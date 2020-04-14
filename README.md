@@ -33,7 +33,7 @@ We have written several documents that you should read through if you haven't do
 Open a pull request from your fork's `master` to the `master` branch of this repository in order to submit your project. You should use the name of your team as the name of the pull request.
 
 ### 5. Commit to your master branch
-The Pull Request you created originally will be automatically updated whenever you push code to `master` on your fork, so no need for updating anything yourself or creating a new Pull Request at the end. Just keep pushing code to your `master` branch and do your best to finish before the code jam ends!
+The pull request you created will be automatically updated whenever you push code to `master` on your fork, so you can create the pull request whenever you want and you only have to do it once. You do not need to wait until the very end of the game jam before you do it. Just keep pushing code to your `master` branch and do your best to finish before the game jam ends!
 
 If you are working as a team, you should consider learning about feature branches so that you don't all work directly on the `master` branch and cause each other a bunch of conflicts. For a short explanation of how this works, see [this video](https://www.youtube.com/watch?v=j7YDbrS9I48).
 
