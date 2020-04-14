@@ -47,4 +47,4 @@ Our website contains some pages that may help you get started:
 
 ## Partners
 
-[![arcade](https://i.imgur.com/CtY3Siv.png)](https://arcade.academy)
+[![arcade](https://raw.githubusercontent.com/python-discord/game-jam-2020/master/Python%20Arcade%20logo.png?token=AAQAKVJNLEVNOTYONW7OGB26T3NEY)](https://arcade.academy)
