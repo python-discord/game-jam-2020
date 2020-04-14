@@ -43,6 +43,11 @@ If you are working as a team, you should consider learning about feature branche
 Our website contains some pages that may help you get started:
 - [How to use git](https://pythondiscord.com/pages/code-jams/using-git/)
 - [Making a fork, opening a pull request, & creating a GitHub webhook](https://pythondiscord.com/pages/code-jams/pull-request/)
+- [Event page](https://pythondiscord.com/pages/events/game-jam-2020/)
+- [Rules](https://pythondiscord.com/pages/events/game-jam-2020/rules/)
+- [Judging](https://pythondiscord.com/pages/events/game-jam-2020/judging/)
+- [Technical Requirements](https://pythondiscord.com/pages/events/game-jam-2020/technical-requirements/)
+- [Project Setup](https://pythondiscord.com/pages/events/game-jam-2020/project-setup/)
 
 
 ## Partners
