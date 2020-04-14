@@ -1,6 +1,6 @@
 [![Game Jam Banner](https://raw.githubusercontent.com/python-discord/game-jam-2020/master/three-of-a-kind.png?token=AAQAKVPU56V5EWHTEYFYIG26T3JFE)](#)
 
-[![Discord](https://img.shields.io/static/v1?label=Python%20Discord&logo=discord&message=%3E30k%20members&color=%237289DA&logoColor=white)](https://discord.gg/2B963hn)
+[![Discord](https://img.shields.io/static/v1?label=Python%20Discord&logo=discord&message=%3E40k%20members&color=%237289DA&logoColor=white)](https://discord.gg/2B963hn)
 [![License](https://img.shields.io/github/license/python-discord/bot)](LICENSE)
 [![Website](https://img.shields.io/badge/website-visit-brightgreen)](https://pythondiscord.com)
 
