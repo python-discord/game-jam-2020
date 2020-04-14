@@ -17,30 +17,36 @@ Arcade is a simple-to-use, modern and powerful game development framework for Py
 ## Getting Started
 
 ### 1. Fork this repository
+
 Start by [forking this repository](https://github.com/python-discord/game-jam-2020/fork). If you're working as a team, only one person needs to do this.
 
 ### 2. Create a team folder in the repo
-You should come up with some team name, and then create a folder in the root of this repository with your team name. **All your project files must be contained within your team's subdirectory**. If you make any changes to other teams folders or to the files in the root, we will not be able to merge your PR, and may have to disqualify your submission.
+
+You should come up with some team name, and then create a folder in the root of this repository with your team name. **All your project files must be contained within your team's subdirectory**. If you make any changes to files other than those in your team folder, we will not be able to merge your PR, and may have to disqualify your submission.
 
 ### 3. Study the guides and guidelines
+
 We have written several documents that you should read through if you haven't done so already. These can all be accessed from the sidebar on [the main event page on our website](https://pythondiscord.com/pages/events/game-jam-2020/). The most important pages to work through can be found here:
-* [Rules](https://pythondiscord.com/pages/events/game-jam-2020/rules/)
-* [Judging](https://pythondiscord.com/pages/events/game-jam-2020/judging/)
-* [Technical Requirements](https://pythondiscord.com/pages/events/game-jam-2020/technical-requirements/)
-* [Project Setup](https://pythondiscord.com/pages/events/game-jam-2020/project-setup/)
+
+- [Rules](https://pythondiscord.com/pages/events/game-jam-2020/rules/)
+- [Judging](https://pythondiscord.com/pages/events/game-jam-2020/judging/)
+- [Technical Requirements](https://pythondiscord.com/pages/events/game-jam-2020/technical-requirements/)
+- [Project Setup](https://pythondiscord.com/pages/events/game-jam-2020/project-setup/)
 
 ### 4. Create a pull request
+
 Open a pull request from your fork's `master` to the `master` branch of this repository in order to submit your project. You should use the name of your team as the name of the pull request.
 
 ### 5. Commit to your master branch
+
 The pull request you created will be automatically updated whenever you push code to `master` on your fork, so you can create the pull request whenever you want and you only have to do it once. You do not need to wait until the very end of the game jam before you do it. Just keep pushing code to your `master` branch and do your best to finish before the game jam ends!
 
 If you are working as a team, you should consider learning about feature branches so that you don't all work directly on the `master` branch and cause each other a bunch of conflicts. For a short explanation of how this works, see [this video](https://www.youtube.com/watch?v=j7YDbrS9I48).
 
-
 ## Useful Information for Participants
 
 Our website contains some pages that may help you get started:
+
 - [How to use git](https://pythondiscord.com/pages/code-jams/using-git/)
 - [Making a fork, opening a pull request, & creating a GitHub webhook](https://pythondiscord.com/pages/code-jams/pull-request/)
 - [Event page](https://pythondiscord.com/pages/events/game-jam-2020/)
@@ -48,7 +54,6 @@ Our website contains some pages that may help you get started:
 - [Judging](https://pythondiscord.com/pages/events/game-jam-2020/judging/)
 - [Technical Requirements](https://pythondiscord.com/pages/events/game-jam-2020/technical-requirements/)
 - [Project Setup](https://pythondiscord.com/pages/events/game-jam-2020/project-setup/)
-
 
 ## Partners
 
