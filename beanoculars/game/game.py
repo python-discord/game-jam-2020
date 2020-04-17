@@ -1,3 +1,4 @@
+# setup
 import arcade
 from constants import WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE, PLAYER_SCALING, TILE_SCALING, TILE_SIZE
 
@@ -22,8 +23,8 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.tile_list = arcade.SpriteList()
 
-        for x in range(0, WINDOW_WIDTH, 32): # Crée le fond à l'aide de grassTile.png
-            for y in range(0, WINDOW_HEIGHT, 32):
+        for x in range(0, WINDOW_WIDTH, TILE_SIZE): # Crée le fond à l'aide de grassTile.png
+            for y in range(0, WINDOW_HEIGHT, TILE_SIZE):
                 wall = arcade.Sprite(r"images\tiles\grassTile.png", TILE_SCALING)
                 wall.center_x = x + TILE_SIZE/2
                 wall.center_y = y + TILE_SIZE/2
