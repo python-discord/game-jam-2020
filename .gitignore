@@ -131,3 +131,4 @@ dmypy.json
 # gimp
 *.xcf
 
+/.idea/workspace.xml
