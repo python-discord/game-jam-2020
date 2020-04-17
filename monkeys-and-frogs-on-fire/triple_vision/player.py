@@ -71,4 +71,9 @@ class Player(arcade.Sprite):
                     next(self._textures[self.cur_color]['idle']['cycle'])
                 ][self.character_face_direction]
 
-                self.prev_anim = 0
+            else:
+                self.texture = self._textures[self.cur_color]['run']['texture'][
+                    next(self._textures[self.cur_color]['run']['cycle'])
+                ][self.character_face_direction]
+
+            self.prev_anim = 0
