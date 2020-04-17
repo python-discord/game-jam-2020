@@ -43,5 +43,5 @@ class MovingSprite(Sprite):
 class Bullet(MovingSprite):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # keep the time of the bulet creation
+        # keep the time of the bullet creation
         self.shot_at = time.time()
