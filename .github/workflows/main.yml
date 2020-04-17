@@ -1,0 +1,12 @@
+
+name: Pyflakes Syntax Checker
+
+on: push
+
+jobs:
+  syntax-check:
+    name: Pyflakes Syntax Checker
+    runs-on: ubuntu-latest
+    steps:
+      - name: Pyflakes Syntax Checker
+        uses: lgeiger/pyflakes-action@v1.0.1
