@@ -6,11 +6,11 @@
 
 ### Welcome to the first Python Discord Game Jam!
 
-#### The theme for this code jam is **Three-of-a-kind**.
+#### The theme for this game jam is **Three-of-a-kind**.
 
 What you do with this theme or how you interpret it is up to you, but it will be your task to come up with something fun using this theme.
 
-#### The chosen technology for this code jam is [Arcade](https://arcade.academy/).
+#### The chosen technology for this game jam is [Arcade](https://arcade.academy/).
 
 Arcade is a simple-to-use, modern and powerful game development framework for Python. We know that a lot of you are probably relatively new to this framework and that's why we've got the creator of Arcade, **Paul Craven**, hanging out in the **`#game-jam`** channel to help. Feel free to ask if you've got questions about Arcade!
 
