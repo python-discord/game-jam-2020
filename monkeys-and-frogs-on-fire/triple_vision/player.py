@@ -56,7 +56,7 @@ class Player(arcade.Sprite):
         self.center_x += 500
         self.center_y += 500
 
-    def update_animation(self, delta_time: float):
+    def update_animation(self, delta_time: float = 1/60):
         self.prev_anim += delta_time
 
         if self.change_x < 0 and self.character_face_direction == Direction.RIGHT:
