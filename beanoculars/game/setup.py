@@ -1,15 +1,5 @@
 import arcade
-
-# Constants
-WINDOW_WIDTH = 960
-WINDOW_HEIGHT = 960
-WINDOW_TITLE = 'MyPythonGame'
-
-TILE_SIZE = 32#x32
-
-# Scaling constants
-PLAYER_SCALING = 1
-TILE_SCALING = 1
+from constants import WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE, PLAYER_SCALING, TILE_SCALING, TILE_SIZE
 
 # Class defining
 class MyGame(arcade.Window):
@@ -32,7 +22,7 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.tile_list = arcade.SpriteList()
 
-        for x in range(0, WINDOW_WIDTH, 32):
+        for x in range(0, WINDOW_WIDTH, 32): # Crée le fond à l'aide de grassTile.png
             for y in range(0, WINDOW_HEIGHT, 32):
                 wall = arcade.Sprite(r"images\tiles\grassTile.png", TILE_SCALING)
                 wall.center_x = x + TILE_SIZE/2
@@ -67,18 +57,3 @@ class MyGame(arcade.Window):
                          modifiers: int):
         """ Get mouse's releases. """
         pass
-
-# MAIN
-def main():
-    """ Main method """
-    window = MyGame(WINDOW_WIDTH,WINDOW_HEIGHT,WINDOW_TITLE)
-    print('Window created')
-    window.setup()
-    print('Game set up')
-    arcade.run()
-
-if __name__ == "__main__":
-    main()
-
-else:
-    print('wtf you do')
