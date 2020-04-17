@@ -45,6 +45,3 @@ class Bullet(MovingSprite):
         super().__init__(*args, **kwargs)
         # keep the time of the bulet creation
         self.shot_at = time.time()
-
-    def fancy_kill(self):
-        self.kill()
