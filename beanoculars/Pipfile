@@ -10,3 +10,6 @@ arcade = "*"
 
 [requires]
 python_version = "3.7"
+
+[scripts]
+start = 'python game\\game.py'
