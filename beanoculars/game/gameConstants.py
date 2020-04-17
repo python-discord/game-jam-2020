@@ -5,3 +5,8 @@ WINDOW_TITLE = 'Main Game Window'
 TILE_SIZE = 32  # x32 = 256px
 PLAYER_SCALING = 1
 TILE_SCALING = 1
+DEBUG_MODE = True
+if DEBUG_MODE:
+    PATH_ADD = ''
+else:
+    PATH_ADD = 'game\\'
