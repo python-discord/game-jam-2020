@@ -1,3 +1,4 @@
 import arcade
 
-print('stuff')
+class Game(arcade.Window):
+    pass
