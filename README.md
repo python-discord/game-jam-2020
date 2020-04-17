@@ -1,4 +1,4 @@
-![Game Jam Banner](https://github.com/python-discord/game-jam-2020/blob/master/three-of-a-kind.png?raw=true)
+[![Game Jam Banner](three-of-a-kind.png)](#)
 
 [![Discord](https://img.shields.io/static/v1?label=Python%20Discord&logo=discord&message=%3E40k%20members&color=%237289DA&logoColor=white)](https://discord.gg/2B963hn)
 [![License](https://img.shields.io/github/license/python-discord/bot)](LICENSE)
@@ -57,4 +57,4 @@ Our website contains some pages that may help you get started:
 
 ## Partners
 
-[![arcade](https://github.com/python-discord/game-jam-2020/blob/master/Python%20Arcade%20logo.png?raw=true)](https://arcade.academy)
+[![arcade](Python%20Arcade%20logo.png)](https://arcade.academy)
