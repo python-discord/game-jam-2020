@@ -1,0 +1,2 @@
+TITLE = 'Game'
+WINDOW_SIZE = (1280, 720)
