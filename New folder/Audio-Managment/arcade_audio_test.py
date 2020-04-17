@@ -24,7 +24,7 @@ def get_notes(file_name, call_back):
         samples, read = s()
         new_note = notes_o(samples)
         if new_note[0] != 0:
-            song_notes.append(((total_frames/float(sample_rate)), new_note[0]))
+            song_notes.append(((total_frames/float(sample_rate)), new_note[1]))
         total_frames += read
 
         if read < hop_s:
@@ -53,6 +53,7 @@ count = 0
 
 def on_draw(delta_time):
     global count, start
+
     """
     Use this function to draw everything to the screen.
     """
@@ -70,7 +71,7 @@ def on_draw(delta_time):
 
     end = time.time() - start
     if end > music_notes[count][0]:
-        on_draw.center_y = default_y + music_notes[count][1] * 2
+        on_draw.center_y = default_y + music_notes[count][1] * 3
         count += 1
 
 
@@ -79,6 +80,7 @@ on_draw.center_y = 0   # type: ignore # dynamic attribute on function obj  # Ini
 
 song = arcade.Sound('test.wav')
 start = None
+
 
 def main():
     global start
