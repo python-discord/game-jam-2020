@@ -79,7 +79,7 @@ class ChasingEnemy(BaseEnemy):
         return (abs(self.center_x - self.what_to_chase.center_x) <= self.detection_radius or
                 abs(self.center_y - self.what_to_chase.center_y) <= self.detection_radius)
 
-    def update(self):
+    def update(self, delta_time: float = 1/60):
         if self._detect():
             dest_x = self.what_to_chase.center_x
             dest_y = self.what_to_chase.center_y
