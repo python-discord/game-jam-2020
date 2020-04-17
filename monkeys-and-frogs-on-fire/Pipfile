@@ -16,4 +16,3 @@ python_version = "3.8"
 start = 'python -m game'
 lint = "python -m flake8"
 precommit = "pre-commit install"
-
