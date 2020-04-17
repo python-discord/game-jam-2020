@@ -14,6 +14,6 @@ arcade = "*"
 python_version = "3.8"
 
 [scripts]
-start = 'python -m game'
+start = 'python -m triple_vision'
 lint = "python -m flake8"
 precommit = "pre-commit install"

@@ -2,15 +2,15 @@ import random
 
 import arcade
 
-from game.constants import (
+from triple_vision.constants import (
     SCALED_TILE,
     SCALING,
     WINDOW_SIZE
 )
-from game.player import Player
+from triple_vision.player import Player
 
 
-class Game(arcade.View):
+class TripleVision(arcade.View):
 
     def __init__(self) -> None:
         super().__init__()

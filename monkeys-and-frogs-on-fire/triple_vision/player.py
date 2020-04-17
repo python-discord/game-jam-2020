@@ -3,8 +3,8 @@ from pathlib import Path
 
 import arcade
 
-from game.constants import Direction, SCALING
-from game.utils import load_texture_pair
+from triple_vision.constants import Direction, SCALING
+from triple_vision.utils import load_texture_pair
 
 
 class Player(arcade.Sprite):

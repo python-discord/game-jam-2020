@@ -1,7 +1,7 @@
-from enum import IntEnum, auto
+from enum import IntEnum
 
 
-TITLE = 'Game'
+TITLE = 'Triple Vision'
 WINDOW_SIZE = (1280, 720)
 
 SCALING = 2
