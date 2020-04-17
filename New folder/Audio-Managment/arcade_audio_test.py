@@ -70,7 +70,7 @@ def on_draw(delta_time):
 
     end = time.time() - start
     if end > music_notes[count][0]:
-        on_draw.center_y = default_y + music_notes[count][1]
+        on_draw.center_y = default_y + music_notes[count][1] * 2
         count += 1
 
 
