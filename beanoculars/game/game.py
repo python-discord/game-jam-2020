@@ -2,25 +2,32 @@
 import arcade
 from arcade.gui import *
 from gameConstants import *
+import math
+import numpy as np
 
 
 def getGridCase(position):
-    pass
+    case = [math.floor(position[0]/32),math.floor(position[1]/32)]
+    return case
 
 def createGrid():
+    """
+    1 = path
+    2 = turret1
+    3 = turret2
+    4 = turret3
+    """
+    grid = []
     size = int(WINDOW_WIDTH / 32)
+    for i in range(size):
+        row = []
+        for j in range(size):
+            row.append(0)
+        grid.append(row)
 
+    return grid
 
 # Class defining
-"""class PlayButton(TextButton):
-    def __init__(self, game, x=0, y=0, width=100, height=40, text=TextButton, theme=None):
-        super().__init__(x,y,width,height,text,theme=theme)
-        self.game = game
-
-    def on_press(self):
-        self.pressed = True
-        print('FUCK YEAH')"""
-
 class MyGame(arcade.Window):
     """
     Main application class.
@@ -39,31 +46,12 @@ class MyGame(arcade.Window):
         self.mouse_x = 0
         self.mouse_y = 0
 
-        self.destination = [0,0]
+        self.mouse_click = [0,0]
+        self.destination = [-1,-1]
 
-        createGrid()
+        self.grid = None
 
         arcade.set_background_color(arcade.csscolor.PURPLE)
-
-        """self.pause = False
-        self.speed = 1
-        self.theme = None
-
-    def set_button_textures(self):
-        normal = PATH_ADD + "images\\tiles\\button.png"
-        hover = PATH_ADD + "images\\tiles\\button.png"
-        clicked = PATH_ADD + "images\\tiles\\button.png"
-        locked = PATH_ADD + "images\\tiles\\button.png"
-
-        self.theme.add_button_textures(normal, hover, clicked, locked)
-
-    def setup_theme(self):
-        self.theme = Theme()
-        self.theme.set_font(24, arcade.color.WHITE)
-        self.set_button_textures()
-
-    def set_buttons(self):
-        self.button_list.append(PlayButton(self, 60, 570, 110, 50, theme=self.theme))"""
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -75,15 +63,15 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = WINDOW_HEIGHT/2
         self.player_list.append(self.player_sprite)
 
+        self.grid = createGrid()
+        print(self.grid)
+
         for x in range(0, WINDOW_WIDTH, TILE_SIZE):  # Crée le fond à l'aide de grassTile.png
             for y in range(0, WINDOW_HEIGHT, TILE_SIZE):
                 wall = arcade.Sprite(PATH_ADD+"images\\tiles\\grassTile.png", TILE_SCALING)
                 wall.center_x = x + TILE_SIZE / 2
                 wall.center_y = y + TILE_SIZE / 2
                 self.tile_list.append(wall)
-
-        """self.setup_theme()
-        self.set_buttons()"""
 
     def on_draw(self):
         """ Renders the screen. """
@@ -96,11 +84,13 @@ class MyGame(arcade.Window):
         self.player_sprite.draw()
 
         # GUI layer
-        """"self.button_list.draw()"""
 
     def on_update(self, delta_time: float):
         """ On Update method"""
-        pass
+        if self.destination != [-1,-1]:
+            self.player_sprite.center_x = self.destination[0] * 32 + TILE_SIZE/2
+            self.player_sprite.center_y = self.destination[1] * 32 + TILE_SIZE/2
+            self.destination = [-1,-1]
 
     def on_key_press(self, symbol: int, modifiers: int):
         """ Get keyboard's presses. """
@@ -112,9 +102,12 @@ class MyGame(arcade.Window):
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """ Get mouse's presses. """
-        self.destination = [self.mouse_x, self.mouse_y]
-        print(self.destination)
-
+        self.mouse_click = [self.mouse_x, self.mouse_y]
+        self.destination = getGridCase(self.mouse_click)
+        if button == 1: # Si clique gauche
+            pass
+        elif button == 4: # Si clique droit
+            pass
     def on_mouse_release(self, x: float, y: float, button: int,
                          modifiers: int):
         """ Get mouse's releases. """
