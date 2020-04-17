@@ -5,6 +5,7 @@ verify_ssl = true
 
 [dev-packages]
 flake8 = "*"
+pre-commit = "*"
 
 [packages]
 arcade = "*"
