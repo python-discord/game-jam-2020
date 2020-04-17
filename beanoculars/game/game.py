@@ -36,7 +36,8 @@ class MyGame(arcade.Window):
     def __init__(self, width, height, windowTitle):
         super(MyGame, self).__init__(width, height, windowTitle, resizable=False)
 
-        self.tile_list = None
+        self.ground_list = None
+        self.path_list = None
         self.player_list = None
 
         self.player_sprite = None
@@ -55,31 +56,37 @@ class MyGame(arcade.Window):
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
+        self.grid = createGrid()
+
         self.player_list = arcade.SpriteList()
-        self.tile_list = arcade.SpriteList()
+        self.ground_list = arcade.SpriteList()
+        self.path_list = arcade.SpriteList()
 
         self.player_sprite = arcade.Sprite(PATH_ADD + "images\\sprite\\player.png", PLAYER_SCALING)
         self.player_sprite.center_x = WINDOW_WIDTH/2
         self.player_sprite.center_y = WINDOW_HEIGHT/2
         self.player_list.append(self.player_sprite)
 
-        self.grid = createGrid()
-        print(self.grid)
-
         for x in range(0, WINDOW_WIDTH, TILE_SIZE):  # Crée le fond à l'aide de grassTile.png
             for y in range(0, WINDOW_HEIGHT, TILE_SIZE):
-                wall = arcade.Sprite(PATH_ADD+"images\\tiles\\grassTile.png", TILE_SCALING)
-                wall.center_x = x + TILE_SIZE / 2
-                wall.center_y = y + TILE_SIZE / 2
-                self.tile_list.append(wall)
+                ground = arcade.Sprite(PATH_ADD+"images\\tiles\\grassTile.png", TILE_SCALING)
+                ground.center_x = x + TILE_SIZE / 2
+                ground.center_y = y + TILE_SIZE / 2
+                self.ground_list.append(ground)
+
+        for i in range(0,WINDOW_HEIGHT, TILE_SIZE):
+            path = arcade.Sprite(PATH_ADD + "images\\tiles\\pathUp.png")
+            path.center_x = 96 + TILE_SIZE/2
+            path.center_y = i + TILE_SIZE/2
+            self.path_list.append(path)
 
     def on_draw(self):
         """ Renders the screen. """
 
         arcade.start_render()
         # Ground layer
-        self.tile_list.draw()
-        arcade.draw_point(self.destination[0], self.destination[1], arcade.csscolor.WHITE, 5)
+        self.ground_list.draw()
+        self.path_list.draw()
         # Player layer
         self.player_sprite.draw()
 
