@@ -54,3 +54,33 @@ class Shape:
                                      int(self.dims[0] * self.scale_size),
                                      int(self.dims[1] * self.scale_size),
                                      self.colour)
+
+
+def manage_shapes(shapes: "list of shape objects") -> "list of updated shapes":
+    for shape in shapes:
+        if shape.removable:
+            shapes.remove(shape)
+        else:
+            shape.update()
+
+    return shapes
+
+
+def create_shape(note, total_notes=3, colour=(255, 0, 0)) -> Shape:
+    final_spacing = int(get_monitors()[0].width * 0.6)
+    central_spacing = final_spacing // total_notes
+    width = int(central_spacing * 0.45)
+    x_pos = int(central_spacing * (note / total_notes)) - central_spacing // 2
+    y_pos = int(get_monitors()[0].height * 0.8)
+    new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 400, colour, 2)
+
+    return new_shape
+
+
+def renderer(shape: Shape):
+    shape.draw()
+    return
+
+
+def draw_all_shapes(shapes: "list of shape objects"):
+    list(map(renderer, shapes))
