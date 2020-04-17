@@ -1,7 +1,6 @@
    ![beanoculars' logo](game/images/icons/beanocularsMINI.png)
 ---
 # GAME TITLE TBD
-*Made by sachapomme*
 ---
 ## About
 This repository is team *Beanoculars* (sachapomme or Sacha#8175) submission for the python discord game jam 2020. The whole project has been done in 10 days and it was my first try at something like this.
