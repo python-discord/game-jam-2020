@@ -36,26 +36,13 @@ class TripleVision(arcade.View):
 
         self.player = Player('m')
 
-    def on_key_press(self, key, modifiers) -> None:
-        if key == arcade.key.W:
-            self.player.change_y = 5
-        if key == arcade.key.S:
-            self.player.change_y = -5
-        if key == arcade.key.A:
-            self.player.change_x = -5
-        if key == arcade.key.D:
-            self.player.change_x = 5
-
-    def on_key_release(self, key, modifiers) -> None:
-        if key in (arcade.key.W, arcade.key.S):
-            self.player.change_y = 0
-        if key in (arcade.key.A, arcade.key.D):
-            self.player.change_x = 0
+    def on_mouse_press(self, x, y, button, modifiers) -> None:
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            self.player.move_to(x, y, rotate=False)
 
     def on_draw(self) -> None:
         self.tiles.draw()
         self.player.draw()
 
     def on_update(self, delta_time: float) -> None:
-        self.player.update_animation(delta_time)
-        self.player.update()
+        self.player.update(delta_time)

@@ -3,11 +3,15 @@ import time
 
 from arcade import Sprite
 
+from triple_vision.constants import SCALED_TILE
+
 
 class MovingSprite(Sprite):
     def __init__(self, moving_speed, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
         self.speed = moving_speed
+        self.target = None
 
     def move_to(self, x, y, rotate: bool = True) -> None:
         """
@@ -34,10 +38,25 @@ class MovingSprite(Sprite):
         self.change_x = math.cos(angle) * self.speed
         self.change_y = math.sin(angle) * self.speed
 
+        self.target = (x, y)
+
     def distance_to(self, sprite: Sprite) -> float:
         x_diff = sprite.center_x - self.center_x
         y_diff = sprite.center_y - self.center_y
         return math.hypot(x_diff, y_diff)
+
+    def update(self) -> None:
+        if self.target is not None:
+            if (
+                self.target[0] - SCALED_TILE / 2 < self.center_x < self.target[0] + SCALED_TILE / 2 and
+                self.target[1] - SCALED_TILE / 2 < self.center_y < self.target[1] + SCALED_TILE / 2
+            ):
+                self.change_x = 0
+                self.change_y = 0
+
+                self.target = None
+
+        super().update()
 
 
 class Bullet(MovingSprite):

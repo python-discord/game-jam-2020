@@ -1,16 +1,15 @@
 import itertools
 from pathlib import Path
 
-import arcade
-
 from triple_vision.constants import Direction, SCALING
+from triple_vision.sprites import MovingSprite
 from triple_vision.utils import load_texture_pair
 
 
-class Player(arcade.Sprite):
+class Player(MovingSprite):
 
     def __init__(self, gender: str) -> None:
-        super().__init__(scale=SCALING)
+        super().__init__(moving_speed=10, scale=SCALING)
 
         self.character_face_direction = Direction.RIGHT
         self.cur_texture = 0
@@ -56,7 +55,7 @@ class Player(arcade.Sprite):
         self.center_x += 500
         self.center_y += 500
 
-    def update_animation(self, delta_time: float):
+    def update_animation(self, delta_time: float) -> None:
         self.prev_anim += delta_time
 
         if self.change_x < 0 and self.character_face_direction == Direction.RIGHT:
@@ -77,3 +76,7 @@ class Player(arcade.Sprite):
                 ][self.character_face_direction]
 
             self.prev_anim = 0
+
+    def update(self, delta_time: float) -> None:
+        self.update_animation(delta_time)
+        super().update()
