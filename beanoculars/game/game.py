@@ -5,6 +5,8 @@ WINDOW_WIDTH = 400
 WINDOW_HEIGHT = 400
 WINDOW_TITLE = 'MyPythonGame'
 
+# Scaling constants
+PLAYER_SCALING = 1
 
 # TODO find ideas
 
@@ -47,6 +49,8 @@ class MyGame(arcade.Window):
                          modifiers: int):
         """ Get mouse releases. """
         pass
+
+    arcade.draw_text()
 
 
 
