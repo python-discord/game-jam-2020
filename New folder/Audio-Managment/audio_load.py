@@ -15,23 +15,23 @@ def get_notes(file_name, call_back):
     s = source(file_name, sample_rate, hop_s)
     sample_rate = s.samplerate
 
-    tolerance = 0.8
-
     notes_o = notes("default", win_s, hop_s, sample_rate)
 
     print("%8s" % "time", "[ start", "vel", "last ]")
 
     # total number of frames read
     total_frames = 0
+    song_notes = []
     while True:
         samples, read = s()
         new_note = notes_o(samples)
         if new_note[0] != 0:
-            note_str = ' '.join(["%.2f" % i for i in new_note])
-            print(((total_frames/float(sample_rate)), new_note[0]))
+            song_notes.append(((total_frames/float(sample_rate)), new_note[0]))
         total_frames += read
 
         if read < hop_s:
-            break
+            return song_notes
 
-get_notes('test.wav', None)
+
+#print(get_notes('test.wav', None))
+
