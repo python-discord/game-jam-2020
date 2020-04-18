@@ -8,7 +8,7 @@ Songs    ~ Each song has a set difficulty
          ~ Shape spawned certain distance away so that rectangle is over
            the right area as the beat arrives
          ~ Indicator for when to press key
-         ~ Path chosen by random seed
+         ~ Path chosen by random seed/algo (still deciding)
 
 Inputs   ~ Mouse position for menu song selection / opening high scores
          ~ Keyboard keys for main game
