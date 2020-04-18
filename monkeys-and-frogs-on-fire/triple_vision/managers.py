@@ -1,6 +1,9 @@
 import arcade
 
+from typing import Tuple
+
 from triple_vision.constants import SCALING, WINDOW_SIZE
+from triple_vision.entities import DamageIndicator
 
 
 class GameManager:
@@ -11,21 +14,27 @@ class GameManager:
         self.enemies = arcade.SpriteList()
         self.player_projectiles = arcade.SpriteList()
         self.enemy_projectiles = arcade.SpriteList()
+        self.damage_indicators = arcade.SpriteList()
 
     def draw(self) -> None:
         self.enemies.draw()
         self.player_projectiles.draw()
         self.enemy_projectiles.draw()
+        self.damage_indicators.draw()
 
     def create_enemy(self, enemy_class, *args, **kwargs) -> None:
         enemy = enemy_class(self, *args, **kwargs)
         self.enemies.append(enemy)
-        return enemy
+
+    def create_dmg_indicator(self, text: str, position: Tuple[float, float]) -> None:
+        dmg_indicator = DamageIndicator(text, *position)
+        self.damage_indicators.append(dmg_indicator)
 
     def update(self, delta_time: float = 1/60) -> None:
         for enemy in self.enemies:
             for projectile in self.player_projectiles:
                 if arcade.check_for_collision(projectile, enemy):
+                    self.create_dmg_indicator(str(projectile.dmg), enemy.position)
                     enemy.hit(
                         projectile.dmg,
                         projectile,
@@ -47,6 +56,7 @@ class GameManager:
         self.enemies.update()
         self.player_projectiles.update()
         self.enemy_projectiles.update()
+        self.damage_indicators.update()
 
 
 class CardManager:
