@@ -1,13 +1,15 @@
 import arcade
 
-class MyGame(arcade.Window):
+from config import Config
+
+class Game(arcade.Window):
     """
     Main application class.
     """
 
     def __init__(self):
         # Call the parent class and set up the window
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+        super().__init__(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT, Config.SCREEN_TITLE)
 
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
@@ -39,17 +41,17 @@ class MyGame(arcade.Window):
 
         # Set up the player, specifically placing it at these coordinates.
         image_source = "images/monsters/skeleton.png"
-        self.player_sprite = arcade.Sprite(image_source, CHARACTER_SCALING)
-        self.player_sprite.center_x = SCREEN_WIDTH / 2
-        self.player_sprite.center_y = SCREEN_HEIGHT / 2
+        self.player_sprite = arcade.Sprite(image_source, Config.CHARACTER_SCALING)
+        self.player_sprite.center_x = Config.SCREEN_WIDTH / 2
+        self.player_sprite.center_y = Config.SCREEN_HEIGHT / 2
         self.player_sprite.scale = 4
         self.player_list.append(self.player_sprite)
 
         # Create the floor
         # This shows using a loop to place multiple sprites horizontally and vertically
-        for y in range(0, 1250, 63 * TILE_SCALING):
-            for x in range(0, 1250, 63 * TILE_SCALING):
-                floor = arcade.Sprite("images/tiles/floor_tile.png", TILE_SCALING)
+        for y in range(0, 1250, 63 * Config.TILE_SCALING):
+            for x in range(0, 1250, 63 * Config.TILE_SCALING):
+                floor = arcade.Sprite("images/tiles/floor_tile.png", Config.TILE_SCALING)
                 floor.center_x = x
                 floor.center_y = y
                 self.floor_list.append(floor)
@@ -71,16 +73,16 @@ class MyGame(arcade.Window):
         """Called whenever a key is pressed. """
 
         if key == arcade.key.UP or key == arcade.key.W:
-            self.player_sprite.change_y = PLAYER_MOVEMENT_SPEED
+            self.player_sprite.change_y = Config.PLAYER_MOVEMENT_SPEED
             self.prev_keypress.append(key)
         elif key == arcade.key.DOWN or key == arcade.key.S:
-            self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED
+            self.player_sprite.change_y = -Config.PLAYER_MOVEMENT_SPEED
             self.prev_keypress.append(key)
         elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+            self.player_sprite.change_x = -Config.PLAYER_MOVEMENT_SPEED
             self.prev_keypress.append(key)
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+            self.player_sprite.change_x = Config.PLAYER_MOVEMENT_SPEED
             self.prev_keypress.append(key)
 
     def on_key_release(self, key, modifiers):
@@ -115,25 +117,25 @@ class MyGame(arcade.Window):
         changed = False
 
         # Scroll left
-        left_boundary = self.view_left + LEFT_VIEWPORT_MARGIN
+        left_boundary = self.view_left + Config.LEFT_VIEWPORT_MARGIN
         if self.player_sprite.left < left_boundary:
             self.view_left -= left_boundary - self.player_sprite.left
             changed = True
 
         # Scroll right
-        right_boundary = self.view_left + SCREEN_WIDTH - RIGHT_VIEWPORT_MARGIN
+        right_boundary = self.view_left + Config.SCREEN_WIDTH - Config.RIGHT_VIEWPORT_MARGIN
         if self.player_sprite.right > right_boundary:
             self.view_left += self.player_sprite.right - right_boundary
             changed = True
 
         # Scroll up
-        top_boundary = self.view_bottom + SCREEN_HEIGHT - TOP_VIEWPORT_MARGIN
+        top_boundary = self.view_bottom + Config.SCREEN_HEIGHT - Config.TOP_VIEWPORT_MARGIN
         if self.player_sprite.top > top_boundary:
             self.view_bottom += self.player_sprite.top - top_boundary
             changed = True
 
         # Scroll down
-        bottom_boundary = self.view_bottom + BOTTOM_VIEWPORT_MARGIN
+        bottom_boundary = self.view_bottom + Config.BOTTOM_VIEWPORT_MARGIN
         if self.player_sprite.bottom < bottom_boundary:
             self.view_bottom -= bottom_boundary - self.player_sprite.bottom
             changed = True
@@ -146,14 +148,14 @@ class MyGame(arcade.Window):
 
             # Do the scrolling
             arcade.set_viewport(self.view_left,
-                                SCREEN_WIDTH + self.view_left,
+                                Config.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
-                                SCREEN_HEIGHT + self.view_bottom)
+                                Config.SCREEN_HEIGHT + self.view_bottom)
 
 
 def main():
     """ Main method """
-    window = MyGame()
+    window = Game()
     window.setup()
     arcade.run()
 
