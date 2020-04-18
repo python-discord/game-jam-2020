@@ -1,4 +1,13 @@
-# Constants
+# SETUP CONSTANTS
+DEBUG_MODE = True
+if DEBUG_MODE:
+    PATH_ADD = ''
+else:
+    PATH_ADD = 'submission\\'
+
+FULLSCREEN = False
+
+# CONSTANTS
 TILE_SIZE = 32  # x32 = 256px
 PLAYER_SCALING = 1
 TILE_SCALING = 1
@@ -12,6 +21,10 @@ RIGHT_FACING = 1
 DOWN_FACING = 2
 UP_FACING = 3
 
+# PLAYER CONSTANTS
+MOVE_SPEED = 1
+MOVE_SPEED_CHARGED = 0.7 * MOVE_SPEED
+
 # ENTITY TYPES
 E_ANT = 0
 E_MOSQUITO = 1
@@ -23,9 +36,3 @@ T_LAMP = 11
 T_VACUUM = 12
 
 VOLUME = 0.5
-
-DEBUG_MODE = True
-if DEBUG_MODE:
-    PATH_ADD = ''
-else:
-    PATH_ADD = 'submission\\'
