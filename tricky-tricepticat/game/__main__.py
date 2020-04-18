@@ -4,9 +4,10 @@ Domicidal
 Python Discord | Game Jam 2020
 """
 import os
+from pathlib import Path
 
 import arcade
-from pathlib import Path
+
 
 UPDATES_PER_FRAME = 3
 
@@ -82,26 +83,36 @@ class Pirate(arcade.Sprite):
         # Idle animation
         if self.change_x == 0 and self.change_y == 0:
             self.cur_texture += 1
-            if self.cur_texture > len(self.texture_dict['idle'])+1 * UPDATES_PER_FRAME:
+            if self.cur_texture > len(
+                    self.texture_dict['idle']
+                    ) + 1 * UPDATES_PER_FRAME:
                 self.cur_texture = len(self.texture_dict['idle'])
                 self.cur_texture -= 1
             frames = self.cur_texture // UPDATES_PER_FRAME
-            self.texture = self.texture_dict['idle'][frames][self.character_face_direction]
-            self.texture = self.texture_dict['idle'][0][self.character_face_direction]
+            self.texture = self.texture_dict['idle'][frames][
+                self.character_face_direction
+                ]
+            self.texture = self.texture_dict['idle'][0][
+                self.character_face_direction
+                ]
             return
 
         # Walking animation
         self.cur_texture += 1
-        if self.cur_texture > len(self.texture_dict['run'])+1 * UPDATES_PER_FRAME:
+        if self.cur_texture > len(
+                self.texture_dict['run'])+1 * UPDATES_PER_FRAME:
             self.cur_texture = 0
 
         frames = self.cur_texture // UPDATES_PER_FRAME
 
-        self.texture = self.texture_dict['run'][frames][self.character_face_direction]
+        self.texture = self.texture_dict['run'][frames][
+            self.character_face_direction
+            ]
 
     def on_update(self, delta_time):
         self.center_x += self.change_x*MOVEMENT_SPEED*delta_time
         self.center_y += self.change_y*MOVEMENT_SPEED*delta_time
+
 
 class MyGame(arcade.Window):
     """
@@ -142,11 +153,10 @@ class MyGame(arcade.Window):
         Normally, you'll call update() on the sprite lists that
         need it.
         """
-        self.player_sprite.change_x = 0
+        self.player_sprite.change_x = 0.1
         self.player_sprite.change_y = 0
         self.player_sprite.on_update(delta_time)
         self.player_sprite.update_animation()
-
 
     def on_key_press(self, key, key_modifiers):
         """
