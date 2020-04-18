@@ -5,9 +5,7 @@ from lane import Lane
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-MAX_SPEED = 3.0
-ACCELERATION_RATE = 0.1
-FRICTION = 0.02
+UPDATES_PER_FRAME = 7
 
 
 class MyGame(arcade.Window):
@@ -35,6 +33,7 @@ class MyGame(arcade.Window):
         # Set up other settings
         self.score = 0
         self.time = 0
+        self.frame = 0
 
     def setup(self):
 
@@ -43,23 +42,48 @@ class MyGame(arcade.Window):
         self.obstacle_list = arcade.SpriteList()
         self.char_list = arcade.SpriteList()
 
+        q_background = arcade.Sprite("../ressources/Q_Background.png")
+        q_background.center_y = SCREEN_HEIGHT - (SCREEN_HEIGHT // 3) + 107
+        q_background.center_x = SCREEN_WIDTH // 2
+        q_background.change_x = -2
+        self.background.append(q_background)
+
+        q_background = arcade.Sprite("../ressources/Q_Background.png")
+        q_background.center_y = SCREEN_HEIGHT - (SCREEN_HEIGHT // 3) + 107
+        q_background.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
+        q_background.change_x = -2
+        self.background.append(q_background)
+
+        Q_run_textures = []
+        for i in range(3):
+            Q_run_textures.append(arcade.load_texture(f"../ressources/Q_Run_{i+1}.png"))
+
         # Set up lane 1
-        self.lane_up = Lane(1, SCREEN_HEIGHT, SCREEN_WIDTH, "../ressources/Q_tempo_char.png")
+        self.lane_up = Lane(1,
+                            SCREEN_HEIGHT,
+                            SCREEN_WIDTH,
+                            "../ressources/Q_Run_1.png",
+                            Q_run_textures)
         self.char_list.append(self.lane_up.char)
         self.floor_list.append(self.lane_up.floor)
-        self.obstacle_list.append(self.lane_up.generate_obstacle())
 
         # Set up lane 2
-        self.lane_middle = Lane(2, SCREEN_HEIGHT, SCREEN_WIDTH, "../ressources/W_tempo_char.png")
+        self.lane_middle = Lane(2,
+                                SCREEN_HEIGHT,
+                                SCREEN_WIDTH,
+                                "../ressources/W_tempo_char.png",
+                                [])
         self.char_list.append(self.lane_middle.char)
         self.floor_list.append(self.lane_middle.floor)
-        self.obstacle_list.append(self.lane_middle.generate_obstacle())
 
         # Set up lane 3
-        self.lane_down = Lane(3, SCREEN_HEIGHT, SCREEN_WIDTH, "../ressources/E_tempo_char.png")
+        self.lane_down = Lane(3,
+                              SCREEN_HEIGHT,
+                              SCREEN_WIDTH,
+                              "../ressources/E_tempo_char.png",
+                              [])
         self.char_list.append(self.lane_down.char)
         self.floor_list.append(self.lane_down.floor)
-        self.obstacle_list.append(self.lane_down.generate_obstacle())
 
         # Set up the rest
         self.score = 0
@@ -111,10 +135,12 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time):
         """ Movement and game logic """
-
         # Temporary level generation
         self.time += delta_time
+        self.frame += 1
         if self.time >= 1:
+            print(self.frame)
+            self.frame = 0
             rand = random.randint(0, 10)
 
             if rand == 0:
@@ -150,9 +176,21 @@ class MyGame(arcade.Window):
             else:
                 temp_list.append(obstacle)
 
-        self.obstacle_list = arcade.SpriteList()
-        for obstacle in temp_list:
-            self.obstacle_list.append(obstacle)
+        self.obstacle_list = temp_list
+
+        # Remove backgrounds item
+        temp_background = arcade.SpriteList()
+        for item in self.background:
+            if item.right > 0:
+                temp_background.append(item)
+            else:
+                if "Q_Background.png" in item.texture.name:
+                    q_background = arcade.Sprite("../ressources/Q_Background.png")
+                    q_background.center_y = SCREEN_HEIGHT - (SCREEN_HEIGHT // 3) + 107
+                    q_background.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
+                    q_background.change_x = -2
+                    temp_background.append(q_background)
+        self.background = temp_background
 
         # Generate a list of all sprites that collided with the player.
         for chars in [self.lane_up.char, self.lane_middle.char, self.lane_down.char]:

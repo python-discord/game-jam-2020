@@ -5,15 +5,16 @@ class Lane():
 
 
     # init a lane with char/floor/physics engine/
-    def __init__(self, tier, SCREEN_HEIGHT, SCREEN_WIDTH, sprite_char):
+    def __init__(self, tier, SCREEN_HEIGHT, SCREEN_WIDTH, sprite_char, run_textures):
 
         self.SCREEN_HEIGHT = SCREEN_HEIGHT
         self.SCREEN_WIDTH = SCREEN_WIDTH
         self.tier = tier
         self.char = Character(sprite_char,
-                              SCREEN_HEIGHT - (SCREEN_HEIGHT // 3)*tier + 20)
-        self.char.center_x = SCREEN_WIDTH //10
-        self.char.scale = 0.5
+                              SCREEN_HEIGHT - (SCREEN_HEIGHT // 3)*tier + 20,
+                              run_textures)
+        self.char.center_x = SCREEN_WIDTH // 10
+        self.char.scale = 1
 
         self.floor = arcade.Sprite("../ressources/Floor_Tempo.png")
         self.floor.center_y = SCREEN_HEIGHT - (SCREEN_HEIGHT // 3)*tier
