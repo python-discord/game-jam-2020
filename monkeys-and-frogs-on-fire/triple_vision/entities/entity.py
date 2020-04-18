@@ -36,7 +36,7 @@ class AnimatedEntity(arcade.Sprite):
 
         if self.is_colored:
             colors = ('red', 'green', 'blue')
-            self.cur_color = colors[0]
+            self.curr_color = colors[0]
 
             for color in colors:
                 self._textures[color] = dict()
@@ -63,7 +63,7 @@ class AnimatedEntity(arcade.Sprite):
                         )
                     ]
 
-            self.texture = self._textures[self.cur_color]['idle']['texture'][0][self.entity_face_direction]
+            self.texture = self._textures[self.curr_color]['idle']['texture'][0][self.entity_face_direction]
 
         else:
             for state in states:
@@ -104,8 +104,8 @@ class AnimatedEntity(arcade.Sprite):
             state = 'idle' if self.change_x == 0 else 'run'
 
             if self.is_colored:
-                self.texture = self._textures[self.cur_color][state]['texture'][
-                    next(self._textures[self.cur_color][state]['cycle'])
+                self.texture = self._textures[self.curr_color][state]['texture'][
+                    next(self._textures[self.curr_color][state]['cycle'])
                 ][self.entity_face_direction]
 
             else:

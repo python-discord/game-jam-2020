@@ -53,7 +53,7 @@ class CardManager:
                         card.left < x < card.right and
                         card.bottom < y < card.top
                     ):
-                        self.ctx.player.cur_color = self.colors[idx]
+                        self.ctx.player.curr_color = self.colors[idx]
                         self.show_cards = False
                         self.ctx.paused = False
 
