@@ -1,3 +1,5 @@
+import time
+
 from triple_vision.constants import SCALING
 from triple_vision.entities.entity import AnimatedEntity
 from triple_vision.entities.sprites import MovingSprite
@@ -6,6 +8,8 @@ from triple_vision.entities.sprites import MovingSprite
 class Player(AnimatedEntity, MovingSprite):
 
     def __init__(self, gender: str) -> None:
+        self.last_shot = time.time()
+
         super().__init__(
             sprite_name='wizzard',
             assets_path='assets/wizard',
