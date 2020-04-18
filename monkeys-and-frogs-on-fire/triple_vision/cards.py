@@ -29,6 +29,12 @@ class CardManager:
 
         self.show_cards = False
         self.hover_card = None
+        self.prev_hover_card = None
+
+    def set_hover_card(self, card):
+        if card != self.hover_card:
+            self.prev_hover_card = self.hover_card
+            self.hover_card = card
 
     def check_mouse_motion(self, x, y) -> None:
         if (
@@ -40,7 +46,7 @@ class CardManager:
                     card.left < x < card.right and
                     card.bottom < y < card.top
                 ):
-                    self.hover_card = card
+                    self.set_hover_card(card)
                     break
 
             self.show_cards = True
@@ -78,14 +84,9 @@ class CardManager:
             max_height = self.MAX_CARD_HOVER_HEIGHT \
                 if card == self.hover_card else self.MAX_CARD_HEIGHT
 
-            if self.show_cards:
-                card.change_y = 10
-            else:
-                card.change_y = -10
-
             if (
                 self.show_cards and
-                card != self.hover_card and
+                card == self.prev_hover_card and
                 card.center_y >= self.MAX_CARD_HEIGHT
             ):
                 card.change_y = -10
@@ -95,5 +96,14 @@ class CardManager:
                 (not self.show_cards and card.center_y <= self.MIN_CARD_HEIGHT)
             ):
                 card.change_y = 0
+
+            elif card == self.prev_hover_card:
+                self.prev_hover_card = None
+
+            elif self.show_cards:
+                card.change_y = 10
+
+            else:
+                card.change_y = -10
 
         self.cards.update()
