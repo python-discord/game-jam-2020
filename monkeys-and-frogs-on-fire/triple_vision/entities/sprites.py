@@ -87,3 +87,14 @@ class TemporarySprite(arcade.Sprite):
         if self.lifetime and time.time() - self.created_at > self.lifetime:
             self.kill()
         super().update()
+
+
+class DamageIndicator(TemporarySprite, MovingSprite):
+    def __init__(self, text, start_x: int, start_y: int):
+        super().__init__(lifetime=1,
+                         moving_speed=1,
+                         center_x=start_x,
+                         center_y=start_y)
+        temp_text = arcade.draw_text(text, start_x, start_y, arcade.color.WHITE)
+        self.texture = temp_text.texture
+        self.move_to(start_x, start_y + 10, rotate=False, set_target=False)
