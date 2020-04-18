@@ -20,9 +20,6 @@ class Enemies(enum.Enum):
 
 
 class BaseEnemy(LivingEntity):
-    """
-    Sprite with idle and run animation.
-    """
     enemy_assets_path = Path('assets/dungeon/frames')
 
     def __init__(self, enemy: Enemies, hp: int = 0, **kwargs) -> None:

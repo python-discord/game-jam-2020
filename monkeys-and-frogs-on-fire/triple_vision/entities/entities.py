@@ -138,13 +138,13 @@ class LivingEntity(AnimatedEntity):
         wall_reference: arcade.SpriteList
     ) -> None:
         """
-        value instead of passing it like this
         :param dmg: how much damage to hp will entity take
         :param attacker_reference: Sprite that hit the entity (player, projectile etc),
                                    so we know in which direction to push the entity.
         :param throwback_force:  force (unit is pixel change) the entity will be pushed away.
         :param wall_reference: SpriteList of things that the entity cannot go trough. This will
                                stop the entity from being pushed and slightly damage the entity.
+                               TODO: Currently a placeholder, to be implemented
         """
         self.hp -= dmg
         if self.hp <= 0:

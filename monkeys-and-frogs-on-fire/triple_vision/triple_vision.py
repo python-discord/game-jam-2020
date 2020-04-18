@@ -26,6 +26,8 @@ class TripleVision(arcade.View):
 
         self.tiles = None
 
+        self.bullet_list = None
+
         self.player = None
 
         self.card_manager = None
