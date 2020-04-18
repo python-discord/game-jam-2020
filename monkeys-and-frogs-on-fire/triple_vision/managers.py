@@ -35,22 +35,12 @@ class GameManager:
             for projectile in self.player_projectiles:
                 if arcade.check_for_collision(projectile, enemy):
                     self.create_dmg_indicator(str(projectile.dmg), enemy.position)
-                    enemy.hit(
-                        projectile.dmg,
-                        projectile,
-                        projectile.throwback_force,
-                        tuple()
-                    )
+                    enemy.hit(projectile)
                     projectile.kill()
 
         for projectile in self.enemy_projectiles:
             if arcade.check_for_collision(projectile, self.window.player):
-                self.window.player.hit(
-                    projectile.dmg,
-                    projectile,
-                    projectile.throwback_force,
-                    tuple()
-                )
+                self.window.player.hit(projectile)
                 projectile.kill()
 
         self.enemies.update()

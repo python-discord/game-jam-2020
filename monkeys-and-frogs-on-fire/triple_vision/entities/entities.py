@@ -7,6 +7,7 @@ import arcade
 
 from triple_vision.constants import Direction
 from triple_vision.utils import load_texture_pair
+from triple_vision.entities.weapons import Weapon
 
 
 class AnimatedEntity(arcade.Sprite):
@@ -130,23 +131,15 @@ class LivingEntity(AnimatedEntity):
         self.being_pushed = False
         self.was_pushed = False
 
-    def hit(
-        self,
-        dmg: int,
-        attacker_reference: arcade.Sprite,
-        throwback_force: int,
-        wall_reference: arcade.SpriteList
-    ) -> None:
+    def hit(self, weapon: Weapon, wall_reference: arcade.SpriteList = tuple()) -> None:
         """
-        :param dmg: how much damage to hp will entity take
-        :param attacker_reference: Sprite that hit the entity (player, projectile etc),
-                                   so we know in which direction to push the entity.
-        :param throwback_force:  force (unit is pixel change) the entity will be pushed away.
+        :param weapon: Weapon the entity is being hit. Used for getting dmg, throwback force
+                       and position for knock-back direction.
         :param wall_reference: SpriteList of things that the entity cannot go trough. This will
                                stop the entity from being pushed and slightly damage the entity.
                                TODO: Currently a placeholder, to be implemented
         """
-        self.hp -= dmg
+        self.hp -= weapon.dmg
         if self.hp <= 0:
             self.kill()
             return
@@ -158,12 +151,12 @@ class LivingEntity(AnimatedEntity):
         dest_x = self.center_x
         dest_y = self.center_y
 
-        x_diff = dest_x - attacker_reference.center_x
-        y_diff = dest_y - attacker_reference.center_y
+        x_diff = dest_x - weapon.center_x
+        y_diff = dest_y - weapon.center_y
         angle = math.atan2(y_diff, x_diff)
 
-        self.change_x = math.cos(angle) * throwback_force
-        self.change_y = math.sin(angle) * throwback_force
+        self.change_x = math.cos(angle) * weapon.throwback_force
+        self.change_y = math.sin(angle) * weapon.throwback_force
 
         self.color = (255, 0, 0)
         self.being_pushed = True
