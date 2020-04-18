@@ -6,3 +6,6 @@ class Game(arcade.Window):
 
 def main():
     actualGame = Game()
+    actualGame.run()
+
+main()
