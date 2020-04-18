@@ -40,6 +40,9 @@ class MovingSprite(arcade.Sprite):
 
         self.target = (x, y)
 
+    def move_to_sprite(self, sprite: arcade.Sprite, rotate: bool = True):
+        self.move_to(sprite.center_x, sprite.center_y, rotate=rotate)
+
     def distance_to(self, sprite: arcade.Sprite) -> float:
         x_diff = sprite.center_x - self.center_x
         y_diff = sprite.center_y - self.center_y
