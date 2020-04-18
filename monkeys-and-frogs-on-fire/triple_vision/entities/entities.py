@@ -128,6 +128,7 @@ class LivingEntity(AnimatedEntity):
 
         self.hp = hp
         self.being_pushed = False
+        self.was_pushed = False
 
     def hit(
         self,
@@ -181,7 +182,13 @@ class LivingEntity(AnimatedEntity):
 
             if -1 <= self.change_x <= 1 and -1 <= self.change_y <= 1:
                 self.being_pushed = False
+                self.was_pushed = True
                 self.color = (255, 255, 255)
+
+        elif self.was_pushed:
+            self.change_x = 0
+            self.change_y = 0
+            self.was_pushed = False
 
     def update(self, delta_time: float = 1/60) -> None:
         self.reduce_throwback()
