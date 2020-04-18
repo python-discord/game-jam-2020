@@ -4,6 +4,8 @@ import arcade
 FLOOR_LENGTH = 60
 FLOOR_TEXTURE_LENGTH = 100
 GRAVITY = 1
+PLAYER_JUMP_SPEED = 20
+PLAYER_MOVEMENT_SPEED = 5
 
 
 class GameState:
@@ -33,3 +35,22 @@ class GameState:
         arcade.start_render()
         self.player.draw()
         self.level_geometry.draw()
+
+    def on_key_press(self, key, modifiers):
+        """Called whenever a key is pressed. """
+        if key == arcade.key.SPACE:
+            if self.engine.can_jump():
+                self.player.change_y = PLAYER_JUMP_SPEED
+        elif key == arcade.key.LEFT or key == arcade.key.A:
+            self.player.change_x = -PLAYER_MOVEMENT_SPEED
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            self.player.change_x = PLAYER_MOVEMENT_SPEED
+
+    def on_key_release(self, key, modifiers):
+        """Called when the user releases a key. """
+        if key == arcade.key.LEFT or key == arcade.key.A:
+            if self.player.change_x < 0:
+                self.player.change_x = 0
+        elif key == arcade.key.RIGHT or key == arcade.key.D:
+            if self.player.change_x > 0:
+                self.player.change_x = 0

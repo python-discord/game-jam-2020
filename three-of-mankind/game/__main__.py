@@ -31,6 +31,16 @@ class Game(arcade.Window):
         if self.gamestate:
             self.gamestate.on_draw()
 
+    def on_key_press(self, symbol: int, modifiers: int):
+        """Send keypress event to the gamestate."""
+        if self.gamestate:
+            self.gamestate.on_key_press(symbol, modifiers)
+
+    def on_key_release(self, symbol: int, modifiers: int):
+        """Send keyrelease event to the gamestate."""
+        if self.gamestate:
+            self.gamestate.on_key_release(symbol, modifiers)
+
     def start_game(self) -> None:
         """Create gamestate and set to the ingame mode."""
         logging.info('New game started')
