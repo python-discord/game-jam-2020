@@ -74,17 +74,14 @@ class CardManager:
         self.cards.draw()
 
     def update(self, delta_time: float = 1/60):
-        if not self.show_cards:
-            for card in self.cards:
-                card.change_y = -10
-
-        elif self.show_cards:
-            for card in self.cards:
-                card.change_y = 10
-
         for card in self.cards:
             max_height = self.MAX_CARD_HOVER_HEIGHT \
                 if card == self.hover_card else self.MAX_CARD_HEIGHT
+
+            if self.show_cards:
+                card.change_y = 10
+            else:
+                card.change_y = -10
 
             if (
                 self.show_cards and
@@ -93,7 +90,7 @@ class CardManager:
             ):
                 card.change_y = -10
 
-            if (
+            elif (
                 (self.show_cards and card.center_y >= max_height) or
                 (not self.show_cards and card.center_y <= self.MIN_CARD_HEIGHT)
             ):
