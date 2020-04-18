@@ -1,4 +1,11 @@
+"""
+map.py
+Manages everything related to how walls, backgrounds, levels and the entire dungeon is generated.
+Pathfinding will also depend on objects here, and is thus integral to it's functionality.
+"""
+
 from __future__ import annotations
+
 
 class Dungeon(object):
     """
@@ -13,7 +20,8 @@ class Dungeon(object):
         :param size: The diameter of the dungeon. Allows for a total of size^2 slots for levels.
         """
 
-        self.levels, self.size = level_count, size
+        self.level_count, self.size = level_count, size
+        self.levels = [[None for y in range(size)] for x in range(size)]  # array[x][y] style access
 
 
 class Level(object):
