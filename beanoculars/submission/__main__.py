@@ -4,7 +4,6 @@ import os
 
 from submission.game import MyGame
 from submission.gameConstants import WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE
-from time import sleep
 
 def main() -> None:
     """ Main method """
