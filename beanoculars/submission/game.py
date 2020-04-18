@@ -11,20 +11,6 @@ def getGridCase(position):
     case = [math.floor(position[0]/32),math.floor(position[1]/32)]
     return case
 
-def createGrid():
-    """
-    TODO faire une définition de quoi égal quoi
-    """
-    grid = []
-    size = int(WINDOW_WIDTH / 32)
-    for i in range(size):
-        row = []
-        for j in range(size):
-            row.append(0) # trier ici les cas de chemins turrets etc
-        grid.append(row)
-
-    return grid
-
 # Class defining
 class MyGame(arcade.Window):
     """
@@ -54,8 +40,6 @@ class MyGame(arcade.Window):
 
     def setup(self):
         """ Set up the test here. Call this function to restart the test. """
-        self.grid = createGrid()
-
         self.player_list = arcade.SpriteList()
         self.ground_list = arcade.SpriteList()
         self.path_list = arcade.SpriteList()
@@ -70,17 +54,9 @@ class MyGame(arcade.Window):
         for x in range(0, WINDOW_WIDTH, TILE_SIZE):  # Crée le fond à l'aide de grassTile.png
             for y in range(0, WINDOW_HEIGHT, TILE_SIZE):
                 ground = arcade.Sprite(PATH_ADD+"images\\tiles\\grassTile.png", TILE_SCALING)
-                ground.center_x = x + TILE_SIZE / 2
-                ground.center_y = y + TILE_SIZE / 2
+                ground.center_x = x + TILE_SIZE * TILE_SCALING / 2
+                ground.center_y = y + TILE_SIZE * TILE_SCALING / 2
                 self.ground_list.append(ground)
-
-
-
-        """for i in range(0,WINDOW_HEIGHT, TILE_SIZE):
-            path = arcade.Sprite(PATH_ADD + "images\\tiles\\pathUp.png")
-            path.center_x = 96 + TILE_SIZE/2
-            path.center_y = i + TILE_SIZE/2
-            self.path_list.append(path)"""
 
     def on_draw(self):
         """ Renders the screen. """
@@ -97,8 +73,8 @@ class MyGame(arcade.Window):
     def on_update(self, delta_time: float):
         """ On Update method"""
         if self.destination != [-1,-1]:
-            self.player_sprite.center_x = self.destination[0] * 32 + TILE_SIZE/2
-            self.player_sprite.center_y = self.destination[1] * 32 + TILE_SIZE/2
+            self.player_sprite.center_x = self.destination[0] * TILE_SIZE + TILE_SIZE/2
+            self.player_sprite.center_y = self.destination[1] * TILE_SIZE + TILE_SIZE/2
             self.destination = [-1,-1]
 
     def on_key_press(self, symbol: int, modifiers: int):
