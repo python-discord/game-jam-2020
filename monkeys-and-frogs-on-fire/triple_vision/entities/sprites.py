@@ -38,9 +38,11 @@ class MovingSprite(arcade.Sprite):
         self.change_x = math.cos(angle) * self.speed
         self.change_y = math.sin(angle) * self.speed
 
+        # should we return target here?
         self.target = (x, y)
 
-    def move_to_sprite(self, sprite: arcade.Sprite, rotate: bool = True):
+    def move_to_sprite(self, sprite: arcade.Sprite, rotate: bool = True) -> None:
+        # should we return target here?
         self.move_to(sprite.center_x, sprite.center_y, rotate=rotate)
 
     def distance_to(self, sprite: arcade.Sprite) -> float:
@@ -63,7 +65,7 @@ class MovingSprite(arcade.Sprite):
 
 
 class Bullet(MovingSprite):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         # keep the time of the bullet creation
         self.shot_at = time.time()
