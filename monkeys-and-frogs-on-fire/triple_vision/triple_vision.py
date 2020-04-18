@@ -3,7 +3,6 @@ import time
 
 import arcade
 
-from triple_vision.cards import CardManager
 from triple_vision.constants import (
     SCALED_TILE,
     SCALING,
@@ -16,7 +15,7 @@ from triple_vision.entities import (
     LaserProjectile,
     StationaryEnemy
 )
-from triple_vision.managers import GameManager
+from triple_vision.managers import CardManager, GameManager
 
 
 class TripleVision(arcade.View):

@@ -165,26 +165,28 @@ class StationaryEnemy(BaseEnemy):
 
         self.last_shot = time.time()
 
-    def _detect(self) -> bool:
-        return (
-            abs(self.center_x - self.target_sprite.center_x) <= self.detection_radius and
-            abs(self.center_y - self.target_sprite.center_y) <= self.detection_radius
-        )
-
     def update(self, delta_time: float = 1/60) -> None:
+        if not (
+            self.center_x - self.detection_radius < self.target_sprite.center_x and
+            self.target_sprite.center_x < self.center_x + self.detection_radius and
+            self.center_y - self.detection_radius < self.target_sprite.center_y and
+            self.target_sprite.center_y < self.center_y + self.detection_radius
+        ):
+            return
+
         if time.time() - self.last_shot < 0.75:
             return
 
-        bullet = LaserProjectile(
+        laser = LaserProjectile(
             center_x=self.center_x,
             center_y=self.center_y
         )
-        bullet.move_to(
+        laser.move_to(
             self.target_sprite.center_x,
             self.target_sprite.center_y,
             rotate=True,
             set_target=False
         )
 
-        self.ctx.enemy_projectiles.append(bullet)
+        self.ctx.enemy_projectiles.append(laser)
         self.last_shot = time.time()
