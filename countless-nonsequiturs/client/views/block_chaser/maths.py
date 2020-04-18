@@ -1,5 +1,5 @@
 import math
-import constants
+from .config import PIXELS_PER_SECOND
 
 
 def distance(x1, y1, x2, y2):
@@ -12,7 +12,7 @@ def move_towards(curr_mouse, curr_position, dt):
     if not overall_distance:
         return (0, 0)
     else:
-        travel = min(overall_distance, constants.PIXELS_PER_SECOND * dt)
+        travel = min(overall_distance, PIXELS_PER_SECOND * dt)
 
         x_distance = curr_mouse[0] - curr_position[0]
         y_distance = curr_mouse[1] - curr_position[1]
