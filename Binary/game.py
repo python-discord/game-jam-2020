@@ -31,8 +31,6 @@ class MyGame(arcade.Window):
         self.root = None
 
         self.RoomList = None
-
-        self.rooms = None
         # If you have sprite lists, you should create them here,
         # and set them to None
 
@@ -55,7 +53,7 @@ class MyGame(arcade.Window):
         for y in range(0, SCREEN_HEIGHT, map_generator.ROOM_H):
             arcade.draw_line(0, y, SCREEN_WIDTH, y, arcade.csscolor.BLACK)
 
-        self.draw_rooms(self.rooms)
+        self.draw_rooms([self.root], 0)
                 
 
     def on_update(self, delta_time):
@@ -71,11 +69,11 @@ class MyGame(arcade.Window):
             self.root = map_generator.Room(map_generator.ROOM_W, map_generator.ROOM_H, (random.randrange(0,255), 
                             random.randrange(0,255), 
                             random.randrange(0,255)), 
-                            [None]*map_generator.MAX_ROOM_NEIGH, "root", 
+                            [None]*map_generator.MAX_ROOM_NEIGH, 
                             SCREEN_WIDTH // 2, 
                             SCREEN_HEIGHT // 2)
                         
-            self.rooms = map_generator.generate([self.root])
+            map_generator.generate([self.root], 0, 0)
 
     def on_key_release(self, key, key_modifiers):
         """
@@ -83,15 +81,22 @@ class MyGame(arcade.Window):
         """
         pass
 
-    def draw_rooms(self, rooms):
-        if(rooms is not None):
+    def draw_rooms(self, rooms, count):
+        room_list = []
+        if(count == map_generator.MAX_ROOM_NUM):
+            return
+        elif(rooms is not None):
             for room in rooms:
                 if(room is not None):
                     arcade.draw_rectangle_filled(room.x, room.y, room.width, room.height, room.color)
                     for neighbor in room.neighbors:
                         if (neighbor is not None):
                             arcade.draw_rectangle_filled(neighbor.x, neighbor.y, neighbor.width, neighbor.height, neighbor.color)
-
+                            count+=len(room.neighbor)
+                            for x in neighbor.neighbors:
+                                if x is not None:
+                                    room_list.append(neighbor.neighbors)
+                            self.draw_rooms(room_list, count)  
 
 
 def main():
