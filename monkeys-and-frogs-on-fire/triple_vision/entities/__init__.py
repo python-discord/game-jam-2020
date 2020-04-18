@@ -1,7 +1,8 @@
 from triple_vision.entities.enemies import (
     Enemies,
     BaseEnemy,
-    ChasingEnemy
+    ChasingEnemy,
+    StationaryEnemy
 )
 from triple_vision.entities.entity import AnimatedEntity
 from triple_vision.entities.player import Player
@@ -15,5 +16,6 @@ __all__ = (
     'Enemies',
     'LaserProjectile',
     'MovingSprite',
-    'Player'
+    'Player',
+    'StationaryEnemy'
 )

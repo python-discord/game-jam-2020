@@ -1,11 +1,13 @@
 import enum
 import math
 from pathlib import Path
+import time
 
 import arcade
 
 from triple_vision.constants import SCALING
 from triple_vision.entities.entity import AnimatedEntity
+from triple_vision.entities.weapons import LaserProjectile
 
 
 class Enemies(enum.Enum):
@@ -14,6 +16,7 @@ class Enemies(enum.Enum):
     Value is default enemy health
     """
     big_demon = 1024
+    imp = 512
 
 
 class BaseEnemy(AnimatedEntity):
@@ -33,10 +36,13 @@ class BaseEnemy(AnimatedEntity):
         self.hp = enemy.value if hp < 1 else hp
         self.being_pushed = False
 
-    def hit(self, dmg: int,
-            attacker_reference: arcade.Sprite,
-            throwback_force: int,
-            wall_reference: arcade.SpriteList):
+    def hit(
+        self,
+        dmg: int,
+        attacker_reference: arcade.Sprite,
+        throwback_force: int,
+        wall_reference: arcade.SpriteList
+    ) -> None:
         """
         TODO attacker_reference should be class projectile/player weapon and should have it's own
              throwback_force
@@ -70,7 +76,7 @@ class BaseEnemy(AnimatedEntity):
         self.color = (255, 0, 0)
         self.being_pushed = True
 
-    def reduce_throwback(self):
+    def reduce_throwback(self) -> None:
         if self.being_pushed:
             if self.change_x > 0:
                 self.change_x -= 1
@@ -99,13 +105,16 @@ class ChasingEnemy(BaseEnemy):
 
     def __init__(
         self,
+        ctx,
         enemy: Enemies,
         target_sprite: arcade.Sprite,
         chase_speed: int,
         detection_radius: int,
         **kwargs
-    ):
+    ) -> None:
         super().__init__(enemy, **kwargs)
+        self.ctx = ctx
+
         self.chase_speed = chase_speed
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
@@ -134,3 +143,48 @@ class ChasingEnemy(BaseEnemy):
                 self.change_y = 0
 
         super().update()
+
+
+class StationaryEnemy(BaseEnemy):
+
+    def __init__(
+        self,
+        ctx,
+        enemy: Enemies,
+        target_sprite: arcade.Sprite,
+        chase_speed: int,
+        detection_radius: int,
+        **kwargs
+    ) -> None:
+        super().__init__(enemy, **kwargs)
+        self.ctx = ctx
+
+        self.chase_speed = chase_speed
+        self.target_sprite = target_sprite
+        self.detection_radius = detection_radius
+
+        self.last_shot = time.time()
+
+    def _detect(self) -> bool:
+        return (
+            abs(self.center_x - self.target_sprite.center_x) <= self.detection_radius and
+            abs(self.center_y - self.target_sprite.center_y) <= self.detection_radius
+        )
+
+    def update(self, delta_time: float = 1/60) -> None:
+        if time.time() - self.last_shot < 0.75:
+            return
+
+        bullet = LaserProjectile(
+            center_x=self.center_x,
+            center_y=self.center_y
+        )
+        bullet.move_to(
+            self.target_sprite.center_x,
+            self.target_sprite.center_y,
+            rotate=True,
+            set_target=False
+        )
+
+        self.ctx.enemy_projectiles.append(bullet)
+        self.last_shot = time.time()

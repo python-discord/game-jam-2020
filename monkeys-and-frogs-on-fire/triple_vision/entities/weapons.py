@@ -11,11 +11,11 @@ class Weapon(arcade.Sprite):
 
 
 class Projectile(Weapon, TemporarySprite, MovingSprite):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    pass
 
 
 class LaserProjectile(Projectile):
+
     def __init__(self, center_x: int, center_y: int, *args, **kwargs):
         super().__init__(
             dmg=64,
@@ -25,5 +25,6 @@ class LaserProjectile(Projectile):
             filename=":resources:images/space_shooter/laserBlue01.png",
             center_x=center_x,
             center_y=center_y,
-            *args, **kwargs
+            *args,
+            **kwargs
         )
