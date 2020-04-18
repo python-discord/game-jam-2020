@@ -128,8 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# gimp
+# Gimp
 *.xcf
 
-/.idea/workspace.xml
-/.idea/misc.xml
+# IDEs
+.idea/
+.vscode/
