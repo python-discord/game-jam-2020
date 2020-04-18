@@ -4,7 +4,8 @@ Menu     ~ Select song
 
 Songs    ~ Each song has a set difficulty
          ~ Use algorithm to determine when beats are
-         ~ Rectangle spawned certain distance away so that rectangle is over
+         ~ Create Shape object which is rendered as a note                  ✓
+         ~ Shape spawned certain distance away so that rectangle is over
            the right area as the beat arrives
          ~ Indicator for when to press key
          ~ Path chosen by random seed
