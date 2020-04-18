@@ -3,7 +3,6 @@ import arcade
 from triple_vision.constants import SCALING, WINDOW_SIZE
 
 
-
 class CardManager:
 
     def __init__(self, ctx) -> None:
