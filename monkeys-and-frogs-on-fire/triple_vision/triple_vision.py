@@ -49,7 +49,6 @@ class TripleVision(arcade.View):
                 )
 
         self.player = Player('m')
-
         self.card_manager = CardManager(self)
         self.game_manager = GameManager()
 
@@ -57,16 +56,15 @@ class TripleVision(arcade.View):
             ChasingEnemy,
             Enemies.big_demon,
             self.player,
-            2,
             SCALED_TILE * 10,
             center_x=50,
-            center_y=500
+            center_y=500,
+            moving_speed=2
         )
         self.game_manager.create_enemy(
             StationaryEnemy,
             Enemies.imp,
             self.player,
-            2,
             SCALED_TILE * 10,
             center_x=50,
             center_y=500
