@@ -1,5 +1,6 @@
 import math
 import time
+from typing import Optional
 
 import arcade
 
@@ -64,8 +65,13 @@ class MovingSprite(arcade.Sprite):
         super().update()
 
 
-class Bullet(MovingSprite):
-    def __init__(self, *args, **kwargs) -> None:
+class TemporarySprite(arcade.Sprite):
+    def __init__(self, lifetime: Optional[int], *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        # keep the time of the bullet creation
-        self.shot_at = time.time()
+        self.lifetime = lifetime
+        self.created_at = time.time()
+
+    def update(self):
+        if self.lifetime and time.time() - self.created_at > self.lifetime:
+            self.kill()
+        super().update()
