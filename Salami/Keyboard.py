@@ -2,33 +2,47 @@
 import arcade
 
 class Keyboard:
+
+    class Key:
+        def __init__(self, key_codes):
+            self.key_codes = list(key_codes)
+            self.pressed = False
+            self.clicked = False
+
     def __init__(self):
 
+        self.key_codes_list = {}
+
         self.keys = {
-            "up": Key(arcade.key.UP, arcade.key.W),
-            "down": Key(arcade.key.DOWN, arcade.key.S),
-            "left": Key(arcade.key.LEFT, arcade.key.A),
-            "right": Key(arcade.key.RIGHT, arcade.key.D),
-            "jump": Key(arcade.key.SPACE)
+            # "up": self.Key(arcade.key.UP, arcade.key.W),
+            # "down": self.Key(arcade.key.DOWN, arcade.key.S),
+            # "left": self.Key(arcade.key.LEFT, arcade.key.A),
+            # "right": self.Key(arcade.key.RIGHT, arcade.key.D),
+            # "jump": self.Key(arcade.key.SPACE)
         }
 
+        self.add_key("up", arcade.key.UP, arcade.key.W)
+        self.add_key("down", arcade.key.DOWN, arcade.key.S)
+        self.add_key("left", arcade.key.LEFT, arcade.key.A)
+        self.add_key("right", arcade.key.RIGHT, arcade.key.D)
+        self.add_key("jump", arcade.key.SPACE)
+        self.add_key("jump", arcade.key.P)
+
     def on_key_press(self, key: int, modifiers: int):
-        for k in self.keys:
-            for keyCode in self.keys.get(k).key_codes:
-                if key == keyCode:
-                    self.keys.get(k).pressed = True
+        self.key_codes_list.get(key).pressed = True
 
     def on_key_release(self, key: int, modifiers: int):
-        for k in self.keys:
-            for keyCode in self.keys.get(k).key_codes:
-                if key == keyCode:
-                    self.keys.get(k).pressed = False
+        self.key_codes_list.get(key).pressed = False
 
-    def is_pressed(self, key: str):
+    def is_pressed(self, key):
         return self.keys.get(key).pressed
 
-class Key:
-    def __init__(self, *key_codes: int):
-        self.key_codes = key_codes
-        self.pressed = False
-        self.clicked = False
+    def add_key(self, key, *key_codes: int):
+        if self.keys.get(key):
+            for key_code in key_codes:
+                self.keys[key].key_codes.append(key_code)
+        else:
+            self.keys[key] = self.Key(key_codes)
+
+        for key_code in key_codes:
+            self.key_codes_list[key_code] = self.keys[key]

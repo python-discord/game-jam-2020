@@ -2,6 +2,12 @@
 import arcade
 import pyglet.gl as gl
 
+<<<<<<< Updated upstream
+=======
+import Engine
+import Entity
+
+>>>>>>> Stashed changes
 WIDTH = 600
 HEIGHT = 400
 
@@ -20,36 +26,32 @@ class Level:
         self.entities = arcade.SpriteList()
 
         self.movespeed = 5
+        self.jumpheight = 5
 
         for x in range(0, WIDTH // TILE_SIZE, TILE_SIZE):
-            tile = arcade.Sprite("Salami/spritesheet.png", 1, 0, 0, TILE_SIZE, TILE_SIZE)
-            tile.left = x + 32
-            tile.bottom = 48
+            tile = Entity.Entity(Entity.ROCK_TILE, x + 32, 48)
             self.tiles.append(tile)
 
         for y in range(TILE_SIZE, TILE_SIZE * 4, TILE_SIZE):
-            tile = arcade.Sprite("Salami/spritesheet.png", 1, 0, 0, TILE_SIZE, TILE_SIZE)
-            tile.left = 0
-            tile.bottom = y
+            tile = Entity.Entity(Entity.ROCK_TILE, 0, y)
             self.tiles.append(tile)
         
         for x in range(0, WIDTH, TILE_SIZE):
-            tile = arcade.Sprite("Salami/spritesheet.png", 1, 0, 0, TILE_SIZE, TILE_SIZE)
-            tile.left = x
-            tile.bottom = 0
+            tile = Entity.Entity(Entity.ROCK_TILE, x, 0)
             self.tiles.append(tile)
-        
-        self.player = arcade.Sprite("Salami/spritesheet.png", 1, TILE_SIZE, 0, TILE_SIZE, TILE_SIZE)
-        self.player.left = 64
-        self.player.bottom = 64
+
+        self.player = Entity.Entity(Entity.PLAYER, 64, 64)
         self.entities.append(self.player)
+
+        print(f"Top: {self.player.top} | Left: {self.player.right}")
+        print(f"Bottom: {self.player.top} | Right: {self.player.right}")
         
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player, self.tiles, GRAVITY)
 
     def update(self, delta):
 
         if self.keyboard.is_pressed("up") and self.physics_engine.can_jump(1):
-            self.physics_engine.jump(5)
+            self.physics_engine.jump(self.jumpheight)
 
         if self.keyboard.is_pressed("left"):
             self.player.change_x = -self.movespeed
