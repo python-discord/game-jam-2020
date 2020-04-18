@@ -35,6 +35,7 @@ class MyGame(arcade.Window):
         self.score = 0
         self.time = 0
         self.frame = 0
+        self.fps = 0
 
     def setup(self):
 
@@ -45,20 +46,20 @@ class MyGame(arcade.Window):
         self.char_list = arcade.SpriteList(use_spatial_hash=True)
 
         # Set up lane 1
-        Q_run_textures = []
+        q_run_textures = []
         for i in range(4):
-            Q_run_textures.append(arcade.load_texture(f"../ressources/New_Q_Run_{i+1}.png"))
+            q_run_textures.append(arcade.load_texture(f"../ressources/New_Q_Run_{i+1}.png"))
 
         self.lane_up = Lane(1,
                             SCREEN_HEIGHT,
                             SCREEN_WIDTH,
                             "../ressources/New_Q_Run_1.png",
-                            Q_run_textures)
+                            q_run_textures)
         self.char_list.append(self.lane_up.char)
         self.floor_list.append(self.lane_up.floor)
-        for background in self.lane_up.gen_background("../ressources/Q_Background.png", 2, 107):
+        for background in self.lane_up.generate_background("../ressources/Q_Background.png", 2, 107):
             self.background.append(background)
-        for sky in self.lane_up.gen_background("../ressources/Q_Sky.png", 1, 107):
+        for sky in self.lane_up.generate_background("../ressources/Q_Sky.png", 1, 107):
             self.sky_list.append(sky)
 
         # Set up lane 2
@@ -69,10 +70,8 @@ class MyGame(arcade.Window):
                                 [])
         self.char_list.append(self.lane_middle.char)
         self.floor_list.append(self.lane_middle.floor)
-        for background in self.lane_up.gen_background("../ressources/W_Background.png", 2,  -93):
+        for background in self.lane_up.generate_background("../ressources/W_Background.png", 2,  -93):
             self.background.append(background)
-
-
 
         # Set up lane 3
         self.lane_down = Lane(3,
@@ -82,7 +81,6 @@ class MyGame(arcade.Window):
                               [])
         self.char_list.append(self.lane_down.char)
         self.floor_list.append(self.lane_down.floor)
-
 
         # Visual cue for when an input is valid
         ok_zone = arcade.Sprite("../ressources/Valid Zone.png")
@@ -94,6 +92,7 @@ class MyGame(arcade.Window):
         self.score = 0
         arcade.set_background_color(arcade.color.WHITE_SMOKE)
         self.time = 0
+        self.fps = 0
 
     def on_draw(self):
         """
@@ -113,6 +112,8 @@ class MyGame(arcade.Window):
         # Put the text on the screen.
         output = f"Score: {self.score}"
         arcade.draw_text(output, 700, 550, arcade.color.BLACK, 14)
+        fps = f"FPS: {self.fps}"
+        arcade.draw_text(fps, 700, 565, arcade.color.BLACK, 14)
 
     def on_key_press(self, key, modifiers):
         """
@@ -149,7 +150,7 @@ class MyGame(arcade.Window):
         self.time += delta_time
         self.frame += 1
         if self.time >= 1:
-            print(self.frame)
+            self.fps = self.frame
             self.frame = 0
             rand = random.randint(0, 10)
 
