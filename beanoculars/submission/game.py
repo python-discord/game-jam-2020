@@ -1,9 +1,8 @@
 # setup
 import arcade
 from arcade.gui import *
-from gameConstants import *
+from submission.gameConstants import *
 import math
-import numpy as np
 
 
 def getGridCase(position):
@@ -12,17 +11,14 @@ def getGridCase(position):
 
 def createGrid():
     """
-    1 = path
-    2 = turret1
-    3 = turret2
-    4 = turret3
+    TODO faire une définition de quoi égal quoi
     """
     grid = []
     size = int(WINDOW_WIDTH / 32)
     for i in range(size):
         row = []
         for j in range(size):
-            row.append(0)
+            row.append(0) # trier ici les cas de chemins turrets etc
         grid.append(row)
 
     return grid
@@ -55,7 +51,7 @@ class MyGame(arcade.Window):
         arcade.set_background_color(arcade.csscolor.PURPLE)
 
     def setup(self):
-        """ Set up the game here. Call this function to restart the game. """
+        """ Set up the test here. Call this function to restart the test. """
         self.grid = createGrid()
 
         self.player_list = arcade.SpriteList()

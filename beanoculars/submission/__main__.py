@@ -1,8 +1,8 @@
-# Main game file
+# Main fuck file
 import arcade
 
-from game import MyGame
-from gameConstants import WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE
+from submission.game import MyGame
+from submission.gameConstants import WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE
 
 
 def main() -> None:
