@@ -38,6 +38,9 @@ T_VACUUM = 12
 
 VOLUME = 0.5
 
+# UPDATE RATES FOR ENTITIES
+ER_MOSQUITO = 5
+
 from pathlib import Path
 PATH = {}
 PATH['project'] = Path(os.path.dirname(__file__))

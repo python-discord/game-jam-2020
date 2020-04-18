@@ -28,6 +28,7 @@ class MyGame(arcade.Window):
         self.ground_list = None
         self.path_list = None
         self.player_list = None
+        self.entity_list = None
 
         self.player_sprite = None
 
@@ -47,6 +48,8 @@ class MyGame(arcade.Window):
         self.screen_x = 0
         self.screen_y = 0
 
+        self.mosquito = None
+
         arcade.set_background_color((94, 132, 63))
 
     def setup(self):
@@ -59,6 +62,7 @@ class MyGame(arcade.Window):
         self.player_list = arcade.SpriteList()
         self.ground_list = arcade.SpriteList()
         self.path_list = arcade.SpriteList()
+        self.entity_list = arcade.SpriteList()
 
         self.player_sprite = arcade.Sprite(PATH['img'] / "sprite\\player.png", PLAYER_SCALING)
         self.player_sprite.center_x = self.destination[0] * TILE_SIZE + TILE_SIZE / 2 + self.window_offset_x
@@ -89,6 +93,10 @@ class MyGame(arcade.Window):
         # Ground layer
         self.ground_list.draw()
         self.path_list.draw()
+        # Entity layer
+        self.entity_list.draw()
+        # Turetts layer
+
         # Player layer
         self.player_sprite.draw()
 
@@ -101,9 +109,14 @@ class MyGame(arcade.Window):
             self.player_sprite.center_y = self.destination[1] * TILE_SIZE + TILE_SIZE/2 + self.window_offset_y
             self.destination = [-1,-1]
 
+        self.entity_list.update_animation()
+
     def on_key_press(self, symbol: int, modifiers: int):
         """ Get keyboard's presses. """
-        pass
+        self.mosquito = AnimatedEntity('fourmi', 4, E_MOSQUITO)
+        self.mosquito.center_x = self.screen_x/2
+        self.mosquito.center_y = self.screen_y/2
+        self.entity_list.append(self.mosquito)
 
     def on_key_release(self, symbol: int, modifiers: int):
         """ Get keyboard's releases. """
