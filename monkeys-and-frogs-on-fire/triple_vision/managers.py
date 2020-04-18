@@ -3,6 +3,52 @@ import arcade
 from triple_vision.constants import SCALING, WINDOW_SIZE
 
 
+class GameManager:
+
+    def __init__(self, window) -> None:
+        self.window = window
+
+        self.enemies = arcade.SpriteList()
+        self.player_projectiles = arcade.SpriteList()
+        self.enemy_projectiles = arcade.SpriteList()
+
+    def draw(self) -> None:
+        self.enemies.draw()
+        self.player_projectiles.draw()
+        self.enemy_projectiles.draw()
+
+    def create_enemy(self, enemy_class, *args, **kwargs) -> None:
+        enemy = enemy_class(self, *args, **kwargs)
+        self.enemies.append(enemy)
+        return enemy
+
+    def update(self, delta_time: float = 1/60) -> None:
+        for enemy in self.enemies:
+            for projectile in self.player_projectiles:
+                if arcade.check_for_collision(projectile, enemy):
+                    enemy.hit(
+                        projectile.dmg,
+                        projectile,
+                        projectile.throwback_force,
+                        tuple()
+                    )
+                    projectile.kill()
+
+        for projectile in self.enemy_projectiles:
+            if arcade.check_for_collision(projectile, self.window.player):
+                self.window.player.hit(
+                    projectile.dmg,
+                    projectile,
+                    projectile.throwback_force,
+                    tuple()
+                )
+                projectile.kill()
+
+        self.enemies.update()
+        self.player_projectiles.update()
+        self.enemy_projectiles.update()
+
+
 class CardManager:
 
     def __init__(self, ctx) -> None:

@@ -27,7 +27,6 @@ class MovingSprite(arcade.Sprite):
         # Do math to calculate how to get the sprite to the destination.
         # Calculation the angle in radians between the start points
         # and end points. This is the angle the sprite will travel.
-        # TODO DRY
         x_diff = x - self.center_x
         y_diff = y - self.center_y
 

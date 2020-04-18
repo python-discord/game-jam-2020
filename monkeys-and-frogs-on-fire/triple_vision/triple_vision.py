@@ -3,7 +3,6 @@ import time
 
 import arcade
 
-from triple_vision.cards import CardManager
 from triple_vision.constants import (
     SCALED_TILE,
     SCALING,
@@ -14,7 +13,9 @@ from triple_vision.entities import (
     Enemies,
     Player,
     LaserProjectile,
+    StationaryEnemy
 )
+from triple_vision.managers import CardManager, GameManager
 
 
 class TripleVision(arcade.View):
@@ -26,11 +27,9 @@ class TripleVision(arcade.View):
         self.tiles = None
 
         self.player = None
-        self.enemy = None
-
-        self.bullet_list = None
 
         self.card_manager = None
+        self.game_manager = None
 
         self.physics_engine = None
 
@@ -50,8 +49,26 @@ class TripleVision(arcade.View):
                 )
 
         self.player = Player('m')
-        self.enemy = ChasingEnemy(Enemies.big_demon, self.player, 1, SCALED_TILE * 10, center_x=50, center_y=500)
         self.card_manager = CardManager(self)
+        self.game_manager = GameManager(self)
+
+        self.game_manager.create_enemy(
+            ChasingEnemy,
+            Enemies.big_demon,
+            self.player,
+            SCALED_TILE * 8,
+            center_x=50,
+            center_y=500,
+            moving_speed=1
+        )
+        self.game_manager.create_enemy(
+            StationaryEnemy,
+            Enemies.imp,
+            self.player,
+            SCALED_TILE * 10,
+            center_x=50,
+            center_y=500
+        )
 
     def on_mouse_motion(self, x, y, dx, dy) -> None:
         self.card_manager.check_mouse_motion(x, y)
@@ -60,15 +77,18 @@ class TripleVision(arcade.View):
         if not self.card_manager.check_mouse_press(x, y, button):
             if button == arcade.MOUSE_BUTTON_LEFT:
                 self.player.move_to(x, y, rotate=False)
+
             elif button == arcade.MOUSE_BUTTON_RIGHT:
                 if time.time() - self.player.last_shot < 0.75:  # TODO hardcoded
                     # TODO Play empty gun sound or something similar
                     return
+
                 bullet = LaserProjectile(
-                    center_x=self.player.center_x, center_y=self.player.center_y
+                    center_x=self.player.center_x,
+                    center_y=self.player.center_y
                 )
                 bullet.move_to(x, y, rotate=True, set_target=False)
-                self.bullet_list.append(bullet)
+                self.game_manager.player_projectiles.append(bullet)
                 self.player.last_shot = time.time()
 
     # def on_key_press(self, key, modifiers):
@@ -117,20 +137,14 @@ class TripleVision(arcade.View):
 
     def on_draw(self) -> None:
         self.tiles.draw()
-        self.bullet_list.draw()
         self.player.draw()
-        self.enemy.draw()
+
+        self.game_manager.draw()
         self.card_manager.draw()
 
     def on_update(self, delta_time: float) -> None:
         if not self.paused:
-            self.bullet_list.update()
             self.player.update(delta_time)
-            self.enemy.update(delta_time)
-
-            for projectile in self.bullet_list:
-                if arcade.check_for_collision(projectile, self.enemy):
-                    self.enemy.hit(projectile.dmg, projectile, projectile.throwback_force, tuple())
-                    projectile.kill()
+            self.game_manager.update(delta_time)
 
         self.card_manager.update()
