@@ -7,10 +7,12 @@ class Shape:
     screen_width_center = get_monitors()[0].width
 
     def __init__(self, x, y, scale_size, dims, dist, colour, speed):
-        # Note: dims is a relative ratio to scale size, if you want a rectangle which
-        # grows to a size of 400x200 its recommended you set scale_size to 400 and
-        # dims to [1, 0.5] because at its largest value, width will be 400*1 = 400
-        # and height will be 400*0.5 = 200
+        """
+        Note: dims is a relative ratio to scale size, if you want a rectangle which
+        grows to a size of 400x200 its recommended you set scale_size to 400 and
+        dims to [1, 0.5] because at its largest value, width will be 400*1 = 400
+        and height will be 400*0.5 = 200
+        """
         self.end_x = x
         self.start_y = y
         self.scale_size = scale_size
@@ -56,31 +58,33 @@ class Shape:
                                      self.colour)
 
 
-def manage_shapes(shapes: "list of shape objects") -> "list of updated shapes":
-    for shape in shapes:
-        if shape.removable:
-            shapes.remove(shape)
-        else:
-            shape.update()
+class ShapeManager:
+    @staticmethod
+    def manage_shapes(shapes: "list of shape objects") -> "list of updated shapes":
+        for shape in shapes:
+            if shape.removable:
+                shapes.remove(shape)
+            else:
+                shape.update()
 
-    return shapes
+        return shapes
 
+    @staticmethod
+    def create_shape(note, total_notes=3, colour=(255, 0, 0)) -> Shape:
+        final_spacing = int(get_monitors()[0].width * 0.6)
+        central_spacing = final_spacing // total_notes
+        width = int(central_spacing * 0.45)
+        x_pos = int(central_spacing * (note / total_notes)) - central_spacing // 2
+        y_pos = int(get_monitors()[0].height * 0.8)
+        new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 400, colour, 2)
 
-def create_shape(note, total_notes=3, colour=(255, 0, 0)) -> Shape:
-    final_spacing = int(get_monitors()[0].width * 0.6)
-    central_spacing = final_spacing // total_notes
-    width = int(central_spacing * 0.45)
-    x_pos = int(central_spacing * (note / total_notes)) - central_spacing // 2
-    y_pos = int(get_monitors()[0].height * 0.8)
-    new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 400, colour, 2)
+        return new_shape
 
-    return new_shape
+    @staticmethod
+    def renderer(shape: Shape):
+        shape.draw()
+        return
 
-
-def renderer(shape: Shape):
-    shape.draw()
-    return
-
-
-def draw_all_shapes(shapes: "list of shape objects"):
-    list(map(renderer, shapes))
+    @classmethod
+    def draw_all_shapes(cls, shapes: "list of shape objects"):
+        list(map(cls.renderer, shapes))
