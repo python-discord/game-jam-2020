@@ -24,6 +24,7 @@ class MyGame(arcade.Window):
         self.obstacle_list = None
         self.floor_list = None
         self.background = None
+        self.sky_list = None
 
         # Set up the Lanes
         self.lane_up = None
@@ -38,52 +39,56 @@ class MyGame(arcade.Window):
     def setup(self):
 
         self.background = arcade.SpriteList()
-        self.floor_list = arcade.SpriteList()
+        self.sky_list = arcade.SpriteList()
+        self.floor_list = arcade.SpriteList(use_spatial_hash=True)
         self.obstacle_list = arcade.SpriteList()
-        self.char_list = arcade.SpriteList()
-
-        q_background = arcade.Sprite("../ressources/Q_Background.png")
-        q_background.center_y = SCREEN_HEIGHT - (SCREEN_HEIGHT // 3) + 107
-        q_background.center_x = SCREEN_WIDTH // 2
-        q_background.change_x = -2
-        self.background.append(q_background)
-
-        q_background = arcade.Sprite("../ressources/Q_Background.png")
-        q_background.center_y = SCREEN_HEIGHT - (SCREEN_HEIGHT // 3) + 107
-        q_background.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
-        q_background.change_x = -2
-        self.background.append(q_background)
-
-        Q_run_textures = []
-        for i in range(3):
-            Q_run_textures.append(arcade.load_texture(f"../ressources/Q_Run_{i+1}.png"))
+        self.char_list = arcade.SpriteList(use_spatial_hash=True)
 
         # Set up lane 1
+        Q_run_textures = []
+        for i in range(4):
+            Q_run_textures.append(arcade.load_texture(f"../ressources/New_Q_Run_{i+1}.png"))
+
         self.lane_up = Lane(1,
                             SCREEN_HEIGHT,
                             SCREEN_WIDTH,
-                            "../ressources/Q_Run_1.png",
+                            "../ressources/New_Q_Run_1.png",
                             Q_run_textures)
         self.char_list.append(self.lane_up.char)
         self.floor_list.append(self.lane_up.floor)
+        for background in self.lane_up.gen_background("../ressources/Q_Background.png", 2, 107):
+            self.background.append(background)
+        for sky in self.lane_up.gen_background("../ressources/Q_Sky.png", 1, 107):
+            self.sky_list.append(sky)
 
         # Set up lane 2
         self.lane_middle = Lane(2,
                                 SCREEN_HEIGHT,
                                 SCREEN_WIDTH,
-                                "../ressources/W_tempo_char.png",
+                                "../ressources/W_Idle.png",
                                 [])
         self.char_list.append(self.lane_middle.char)
         self.floor_list.append(self.lane_middle.floor)
+        for background in self.lane_up.gen_background("../ressources/W_Background.png", 2,  -93):
+            self.background.append(background)
+
+
 
         # Set up lane 3
         self.lane_down = Lane(3,
                               SCREEN_HEIGHT,
                               SCREEN_WIDTH,
-                              "../ressources/E_tempo_char.png",
+                              "../ressources/E_Idle.png",
                               [])
         self.char_list.append(self.lane_down.char)
         self.floor_list.append(self.lane_down.floor)
+
+
+        # Visual cue for when an input is valid
+        ok_zone = arcade.Sprite("../ressources/Valid Zone.png")
+        ok_zone.center_x = (SCREEN_WIDTH // 10) * 2
+        ok_zone.center_y = SCREEN_HEIGHT // 2
+        self.floor_list.append(ok_zone)
 
         # Set up the rest
         self.score = 0
@@ -98,9 +103,10 @@ class MyGame(arcade.Window):
         # This command has to happen before we start drawing
         arcade.start_render()
 
-        # Draw all the sprites.
-        self.floor_list.draw()
+        # Draw all the sprites (order determine Z axis)
+        self.sky_list.draw()
         self.background.draw()
+        self.floor_list.draw()
         self.obstacle_list.draw()
         self.char_list.draw()
 
@@ -113,14 +119,18 @@ class MyGame(arcade.Window):
         Called whenever a key is pressed.
         """
         if key == arcade.key.A:
-            if self.lane_up.physics_engine.can_jump(5):
-                self.lane_up.physics_engine.jump(6)
+            if self.lane_up.action(self.obstacle_list):
+                self.score += 10
+
         elif key == arcade.key.Z:
-            if self.lane_middle.physics_engine.can_jump(5):
-                self.lane_middle.physics_engine.jump(6)
+            if self.lane_middle.action(self.obstacle_list):
+                self.score += 10
+
         elif key == arcade.key.E:
-            if self.lane_down.physics_engine.can_jump(5):
-                self.lane_down.physics_engine.jump(6)
+            if self.lane_down.action(self.obstacle_list):
+                self.score += 10
+        elif key == arcade.key.U:
+            self.lane_down.char.scale = 15
 
     def on_key_release(self, key, modifiers):
         """
@@ -149,58 +159,43 @@ class MyGame(arcade.Window):
                 self.obstacle_list.append(self.lane_middle.generate_obstacle())
             elif rand == 2:
                 self.obstacle_list.append(self.lane_down.generate_obstacle())
-            elif rand == 3:
-                self.background.append(self.lane_up.generate_tree())
-            elif rand == 4:
-                self.background.append(self.lane_middle.generate_tree())
-            elif rand == 5:
-                self.background.append(self.lane_down.generate_tree())
 
             self.time = 0
 
-        # Important stuff to update
+        # Update Physic Engine
         self.lane_up.physics_engine.update()
         self.lane_middle.physics_engine.update()
         self.lane_down.physics_engine.update()
 
+        # Update Sprite_Lists
         self.floor_list.update()
+        self.sky_list.update()
         self.background.update()
         self.obstacle_list.update()
         self.char_list.update()
 
         # Score points and remove obstacles
-        temp_list = arcade.SpriteList()
         for obstacle in self.obstacle_list:
             if obstacle.center_x < 0:
-                self.score += 10
-            else:
-                temp_list.append(obstacle)
+                self.score -= 50
+                obstacle.remove_from_sprite_lists()
 
-        self.obstacle_list = temp_list
-
-        # Remove backgrounds item
-        temp_background = arcade.SpriteList()
+    # Remove backgrounds item
         for item in self.background:
-            if item.right > 0:
-                temp_background.append(item)
-            else:
+            if item.right < 0:
                 if "Q_Background.png" in item.texture.name:
-                    q_background = arcade.Sprite("../ressources/Q_Background.png")
-                    q_background.center_y = SCREEN_HEIGHT - (SCREEN_HEIGHT // 3) + 107
-                    q_background.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
-                    q_background.change_x = -2
-                    temp_background.append(q_background)
-        self.background = temp_background
+                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
+                elif "W_Background.png" in item.texture.name:
+                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
+                else:
+                    item.remove_from_sprite_lists()
 
-        # Generate a list of all sprites that collided with the player.
-        for chars in [self.lane_up.char, self.lane_middle.char, self.lane_down.char]:
-            hit_list = arcade.check_for_collision_with_list(chars, self.obstacle_list)
+        # Handle sky
 
-        # Loop through each colliding sprite, remove it, and add to the score.
-            if hit_list:
-                # TODO to destroy the obstacle/Make it triggered once
-                self.score += -50
-
+        for item in self.sky_list:
+            if item.right < 0:
+                if "Q_Sky.png" in item.texture.name:
+                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
 
 def main():
     """ Main method """
