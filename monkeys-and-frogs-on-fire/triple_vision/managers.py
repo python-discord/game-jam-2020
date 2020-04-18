@@ -5,7 +5,9 @@ from triple_vision.constants import SCALING, WINDOW_SIZE
 
 class GameManager:
 
-    def __init__(self) -> None:
+    def __init__(self, window) -> None:
+        self.window = window
+
         self.enemies = arcade.SpriteList()
         self.player_projectiles = arcade.SpriteList()
         self.enemy_projectiles = arcade.SpriteList()
@@ -31,6 +33,11 @@ class GameManager:
                         tuple()
                     )
                     projectile.kill()
+
+        for projectile in self.enemy_projectiles:
+            if arcade.check_for_collision(projectile, self.window.player):
+                # TODO: damage player
+                projectile.kill()
 
         self.enemies.update()
         self.player_projectiles.update()

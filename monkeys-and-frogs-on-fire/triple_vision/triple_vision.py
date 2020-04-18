@@ -50,7 +50,7 @@ class TripleVision(arcade.View):
 
         self.player = Player('m')
         self.card_manager = CardManager(self)
-        self.game_manager = GameManager()
+        self.game_manager = GameManager(self)
 
         self.game_manager.create_enemy(
             ChasingEnemy,
