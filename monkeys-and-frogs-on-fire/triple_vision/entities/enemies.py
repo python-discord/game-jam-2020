@@ -1,12 +1,11 @@
 import enum
-import math
 from pathlib import Path
 import time
 
 import arcade
 
 from triple_vision.constants import SCALING
-from triple_vision.entities.entity import AnimatedEntity
+from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import MovingSprite
 from triple_vision.entities.weapons import LaserProjectile
 
@@ -20,7 +19,7 @@ class Enemies(enum.Enum):
     imp = 512
 
 
-class BaseEnemy(AnimatedEntity):
+class BaseEnemy(LivingEntity):
     """
     Sprite with idle and run animation.
     """
@@ -36,64 +35,6 @@ class BaseEnemy(AnimatedEntity):
 
         self.hp = enemy.value if hp < 1 else hp
         self.being_pushed = False
-
-    def hit(
-        self,
-        dmg: int,
-        attacker_reference: arcade.Sprite,
-        throwback_force: int,
-        wall_reference: arcade.SpriteList
-    ) -> None:
-        """
-        value instead of passing it like this
-        :param dmg: how much damage to hp will enemy take
-        :param attacker_reference: Sprite that hit the enemy (player, projectile etc),
-                                   so we know in which direction to push the enemy.
-        :param throwback_force:  force (unit is pixel change) the enemy will be pushed away.
-        :param wall_reference: SpriteList of things that the enemy cannot go trough. This will
-                               stop the enemy from being pushed and slightly damage the enemy.
-        """
-        self.hp -= dmg
-        if self.hp <= 0:
-            self.kill()
-            return
-
-        if self.being_pushed:
-            return
-
-        # TODO DRY
-        dest_x = self.center_x
-        dest_y = self.center_y
-
-        x_diff = dest_x - attacker_reference.center_x
-        y_diff = dest_y - attacker_reference.center_y
-        angle = math.atan2(y_diff, x_diff)
-
-        self.change_x = math.cos(angle) * throwback_force
-        self.change_y = math.sin(angle) * throwback_force
-
-        self.color = (255, 0, 0)
-        self.being_pushed = True
-
-    def reduce_throwback(self) -> None:
-        if self.being_pushed:
-            if self.change_x > 0:
-                self.change_x -= 1
-            elif self.change_x < 0:
-                self.change_x += 1
-
-            if self.change_y > 0:
-                self.change_y -= 1
-            elif self.change_y < 0:
-                self.change_y += 1
-
-            if -1 <= self.change_x <= 1 and -1 <= self.change_y <= 1:
-                self.being_pushed = False
-                self.color = (255, 255, 255)
-
-    def update(self, delta_time: float = 1/60) -> None:
-        self.reduce_throwback()
-        super().update(delta_time)
 
 
 class ChasingEnemy(BaseEnemy, MovingSprite):

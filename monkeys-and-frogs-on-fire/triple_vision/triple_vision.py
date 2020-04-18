@@ -56,10 +56,10 @@ class TripleVision(arcade.View):
             ChasingEnemy,
             Enemies.big_demon,
             self.player,
-            SCALED_TILE * 10,
+            SCALED_TILE * 8,
             center_x=50,
             center_y=500,
-            moving_speed=2
+            moving_speed=1
         )
         self.game_manager.create_enemy(
             StationaryEnemy,

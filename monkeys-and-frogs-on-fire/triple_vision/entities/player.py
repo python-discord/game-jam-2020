@@ -1,11 +1,11 @@
 import time
 
 from triple_vision.constants import SCALING
-from triple_vision.entities.entity import AnimatedEntity
+from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import MovingSprite
 
 
-class Player(AnimatedEntity, MovingSprite):
+class Player(LivingEntity, MovingSprite):
 
     def __init__(self, gender: str) -> None:
         self.last_shot = time.time()
@@ -19,5 +19,6 @@ class Player(AnimatedEntity, MovingSprite):
             moving_speed=3,
             scale=SCALING,
             center_x=500,
-            center_y=500
+            center_y=500,
+            hp=1000
         )
