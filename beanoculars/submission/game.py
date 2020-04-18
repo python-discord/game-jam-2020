@@ -3,6 +3,7 @@ import arcade
 # from arcade.gui import *
 from submission.gameConstants import *
 from submission.loadAnimatedChars import *
+from submission.tileMapLoader import *
 import math
 
 
@@ -64,6 +65,8 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = WINDOW_HEIGHT/2
         self.player_list.append(self.player_sprite)
 
+        self.path_list = loadPathTilemap()
+
         for x in range(0, WINDOW_WIDTH, TILE_SIZE):  # Crée le fond à l'aide de grassTile.png
             for y in range(0, WINDOW_HEIGHT, TILE_SIZE):
                 ground = arcade.Sprite(PATH_ADD+"images\\tiles\\grassTile.png", TILE_SCALING)
@@ -71,11 +74,13 @@ class MyGame(arcade.Window):
                 ground.center_y = y + TILE_SIZE / 2
                 self.ground_list.append(ground)
 
-        for i in range(0,WINDOW_HEIGHT, TILE_SIZE):
+
+
+        """for i in range(0,WINDOW_HEIGHT, TILE_SIZE):
             path = arcade.Sprite(PATH_ADD + "images\\tiles\\pathUp.png")
             path.center_x = 96 + TILE_SIZE/2
             path.center_y = i + TILE_SIZE/2
-            self.path_list.append(path)
+            self.path_list.append(path)"""
 
     def on_draw(self):
         """ Renders the screen. """
