@@ -11,7 +11,7 @@ class Player(AnimatedEntity, MovingSprite):
             assets_path='assets/wizard',
             is_colored=True,
             has_hit_frame=True,
-            gender='m',
+            gender=gender,
             moving_speed=3,
             scale=SCALING,
             center_x=500,
