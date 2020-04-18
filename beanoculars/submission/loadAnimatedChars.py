@@ -48,7 +48,7 @@ class AnimatedEntity(arcade.Sprite):
         self.basic_textures = []
 
         for i in range(num_of_frames): # nb of frames of the animation
-            texture_pair = load_texture_pack(f"{main_path}_f{i}.png")
+            texture_pair = load_texture_pair(f"{main_path}_f{i}.png")
             self.basic_textures.append(texture_pair)
 
     def update_animation(self, delta_time: float = 1/60):

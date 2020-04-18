@@ -1,3 +1,4 @@
+import os
 # SETUP CONSTANTS
 DEBUG_MODE = True
 if DEBUG_MODE:
@@ -5,7 +6,7 @@ if DEBUG_MODE:
 else:
     PATH_ADD = 'submission\\'
 
-FULLSCREEN = False
+FULLSCREEN = True
 
 # CONSTANTS
 TILE_SIZE = 32  # x32 = 256px
@@ -36,3 +37,10 @@ T_LAMP = 11
 T_VACUUM = 12
 
 VOLUME = 0.5
+
+from pathlib import Path
+PATH = {}
+PATH['project'] = Path(os.path.dirname(__file__))
+PATH['img'] = PATH['project'] / "images"
+PATH['sound'] = PATH['project'] / "sounds"
+PATH['maps'] = PATH['project'] / "tmx_maps"

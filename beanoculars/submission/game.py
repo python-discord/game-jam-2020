@@ -8,7 +8,6 @@ from submission.sounds import loadSounds
 from random import randint
 import math
 
-
 def getGridCase(position):
     case = [math.floor(position[0]/32)-22*FULLSCREEN,math.floor(position[1]/32)-9*FULLSCREEN]
     print(case)
@@ -61,7 +60,7 @@ class MyGame(arcade.Window):
         self.ground_list = arcade.SpriteList()
         self.path_list = arcade.SpriteList()
 
-        self.player_sprite = arcade.Sprite(PATH_ADD + "images\\sprite\\player.png", PLAYER_SCALING)
+        self.player_sprite = arcade.Sprite(PATH['img'] / "sprite\\player.png", PLAYER_SCALING)
         self.player_sprite.center_x = self.destination[0] * TILE_SIZE + TILE_SIZE / 2 + self.window_offset_x
         self.player_sprite.center_y = self.destination[1] * TILE_SIZE + TILE_SIZE / 2 + self.window_offset_y
         self.player_list.append(self.player_sprite)
@@ -75,12 +74,12 @@ class MyGame(arcade.Window):
         for x in range(0, WINDOW_WIDTH, TILE_SIZE):  # Crée le fond à l'aide des grasstiles
             for y in range(0, WINDOW_HEIGHT, TILE_SIZE):
                 randomNum = randint(1,3)
-                ground = arcade.Sprite(PATH_ADD+f"images\\tiles\\grassTile{randomNum}.png", TILE_SCALING)
+                ground = arcade.Sprite(PATH['img'] / f"tiles\\grassTile{randomNum}.png", TILE_SCALING)
                 ground.center_x = x + TILE_SIZE * TILE_SCALING / 2 + self.window_offset_x
                 ground.center_y = y + TILE_SIZE * TILE_SCALING / 2 + self.window_offset_y
                 self.ground_list.append(ground)
 
-        loadSounds(PATH_ADD + "sounds", self.sound_dict)
+        loadSounds(PATH['sound'], self.sound_dict)
 
 
     def on_draw(self):
