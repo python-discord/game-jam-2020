@@ -4,6 +4,7 @@ import arcade
 from submission.gameConstants import *
 from submission.loadAnimatedChars import *
 from submission.tileMapLoader import *
+from submission.sounds import loadSounds
 import math
 
 
@@ -34,7 +35,7 @@ class MyGame(arcade.Window):
         self.mouse_click = [0,0]
         self.destination = [-1,-1]
 
-        self.grid = None
+        self.sound_dict = {}
 
         arcade.set_background_color(arcade.csscolor.PURPLE)
 
@@ -57,6 +58,9 @@ class MyGame(arcade.Window):
                 ground.center_x = x + TILE_SIZE * TILE_SCALING / 2
                 ground.center_y = y + TILE_SIZE * TILE_SCALING / 2
                 self.ground_list.append(ground)
+
+        loadSounds(PATH_ADD + "sounds", self.sound_dict)
+
 
     def on_draw(self):
         """ Renders the screen. """
@@ -93,6 +97,8 @@ class MyGame(arcade.Window):
             pass
         elif button == 4: # Si clique droit
             pass
+
+        self.sound_dict['testsound.wav'].play()
     def on_mouse_release(self, x: float, y: float, button: int,
                          modifiers: int):
         """ Get mouse's releases. """

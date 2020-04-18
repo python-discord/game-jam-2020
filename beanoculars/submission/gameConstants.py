@@ -1,6 +1,4 @@
 # Constants
-
-
 TILE_SIZE = 32  # x32 = 256px
 PLAYER_SCALING = 1
 TILE_SCALING = 1
@@ -23,6 +21,8 @@ E_DUNG_BEETLE = 3
 T_SPRAY = 10
 T_LAMP = 11
 T_VACUUM = 12
+
+VOLUME = 0.5
 
 DEBUG_MODE = True
 if DEBUG_MODE:
