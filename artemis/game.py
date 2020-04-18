@@ -41,11 +41,18 @@ class Game(arcade.Window):
         # keep track of things
         self.pressed = []
         self.left = 0
+        self.score = 0
 
         arcade.run()
 
     def on_draw(self):
         arcade.start_render()
+        arcade.draw_text(
+            text=f'Score: {self.score}', start_x=self.left + WIDTH - 50,
+            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2,
+            color=arcade.color.WHITE, font_size=20, anchor_x='right',
+            anchor_y='center'
+        )
         self.blocks.draw()
         self.gems.draw()
         self.boxes.draw()
