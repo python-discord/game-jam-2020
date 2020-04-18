@@ -27,6 +27,7 @@ class MovingSprite(arcade.Sprite):
         # Do math to calculate how to get the sprite to the destination.
         # Calculation the angle in radians between the start points
         # and end points. This is the angle the sprite will travel.
+        # TODO DRY
         x_diff = x - self.center_x
         y_diff = y - self.center_y
 
@@ -87,8 +88,3 @@ class TemporarySprite(arcade.Sprite):
         if self.lifetime and time.time() - self.created_at > self.lifetime:
             self.kill()
         super().update()
-
-
-class Bullet(TemporarySprite, MovingSprite):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)

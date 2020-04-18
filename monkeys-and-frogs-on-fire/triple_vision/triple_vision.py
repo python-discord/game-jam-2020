@@ -8,15 +8,12 @@ from triple_vision.constants import (
     SCALED_TILE,
     SCALING,
     WINDOW_SIZE,
-    BULLET_LIFETIME,
-    BULLET_SPEED,
-    BULLET_COOLDOWN,
 )
 from triple_vision.entities import (
     ChasingEnemy,
     Enemies,
     Player,
-    Bullet,
+    LaserProjectile,
 )
 
 
@@ -64,13 +61,10 @@ class TripleVision(arcade.View):
             if button == arcade.MOUSE_BUTTON_LEFT:
                 self.player.move_to(x, y, rotate=False)
             elif button == arcade.MOUSE_BUTTON_RIGHT:
-                if time.time() - self.player.last_shot < BULLET_COOLDOWN:
+                if time.time() - self.player.last_shot < 0.75:  # TODO hardcoded
                     # TODO Play empty gun sound or something similar
                     return
-                bullet = Bullet(
-                    BULLET_LIFETIME,
-                    BULLET_SPEED,
-                    ":resources:images/space_shooter/laserBlue01.png",
+                bullet = LaserProjectile(
                     center_x=self.player.center_x, center_y=self.player.center_y
                 )
                 bullet.move_to(x, y, rotate=True, set_target=False)
@@ -126,6 +120,9 @@ class TripleVision(arcade.View):
             self.player.update(delta_time)
             self.enemy.update(delta_time)
 
+            for projectile in self.bullet_list:
+                if arcade.check_for_collision(projectile, self.enemy):
+                    self.enemy.hit(projectile.dmg, projectile, projectile.throwback_force, tuple())
+                    projectile.kill()
+
         self.card_manager.update()
-
-

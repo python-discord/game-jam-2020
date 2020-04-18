@@ -5,7 +5,8 @@ from triple_vision.entities.enemies import (
 )
 from triple_vision.entities.entity import AnimatedEntity
 from triple_vision.entities.player import Player
-from triple_vision.entities.sprites import MovingSprite, Bullet
+from triple_vision.entities.sprites import MovingSprite
+from triple_vision.entities.weapons import LaserProjectile
 
 __all__ = (
     'AnimatedEntity',
@@ -14,5 +15,5 @@ __all__ = (
     'Enemies',
     'MovingSprite',
     'Player',
-    'Bullet'
+    'LaserProjectile'
 )
