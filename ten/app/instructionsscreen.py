@@ -1,11 +1,11 @@
-from buttons import MenuButton
 import arcade
+from buttons import MenuButton
 
 
-class GameView(arcade.View):
+class InstructionView(arcade.View):
     def __init__(self):
         super().__init__()
-        print("GameView Created")
+        print("InstructionsScreen Created")
         self.theme = None
 
     def setup(self):
@@ -17,8 +17,8 @@ class GameView(arcade.View):
         go_back = MenuButton(
             self,
             MenuView(),
-            100,
-            self.window.WINDOW_HEIGHT-50,
+            int(self.window.WINDOW_WIDTH / 2),
+            int(self.window.WINDOW_HEIGHT / 3),
             200,
             100,
             "Go Back",
@@ -28,7 +28,7 @@ class GameView(arcade.View):
 
     def on_show(self):
         self.setup_buttons()
-        arcade.set_background_color(arcade.color.WHITE)
+        arcade.set_background_color(arcade.color.BABY_BLUE)
 
     def update(self, delta_time):
         pass
