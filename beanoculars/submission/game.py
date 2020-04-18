@@ -1,7 +1,8 @@
 # setup
 import arcade
-from arcade.gui import *
+# from arcade.gui import *
 from submission.gameConstants import *
+from submission.loadAnimatedChars import *
 import math
 
 

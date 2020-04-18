@@ -12,4 +12,4 @@ arcade = "*"
 python_version = "3.7"
 
 [scripts]
-start = 'python submission\\__main__.py'
+start = "python -m submission"
