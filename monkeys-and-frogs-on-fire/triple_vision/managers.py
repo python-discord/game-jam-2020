@@ -3,7 +3,7 @@ import arcade
 from typing import Tuple
 
 from triple_vision.constants import SCALING, WINDOW_SIZE
-from triple_vision.entities.sprites import DamageIndicator
+from triple_vision.entities import DamageIndicator
 
 
 class GameManager:
