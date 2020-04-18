@@ -52,23 +52,26 @@ class TripleVision(arcade.View):
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
 
-        self.game_manager.create_enemy(
-            ChasingEnemy,
-            Enemies.big_demon,
-            self.player,
-            SCALED_TILE * 8,
-            center_x=50,
-            center_y=500,
-            moving_speed=1
-        )
-        self.game_manager.create_enemy(
-            StationaryEnemy,
-            Enemies.imp,
-            self.player,
-            SCALED_TILE * 10,
-            center_x=50,
-            center_y=500
-        )
+        for y in range(1, 3):
+            self.game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.big_demon,
+                self.player,
+                SCALED_TILE * 10,
+                center_x=50,
+                center_y=y * 250,
+                moving_speed=1
+            )
+
+        for y in range(1, 4):
+            self.game_manager.create_enemy(
+                StationaryEnemy,
+                Enemies.imp,
+                self.player,
+                SCALED_TILE * 10,
+                center_x=50,
+                center_y=y * 200
+            )
 
     def on_mouse_motion(self, x, y, dx, dy) -> None:
         self.card_manager.check_mouse_motion(x, y)
