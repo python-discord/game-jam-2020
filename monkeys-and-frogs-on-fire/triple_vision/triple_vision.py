@@ -50,7 +50,12 @@ class TripleVision(arcade.View):
                 )
 
         self.player = Player('m')
-        self.enemy = ChasingEnemy(Enemies.big_demon, self.player, 1, SCALED_TILE * 10, center_x=50, center_y=500)
+        self.enemy = ChasingEnemy(Enemies.big_demon,
+                                  self.player,
+                                  SCALED_TILE * 10,
+                                  moving_speed=1,
+                                  center_x=50,
+                                  center_y=500)
         self.card_manager = CardManager(self)
 
     def on_mouse_motion(self, x, y, dx, dy) -> None:

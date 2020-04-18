@@ -6,6 +6,7 @@ import arcade
 
 from triple_vision.constants import SCALING
 from triple_vision.entities.entity import AnimatedEntity
+from triple_vision.entities.sprites import MovingSprite
 
 
 class Enemies(enum.Enum):
@@ -38,8 +39,6 @@ class BaseEnemy(AnimatedEntity):
             throwback_force: int,
             wall_reference: arcade.SpriteList):
         """
-        TODO attacker_reference should be class projectile/player weapon and should have it's own
-             throwback_force
         value instead of passing it like this
         :param dmg: how much damage to hp will enemy take
         :param attacker_reference: Sprite that hit the enemy (player, projectile etc),
@@ -91,7 +90,7 @@ class BaseEnemy(AnimatedEntity):
         super().update(delta_time)
 
 
-class ChasingEnemy(BaseEnemy):
+class ChasingEnemy(BaseEnemy, MovingSprite):
     """
     Simple chasing enemy that tries to catch some other sprite.
     No path-finding, just goes straight to sprite if it is in radius.
@@ -101,12 +100,11 @@ class ChasingEnemy(BaseEnemy):
         self,
         enemy: Enemies,
         target_sprite: arcade.Sprite,
-        chase_speed: int,
         detection_radius: int,
+        *args,
         **kwargs
     ):
-        super().__init__(enemy, **kwargs)
-        self.chase_speed = chase_speed
+        super().__init__(enemy, *args, **kwargs)
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
 
@@ -119,16 +117,9 @@ class ChasingEnemy(BaseEnemy):
     def update(self, delta_time: float = 1/60):
         if not self.being_pushed:
             if self._detect():
-                # TODO DRY
-                dest_x = self.target_sprite.center_x
-                dest_y = self.target_sprite.center_y
-
-                x_diff = dest_x - self.center_x
-                y_diff = dest_y - self.center_y
-                angle = math.atan2(y_diff, x_diff)
-
-                self.change_x = math.cos(angle) * self.chase_speed
-                self.change_y = math.sin(angle) * self.chase_speed
+                self.move_to(self.target_sprite.center_x,
+                             self.target_sprite.center_y,
+                             rotate=False)
             else:
                 self.change_x = 0
                 self.change_y = 0
