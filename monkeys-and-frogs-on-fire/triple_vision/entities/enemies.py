@@ -4,6 +4,7 @@ from pathlib import Path
 
 import arcade
 
+from triple_vision.constants import SCALING
 from triple_vision.entities.entity import AnimatedEntity
 
 
@@ -21,6 +22,7 @@ class BaseEnemy(AnimatedEntity):
         super().__init__(
             sprite_name=enemy.name,
             assets_path=self.enemy_assets_path,
+            scale=SCALING,
             **kwargs
         )
 
