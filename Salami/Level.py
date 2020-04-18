@@ -2,12 +2,9 @@
 import arcade
 import pyglet.gl as gl
 
-<<<<<<< Updated upstream
-=======
 import Engine
 import Entity
 
->>>>>>> Stashed changes
 WIDTH = 600
 HEIGHT = 400
 
