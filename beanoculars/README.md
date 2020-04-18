@@ -1,4 +1,4 @@
-![beanoculars' logo](submission/images/icons/beanocularsMINI.png)
+![beanoculars' logo](game/images/icons/beanocularsMINI.png)
 ### Beanoculars' submission for the python-discord game jam 2020
 ---
 # GAME TITLE TBD
