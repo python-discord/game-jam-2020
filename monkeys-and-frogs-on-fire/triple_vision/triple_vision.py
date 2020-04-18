@@ -46,6 +46,14 @@ class TripleVision(arcade.View):
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.player.move_to(x, y, rotate=False)
 
+    def on_key_press(self, key, modifiers) -> None:
+        if key == arcade.key.KEY_1:
+            self.player.cur_color = 'red'
+        elif key == arcade.key.KEY_2:
+            self.player.cur_color = 'green'
+        elif key == arcade.key.KEY_3:
+            self.player.cur_color = 'blue'
+
     def on_draw(self) -> None:
         self.tiles.draw()
         self.player.draw()
