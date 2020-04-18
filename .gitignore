@@ -132,3 +132,4 @@ dmypy.json
 *.xcf
 
 /.idea/workspace.xml
+/.idea/misc.xml
