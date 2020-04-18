@@ -3,6 +3,7 @@ import arcade
 
 FLOOR_LENGTH = 60
 FLOOR_TEXTURE_LENGTH = 100
+GRAVITY = 1
 
 
 class GameState:
@@ -21,11 +22,14 @@ class GameState:
             floor.bottom = 0
             self.level_geometry.append(floor)
 
+        self.engine = arcade.PhysicsEnginePlatformer(self.player, self.level_geometry, GRAVITY)
+
     def on_update(self, delta_time: float) -> None:
         """Handle update event."""
-        ...
+        self.engine.update()
 
     def on_draw(self) -> None:
         """Handle draw event."""
+        arcade.start_render()
         self.player.draw()
         self.level_geometry.draw()
