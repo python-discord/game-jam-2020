@@ -14,7 +14,8 @@ class CardManager:
         card_scale = SCALING / 6
 
         self.MIN_CARD_HEIGHT = -132 * card_scale
-        self.MAX_CARD_HEIGHT = 280 * card_scale
+        self.MAX_CARD_HEIGHT = 84 * card_scale
+        self.MAX_CARD_HOVER_HEIGHT = 280 * card_scale
 
         for idx, color in enumerate(self.colors):
             self.cards.append(
@@ -27,12 +28,21 @@ class CardManager:
             )
 
         self.show_cards = False
+        self.hover_card = None
 
     def check_mouse_motion(self, x, y) -> None:
         if (
             self.cards[0].left < x < self.cards[-1].right and
             self.cards[0].bottom < y < self.cards[-1].top
         ):
+            for card in self.cards:
+                if (
+                    card.left < x < card.right and
+                    card.bottom < y < card.top
+                ):
+                    self.hover_card = card
+                    break
+
             self.show_cards = True
             self.ctx.paused = True
 
@@ -72,11 +82,21 @@ class CardManager:
             for card in self.cards:
                 card.change_y = 10
 
-        if (
-            (self.show_cards and self.cards[0].center_y >= self.MAX_CARD_HEIGHT) or
-            (not self.show_cards and self.cards[0].center_y <= self.MIN_CARD_HEIGHT)
-        ):
-            for card in self.cards:
+        for card in self.cards:
+            max_height = self.MAX_CARD_HOVER_HEIGHT \
+                if card == self.hover_card else self.MAX_CARD_HEIGHT
+
+            if (
+                self.show_cards and
+                card != self.hover_card and
+                card.center_y >= self.MAX_CARD_HEIGHT
+            ):
+                card.change_y = -10
+
+            if (
+                (self.show_cards and card.center_y >= max_height) or
+                (not self.show_cards and card.center_y <= self.MIN_CARD_HEIGHT)
+            ):
                 card.change_y = 0
 
         self.cards.update()

@@ -13,7 +13,7 @@ __all__ = (
     'BaseEnemy',
     'ChasingEnemy',
     'Enemies',
+    'LaserProjectile',
     'MovingSprite',
-    'Player',
-    'LaserProjectile'
+    'Player'
 )

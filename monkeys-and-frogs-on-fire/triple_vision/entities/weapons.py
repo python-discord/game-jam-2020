@@ -18,12 +18,12 @@ class Projectile(Weapon, TemporarySprite, MovingSprite):
 class LaserProjectile(Projectile):
     def __init__(self, center_x: int, center_y: int, *args, **kwargs):
         super().__init__(
-                    dmg=64,
-                    throwback_force=8,
-                    lifetime=3,
-                    moving_speed=5,
-                    filename=":resources:images/space_shooter/laserBlue01.png",
-                    center_x=center_x,
-                    center_y=center_y,
-                    *args, **kwargs
-                    )
+            dmg=64,
+            throwback_force=8,
+            lifetime=3,
+            moving_speed=5,
+            filename=":resources:images/space_shooter/laserBlue01.png",
+            center_x=center_x,
+            center_y=center_y,
+            *args, **kwargs
+        )
