@@ -75,3 +75,8 @@ class TemporarySprite(arcade.Sprite):
         if self.lifetime and time.time() - self.created_at > self.lifetime:
             self.kill()
         super().update()
+
+
+class Bullet(TemporarySprite, MovingSprite):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
