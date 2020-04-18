@@ -8,6 +8,7 @@ import arcade
 
 from config import Config
 
+
 class Game(arcade.Window):
     """
     Main application class.
@@ -29,7 +30,7 @@ class Game(arcade.Window):
         # Our physics engine
         self.physics_engine = None
 
-        #list to keep track of keypresses
+        # list to keep track of keypresses
         self.prev_keypress = []
 
         # Used to keep track of our scrolling
@@ -108,38 +109,31 @@ class Game(arcade.Window):
             self.prev_keypress.remove(key)
 
         if self.prev_keypress:
-            self.on_key_press(self.prev_keypress.pop(0), '')
+            self.on_key_press(self.prev_keypress.pop(0), 0)
 
     def on_update(self, delta_time):
         """ Movement and game logic """
 
         # Move the player with the physics engine
         self.physics_engine.update()
+        changed = False  # Track if we need to change the viewport
 
-                # --- Manage Scrolling ---
-
-        # Track if we need to change the viewport
-
-        changed = False
-
+        # Below manages all scrolling mechanics
         # Scroll left
         left_boundary = self.view_left + Config.LEFT_VIEWPORT_MARGIN
         if self.player_sprite.left < left_boundary:
             self.view_left -= left_boundary - self.player_sprite.left
             changed = True
-
         # Scroll right
         right_boundary = self.view_left + Config.SCREEN_WIDTH - Config.RIGHT_VIEWPORT_MARGIN
         if self.player_sprite.right > right_boundary:
             self.view_left += self.player_sprite.right - right_boundary
             changed = True
-
         # Scroll up
         top_boundary = self.view_bottom + Config.SCREEN_HEIGHT - Config.TOP_VIEWPORT_MARGIN
         if self.player_sprite.top > top_boundary:
             self.view_bottom += self.player_sprite.top - top_boundary
             changed = True
-
         # Scroll down
         bottom_boundary = self.view_bottom + Config.BOTTOM_VIEWPORT_MARGIN
         if self.player_sprite.bottom < bottom_boundary:
@@ -159,8 +153,11 @@ class Game(arcade.Window):
                                 Config.SCREEN_HEIGHT + self.view_bottom)
 
 
-def main():
-    """ Main method """
+def main() -> None:
+    """
+    Setups up window classes and runs the game.
+    """
+
     window = Game()
     window.setup()
     arcade.run()

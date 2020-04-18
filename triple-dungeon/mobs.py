@@ -7,6 +7,7 @@ import arcade
 
 from config import Config
 
+
 class Mob(object):
     """
     Represents a Mob. No defined behaviour, it has no intelligence.
