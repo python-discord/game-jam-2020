@@ -46,6 +46,16 @@ class MovingSprite(arcade.Sprite):
         # should we return target here?
         self.move_to(sprite.center_x, sprite.center_y, rotate=rotate)
 
+    def move_to_angle(self, angle, rotate: bool = True):
+        if rotate:
+            # Angle the sprite
+            self.angle = math.degrees(angle)
+
+        # Taking into account the angle, calculate our change_x
+        # and change_y. Velocity is how fast the sprite travels.
+        self.change_x = math.cos(angle) * self.speed
+        self.change_y = math.sin(angle) * self.speed
+
     def distance_to(self, sprite: arcade.Sprite) -> float:
         x_diff = sprite.center_x - self.center_x
         y_diff = sprite.center_y - self.center_y
