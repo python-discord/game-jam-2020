@@ -1,7 +1,7 @@
 ![beanoculars' logo](submission/images/icons/beanocularsMINI.png)
 ### Beanoculars' submission for the python-discord game jam 2020
 ---
-# GAME TITLE TBD
+# TRICERASECT (NOT DEFINITIVE)
 ---
 > Made by sachapomme (Sacha#8175)
 
