@@ -1,11 +1,14 @@
 import arcade
 
+from config import Config
+
 class Mob(object):
     """
     Represents a Mob. No defined behaviour, it has no intelligence.
     """
     def __init__(self, sprite, max_health=100, max_armor=0) -> None:
         self.sprite_path = sprite
+        self.sprite = arcade.Sprite(self.sprite_path, Config.CHARACTER_SCALING)
         self.max_health, self.max_armor = max_health, max_armor
         self.health, self.armor = max_health, max_armor
 
