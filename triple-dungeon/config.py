@@ -1,3 +1,9 @@
+"""
+config.py
+Holds all constants used for setting up the game.
+May later hold functions for loading/saving configuration files.
+"""
+
 class Config(object):
     """
     A simple class dedicated to loading, storing and organizing constants.

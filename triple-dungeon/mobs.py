@@ -1,3 +1,8 @@
+"""
+mobs.py
+Organizes all classes related to Mobs, Entities, Enemies, Players and Items.
+"""
+
 import arcade
 
 from config import Config

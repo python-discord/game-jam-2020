@@ -1,3 +1,9 @@
+"""
+main.py
+The main class used to load the game.
+Holds the main game window, as well as manages basic functions for organizing the game.
+"""
+
 import arcade
 
 from config import Config
