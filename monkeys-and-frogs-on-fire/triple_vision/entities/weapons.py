@@ -1,3 +1,5 @@
+import random
+
 import arcade
 
 from triple_vision.entities.sprites import TemporarySprite, MovingSprite
@@ -18,7 +20,7 @@ class LaserProjectile(Projectile):
 
     def __init__(self, center_x: int, center_y: int, *args, **kwargs):
         super().__init__(
-            dmg=64,
+            dmg=random.randrange(60, 70),
             throwback_force=8,
             lifetime=3,
             moving_speed=5,
