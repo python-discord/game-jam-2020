@@ -7,8 +7,11 @@ from triple_vision.constants import (
     SCALING,
     WINDOW_SIZE
 )
-from triple_vision.player import Player
-from triple_vision.enemies import ChasingEnemy, Enemies
+from triple_vision.entities import (
+    ChasingEnemy,
+    Enemies,
+    Player
+)
 
 
 class TripleVision(arcade.View):
@@ -37,7 +40,7 @@ class TripleVision(arcade.View):
                 )
 
         self.player = Player('m')
-        self.enemy = ChasingEnemy(Enemies.big_demon, self.player, 1, 50, center_x=50, center_y=500)
+        self.enemy = ChasingEnemy(Enemies.big_demon, self.player, 1, SCALED_TILE * 10, center_x=50, center_y=500)
 
     def on_mouse_press(self, x, y, button, modifiers) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:

@@ -1,12 +1,12 @@
 import math
 import time
 
-from arcade import Sprite
+import arcade
 
 from triple_vision.constants import SCALED_TILE
 
 
-class MovingSprite(Sprite):
+class MovingSprite(arcade.Sprite):
     def __init__(self, moving_speed, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -40,7 +40,7 @@ class MovingSprite(Sprite):
 
         self.target = (x, y)
 
-    def distance_to(self, sprite: Sprite) -> float:
+    def distance_to(self, sprite: arcade.Sprite) -> float:
         x_diff = sprite.center_x - self.center_x
         y_diff = sprite.center_y - self.center_y
         return math.hypot(x_diff, y_diff)
