@@ -49,7 +49,7 @@ class Game(arcade.Window):
         self.enemy_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
-        image_source = "resources/images/monsters/skeleton.png"
+        image_source = "resources/images/monsters/skeleton/skeleton2.png"
         self.player_sprite = arcade.Sprite(image_source, Config.CHARACTER_SCALING)
         self.player_sprite.center_x = Config.SCREEN_WIDTH / 2
         self.player_sprite.center_y = Config.SCREEN_HEIGHT / 2
@@ -57,11 +57,11 @@ class Game(arcade.Window):
         self.player_list.append(self.player_sprite)
 
         # Create the level
-        self.floor_list, self.wall_list = Level.load_file('resources/levels/box.json')
+        self.floor_list, self.wall_list = Level.load_file('resources/levels/test1.json')
 
         # Create monsters
-        self.enemy_list.append(Enemy(image_source, 100, 100).get_enemy())
-        self.enemy_list.append(Enemy(image_source, Config.SCREEN_WIDTH / 2 + 10, Config.SCREEN_HEIGHT / 2 + 10).get_enemy())
+        self.enemy_list.append(Enemy("resources/images/monsters/ghost/ghost1.png", 200, 200).get_enemy())
+        self.enemy_list.append(Enemy("resources/images/monsters/frog/frog1.png", 200, 1000).get_enemy())
 
         # Create the 'physics engine'
         self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.wall_list)
@@ -71,7 +71,7 @@ class Game(arcade.Window):
 
         # Clear the screen to the background color
         arcade.start_render()
-        
+
         # Draw our sprites
         self.floor_list.draw()
         self.player_list.draw()
