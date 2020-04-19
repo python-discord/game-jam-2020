@@ -1,37 +1,6 @@
 import arcade
 
 
-class EventGetter(arcade.View):
-    mouse_x = 0
-    mouse_y = 0
-    pressed_keys = []
-    mouse_button_pressed = None
-
-    @classmethod
-    def on_key_press(cls, symbol, modifiers):
-        if symbol not in cls.pressed_keys:
-            cls.pressed_keys.append(symbol)
-
-    @classmethod
-    def on_key_release(cls, _symbol, _modifiers):
-        if _symbol in cls.pressed_keys:
-            cls.pressed_keys.remove(_symbol)
-
-    @classmethod
-    def on_mouse_motion(cls, x, y, dx, dy):
-        cls.mouse_x = x
-        cls.mouse_y = y
-
-    @classmethod
-    def on_mouse_press(cls, x, y, button, modifiers):
-        cls.mouse_button_pressed = button
-
-    @classmethod
-    def on_mouse_release(cls, x, y, button, modifiers):
-        if cls.mouse_button_pressed == button:
-            cls.mouse_button_pressed = None
-
-
 class EventHandler:
     left_game_button = arcade.key.A
     center_game_button = arcade.key.S
@@ -43,15 +12,11 @@ class EventHandler:
 
     @classmethod
     def get_game_buttons_pressed(cls) -> "tuple of channels active <left, center, right>":
-        left_pressed = cls.left_game_button in EventGetter.pressed_keys
-        center_pressed = cls.center_game_button in EventGetter.pressed_keys
-        right_pressed = cls.right_game_button in EventGetter.pressed_keys
+        left_pressed = cls.left_game_button in "<pressed keys>: list"
+        center_pressed = cls.center_game_button in "<pressed keys>: list"
+        right_pressed = cls.right_game_button in "<pressed keys>: list"
 
         return left_pressed, center_pressed, right_pressed
-
-    @property
-    def mouse_pos(self):
-        return EventGetter.mouse_x, EventGetter.mouse_y
 
 
 class Button:
@@ -89,8 +54,8 @@ class Button:
         return self.name == other
 
     def is_pressed(self):
-        if 0 <= EventHandler.mouse_pos[0] - self.x_pos <= self.width:
-            if 0 <= EventHandler.mouse_pos[1] - self.y_pos <= self.height:
+        """if 0 <= <mouse x position> - self.x_pos <= self.width:
+            if 0 <= <mouse y position> - self.y_pos <= self.height:
                 return True
 
-        return False
+        return False"""
