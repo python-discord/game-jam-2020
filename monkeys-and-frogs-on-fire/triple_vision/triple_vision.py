@@ -1,5 +1,4 @@
 import random
-import time
 
 import arcade
 
@@ -12,7 +11,6 @@ from triple_vision.entities import (
     ChasingEnemy,
     Enemies,
     Player,
-    LaserProjectile,
     StationaryEnemy
 )
 from triple_vision.managers import CardManager, GameManager
@@ -50,7 +48,7 @@ class TripleVision(arcade.View):
                     )
                 )
 
-        self.player = Player('m')
+        self.player = Player(self, 'm')
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
 
@@ -78,26 +76,12 @@ class TripleVision(arcade.View):
     def on_mouse_motion(self, x, y, dx, dy) -> None:
         self.card_manager.check_mouse_motion(x, y)
 
-    def on_mouse_press(self, x, y, button, modifiers) -> None:
+    def on_mouse_press(self, *args) -> None:
         if not self.player.is_alive:
             return
 
-        if not self.card_manager.check_mouse_press(x, y, button):
-            if button == arcade.MOUSE_BUTTON_LEFT:
-                self.player.move_to(x, y, rotate=False)
-
-            elif button == arcade.MOUSE_BUTTON_RIGHT:
-                if time.time() - self.player.last_shot < 0.75:  # TODO hardcoded
-                    # TODO Play empty gun sound or something similar
-                    return
-
-                bullet = LaserProjectile(
-                    center_x=self.player.center_x,
-                    center_y=self.player.center_y
-                )
-                bullet.move_to(x, y, rotate=True, set_target=False)
-                self.game_manager.player_projectiles.append(bullet)
-                self.player.last_shot = time.time()
+        if not self.card_manager.check_mouse_press(*args):
+            self.player.check_mouse_press(*args)
 
     # def on_key_press(self, key, modifiers):
     #     """Called whenever a key is pressed. """

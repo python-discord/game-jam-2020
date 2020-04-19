@@ -24,7 +24,7 @@ class LaserProjectile(Projectile):
             throwback_force=8,
             lifetime=3,
             moving_speed=5,
-            filename=":resources:images/space_shooter/laserBlue01.png",
+            filename='assets/lasers/blue_laser.png',
             center_x=center_x,
             center_y=center_y,
             *args,
