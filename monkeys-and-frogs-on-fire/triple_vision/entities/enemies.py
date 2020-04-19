@@ -1,6 +1,6 @@
 import enum
-from pathlib import Path
 import time
+from pathlib import Path
 
 import arcade
 
@@ -89,7 +89,7 @@ class StationaryEnemy(BaseEnemy):
         if not is_in_radius(self, self.target_sprite, self.detection_radius):
             return
 
-        if time.time() - self.last_shot < 0.75:
+        if time.time() - self.last_shot < 0.75:  # TODO should be a constant
             return
 
         laser = LaserProjectile(
