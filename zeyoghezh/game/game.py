@@ -74,8 +74,9 @@ class Game(arcade.Window):
             if TRIANGULATION_FREQUENCY > random.random():
                 planet.draw_triangulation_circle()
         self.planet_sprites.draw()
+        lithium_count_text = f"Lithium count: {self.lithium_count:.2f}"
         arcade.draw_text(
-            f"{self.lithium_count=}", *self.lithium_score_location,
+            f"{lithium_count_text}", *self.lithium_score_location,
             color=arcade.color.WHITE, font_size=24)
 
     @log_exceptions
@@ -83,14 +84,20 @@ class Game(arcade.Window):
         if get_distance(x, y, *self.lithium_location) < 10:
             self.clicked_lithium()
         for planet in self.planets:
-            if self.lithium_count and planet.collides_with_point((x, y)):
+            if self.lithium_count >= 1 and planet.collides_with_point((x, y)):
                 logger.info(f"Healing {planet.name}")
                 self.lithium_count -= 1
                 planet.get_healed(0.1)
 
     def clicked_lithium(self):
-        self.lithium_count += 1
+        planet_avg_health = self.avg_planet_health()
+        self.lithium_count += planet_avg_health
         self.lithium_location = get_new_lithium_location()
+
+    def avg_planet_health(self):
+        return (
+            sum([planet.health for planet in self.planets]) / len(self.planets)
+        )
 
     def on_update(self, delta_time):
         logger.debug("\nNew Round\n")

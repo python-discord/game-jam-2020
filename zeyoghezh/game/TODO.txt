@@ -1,3 +1,4 @@
 Make all the _x and _y stuff just be 2-element tuples
-Have player get more lithium when all the planets are stronger and less when weaker
 Fix issue of planets getting stuck outside screen
+
+Have attack distance be based on the closest points, not the center points
