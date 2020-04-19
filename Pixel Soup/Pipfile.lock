@@ -85,10 +85,10 @@
         },
         "pyglet": {
             "hashes": [
-                "sha256:83dbbcd9c7ff0b755a8249bfcb370dd832092f4ee2cc9993dd298f47c18c04eb",
-                "sha256:9e0349a6c523c0e61553582ebd5ea88661adab840985c465a315c0a9a0d2853d"
+                "sha256:bd96b9c374a7192e4787f989e8f911719476c71476466a02312839e8cb6a0d4e",
+                "sha256:c54d897d96bf65689bfaf094330ba3dc76af24daf74e7d98336157fd82b72f1b"
             ],
-            "version": "==2.0.dev0"
+            "version": "==1.5.3"
         },
         "pytiled-parser": {
             "hashes": [
