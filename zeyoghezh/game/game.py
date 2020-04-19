@@ -1,6 +1,7 @@
 import random
 import arcade
 import logging
+from arcade.gui import Theme, TextButton
 from util import get_distance, log_exceptions
 from planet import Planet
 from config import (
@@ -32,9 +33,21 @@ class Game(arcade.Window):
         self.lithium_location = get_new_lithium_location()
         self.lithium_count = 0
         self.lithium_score_location = (SCREEN_SIZE[0]/3, SCREEN_SIZE[1]/20)
+        self.theme = None
+
+        self.abscond_button = None
 
     def setup(self):
         self.planets = [Planet(planet_name) for planet_name in ALL_PLANETS]
+        self.setup_theme()
+        self.abscond_button = TextButton(
+            SCREEN_SIZE[0]/6, SCREEN_SIZE[1]/15, 200, 50,
+            "Abscond", theme=self.theme)
+        self.abscond_button.on_press = (
+            lambda: self.abscond_press())
+        self.abscond_button.on_release = (
+            lambda: self.abscond_release())
+        self.button_list.append(self.abscond_button)
         for i, planet in enumerate(self.planets):
             # TODO improve this
             self.planet_sprites.append(planet)
@@ -49,10 +62,31 @@ class Game(arcade.Window):
                 start_speed_y=random.random()
             )
 
+    def abscond_press(self):
+        self.abscond_button.pressed = True
+
+    def abscond_release(self):
+        if self.abscond_button.pressed:
+            self.abscond_button.pressed = False
+            self.game_over(f"Absconded with {self.lithium_count:.2f} lithium!")
+
+    def set_button_textures(self):
+        normal = ":resources:gui_themes/Fantasy/Buttons/Normal.png"
+        hover = ":resources:gui_themes/Fantasy/Buttons/Hover.png"
+        clicked = ":resources:gui_themes/Fantasy/Buttons/Clicked.png"
+        locked = ":resources:gui_themes/Fantasy/Buttons/Locked.png"
+        self.theme.add_button_textures(normal, hover, clicked, locked)
+
+    def setup_theme(self):
+        self.theme = Theme()
+        self.theme.set_font(24, arcade.color.WHITE)
+        self.set_button_textures()
+
     @log_exceptions
     def on_draw(self):
         """ Draw everything """
         arcade.start_render()
+        super().on_draw()
         for planet in self.planets:
             for other in planet.attacked_last_round:
                 arcade.draw_line(
@@ -88,6 +122,7 @@ class Game(arcade.Window):
                 logger.info(f"Healing {planet.name}")
                 self.lithium_count -= 1
                 planet.get_healed(0.1)
+        self.abscond_button.check_mouse_press(x, y)
 
     def clicked_lithium(self):
         planet_avg_health = self.avg_planet_health()

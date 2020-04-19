@@ -13,7 +13,7 @@ def log_exceptions(func):
     def inner(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except KeyboardInterrupt:
+        except (KeyboardInterrupt, SystemExit):
             raise
         except BaseException:
             logging.error("Got error!", exc_info=True)
