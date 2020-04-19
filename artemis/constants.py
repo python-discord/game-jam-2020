@@ -1,4 +1,5 @@
 ASSETS = 'assets/'
+BACKGROUND = (25, 0, 50)
 
 BLOCKS_Y = 20
 BLOCKS_X = 40

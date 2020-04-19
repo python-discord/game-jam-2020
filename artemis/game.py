@@ -1,19 +1,19 @@
 import arcade
 import random
 import math
-import sys
 
-from constants import WIDTH, HEIGHT, SCALING, SIDE, TOP
+from constants import WIDTH, HEIGHT, SCALING, SIDE, TOP, BACKGROUND
 from engine import BiDirectionalPhysicsEnginePlatformer
 from player import Player
 from sprites import Block, Gem
 from displays import Box
+import views
 
 
-class Game(arcade.Window):
+class Game(arcade.View):
     def __init__(self):
-        super().__init__(WIDTH, HEIGHT, 'Runner')
-        arcade.set_background_color((25, 0, 50))
+        super().__init__()
+        arcade.set_background_color(BACKGROUND)
 
         # sprites
         self.player = Player(self)
@@ -43,22 +43,9 @@ class Game(arcade.Window):
         self.pressed = []
         self.left = 0
         self.score = 0
-        self.die_after = -1
-
-        arcade.run()
 
     def on_draw(self):
         arcade.start_render()
-        self.die_after -= 1
-        if self.die_after == 0:
-            sys.exit()
-        if self.die_after > 0:
-            arcade.draw_text(
-                'Game Over\nInventory Full', self.left+WIDTH/2, HEIGHT/2,
-                arcade.color.RED, 100, width=WIDTH, align='center',
-                anchor_x='center', anchor_y='center'
-            )
-            return
         arcade.draw_text(
             text=f'Score: {self.score}', start_x=self.left + WIDTH - 50,
             start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2,
@@ -116,7 +103,7 @@ class Game(arcade.Window):
         assert False, 'Should not get here.'
 
     def game_over(self):
-        self.die_after = 1000
+        self.window.show_view(views.GameOver('Inventory Full'))
 
     def scroll(self):
         self.left += self.player.speed
