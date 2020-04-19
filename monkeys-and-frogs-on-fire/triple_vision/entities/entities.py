@@ -1,13 +1,12 @@
 import itertools
-import math
 from pathlib import Path
 from typing import Any, Optional, Tuple
 
 import arcade
 
 from triple_vision.constants import Direction
-from triple_vision.utils import load_texture_pair, get_change_speed
 from triple_vision.entities.weapons import Weapon
+from triple_vision.utils import load_texture_pair, get_change_vector
 
 
 class AnimatedEntity(arcade.Sprite):
@@ -152,7 +151,7 @@ class LivingEntity(AnimatedEntity):
         if self.being_pushed:
             return
 
-        change = get_change_speed(
+        change = get_change_vector(
             start_position=weapon.position,
             destination_position=self.position,
             speed_multiplier=weapon.throwback_force

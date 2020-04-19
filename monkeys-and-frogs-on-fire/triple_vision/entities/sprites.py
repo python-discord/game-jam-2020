@@ -5,7 +5,7 @@ from typing import Optional
 import arcade
 
 from triple_vision.constants import SCALED_TILE
-from triple_vision.utils import get_change_speed
+from triple_vision.utils import get_change_vector
 
 
 class MovingSprite(arcade.Sprite):
@@ -27,7 +27,7 @@ class MovingSprite(arcade.Sprite):
         :param rotate: represents if we need to rotate the sprite or not
         """
 
-        self.change_x, self.change_y, angle = get_change_speed(
+        self.change_x, self.change_y, angle = get_change_vector(
             start_position=self.position,
             destination_position=(x, y),
             speed_multiplier=self.speed * self.speed_multiplier

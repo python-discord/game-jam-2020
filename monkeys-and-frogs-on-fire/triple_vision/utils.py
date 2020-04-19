@@ -25,7 +25,7 @@ def distance_between(center_object: Sprite, target_object: Sprite) -> float:
     return math.hypot(x_diff, y_diff)
 
 
-def get_change_speed(
+def get_change_vector(
         *,
         start_position: Tuple[float, float],
         destination_position: Tuple[float, float],
