@@ -9,8 +9,9 @@ class Map:
     def __init__(self, shape: Tuple[int, int]) -> None:
         self.shape = shape
 
+        self.AIR = 0
         self.WALL = 1
-        self.FLOOR = 0
+        self.FLOOR = 2
         self.GENERATIONS = 6
         self.FILL_PROBABILITY = 0.4
 
@@ -57,18 +58,20 @@ class Map:
                             map_[i][j] = self.WALL
 
                     else:
-                        # Solidify walls if 1 away has 5 or more walls
-                        if wall_count_1_away >= 5:
-                            map_[i][j] = self.WALL
-                        else:
-                            map_[i][j] = self.FLOOR
+                        submap = map_[
+                            max(i - 1, 0): min(i + 2, map_.shape[0]),
+                            max(j - 1, 0): min(j + 2, map_.shape[1])
+                        ]
+                        floor_count_1_away = len(np.where(submap.flatten() == self.FLOOR)[0])
 
-        # Make all the corners walls
-        map_[0][0] = map_[0][-1] = map_[-1][0] = map_[-1][-1] = self.WALL
+                        # Turn all walls that aren't near floor into air
+                        if floor_count_1_away == 0 and map_[i][j] == self.WALL:
+                            map_[i][j] = self.AIR
 
         return map_
 
 
 if __name__ == "__main__":
     map_ = Map((20, 20))
-    print(map_.generate())
+    gen = map_.generate()
+    print(gen)
