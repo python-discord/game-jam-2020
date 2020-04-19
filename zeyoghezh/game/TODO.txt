@@ -1,3 +1,4 @@
 Make all the _x and _y stuff just be 2-element tuples
-Make lithium clickable
 Have player get more lithium when all the planets are stronger and less when weaker
+Fix issue of planets getting stuck outside screen
+Click on planets to upgrade them
