@@ -137,7 +137,9 @@ class LivingEntity(AnimatedEntity):
                        and position for knock-back direction.
         :param wall_reference: SpriteList of things that the entity cannot go trough. This will
                                stop the entity from being pushed and slightly damage the entity.
-                               TODO: Currently a placeholder, to be implemented
+                               TODO: Currently a placeholder, to be implemented,
+                                     maybe this check should be done in manager?
+                                     So if hits wall and being_pushed True then deduct hp
         """
         self.hp -= weapon.dmg
         if self.hp <= 0:

@@ -9,6 +9,7 @@ class Player(LivingEntity, MovingSprite):
 
     def __init__(self, gender: str) -> None:
         self.last_shot = time.time()
+        self.is_alive = True
 
         super().__init__(
             sprite_name='wizzard',
@@ -22,3 +23,7 @@ class Player(LivingEntity, MovingSprite):
             center_y=500,
             hp=1000
         )
+
+    def kill(self):
+        self.is_alive = False
+        super().kill()
