@@ -2,6 +2,8 @@ import random
 import math
 import arcade
 import os
+import pymunk
+from PIL import Image
 
 from typing import cast
 
@@ -14,221 +16,213 @@ LEFT_LIMIT = -OFFSCREEN_SPACE
 RIGHT_LIMIT = SCREEN_WIDTH + OFFSCREEN_SPACE
 BOTTOM_LIMIT = -OFFSCREEN_SPACE
 TOP_LIMIT = SCREEN_HEIGHT + OFFSCREEN_SPACE
-SCREEN_DIST = math.sqrt(SCREEN_HEIGHT ** 2 + SCREEN_WIDTH ** 2) / 2
-SCREEN_MARGIN = 50
-
+SCREEN_DIST = math.sqrt(SCREEN_HEIGHT**2+SCREEN_WIDTH**2)/2
 
 class GroundSprite(arcade.Sprite):
-    def __init__(self, textures, scale, x, y):
-        super().__init__()
+  def __init__(self, pymunk_shape, textures, scale, x, y):
+    super().__init__()
+    self.pymunk_shape = pymunk_shape
 
-        self.textures = textures
-        self.texture = self.textures[0]
+    self.textures = textures
+    self.texture = self.textures[0]
 
-        self.scaling = scale
+    self.scaling = scale
 
-        self.x = x
-        self.y = y
+    self.x = x
+    self.y = y
 
-    def update(self, zoom, cx, cy):
-        """ Move the sprite """
-        super().update()
+  def update(self,zoom,cx,cy):
+    """ Move the sprite """
+    super().update()
 
-        self.scale = zoom * self.scaling
+    self.scale = zoom * self.scaling
 
-        self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
-        self.center_y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
-
+    self.center_x = self.pymunk_shape.body.position.x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
+    self.center_y = self.pymunk_shape.body.position.y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
 
 class PlayerSprite(arcade.Sprite):
-    def __init__(self, textures, scale, x, y, zoom, cx, cy):
-        super().__init__()
+  def __init__(self, pymunk_shape, textures, scale, x, y):
+    super().__init__()
+    self.pymunk_shape = pymunk_shape
+    self.can_jump = True
 
-        self.textures = textures
-        self.texture = self.textures[0]
+    self.textures = textures
+    self.texture = self.textures[0]
 
-        self.scaling = scale
+    self.scaling = scale
 
-        self.x = x
-        self.y = y
+    self.x = x
+    self.y = y
 
-        self.acc_x = 0  # acceleration
-        self.acc_y = 0
+    self.acc_x = 0
+    self.acc_y = 0
 
-        self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
-        self.center_y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
-        self.og_x = self.center_x  # original x, which is x in the prev frame
-        self.og_y = self.center_y
+    self.center_x = self.pymunk_shape.body.position.x
+    self.center_y = self.pymunk_shape.body.position.y
 
-    def update(self, zoom, cx, cy):
-        self.scale = zoom * self.scaling
-        self.og_x = self.center_x
-        self.og_y = self.center_y
-        # self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
+    self.og_x = self.center_x
+    self.og_y = self.center_y
+
+  def update(self,zoom,cx,cy):
+    self.scale = zoom * self.scaling
+    self.og_x = self.center_x
+    self.og_y = self.center_y
+
+def make_player_sprite(mass,space, textures, scale, x,y, zoom, cx, cy):
+  pos_x = (x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
+  pos_y = (y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
+
+  width, height = textures[0].width, textures[0].height
+  mass = mass
+  moment = pymunk.moment_for_box(mass, (width, height))
+  body = pymunk.Body(mass, moment)
+  body.position = pymunk.Vec2d((pos_x,pos_y))
+  shape = pymunk.Poly.create_box(body, (width, height))
+  shape.friction = 0.5
+  space.add(body, shape)
+  sprite = PlayerSprite(shape, textures, scale,x,y)
+  return sprite
+
+def make_ground_sprite(space, textures, scale, x, y, zoom, cx, cy):
+  pos_x = (x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
+  pos_y = (y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
+
+  width, height = textures[0].width, textures[0].height
+  body = pymunk.Body(body_type=pymunk.Body.STATIC)
+  body.position = pymunk.Vec2d((pos_x-width, pos_y-height))
+  shape = pymunk.Poly.create_box(body, (width, height))
+  shape.friction = 0.5
+  space.add(body, shape)
+  sprite = GroundSprite(shape, textures, scale, x, y)
+  return sprite
 
 
 class MyGame(arcade.Window):
-    """ Main application class. """
+  """ Main application class. """
 
-    def __init__(self):
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-        file_path = os.path.dirname(os.path.abspath(__file__))
-        os.chdir(file_path)
+  def __init__(self):
+    super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    file_path = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(file_path)
 
-        # set up the actual game
-        self.frame_count = 0
-        self.total_time = 0
-        self.game_over = False
-        self.debug_mode = False
-        self.set_location(0, 0)
+  def start_new_game(self):
+    """ Set up the game and initialize the variables. """
+    self.frame_count = 0
+    self.total_time = 0
+    self.game_over = False
+    self.debug_mode = False
+    self.set_location(0,0)
+    self.space = pymunk.Space()
+    self.space.gravity = (0.0, -900.0)
 
-        self.camera_zoom = 1
-        self.camera_x = SCREEN_WIDTH / -2
-        self.camera_y = SCREEN_HEIGHT / -2
+    self.camera_zoom = 1
+    self.camera_x = SCREEN_WIDTH / -2
+    self.camera_y = SCREEN_HEIGHT / -2
 
-        self.gravity = 0.5
+    self.key_pressed = [0,0,0] #controllable
 
-        self.key_pressed = [0, 0, 0]  # controllable
+    self.ground_sprite_list = arcade.SpriteList()
+    self.player_sprite_list = arcade.SpriteList()
 
-        self.ground_sprite_list = arcade.SpriteList()
-        self.player_sprite_list = arcade.SpriteList()
-        self.view_left = 0
-        self.view_bottom = 0
+    self.selected_player = 0
 
-        self.controlled = 0
+    self.ground_texture_list = [arcade.load_texture("images/ground/debug.png")]
+    self.player_texture_list = [arcade.load_texture("images/player/debug.png")]
 
-        self.ground_texture_list = [arcade.load_texture("images/ground/debug.png")]
-        self.player_texture_list = [arcade.load_texture("images/player/debug.png")]
+    for i in range(1,4):
+      object = make_player_sprite(5,self.space,self.player_texture_list,1,i*32,32*1,self.camera_zoom,self.camera_x,self.camera_y)
+      object.set_hit_box([[object.width / -2, object.height / -2-1], [object.width /2, object.height / -2-1], [object.width / 2, object.height / 2], [object.width / -2, object.height / 2]])
+      self.player_sprite_list.append(object)
 
-        for i in range(1, 4):  # TODO: make sprites
-            object = PlayerSprite(self.player_texture_list, 1, i * 32, 32 * 1, self.camera_zoom, self.camera_x,
-                                  self.camera_y)  # create the players
-            self.player_sprite_list.append(object)
-        # so the players can interact with each other and not just give the game a seizure
-        a = arcade.SpriteList()
-        b = arcade.SpriteList()
-        c = arcade.SpriteList()
-        a.append(self.player_sprite_list[1])
-        a.append(self.player_sprite_list[2])
-        b.append(self.player_sprite_list[0])
-        b.append(self.player_sprite_list[2])
-        c.append(self.player_sprite_list[0])
-        c.append(self.player_sprite_list[1])
+    for i in range(1,10):
+      object = make_ground_sprite(self.space,self.ground_texture_list,1,i*32,32*-1,self.camera_zoom,self.camera_x,self.camera_y)
+      self.ground_sprite_list.append(object)
 
-        for i in range(1, 30):  # make the ground
-            object = GroundSprite(self.ground_texture_list, 1, (i-10) * 32, 0)
-            self.ground_sprite_list.append(object)
-            a.append(object)
-            b.append(object)
-            c.append(object)
+  def on_draw(self):
+    arcade.start_render()
 
-        self.physics_engines = []  # make the physics engines
-        self.physics_engines.append(
-            arcade.PhysicsEnginePlatformer(self.player_sprite_list[0], a, gravity_constant=self.gravity))
-        self.physics_engines.append(
-            arcade.PhysicsEnginePlatformer(self.player_sprite_list[1], b, gravity_constant=self.gravity))
-        self.physics_engines.append(
-            arcade.PhysicsEnginePlatformer(self.player_sprite_list[2], c, gravity_constant=self.gravity))
+    self.ground_sprite_list.draw()
+    self.player_sprite_list.draw()
+    if self.debug_mode == True:
+      for i in self.player_sprite_list:
+        i.draw_hit_box((100,100,100),3)
 
-    def on_draw(self):  # simple rendering
-        arcade.start_render()
+  def on_key_press(self, key, modifiers):
+    if key == arcade.key.LEFT or key == arcade.key.A:
+      self.key_pressed[1] = -6
+    elif key == arcade.key.RIGHT or key == arcade.key.D:
+      self.key_pressed[0] = 6
+    elif key == arcade.key.UP or key == arcade.key.W:
+      self.key_pressed[2] = 450
+    elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
+      self.selected_player = 0
+    elif key == arcade.key.NUM_2 or key == arcade.key.KEY_2:
+      self.selected_player = 1
+    elif key == arcade.key.NUM_3 or key == arcade.key.KEY_3:
+      self.selected_player = 2
 
-        self.ground_sprite_list.draw()
-        self.player_sprite_list.draw()
+  def on_key_release(self, key, modifiers):
+    if key == arcade.key.LEFT or key == arcade.key.A:
+      self.key_pressed[1] = 0
+    elif key == arcade.key.RIGHT or key == arcade.key.D:
+      self.key_pressed[0] = 0
+    elif key == arcade.key.UP or key == arcade.key.W:
+      self.key_pressed[2] = 0
 
-    def on_key_press(self, key, modifiers):
-        if key == arcade.key.LEFT or key == arcade.key.A:
-            self.key_pressed[1] = -0.3
-        elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.key_pressed[0] = 0.3
-        elif key == arcade.key.UP or key == arcade.key.W:
-            self.key_pressed[2] = 8
-        # these are for when the player wants the switch
-        elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
-            self.controlled = 0
-        elif key == arcade.key.NUM_2 or key == arcade.key.KEY_2:
-            self.controlled = 1
-        elif key == arcade.key.NUM_3 or key == arcade.key.KEY_3:
-            self.controlled = 2
+  def on_update(self, x):
+    """ Move everything """
 
-    def on_key_release(self, key, modifiers):
-        if key == arcade.key.LEFT or key == arcade.key.A:
-            self.key_pressed[1] = 0
-        elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.key_pressed[0] = 0
-        elif key == arcade.key.UP or key == arcade.key.W:
-            self.key_pressed[2] = 0
+    self.frame_count += 1
+    self.space.step(1 / 60.0)
 
-    def on_update(self, x):
-        """ Move everything """
+    self.player_sprite_list[self.selected_player].pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.key_pressed[:2]), 0))
+    if self.player_sprite_list[self.selected_player].can_jump == True:
+      self.player_sprite_list[self.selected_player].pymunk_shape.body.velocity += pymunk.Vec2d((0,self.key_pressed[2]))
+      self.player_sprite_list[self.selected_player].can_jump = False
+    if self.player_sprite_list[self.selected_player].pymunk_shape.body.velocity.x > 125:
+      self.player_sprite_list[self.selected_player].pymunk_shape.body.velocity = pymunk.Vec2d((125, self.player_sprite_list[self.selected_player].pymunk_shape.body.velocity.y))
+    if self.player_sprite_list[self.selected_player].pymunk_shape.body.velocity.x < -125:
+      self.player_sprite_list[self.selected_player].pymunk_shape.body.velocity = pymunk.Vec2d((-125, self.player_sprite_list[self.selected_player].pymunk_shape.body.velocity.y))
 
-        self.frame_count += 1
-        self.player_sprite_list[self.controlled].acc_x = self.key_pressed[0] + self.key_pressed[1]
-        if self.player_sprite_list[self.controlled].top < -1000:
-            self.game_over = True
-        # accelerate the controlled sprite to a maximum speed of 3.5
-        if abs(self.player_sprite_list[self.controlled].change_x) < 3.5:
-            self.player_sprite_list[self.controlled].change_x += self.player_sprite_list[self.controlled].acc_x
+    x,y = [self.player_sprite_list[0].x for i in range(2)],[self.player_sprite_list[0].y for i in range(2)]
+    for i in self.player_sprite_list[1:]:
+      x[0] = i.x if i.x < x[0] else x[0]
+      y[0] = i.y if i.y < y[0] else y[0]
+      x[1] = i.x if i.x > x[1] else x[1]
+      y[1] = i.y if i.y > y[1] else y[1]
+    self.camera_x = sum(x)/2 + SCREEN_WIDTH / -2
+    self.camera_y = sum(y)/2 + SCREEN_HEIGHT / -2
 
-        self.player_sprite_list[self.controlled].change_y = self.key_pressed[2] if self.physics_engines[
-            self.controlled].can_jump() else self.player_sprite_list[self.controlled].change_y
-
-        if self.key_pressed[0] + self.key_pressed[1] == 0:  # if left AND right keys are pressed, cancel it
-            if abs(self.player_sprite_list[self.controlled].change_x) < 0.4:
-                self.player_sprite_list[self.controlled].change_x = 0
-            elif self.player_sprite_list[self.controlled].change_x < 0:  # these two serve deceleration
-                self.player_sprite_list[self.controlled].change_x += 0.3
-            else:
-                self.player_sprite_list[self.controlled].change_x = -0.3
-
-        changed = False
-        left_boundary = self.view_left + SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].left < left_boundary:
-            self.view_left -= left_boundary - self.player_sprite_list[self.controlled].left
-            changed = True
-
-        right_boundary = self.view_left + SCREEN_WIDTH - SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].right > right_boundary:
-            self.view_left += self.player_sprite_list[self.controlled].right - right_boundary
-            changed = True
-
-        top_boundary = self.view_bottom + SCREEN_HEIGHT - SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].top > top_boundary:
-            self.view_bottom += self.player_sprite_list[self.controlled].top - top_boundary
-            changed = True
-
-        bottom_boundary = self.view_bottom + SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].bottom < bottom_boundary:
-            self.view_bottom -= bottom_boundary - self.player_sprite_list[self.controlled].bottom
-            changed = True
-
-        self.view_left = int(self.view_left)
-        self.view_bottom = int(self.view_bottom)
-
-        # If we changed the boundary values, update the view port to match
-        if changed:
-            arcade.set_viewport(self.view_left,
-                                SCREEN_WIDTH + self.view_left - 1,
-                                self.view_bottom,
-                                SCREEN_HEIGHT + self.view_bottom - 1)
-
-        if not self.game_over:
-            for i in self.ground_sprite_list:
-                i.update(self.camera_zoom, self.camera_x, self.camera_y)
-            for i in self.player_sprite_list:
-                i.update(self.camera_zoom, self.camera_x, self.camera_y)
-            for i in self.physics_engines:
-                i.update()
-
-        else:
-            self.close()
-
+    if not self.game_over:
+      for i in self.ground_sprite_list:
+        i.update(self.camera_zoom,self.camera_x,self.camera_y)
+      for i in self.player_sprite_list:
+        i.update(self.camera_zoom,self.camera_x,self.camera_y)
+        boxes = arcade.check_for_collision_with_list(i,self.ground_sprite_list)
+        if_collide = [True for char in self.player_sprite_list if arcade.check_for_collision(i,char) == True and char != i]
+        if (boxes != [] or True in if_collide) and abs(i.pymunk_shape.body.velocity.y) < 3:
+          i.can_jump = True
+      for i in self.player_sprite_list:
+        i.center_x = i.pymunk_shape.body.position.x
+        i.center_y = i.pymunk_shape.body.position.y
+        i.angle = math.degrees(i.pymunk_shape.body.angle)
+        # print(i.pymunk_shape.body.angle)
+        # print(i.pymunk_shape.body.rotation_vector)
+      # for x, i in enumerate(self.player_sprite_list):
+      #   if x != self.selected_player:
+      #     i.change_y = 0
+      #     i.change_x = 0
+      # for i in [self.player_sprite_list[self.selected_player]]:
+      #   i.x += i.center_x - i.og_x
+      #   i.y += i.center_y - i.og_y
+      #   i.center_x,i.center_y = i.og_x,i.og_y
 
 def main():
-    """ Start the game """
-    window = MyGame()
-    arcade.run()
+  """ Start the game """
+  window = MyGame()
+  window.start_new_game()
+  arcade.run()
 
 
 if __name__ == "__main__":
-    main()
+  main()
