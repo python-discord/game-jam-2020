@@ -7,7 +7,7 @@ import Level
 import Keyboard
 import Camera
 
-from Constants import *
+from Constants import WIDTH, HEIGHT, TITLE
 
 
 class PyGameJam2020(arcade.Window):
@@ -58,14 +58,12 @@ class PyGameJam2020(arcade.Window):
             self.frames = 0
 
     def on_draw(self):
-        
+
         arcade.start_render()
 
         self.camera.set_viewport()
 
-        self.level.draw(self.camera)
-        
-        arcade.set_viewport(0, WIDTH, 0, HEIGHT)
+        self.level.draw()
 
     def on_key_press(self, key, modifiers):
         

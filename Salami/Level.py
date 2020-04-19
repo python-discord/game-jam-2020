@@ -5,11 +5,7 @@ import pyglet.gl as gl
 import Engine
 import Entity
 
-WIDTH = 600
-HEIGHT = 400
-
-TILE_SIZE = 16
-GRAVITY = 0.2
+from Constants import WIDTH, HEIGHT, TILE_SIZE, GRAVITY
 
 
 class Level:
@@ -62,3 +58,5 @@ class Level:
     def draw(self):
         self.tiles.draw(filter=gl.GL_NEAREST)
         self.entities.draw(filter=gl.GL_NEAREST)
+
+        self.player.draw_hit_box(arcade.color.BLUE)
