@@ -11,8 +11,8 @@ class Config(object):
     """
 
     # Constants
-    SCREEN_WIDTH = 1000
-    SCREEN_HEIGHT = 650
+    SCREEN_WIDTH = 1650
+    SCREEN_HEIGHT = 1000
     SCREEN_TITLE = "Triple Dungeon"
     TILE_WIDTH = 63
 
@@ -21,7 +21,7 @@ class Config(object):
     TILE_SCALING = 2
 
     # Movement speed of player, in pixels per frame
-    PLAYER_MOVEMENT_SPEED = 5
+    PLAYER_MOVEMENT_SPEED = 7
 
     # How many pixels to keep as a minimum margin between the character
     # and the edge of the screen.
