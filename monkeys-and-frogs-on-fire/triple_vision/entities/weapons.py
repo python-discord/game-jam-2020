@@ -1,10 +1,10 @@
+import random
 from pathlib import Path
 from typing import Any, Tuple
-from random import randrange, choice
 
 import arcade
 
-from triple_vision.entities.sprites import TemporarySprite, MovingSprite
+from triple_vision.entities.sprites import MovingSprite, TemporarySprite
 
 
 class Weapon(arcade.Sprite):
@@ -29,10 +29,10 @@ class Weapon(arcade.Sprite):
         return [arcade.load_sound(str(cls.assets_path / sound)) for sound in sounds]
 
     def play_activate_sound(self):
-        arcade.play_sound(choice(self._activate_sounds))
+        arcade.play_sound(random.choice(self._activate_sounds))
 
     def play_hit_sound(self):
-        arcade.play_sound(choice(self._hit_sounds))
+        arcade.play_sound(random.choice(self._hit_sounds))
 
 
 class Projectile(Weapon, TemporarySprite, MovingSprite):
@@ -48,7 +48,7 @@ class LaserProjectile(Projectile):
         center_x: float,
         center_y: float,
         *args: Any,
-        dmg: float = randrange(60, 70),
+        dmg: float = random.randrange(60, 70),
         moving_speed: float = 5.0,
         **kwargs: Any
     ) -> None:

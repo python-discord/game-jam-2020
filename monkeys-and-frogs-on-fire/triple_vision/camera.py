@@ -1,6 +1,6 @@
 import arcade
 
-from triple_vision.constants import WINDOW_SIZE
+from triple_vision import Settings as s
 
 
 class Camera:
@@ -30,13 +30,13 @@ class Camera:
             changed = True
 
         # Scroll right
-        right_boundary = self.viewport_left + WINDOW_SIZE[0] - self.viewport_left_margin
+        right_boundary = self.viewport_left + s.WINDOW_SIZE[0] - self.viewport_left_margin
         if self.player_sprite.right > right_boundary:
             self.viewport_left += self.player_sprite.right - right_boundary
             changed = True
 
         # Scroll up
-        top_boundary = self.viewport_bottom + WINDOW_SIZE[1] - self.viewport_bottom_margin
+        top_boundary = self.viewport_bottom + s.WINDOW_SIZE[1] - self.viewport_bottom_margin
         if self.player_sprite.top > top_boundary:
             self.viewport_bottom += self.player_sprite.top - top_boundary
             changed = True
@@ -50,7 +50,7 @@ class Camera:
         if changed:
             arcade.set_viewport(
                 self.viewport_left,
-                WINDOW_SIZE[0] + self.viewport_left,
+                s.WINDOW_SIZE[0] + self.viewport_left,
                 self.viewport_bottom,
-                WINDOW_SIZE[1] + self.viewport_bottom,
+                s.WINDOW_SIZE[1] + self.viewport_bottom,
             )

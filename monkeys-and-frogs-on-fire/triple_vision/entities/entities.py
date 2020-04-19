@@ -4,9 +4,9 @@ from typing import Any, Optional, Tuple
 
 import arcade
 
-from triple_vision.constants import Direction
+from triple_vision import Direction
 from triple_vision.entities.weapons import Weapon
-from triple_vision.utils import load_texture_pair, get_change_vector
+from triple_vision.utils import get_change_vector, load_texture_pair
 
 
 class AnimatedEntity(arcade.Sprite):

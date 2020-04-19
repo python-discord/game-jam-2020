@@ -2,24 +2,23 @@ import math
 from typing import Tuple
 
 import arcade
-from arcade import Sprite, Texture
 
 
-def load_texture_pair(filename: str) -> Tuple[Texture, Texture]:
+def load_texture_pair(filename: str) -> Tuple[arcade.Texture, arcade.Texture]:
     return (
         arcade.load_texture(filename),
         arcade.load_texture(filename, mirrored=True)
     )
 
 
-def is_in_radius(center_object: Sprite, target_object: Sprite, radius: int) -> bool:
+def is_in_radius(center_object: arcade.Sprite, target_object: arcade.Sprite, radius: int) -> bool:
     return (
             abs(center_object.center_x - target_object.center_x) <= radius and
             abs(center_object.center_y - target_object.center_y) <= radius
     )
 
 
-def distance_between(center_object: Sprite, target_object: Sprite) -> float:
+def distance_between(center_object: arcade.Sprite, target_object: arcade.Sprite) -> float:
     x_diff = target_object.center_x - center_object.center_x
     y_diff = target_object.center_y - center_object.center_y
     return math.hypot(x_diff, y_diff)

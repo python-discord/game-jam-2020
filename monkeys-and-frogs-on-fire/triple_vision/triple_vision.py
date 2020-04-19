@@ -1,7 +1,8 @@
 import arcade
 
+from triple_vision import Settings as s
+from triple_vision import Tile
 from triple_vision.camera import Camera
-from triple_vision.constants import SCALED_TILE, WINDOW_SIZE
 from triple_vision.entities import (
     ChasingEnemy,
     Enemies,
@@ -41,7 +42,7 @@ class TripleVision(arcade.View):
         self.player = Player(self, 'm')
         self.player.setup()
 
-        self.camera = Camera(self, WINDOW_SIZE[0] / 2.5, WINDOW_SIZE[1] / 2.5)
+        self.camera = Camera(self, s.WINDOW_SIZE[0] / 2.5, s.WINDOW_SIZE[1] / 2.5)
 
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
@@ -51,7 +52,7 @@ class TripleVision(arcade.View):
                 ChasingEnemy,
                 Enemies.big_demon,
                 self.player,
-                SCALED_TILE * 10,
+                Tile.SCALED * 10,
                 center_x=50,
                 center_y=y * 250,
                 moving_speed=1
@@ -62,7 +63,7 @@ class TripleVision(arcade.View):
                 StationaryEnemy,
                 Enemies.imp,
                 self.player,
-                SCALED_TILE * 10,
+                Tile.SCALED * 10,
                 center_x=50,
                 center_y=y * 200
             )

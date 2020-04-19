@@ -4,7 +4,8 @@ from typing import List, Tuple
 import arcade
 import numpy as np
 
-from triple_vision.constants import SCALED_TILE, SCALING
+from triple_vision import Settings as s
+from triple_vision import Tile
 
 
 class Map:
@@ -91,9 +92,9 @@ class Map:
 
                 sprite = arcade.Sprite(
                     filename=f'assets/dungeon/frames/{filename}.png',
-                    scale=SCALING,
-                    center_x=i * SCALED_TILE + SCALED_TILE / 2,
-                    center_y=j * SCALED_TILE + SCALED_TILE / 2
+                    scale=s.SCALING,
+                    center_x=i * Tile.SCALED + Tile.SCALED / 2,
+                    center_y=j * Tile.SCALED + Tile.SCALED / 2
                 )
 
                 if val == self.WALL:

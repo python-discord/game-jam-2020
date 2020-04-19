@@ -1,10 +1,9 @@
-import time
 import random
+import time
 
 import arcade
 
-
-from triple_vision.constants import SCALING
+from triple_vision import Settings as s
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import MovingSprite
 from triple_vision.entities.weapons import LaserProjectile
@@ -20,7 +19,7 @@ class Player(LivingEntity, MovingSprite):
             has_hit_frame=True,
             gender=gender,
             moving_speed=3,
-            scale=SCALING,
+            scale=s.SCALING,
             center_x=500,
             center_y=500,
             hp=1000

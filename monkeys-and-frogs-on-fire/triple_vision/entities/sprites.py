@@ -4,7 +4,7 @@ from typing import Optional
 
 import arcade
 
-from triple_vision.constants import SCALED_TILE
+from triple_vision import Tile
 from triple_vision.utils import get_change_vector
 
 
@@ -68,8 +68,8 @@ class MovingSprite(arcade.Sprite):
     def update(self) -> None:
         if self.target is not None:
             if (
-                self.target[0] - SCALED_TILE / 2 < self.center_x < self.target[0] + SCALED_TILE / 2 and
-                self.target[1] - SCALED_TILE / 2 < self.center_y < self.target[1] + SCALED_TILE / 2
+                self.target[0] - Tile.SCALED / 2 < self.center_x < self.target[0] + Tile.SCALED / 2 and
+                self.target[1] - Tile.SCALED / 2 < self.center_y < self.target[1] + Tile.SCALED / 2
             ):
                 self.change_x = 0
                 self.change_y = 0

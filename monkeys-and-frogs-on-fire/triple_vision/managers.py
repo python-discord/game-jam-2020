@@ -1,8 +1,8 @@
-import arcade
-
 from typing import Tuple
 
-from triple_vision.constants import SCALING, WINDOW_SIZE
+import arcade
+
+from triple_vision import Settings as s
 from triple_vision.entities import DamageIndicator
 
 
@@ -57,7 +57,7 @@ class CardManager:
         self.cards = arcade.SpriteList()
         self.colors = ('red', 'green', 'blue')
 
-        card_scale = SCALING / 6
+        card_scale = s.SCALING / 6
 
         self.MIN_CARD_HEIGHT = -132 * card_scale
         self.MAX_CARD_HEIGHT = 84 * card_scale
@@ -68,7 +68,7 @@ class CardManager:
                 arcade.Sprite(
                     filename=f'assets/wizard/{color}_card.png',
                     scale=card_scale,
-                    center_x=WINDOW_SIZE[0] / 2 + (idx - 1) * 400 * card_scale,
+                    center_x=s.WINDOW_SIZE[0] / 2 + (idx - 1) * 400 * card_scale,
                     center_y=self.MIN_CARD_HEIGHT
                 )
             )
