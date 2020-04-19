@@ -129,7 +129,6 @@ class LivingEntity(AnimatedEntity):
 
         self.hp = hp
         self.being_pushed = False
-        self.was_pushed = False
 
     def hit(self, weapon: Weapon, wall_reference: arcade.SpriteList = tuple()) -> None:
         """
@@ -175,16 +174,15 @@ class LivingEntity(AnimatedEntity):
             elif self.change_y < 0:
                 self.change_y += 1
 
+            # Change is float so we can't really check if it's exactly 0
+            # because it can be 0.1 so we just round it from -1 to 1
             if -1 <= self.change_x <= 1 and -1 <= self.change_y <= 1:
                 self.being_pushed = False
-                self.was_pushed = True
+                self.change_x = 0
+                self.change_y = 0
                 self.color = (255, 255, 255)
 
-        elif self.was_pushed:
-            self.change_x = 0
-            self.change_y = 0
-            self.was_pushed = False
-
     def update(self, delta_time: float = 1/60) -> None:
-        self.reduce_throwback()
+        if self.being_pushed:
+            self.reduce_throwback()
         super().update(delta_time)
