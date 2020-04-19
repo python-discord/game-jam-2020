@@ -2,9 +2,6 @@ import random
 import math
 import arcade
 import os
-import pymunk
-from PIL import Image
-
 from typing import cast
 
 SCALE = 1
@@ -17,86 +14,48 @@ RIGHT_LIMIT = SCREEN_WIDTH + OFFSCREEN_SPACE
 BOTTOM_LIMIT = -OFFSCREEN_SPACE
 TOP_LIMIT = SCREEN_HEIGHT + OFFSCREEN_SPACE
 SCREEN_DIST = math.sqrt(SCREEN_HEIGHT ** 2 + SCREEN_WIDTH ** 2) / 2
-SCREEN_MARGIN = 200
+SCREEN_MARGIN = 50
 
 
 class GroundSprite(arcade.Sprite):
-  def __init__(self, pymunk_shape, textures, scale, x, y):
-    super().__init__()
-    self.pymunk_shape = pymunk_shape
+    def __init__(self, textures, scale, x, y):
+        super().__init__()
+        self.textures = textures
+        self.texture = self.textures[0]
+        self.scaling = scale
+        self.x = x
+        self.y = y
 
-    self.textures = textures
-    self.texture = self.textures[0]
+    def update(self, zoom, cx, cy):
+        """ Move the sprite """
+        super().update()
+        self.scale = zoom * self.scaling
+        self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
+        self.center_y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
 
-    self.scaling = scale
-
-    self.x = x
-    self.y = y
-
-  def update(self,zoom,cx,cy):
-    """ Move the sprite """
-    super().update()
-
-    self.scale = zoom * self.scaling
-
-    self.center_x = self.pymunk_shape.body.position.x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
-    self.center_y = self.pymunk_shape.body.position.y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
 
 class PlayerSprite(arcade.Sprite):
-  def __init__(self, pymunk_shape, textures, scale, x, y):
-    super().__init__()
-    self.pymunk_shape = pymunk_shape
-    self.can_jump = True
+    def __init__(self, textures, scale, x, y, zoom, cx, cy):
+        super().__init__()
+        self.textures = textures
+        self.texture = self.textures[0]
+        self.scaling = scale
+        self.x = x
+        self.y = y
 
-    self.textures = textures
-    self.texture = self.textures[0]
+        self.acc_x = 0  # acceleration
+        self.acc_y = 0
 
-    self.scaling = scale
+        self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
+        self.center_y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
+        self.og_x = self.center_x  # original x, which is x in the prev frame
+        self.og_y = self.center_y
 
-    self.x = x
-    self.y = y
-
-    self.acc_x = 0
-    self.acc_y = 0
-
-    self.center_x = self.pymunk_shape.body.position.x
-    self.center_y = self.pymunk_shape.body.position.y
-
-    self.og_x = self.center_x
-    self.og_y = self.center_y
-
-  def update(self,zoom,cx,cy):
-    self.scale = zoom * self.scaling
-    self.og_x = self.center_x
-    self.og_y = self.center_y
-
-def make_player_sprite(mass,space, textures, scale, x,y, zoom, cx, cy):
-  pos_x = (x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
-  pos_y = (y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
-
-  width, height = textures[0].width, textures[0].height
-  mass = mass
-  moment = pymunk.moment_for_box(mass, (width, height))
-  body = pymunk.Body(mass, moment)
-  body.position = pymunk.Vec2d((pos_x,pos_y))
-  shape = pymunk.Poly.create_box(body, (width, height))
-  shape.friction = 0.5
-  space.add(body, shape)
-  sprite = PlayerSprite(shape, textures, scale,x,y)
-  return sprite
-
-def make_ground_sprite(space, textures, scale, x, y, zoom, cx, cy):
-  pos_x = (x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
-  pos_y = (y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
-
-  width, height = textures[0].width, textures[0].height
-  body = pymunk.Body(body_type=pymunk.Body.STATIC)
-  body.position = pymunk.Vec2d((pos_x-width, pos_y-height))
-  shape = pymunk.Poly.create_box(body, (width, height))
-  shape.friction = 0.5
-  space.add(body, shape)
-  sprite = GroundSprite(shape, textures, scale, x, y)
-  return sprite
+    def update(self, zoom, cx, cy):
+        self.scale = zoom * self.scaling
+        self.og_x = self.center_x
+        self.og_y = self.center_y
+        # self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
 
 
 class MyGame(arcade.Window):
@@ -113,13 +72,10 @@ class MyGame(arcade.Window):
         self.game_over = False
         self.debug_mode = False
         self.set_location(0, 0)
-
         self.camera_zoom = 1
         self.camera_x = SCREEN_WIDTH / -2
         self.camera_y = SCREEN_HEIGHT / -2
-
         self.gravity = 0.5
-
         self.key_pressed = [0, 0, 0]  # controllable
 
         self.ground_sprite_list = arcade.SpriteList()
@@ -130,16 +86,14 @@ class MyGame(arcade.Window):
         self.controlled = 0
 
         self.ground_texture_list = [arcade.load_texture("images/ground/debug.png")]
-        self.player_texture_list = [[arcade.load_texture("images/player/player1.jpg")],
-                                    [arcade.load_texture("images/player/player2.jpg")],
-                                    [arcade.load_texture("images/player/player3.jpg")]]
+        self.player_texture_list = [arcade.load_texture("images/player/debug.png")]
 
-        for i in range(3):  # TODO: make sprites
-            object = PlayerSprite(self.player_texture_list[i], 1, i * 32, 32 * 1, self.camera_zoom, self.camera_x,
+        for i in range(1, 4):  # TODO: make sprites
+            object = PlayerSprite(self.player_texture_list, 1, i * 32, 32 * 1, self.camera_zoom, self.camera_x,
                                   self.camera_y)  # create the players
             self.player_sprite_list.append(object)
 
-        # so the players can interact with each other and not just give the game a seizure
+            # so the players can interact with each other and not just give the game a seizure
         a = arcade.SpriteList()
         b = arcade.SpriteList()
         c = arcade.SpriteList()
@@ -151,11 +105,12 @@ class MyGame(arcade.Window):
         c.append(self.player_sprite_list[1])
 
         for i in range(1, 30):  # make the ground
-            object = GroundSprite(self.ground_texture_list, 1, (i-10) * 32, -128)
+            object = GroundSprite(self.ground_texture_list, 1, (i - 10) * 32, 0)
             self.ground_sprite_list.append(object)
-            a.append(object)
-            b.append(object)
-            c.append(object)
+
+        a.append(object)
+        b.append(object)
+        c.append(object)
 
         self.physics_engines = []  # make the physics engines
         self.physics_engines.append(
@@ -164,7 +119,6 @@ class MyGame(arcade.Window):
             arcade.PhysicsEnginePlatformer(self.player_sprite_list[1], b, gravity_constant=self.gravity))
         self.physics_engines.append(
             arcade.PhysicsEnginePlatformer(self.player_sprite_list[2], c, gravity_constant=self.gravity))
-        arcade.set_background_color(arcade.color.BLUE_BELL)
 
     def on_draw(self):  # simple rendering
         arcade.start_render()
@@ -195,32 +149,9 @@ class MyGame(arcade.Window):
         elif key == arcade.key.UP or key == arcade.key.W:
             self.key_pressed[2] = 0
 
-    def camera_shift(self):
-        changed = False
-        left_boundary = self.view_left + SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].left < left_boundary:
-            self.view_left -= left_boundary - self.player_sprite_list[self.controlled].left
-            changed = True
-
-        right_boundary = self.view_left + SCREEN_WIDTH - SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].right > right_boundary:
-            self.view_left += self.player_sprite_list[self.controlled].right - right_boundary
-            changed = True
-
-        top_boundary = self.view_bottom + SCREEN_HEIGHT - SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].top > top_boundary:
-            self.view_bottom += self.player_sprite_list[self.controlled].top - top_boundary
-            changed = True
-
-        self.view_left = int(self.view_left)
-        self.view_bottom = int(self.view_bottom)
-
-        # If we changed the boundary values, update the view port to match
-        if changed:
-            arcade.set_viewport(self.view_left, SCREEN_WIDTH + self.view_left - 1,
-                                self.view_bottom, SCREEN_HEIGHT + self.view_bottom - 1)
-
     def on_update(self, x):
+        """ Move everything """
+
         self.frame_count += 1
         self.player_sprite_list[self.controlled].acc_x = self.key_pressed[0] + self.key_pressed[1]
         if self.player_sprite_list[self.controlled].top < -1000:
@@ -240,7 +171,36 @@ class MyGame(arcade.Window):
             else:
                 self.player_sprite_list[self.controlled].change_x = -0.3
 
-        self.camera_shift()
+        changed = False
+        left_boundary = self.view_left + SCREEN_MARGIN
+        if self.player_sprite_list[self.controlled].left < left_boundary:
+            self.view_left -= left_boundary - self.player_sprite_list[self.controlled].left
+            changed = True
+
+        right_boundary = self.view_left + SCREEN_WIDTH - SCREEN_MARGIN
+        if self.player_sprite_list[self.controlled].right > right_boundary:
+            self.view_left += self.player_sprite_list[self.controlled].right - right_boundary
+            changed = True
+
+        top_boundary = self.view_bottom + SCREEN_HEIGHT - SCREEN_MARGIN
+        if self.player_sprite_list[self.controlled].top > top_boundary:
+            self.view_bottom += self.player_sprite_list[self.controlled].top - top_boundary
+            changed = True
+
+        bottom_boundary = self.view_bottom + SCREEN_MARGIN
+        if self.player_sprite_list[self.controlled].bottom < bottom_boundary:
+            self.view_bottom -= bottom_boundary - self.player_sprite_list[self.controlled].bottom
+            changed = True
+
+        self.view_left = int(self.view_left)
+        self.view_bottom = int(self.view_bottom)
+
+        # If we changed the boundary values, update the view port to match
+        if changed:
+            arcade.set_viewport(self.view_left,
+                                SCREEN_WIDTH + self.view_left - 1,
+                                self.view_bottom,
+                                SCREEN_HEIGHT + self.view_bottom - 1)
 
         if not self.game_over:
             for i in self.ground_sprite_list:
@@ -249,17 +209,3 @@ class MyGame(arcade.Window):
                 i.update(self.camera_zoom, self.camera_x, self.camera_y)
             for i in self.physics_engines:
                 i.update()
-
-        else:
-            self.close()
-
-
-def main():
-  """ Start the game """
-  window = MyGame()
-  window.start_new_game()
-  arcade.run()
-
-
-if __name__ == "__main__":
-  main()
