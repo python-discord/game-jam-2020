@@ -43,7 +43,7 @@ class SoundManager:
         elif index is not None:
             self.curr_sound = self._sounds[index] if index - len(self._sounds) <= index < len(self._sounds) else None
         else:
-            raise Exception("Not passed songs to play, aborting.")
+            raise Exception("Not passed sounds to play, aborting.")
 
     def toggle_next_sound(self) -> None:
         self.curr_sound = next(self._sounds_cycle)
