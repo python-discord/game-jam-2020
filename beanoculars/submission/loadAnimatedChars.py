@@ -90,7 +90,7 @@ class AnimatedPlayer(arcade.Sprite):
 
         self.numberFrames = num_of_frames
 
-        self.character_face_direction = RIGHT_FACING
+        self.character_face_direction = LEFT_FACING
 
         self.cur_texture_index = 0
 
@@ -104,8 +104,12 @@ class AnimatedPlayer(arcade.Sprite):
 
         self.texture = self.basic_textures[0][0]
 
+        self.is_moving = False
+        self.pause_frame = True
+        self.order = []
+
     def update_animation(self, delta_time: float = 1 / 60):
         self.cur_texture_index += 1
         if self.cur_texture_index >= self.numberFrames * UR_PLAYER:
             self.cur_texture_index = 0
-        self.texture = self.basic_textures[self.cur_texture_index // UR_PLAYER][0]
+        self.texture = self.basic_textures[self.cur_texture_index // UR_PLAYER][self.character_face_direction]
