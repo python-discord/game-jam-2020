@@ -7,6 +7,7 @@ Holds the main game window, as well as manages basic functions for organizing th
 import arcade
 
 from config import Config
+from map import Level
 
 
 class Game(arcade.Window):
@@ -47,21 +48,15 @@ class Game(arcade.Window):
         self.player_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
-        image_source = "images/monsters/skeleton.png"
+        image_source = "resources/images/monsters/skeleton.png"
         self.player_sprite = arcade.Sprite(image_source, Config.CHARACTER_SCALING)
         self.player_sprite.center_x = Config.SCREEN_WIDTH / 2
         self.player_sprite.center_y = Config.SCREEN_HEIGHT / 2
         self.player_sprite.scale = 4
         self.player_list.append(self.player_sprite)
 
-        # Create the floor
-        # This shows using a loop to place multiple sprites horizontally and vertically
-        for y in range(0, 1250, 63 * Config.TILE_SCALING):
-            for x in range(0, 1250, 63 * Config.TILE_SCALING):
-                floor = arcade.Sprite("images/tiles/floor_tile.png", Config.TILE_SCALING)
-                floor.center_x = x
-                floor.center_y = y
-                self.floor_list.append(floor)
+        # Create the level
+        self.floor_list, self.wall_list = Level.load_file('resources/levels/box.json')
 
         # Create the 'physics engine'
         self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.wall_list)
@@ -75,6 +70,7 @@ class Game(arcade.Window):
         # Draw our sprites
         self.floor_list.draw()
         self.player_list.draw()
+        self.wall_list.draw()
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """

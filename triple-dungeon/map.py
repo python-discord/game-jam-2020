@@ -5,9 +5,10 @@ Pathfinding will also depend on objects here, and is thus integral to it's funct
 """
 
 from __future__ import annotations
+from config import Config
 
 import arcade
-
+import json
 
 class Dungeon(object):
     """
@@ -69,7 +70,36 @@ class Level(object):
         :param path: Path to the Level file.
         :return: The new generated Level file.
         """
-        pass
+        floor_list = arcade.SpriteList()
+        wall_list = arcade.SpriteList()
+        x = 0
+        y = 0
+
+        with open(path) as file:
+            level = json.load(file)
+        elements = level['elements']
+        structure = level['structure']
+
+        level_size = 10 * Config.TILE_SCALING * Config.TILE_WIDTH
+
+        # Create the level
+        # This shows using a loop to place multiple sprites horizontally and vertically
+        for y_pos in range(0, level_size , 63 * Config.TILE_SCALING):
+            for x_pos in range(0, level_size, 63 * Config.TILE_SCALING):
+                cur_tile = structure[y][x]
+                sprite = elements[cur_tile]
+                floor = arcade.Sprite(sprite, Config.TILE_SCALING)
+                floor.center_x = x_pos
+                floor.center_y = y_pos
+                if(cur_tile == ' '):
+                    floor_list.append(floor)
+                elif(cur_tile == 'w'):
+                    wall_list.append(floor)
+                x += 1
+            x = 0
+            y += 1
+
+        return (floor_list, wall_list)
 
     def render(self) -> None:
         """
