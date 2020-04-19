@@ -1,18 +1,29 @@
 import random
 from typing import List, Tuple
 
+import arcade
 import numpy as np
+
+from triple_vision.constants import (
+    SCALED_TILE,
+    SCALING,
+    TILE_SIZE
+)
 
 
 class Map:
 
-    def __init__(self, shape: Tuple[int, int]) -> None:
+    def __init__(self, view: arcade.View, shape: Tuple[int, int]) -> None:
+        self.view = view
         self.shape = shape
 
+        self.AIR = 0
         self.WALL = 1
-        self.FLOOR = 0
+        self.FLOOR = 2
         self.GENERATIONS = 6
         self.FILL_PROBABILITY = 0.4
+
+        self.sprites = None
 
     def generate(self) -> List[List[int]]:
         map_ = np.ones(self.shape)
@@ -57,18 +68,56 @@ class Map:
                             map_[i][j] = self.WALL
 
                     else:
-                        # Solidify walls if 1 away has 5 or more walls
-                        if wall_count_1_away >= 5:
-                            map_[i][j] = self.WALL
-                        else:
-                            map_[i][j] = self.FLOOR
+                        submap = map_[
+                            max(i - 1, 0): min(i + 2, map_.shape[0]),
+                            max(j - 1, 0): min(j + 2, map_.shape[1])
+                        ]
+                        floor_count_1_away = len(np.where(submap.flatten() == self.FLOOR)[0])
 
-        # Make all the corners walls
-        map_[0][0] = map_[0][-1] = map_[-1][0] = map_[-1][-1] = self.WALL
+                        # Turn all walls that aren't near floor into air
+                        if floor_count_1_away == 0 and map_[i][j] == self.WALL:
+                            map_[i][j] = self.AIR
 
         return map_
 
+    def spritify(self, map_) -> arcade.SpriteList:
+        sprites = arcade.SpriteList()
 
-if __name__ == "__main__":
-    map_ = Map((20, 20))
-    print(map_.generate())
+        for i in range(self.shape[0]):
+            for j in range(self.shape[1]):
+                val = map_[i][j]
+
+                if val == 0:
+                    continue
+
+                filename = 'wall_mid' if val == self.WALL else f'floor_{random.randint(1, 8)}'
+
+                sprite = arcade.Sprite(
+                    filename=f'assets/dungeon/frames/{filename}.png',
+                    scale=SCALING,
+                    center_x=i * SCALED_TILE + SCALED_TILE / 2,
+                    center_y=j * SCALED_TILE + SCALED_TILE / 2
+                )
+
+                if val == self.WALL:
+                    self.view.collision_list.append(sprite)
+
+                sprites.append(sprite)
+
+        return sprites
+
+    def setup(self) -> None:
+        floor_count = 0
+        map_ = None
+
+        while floor_count < (self.shape[0] * self.shape[1]) // 3:
+            map_ = self.generate()
+            floor_count = len(np.where(map_.flatten() == self.FLOOR)[0])
+
+        self.sprites = self.spritify(map_)
+
+    def draw(self) -> None:
+        self.sprites.draw()
+
+    def update(self, delta_time: float = 1/60) -> None:
+        self.sprites.update()
