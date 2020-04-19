@@ -24,6 +24,7 @@ class Sound(arcade.Sound):
         super().set_volume(volume)
 
 
+
 class SoundManager:
     def __init__(self, sounds: List[arcade.Sound]) -> None:
         self._sounds = sounds
@@ -49,6 +50,24 @@ class SoundManager:
 
     def update_cycle(self):
         self._sounds_cycle = itertools.cycle(self._sounds)
+
+    @staticmethod
+    def load_sound(file_name: str):
+        """
+        Load a sound.
+
+        :param str file_name: Name of the sound file to load.
+
+        :returns: Sound object
+        :rtype: Sound
+        """
+
+        try:
+            sound = Sound(file_name)
+            return sound
+        except Exception as e:
+            print(f"Unable to load sound file: \"{file_name}\". Exception: {e}")
+            return None
 
     def on_update(self, delta_time: float) -> None:
         self.tick_delta += delta_time
