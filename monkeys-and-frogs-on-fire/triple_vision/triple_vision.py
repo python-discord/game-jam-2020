@@ -1,8 +1,7 @@
 import arcade
 
-from triple_vision.constants import (
-    SCALED_TILE,
-)
+from triple_vision.camera import Camera
+from triple_vision.constants import SCALED_TILE, WINDOW_SIZE
 from triple_vision.entities import (
     ChasingEnemy,
     Enemies,
@@ -25,6 +24,7 @@ class TripleVision(arcade.View):
         self.bullet_list = None
 
         self.player = None
+        self.camera = None
 
         self.card_manager = None
         self.game_manager = None
@@ -40,6 +40,8 @@ class TripleVision(arcade.View):
 
         self.player = Player(self, 'm')
         self.player.setup()
+
+        self.camera = Camera(self, WINDOW_SIZE[0] / 2.5, WINDOW_SIZE[1] / 2.5)
 
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
@@ -68,11 +70,17 @@ class TripleVision(arcade.View):
         self.physics_engine = arcade.PhysicsEngineSimple(self.player, self.collision_list)
 
     def on_mouse_motion(self, x, y, dx, dy) -> None:
-        self.card_manager.check_mouse_motion(x, y)
+        self.card_manager.check_mouse_motion(
+            x + self.camera.viewport_left,
+            y + self.camera.viewport_bottom
+        )
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int) -> None:
         if not self.player.is_alive:
             return
+
+        x += self.camera.viewport_left
+        y += self.camera.viewport_bottom
 
         if not self.card_manager.process_mouse_press(x, y, button):
             self.player.process_mouse_press(x, y, button)
@@ -120,7 +128,6 @@ class TripleVision(arcade.View):
 
         if self.player.is_alive:
             self.player.draw()
-            self.player.draw_hit_box()
 
         self.game_manager.draw()
         self.card_manager.draw()
@@ -133,5 +140,6 @@ class TripleVision(arcade.View):
             self.game_manager.update(delta_time)
             self.physics_engine.update()
             self.map.update()
+            self.camera.update()
 
         self.card_manager.update()

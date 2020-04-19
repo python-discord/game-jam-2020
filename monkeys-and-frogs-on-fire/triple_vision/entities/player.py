@@ -3,6 +3,7 @@ import random
 
 import arcade
 
+
 from triple_vision.constants import SCALING
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import MovingSprite
@@ -11,7 +12,7 @@ from triple_vision.entities.weapons import LaserProjectile
 
 class Player(LivingEntity, MovingSprite):
 
-    def __init__(self, window: arcade.Window, gender: str) -> None:
+    def __init__(self, view: arcade.View, gender: str) -> None:
         super().__init__(
             sprite_name='wizzard',
             assets_path='assets/wizard',
@@ -25,7 +26,7 @@ class Player(LivingEntity, MovingSprite):
             hp=1000
         )
 
-        self.window = window
+        self.view = view
         self.last_shot = time.time()
 
         self.is_alive = True
@@ -94,7 +95,7 @@ class Player(LivingEntity, MovingSprite):
             )
             bullet.move_to(x, y, rotate=True, set_target=False)
             bullet.play_activate_sound()
-            self.window.game_manager.player_projectiles.append(bullet)
+            self.view.game_manager.player_projectiles.append(bullet)
             self.last_shot = time.time()
 
     def kill(self):

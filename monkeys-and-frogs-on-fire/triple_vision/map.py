@@ -78,6 +78,7 @@ class Map:
 
     def spritify(self, map_) -> arcade.SpriteList:
         sprites = arcade.SpriteList()
+        collision_list = arcade.SpriteList()
 
         for i in range(self.shape[0]):
             for j in range(self.shape[1]):
@@ -96,11 +97,11 @@ class Map:
                 )
 
                 if val == self.WALL:
-                    self.view.collision_list.append(sprite)
+                    collision_list.append(sprite)
 
                 sprites.append(sprite)
 
-        return sprites
+        return sprites, collision_list
 
     def setup(self) -> None:
         floor_count = 0
@@ -110,7 +111,7 @@ class Map:
             map_ = self.generate()
             floor_count = len(np.where(map_.flatten() == self.FLOOR)[0])
 
-        self.sprites = self.spritify(map_)
+        self.sprites, self.view.collision_list = self.spritify(map_)
 
     def draw(self) -> None:
         self.sprites.draw()
