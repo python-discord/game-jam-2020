@@ -128,19 +128,18 @@ class TripleVision(arcade.View):
 
     def on_update(self, delta_time: float) -> None:
         if self.slowed_down:
+            self.card_manager.update()
             self._on_update_count += 1
             if self._on_update_count >= constants.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER:
-                self.update(delta_time)
+                self.update_(delta_time)
                 self._on_update_count = 0
         else:
-            self.update(delta_time)
+            self.update_(delta_time)
 
-    def update(self, delta_time: float) -> None:
+    def update_(self, delta_time: float) -> None:
         if self.player.is_alive:
             self.player.update(delta_time)
 
         self.game_manager.update(delta_time)
         self.physics_engine.update()
         self.map.update()
-
-        self.card_manager.update()
