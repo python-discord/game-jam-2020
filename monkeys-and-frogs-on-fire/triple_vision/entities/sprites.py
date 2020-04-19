@@ -11,6 +11,7 @@ class MovingSprite(arcade.Sprite):
     def __init__(self, moving_speed, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.speed_multiplier = 1
         self.speed = moving_speed
         self.target = None
 
@@ -18,9 +19,10 @@ class MovingSprite(arcade.Sprite):
         """
         Move the MovingSprite into a given point on the screen.
 
-        :param set_target: Represents if we want to set the point as a target -
-        (the sprite will stop after reaching it)
-        :param x, y: are the coordinates for the sprite to move into
+        :param set_target: Represents if we want to set the point as a target
+                           (the sprite will stop after reaching it)
+        :param x: x coordinate for the sprite to move into
+        :param y: y coordinate for the sprite to move into
         :param rotate: represents if we need to rotate the sprite or not
         """
 
@@ -38,13 +40,13 @@ class MovingSprite(arcade.Sprite):
 
         # Taking into account the angle, calculate our change_x
         # and change_y. Velocity is how fast the sprite travels.
-        self.change_x = math.cos(angle) * self.speed
-        self.change_y = math.sin(angle) * self.speed
+        self.change_x = math.cos(angle) * self.speed * self.speed_multiplier
+        self.change_y = math.sin(angle) * self.speed * self.speed_multiplier
 
         if set_target:
             self.target = (x, y)
 
-    def move_to_sprite(self, sprite: arcade.Sprite, rotate: bool = True, set_target: bool = True) -> None:
+    def move_to_sprite(self, sprite: arcade.Sprite, rotate: bool = True, set_target: bool = True):
         # should we return target here?
         self.move_to(sprite.center_x, sprite.center_y, rotate=rotate, set_target=set_target)
 

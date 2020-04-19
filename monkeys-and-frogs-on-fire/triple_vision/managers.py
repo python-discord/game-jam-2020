@@ -35,22 +35,12 @@ class GameManager:
             for projectile in self.player_projectiles:
                 if arcade.check_for_collision(projectile, enemy):
                     self.create_dmg_indicator(str(projectile.dmg), enemy.position)
-                    enemy.hit(
-                        projectile.dmg,
-                        projectile,
-                        projectile.throwback_force,
-                        tuple()
-                    )
+                    enemy.hit(projectile)
                     projectile.kill()
 
         for projectile in self.enemy_projectiles:
             if arcade.check_for_collision(projectile, self.window.player):
-                self.window.player.hit(
-                    projectile.dmg,
-                    projectile,
-                    projectile.throwback_force,
-                    tuple()
-                )
+                self.window.player.hit(projectile)
                 projectile.kill()
 
         self.enemies.update()
@@ -112,7 +102,7 @@ class CardManager:
             self.show_cards = False
             self.ctx.paused = False
 
-    def check_mouse_press(self, x, y, button) -> bool:
+    def check_mouse_press(self, x, y, button, modifiers) -> bool:
         if button == arcade.MOUSE_BUTTON_LEFT:
             if (
                 self.cards[0].left < x < self.cards[-1].right and

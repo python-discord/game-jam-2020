@@ -7,6 +7,7 @@ import arcade
 
 from triple_vision.constants import Direction
 from triple_vision.utils import load_texture_pair
+from triple_vision.entities.weapons import Weapon
 
 
 class AnimatedEntity(arcade.Sprite):
@@ -123,30 +124,26 @@ class AnimatedEntity(arcade.Sprite):
 
 class LivingEntity(AnimatedEntity):
 
-    def __init__(self, hp: int = 0, *args, **kwargs) -> None:
+    def __init__(self, hp: float = 0, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.hp = hp
         self.being_pushed = False
-        self.was_pushed = False
 
-    def hit(
-        self,
-        dmg: int,
-        attacker_reference: arcade.Sprite,
-        throwback_force: int,
-        wall_reference: arcade.SpriteList
-    ) -> None:
+        self.resistance = 0
+
+    def hit(self, weapon: Weapon, wall_reference: arcade.SpriteList = tuple()) -> None:
         """
-        value instead of passing it like this
-        :param dmg: how much damage to hp will entity take
-        :param attacker_reference: Sprite that hit the entity (player, projectile etc),
-                                   so we know in which direction to push the entity.
-        :param throwback_force:  force (unit is pixel change) the entity will be pushed away.
+        :param weapon: Weapon the entity is being hit. Used for getting dmg, throwback force
+                       and position for knock-back direction.
         :param wall_reference: SpriteList of things that the entity cannot go trough. This will
                                stop the entity from being pushed and slightly damage the entity.
+                               TODO: Currently a placeholder, to be implemented,
+                                     maybe this check should be done in manager?
+                                     So if hits wall and being_pushed True then deduct hp
         """
-        self.hp -= dmg
+        self.hp -= weapon.dmg * (1 - self.resistance)
+
         if self.hp <= 0:
             self.kill()
             return
@@ -158,12 +155,12 @@ class LivingEntity(AnimatedEntity):
         dest_x = self.center_x
         dest_y = self.center_y
 
-        x_diff = dest_x - attacker_reference.center_x
-        y_diff = dest_y - attacker_reference.center_y
+        x_diff = dest_x - weapon.center_x
+        y_diff = dest_y - weapon.center_y
         angle = math.atan2(y_diff, x_diff)
 
-        self.change_x = math.cos(angle) * throwback_force
-        self.change_y = math.sin(angle) * throwback_force
+        self.change_x = math.cos(angle) * weapon.throwback_force
+        self.change_y = math.sin(angle) * weapon.throwback_force
 
         self.color = (255, 0, 0)
         self.being_pushed = True
@@ -180,16 +177,15 @@ class LivingEntity(AnimatedEntity):
             elif self.change_y < 0:
                 self.change_y += 1
 
+            # Change is float so we can't really check if it's exactly 0
+            # because it can be 0.1 so we just round it from -1 to 1
             if -1 <= self.change_x <= 1 and -1 <= self.change_y <= 1:
                 self.being_pushed = False
-                self.was_pushed = True
+                self.change_x = 0
+                self.change_y = 0
                 self.color = (255, 255, 255)
 
-        elif self.was_pushed:
-            self.change_x = 0
-            self.change_y = 0
-            self.was_pushed = False
-
     def update(self, delta_time: float = 1/60) -> None:
-        self.reduce_throwback()
+        if self.being_pushed:
+            self.reduce_throwback()
         super().update(delta_time)
