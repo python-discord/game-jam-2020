@@ -1,5 +1,5 @@
 import random
-from typing import List, Tuple
+from typing import Tuple
 
 import arcade
 import numpy as np
@@ -18,11 +18,11 @@ class Map:
         self.WALL = 1
         self.FLOOR = 2
         self.GENERATIONS = 6
-        self.FILL_PROBABILITY = 0.4
+        self.FILL_PROBABILITY = 0.2
 
         self.sprites = None
 
-    def generate(self) -> List[List[int]]:
+    def generate(self) -> np.array:
         map_ = np.ones(self.shape)
 
         for i in range(self.shape[0]):

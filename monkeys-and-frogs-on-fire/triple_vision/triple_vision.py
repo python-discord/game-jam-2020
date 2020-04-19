@@ -36,7 +36,7 @@ class TripleVision(arcade.View):
         self.collision_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
 
-        self.map = Map(self, (24, 24))
+        self.map = Map(self, (50, 50))
         self.map.setup()
 
         self.player = Player(self, 'm')
@@ -126,14 +126,14 @@ class TripleVision(arcade.View):
         arcade.start_render()
 
         self.map.draw()
+        self.game_manager.draw()
 
         if self.player.is_alive:
             self.player.draw()
 
-        self.game_manager.draw()
         self.card_manager.draw()
 
-    def on_update(self, delta_time: float) -> None:
+    def on_update(self, delta_time: float = 1/60) -> None:
         if not self.paused:
             if self.player.is_alive:
                 self.player.update(delta_time)

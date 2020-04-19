@@ -13,8 +13,8 @@ def load_texture_pair(filename: str) -> Tuple[arcade.Texture, arcade.Texture]:
 
 def is_in_radius(center_object: arcade.Sprite, target_object: arcade.Sprite, radius: int) -> bool:
     return (
-            abs(center_object.center_x - target_object.center_x) <= radius and
-            abs(center_object.center_y - target_object.center_y) <= radius
+        abs(center_object.center_x - target_object.center_x) <= radius and
+        abs(center_object.center_y - target_object.center_y) <= radius
     )
 
 
@@ -28,7 +28,7 @@ def get_change_vector(
         *,
         start_position: Tuple[float, float],
         destination_position: Tuple[float, float],
-        speed_multiplier: float = 1
+        speed_multiplier: float = 1.0
 ) -> Tuple[float, float, float]:
     """
     Get x, y change resulting in a angle that will go from start object center to end object
