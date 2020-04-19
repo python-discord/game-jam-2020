@@ -1,5 +1,5 @@
-from typing import Any
 import random
+from typing import Any
 
 import arcade
 
@@ -7,7 +7,7 @@ from triple_vision.entities.sprites import TemporarySprite, MovingSprite
 
 
 class Weapon(arcade.Sprite):
-    def __init__(self, dmg: int, throwback_force: int, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, dmg: float, throwback_force: int, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.dmg = dmg
         self.throwback_force = throwback_force
