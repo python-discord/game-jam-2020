@@ -68,8 +68,6 @@ class MyGame(arcade.Window):
         self.player_list.append(self.player_sprite)
 
         self.path_list = loadPathTilemap()
-        for i in list(self.path_list):
-            print(i)
 
         for i in range(len(self.path_list)):
             self.path_list[i].center_x += self.window_offset_x
@@ -77,8 +75,16 @@ class MyGame(arcade.Window):
 
         for x in range(0, WINDOW_WIDTH, TILE_SIZE):  # Crée le fond à l'aide des grasstiles
             for y in range(0, WINDOW_HEIGHT, TILE_SIZE):
-                randomNum = randint(1,3)
-                ground = arcade.Sprite(PATH['img'] / f"tiles\\grassTile{randomNum}.png", TILE_SCALING)
+                if x >= 29 * TILE_SIZE:
+                    if x == 29*TILE_SIZE:
+                        ground = arcade.Sprite(PATH['img'] / "tiles\\townTile1.png", TILE_SCALING)
+                    else:
+                        ground = arcade.Sprite(PATH['img'] / "tiles\\townTile2.png", TILE_SCALING)
+
+                else:
+                    randomNum = randint(1,3)
+                    ground = arcade.Sprite(PATH['img'] / f"tiles\\grassTile{randomNum}.png", TILE_SCALING)
+
                 ground.center_x = x + TILE_SIZE * TILE_SCALING / 2 + self.window_offset_x
                 ground.center_y = y + TILE_SIZE * TILE_SCALING / 2 + self.window_offset_y
                 self.ground_list.append(ground)
@@ -95,7 +101,7 @@ class MyGame(arcade.Window):
         self.path_list.draw()
         # Entity layer
         self.entity_list.draw()
-        # Turetts layer
+        # Turrets layer
 
         # Player layer
         self.player_sprite.draw()
