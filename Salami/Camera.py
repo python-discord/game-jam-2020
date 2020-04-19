@@ -36,6 +36,11 @@ class Camera:
         self.zoom_width *= amount
         self.zoom_height *= amount
 
+        if self.zoom_width < self.width / 2:
+            self.zoom_width = self.width / 2 + 0.1
+        if self.zoom_height < self.height / 2:
+            self.zoom_height = self.height / 2 + 0.1
+
         self.left   = self.width - self.zoom_width
         self.right  = self.zoom_width
         self.bottom = self.height - self.zoom_height

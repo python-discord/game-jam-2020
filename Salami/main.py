@@ -7,9 +7,8 @@ import Level
 import Keyboard
 import Camera
 
-WIDTH = 300
-HEIGHT = 200
-TITLE = "Python Game Jam 2020"
+from Constants import *
+
 
 class PyGameJam2020(arcade.Window):
 
@@ -31,6 +30,7 @@ class PyGameJam2020(arcade.Window):
         self.set_location((self.camera.screen_width - WIDTH) // 2, (self.camera.screen_height - HEIGHT) // 2)
 
     def setup(self):
+
         self.level = Level.Level(self.camera, self.keyboard)
 
     def on_update(self, delta):
@@ -39,6 +39,15 @@ class PyGameJam2020(arcade.Window):
 
         self.camera.x = self.level.player.center_x
         self.camera.y = self.level.player.center_y
+        # self.camera.x = self.mouse_x
+        # self.camera.y = self.mouse_y
+
+        if self.keyboard.is_pressed("zoom_in"):
+            self.camera.zoom(0.95)
+        elif self.keyboard.is_pressed("zoom_out"):
+            self.camera.zoom(1/0.95)
+
+        # print(f"{self.camera.zoom_width} | {self.camera.zoom_height}")
 
         self.frames += 1
         self.time += delta
@@ -49,19 +58,18 @@ class PyGameJam2020(arcade.Window):
             self.frames = 0
 
     def on_draw(self):
+        
         arcade.start_render()
 
         self.camera.set_viewport()
 
-        self.level.draw()
+        self.level.draw(self.camera)
+        
+        arcade.set_viewport(0, WIDTH, 0, HEIGHT)
 
     def on_key_press(self, key, modifiers):
+        
         self.keyboard.on_key_press(key, modifiers)
-
-        if key == arcade.key.EQUAL:
-            self.camera.zoom(0.9)
-        elif key == arcade.key.MINUS:
-            self.camera.zoom(1/0.9)
     
     def on_key_release(self, key, modifiers):
         self.keyboard.on_key_release(key, modifiers)

@@ -1,0 +1,11 @@
+
+
+WIDTH = 400
+HEIGHT = 300
+
+TITLE = "Gaming Jam"
+
+TILE_SIZE = 16
+GRAVITY = 0.5
+
+GRID_SIZE = 16
