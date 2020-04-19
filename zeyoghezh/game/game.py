@@ -42,8 +42,8 @@ class Game(arcade.Window):
         self.abscond_button = TextButton(
             SCREEN_SIZE[0]/6, SCREEN_SIZE[1]/15, 200, 50,
             "Abscond", theme=self.theme)
-        self.abscond_button.on_press = lambda: self.abscond_press()
-        self.abscond_button.on_release = lambda: self.abscond_release()
+        self.abscond_button.on_press = self.abscond_press
+        self.abscond_button.on_release = self.abscond_release
         self.button_list.append(self.abscond_button)
         for i, planet in enumerate(planets):
             # TODO improve this
