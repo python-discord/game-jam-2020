@@ -12,6 +12,11 @@ class Tile:
     SCALED = SIZE * Settings.SCALING
 
 
+class SoundSettings:
+    FADE_FREQUENCY = 0.1
+    FADE_AMOUNT = 0.05
+
+
 class Direction(IntEnum):
     LEFT: int = 1
     RIGHT: int = 0
