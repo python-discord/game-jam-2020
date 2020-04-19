@@ -25,7 +25,7 @@ class Sound(arcade.Sound):
 
 
 class SoundManager:
-    def __init__(self, sounds: List[arcade.Sound]) -> None:
+    def __init__(self, sounds: List[arcade.Sound] = []) -> None:
         self._sounds = sounds
         self._sounds_cycle = itertools.cycle(self._sounds)
         self.curr_sound: Sound = None
