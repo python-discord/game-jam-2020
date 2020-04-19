@@ -28,8 +28,12 @@ class SoundManager:
         self.tick_delta = 0.0
         self.playing = False
 
-    def add_sound(self, sound: Sound) -> None:
-        self._sounds.append(sound)
+    def add_sound(self, sound_name: str, faded: bool = False, max_volume: float = 1.0) -> None:
+        self._sounds.append(Sound(sound_name, is_faded=faded, max_volume=max_volume))
+        self.update_cycle()
+
+    def remove_sound(self, sound_name: str):
+        self._sounds = [sound for sound in self._sounds if sound.file_name != sound_name]
         self.update_cycle()
 
     def play_external_sound(
