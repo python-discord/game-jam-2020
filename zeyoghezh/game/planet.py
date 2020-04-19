@@ -5,7 +5,8 @@ import random
 from config import (
     SCREEN_SIZE, PLANET_BASE_SPEED, PUSH_BASE_SPEED,
     PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
-    PLANET_COLORS, PLANET_SPRITES
+    PLANET_COLORS, PLANET_SPRITES, TRIANGULATION_START_LIKELIHOOD,
+    TRIANGULATION_END_LIKELIHOOD
 )
 
 logger = logging.getLogger()
@@ -32,6 +33,8 @@ class Planet(arcade.Sprite):
 
         self.attacked_last_round = []
         self.total_healing = 0
+
+        self.is_triangulating = False
 
     def setup(
             self, parent, others, center_x, center_y,
@@ -147,3 +150,9 @@ class Planet(arcade.Sprite):
         self.total_healing += health
         self.scale = self.health
         assert self.health > 0
+
+    def update_triangulating(self):
+        if random.random() < TRIANGULATION_START_LIKELIHOOD:
+            self.is_triangulating = True
+        if random.random() < TRIANGULATION_END_LIKELIHOOD:
+            self.is_triangulating = False

@@ -5,7 +5,7 @@ from arcade.gui import Theme, TextButton
 from util import get_distance, log_exceptions
 from planet import Planet
 from config import (
-    SCREEN_SIZE, TRIANGULATION_FREQUENCY, SCREEN_TITLE, ALL_PLANETS
+    SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS
 )
 import sys
 
@@ -101,7 +101,7 @@ class Game(arcade.Window):
             planet.pushed_last_round = []
 
             # TODO make this last some time, not just 1 frame
-            if TRIANGULATION_FREQUENCY > random.random():
+            if planet.is_triangulating:
                 planet.draw_triangulation_circle()
         self.planets.draw()
         lithium_count_text = f"Lithium count: {self.lithium_count:.2f}"
@@ -137,6 +137,7 @@ class Game(arcade.Window):
         [planet.move() for planet in self.planets]
         [planet.try_attack_others() for planet in self.planets]
         [planet.try_push_others() for planet in self.planets]
+        [planet.update_triangulating() for planet in self.planets]
 
     def run_assertions(self):
         assert len(self.planets) == 3
