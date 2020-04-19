@@ -15,7 +15,7 @@ RIGHT_LIMIT = SCREEN_WIDTH + OFFSCREEN_SPACE
 BOTTOM_LIMIT = -OFFSCREEN_SPACE
 TOP_LIMIT = SCREEN_HEIGHT + OFFSCREEN_SPACE
 SCREEN_DIST = math.sqrt(SCREEN_HEIGHT ** 2 + SCREEN_WIDTH ** 2) / 2
-SCREEN_MARGIN = 50
+SCREEN_MARGIN = 200
 
 
 class GroundSprite(arcade.Sprite):
@@ -98,12 +98,15 @@ class MyGame(arcade.Window):
         self.controlled = 0
 
         self.ground_texture_list = [arcade.load_texture("images/ground/debug.png")]
-        self.player_texture_list = [arcade.load_texture("images/player/debug.png")]
+        self.player_texture_list = [[arcade.load_texture("images/player/player1.jpg")],
+                                    [arcade.load_texture("images/player/player2.jpg")],
+                                    [arcade.load_texture("images/player/player3.jpg")]]
 
-        for i in range(1, 4):  # TODO: make sprites
-            object = PlayerSprite(self.player_texture_list, 1, i * 32, 32 * 1, self.camera_zoom, self.camera_x,
+        for i in range(3):  # TODO: make sprites
+            object = PlayerSprite(self.player_texture_list[i], 1, i * 32, 32 * 1, self.camera_zoom, self.camera_x,
                                   self.camera_y)  # create the players
             self.player_sprite_list.append(object)
+
         # so the players can interact with each other and not just give the game a seizure
         a = arcade.SpriteList()
         b = arcade.SpriteList()
@@ -116,7 +119,7 @@ class MyGame(arcade.Window):
         c.append(self.player_sprite_list[1])
 
         for i in range(1, 30):  # make the ground
-            object = GroundSprite(self.ground_texture_list, 1, (i-10) * 32, 0)
+            object = GroundSprite(self.ground_texture_list, 1, (i-10) * 32, -128)
             self.ground_sprite_list.append(object)
             a.append(object)
             b.append(object)
@@ -129,6 +132,7 @@ class MyGame(arcade.Window):
             arcade.PhysicsEnginePlatformer(self.player_sprite_list[1], b, gravity_constant=self.gravity))
         self.physics_engines.append(
             arcade.PhysicsEnginePlatformer(self.player_sprite_list[2], c, gravity_constant=self.gravity))
+        arcade.set_background_color(arcade.color.BLUE_BELL)
 
     def on_draw(self):  # simple rendering
         arcade.start_render()
@@ -159,9 +163,32 @@ class MyGame(arcade.Window):
         elif key == arcade.key.UP or key == arcade.key.W:
             self.key_pressed[2] = 0
 
-    def on_update(self, x):
-        """ Move everything """
+    def camera_shift(self):
+        changed = False
+        left_boundary = self.view_left + SCREEN_MARGIN
+        if self.player_sprite_list[self.controlled].left < left_boundary:
+            self.view_left -= left_boundary - self.player_sprite_list[self.controlled].left
+            changed = True
 
+        right_boundary = self.view_left + SCREEN_WIDTH - SCREEN_MARGIN
+        if self.player_sprite_list[self.controlled].right > right_boundary:
+            self.view_left += self.player_sprite_list[self.controlled].right - right_boundary
+            changed = True
+
+        top_boundary = self.view_bottom + SCREEN_HEIGHT - SCREEN_MARGIN
+        if self.player_sprite_list[self.controlled].top > top_boundary:
+            self.view_bottom += self.player_sprite_list[self.controlled].top - top_boundary
+            changed = True
+
+        self.view_left = int(self.view_left)
+        self.view_bottom = int(self.view_bottom)
+
+        # If we changed the boundary values, update the view port to match
+        if changed:
+            arcade.set_viewport(self.view_left, SCREEN_WIDTH + self.view_left - 1,
+                                self.view_bottom, SCREEN_HEIGHT + self.view_bottom - 1)
+
+    def on_update(self, x):
         self.frame_count += 1
         self.player_sprite_list[self.controlled].acc_x = self.key_pressed[0] + self.key_pressed[1]
         if self.player_sprite_list[self.controlled].top < -1000:
@@ -181,36 +208,7 @@ class MyGame(arcade.Window):
             else:
                 self.player_sprite_list[self.controlled].change_x = -0.3
 
-        changed = False
-        left_boundary = self.view_left + SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].left < left_boundary:
-            self.view_left -= left_boundary - self.player_sprite_list[self.controlled].left
-            changed = True
-
-        right_boundary = self.view_left + SCREEN_WIDTH - SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].right > right_boundary:
-            self.view_left += self.player_sprite_list[self.controlled].right - right_boundary
-            changed = True
-
-        top_boundary = self.view_bottom + SCREEN_HEIGHT - SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].top > top_boundary:
-            self.view_bottom += self.player_sprite_list[self.controlled].top - top_boundary
-            changed = True
-
-        bottom_boundary = self.view_bottom + SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].bottom < bottom_boundary:
-            self.view_bottom -= bottom_boundary - self.player_sprite_list[self.controlled].bottom
-            changed = True
-
-        self.view_left = int(self.view_left)
-        self.view_bottom = int(self.view_bottom)
-
-        # If we changed the boundary values, update the view port to match
-        if changed:
-            arcade.set_viewport(self.view_left,
-                                SCREEN_WIDTH + self.view_left - 1,
-                                self.view_bottom,
-                                SCREEN_HEIGHT + self.view_bottom - 1)
+        self.camera_shift()
 
         if not self.game_over:
             for i in self.ground_sprite_list:
