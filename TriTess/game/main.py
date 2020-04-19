@@ -63,7 +63,7 @@ class TriTess(arcade.Window):
         arcade.start_render()
 
         # Draw the grid
-        self.trigrid.draw()
+        self.trigrid.on_draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
         pass
