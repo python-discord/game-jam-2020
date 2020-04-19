@@ -8,6 +8,8 @@ SCALING = 3
 TILE_SIZE = 16
 SCALED_TILE = TILE_SIZE * SCALING
 
+ON_CARD_HOVER_SLOWDOWN_MULTIPLIER = 4
+
 
 class Direction(IntEnum):
     LEFT: int = 1

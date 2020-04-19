@@ -10,6 +10,7 @@ from triple_vision.entities import (
     StationaryEnemy
 )
 from triple_vision.managers import CardManager, GameManager
+from triple_vision import constants
 from triple_vision.map import Map
 
 
@@ -17,7 +18,8 @@ class TripleVision(arcade.View):
     def __init__(self) -> None:
         super().__init__()
 
-        self.paused = False
+        self.slowed_down = False
+        self._on_update_count = 0
 
         self.map = None
 
@@ -125,12 +127,20 @@ class TripleVision(arcade.View):
         self.card_manager.draw()
 
     def on_update(self, delta_time: float) -> None:
-        if not self.paused:
-            if self.player.is_alive:
-                self.player.update(delta_time)
+        if self.slowed_down:
+            self._on_update_count += 1
+            if self._on_update_count >= constants.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER:
+                self.update(delta_time)
+                self._on_update_count = 0
+        else:
+            self.update(delta_time)
 
-            self.game_manager.update(delta_time)
-            self.physics_engine.update()
-            self.map.update()
+    def update(self, delta_time: float) -> None:
+        if self.player.is_alive:
+            self.player.update(delta_time)
+
+        self.game_manager.update(delta_time)
+        self.physics_engine.update()
+        self.map.update()
 
         self.card_manager.update()

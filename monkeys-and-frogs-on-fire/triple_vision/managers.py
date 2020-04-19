@@ -96,11 +96,11 @@ class CardManager:
                     break
 
             self.show_cards = True
-            self.ctx.paused = True
+            self.ctx.slowed_down = True
 
         else:
             self.show_cards = False
-            self.ctx.paused = False
+            self.ctx.slowed_down = False
 
     def process_mouse_press(self, x, y, button) -> bool:
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -116,7 +116,7 @@ class CardManager:
                     ):
                         self.ctx.player.curr_color = self.colors[idx]
                         self.show_cards = False
-                        self.ctx.paused = False
+                        self.ctx.slowed_down = False
 
                 return True
 
