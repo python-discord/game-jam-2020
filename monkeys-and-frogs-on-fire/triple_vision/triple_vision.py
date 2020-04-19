@@ -74,12 +74,12 @@ class TripleVision(arcade.View):
     def on_mouse_motion(self, x, y, dx, dy) -> None:
         self.card_manager.check_mouse_motion(x, y)
 
-    def on_mouse_press(self, *args) -> None:
+    def on_mouse_press(self, x: float, y: float, button: int, modifiers: int) -> None:
         if not self.player.is_alive:
             return
 
-        if not self.card_manager.check_mouse_press(*args):
-            self.player.check_mouse_press(*args)
+        if not self.card_manager.process_mouse_press(x, y, button):
+            self.player.process_mouse_press(x, y, button)
 
     # def on_key_press(self, key, modifiers):
     #     """Called whenever a key is pressed. """

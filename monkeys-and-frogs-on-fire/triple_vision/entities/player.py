@@ -66,7 +66,7 @@ class Player(LivingEntity, MovingSprite):
     def setup(self) -> None:
         self.curr_color = 'red'
 
-    def check_mouse_press(self, x, y, button, modifiers) -> None:
+    def process_mouse_press(self, x, y, button) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.move_to(x, y, rotate=False)
 

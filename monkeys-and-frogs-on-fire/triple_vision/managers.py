@@ -102,7 +102,7 @@ class CardManager:
             self.show_cards = False
             self.ctx.paused = False
 
-    def check_mouse_press(self, x, y, button, modifiers) -> bool:
+    def process_mouse_press(self, x, y, button) -> bool:
         if button == arcade.MOUSE_BUTTON_LEFT:
             if (
                 self.cards[0].left < x < self.cards[-1].right and
