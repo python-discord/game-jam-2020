@@ -36,6 +36,7 @@ class SoundManager:
         self, sound_name: str = None, faded: bool = False, max_volume: float = 1.0
     ) -> None:
         self.curr_sound = Sound(sound_name, is_faded=faded, max_volume=max_volume)
+        self.playing = False
 
     def play_sound_from_list(self, index):
         self.curr_sound = (
@@ -43,6 +44,7 @@ class SoundManager:
             if index - len(self._sounds) <= index < len(self._sounds)
             else self.curr_sound
         )
+        self.playing = False
 
     def toggle_next_sound(self) -> None:
         self.curr_sound = next(self._sounds_cycle)
