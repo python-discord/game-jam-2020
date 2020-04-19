@@ -66,7 +66,6 @@ class MovingSprite(arcade.Sprite):
         self.change_y = math.sin(radians_angle) * self.speed
 
     def on_update(self, delta_time: float = 1/60) -> None:
-        print(delta_time)
         if self.target is not None:
             if (
                 self.target[0] - SCALED_TILE / 2 < self.center_x < self.target[0] + SCALED_TILE / 2 and
@@ -77,14 +76,13 @@ class MovingSprite(arcade.Sprite):
 
                 self.target = None
 
-        # For slowdown
-        #self.change_x *= delta_time * 60
-        #self.change_y *= delta_time * 60
+        self._update(delta_time)
 
-        #super().update()
-        self.update_(delta_time)
-
-    def update_(self, delta_time):
+    def _update(self, delta_time):
+        """
+        Update that works with delta time, so it support slowdown.
+        The lower it is the slower will the change position happen.
+        """
         slowdown = delta_time * 60
         self.position = [
             self._position[0] + self.change_x * slowdown,

@@ -19,7 +19,6 @@ class TripleVision(arcade.View):
         super().__init__()
 
         self.slowed_down = False
-        self._on_update_count = 0
 
         self.map = None
 
@@ -128,10 +127,7 @@ class TripleVision(arcade.View):
 
     def on_update(self, delta_time: float = 1/60) -> None:
         if self.slowed_down:
-            #self._on_update_count += 1
-            #if self._on_update_count == constants.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER:
             self.update_(delta_time/constants.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
-                #self._on_update_count = 0
         else:
             self.update_(delta_time)
 
