@@ -30,7 +30,7 @@ class GameManager:
         dmg_indicator = DamageIndicator(text, *position)
         self.damage_indicators.append(dmg_indicator)
 
-    def update(self, delta_time: float = 1/60) -> None:
+    def on_update(self, delta_time) -> None:
         for enemy in self.enemies:
             for projectile in self.player_projectiles:
                 if arcade.check_for_collision(projectile, enemy):
@@ -44,8 +44,8 @@ class GameManager:
                 projectile.kill()
 
         self.enemies.update()
-        self.player_projectiles.update()
-        self.enemy_projectiles.update()
+        self.player_projectiles.on_update(delta_time)
+        self.enemy_projectiles.on_update(delta_time)
         self.damage_indicators.update()
 
 

@@ -29,7 +29,10 @@ class Weapon(arcade.Sprite):
         return [arcade.load_sound(str(cls.assets_path / sound)) for sound in sounds]
 
     def play_activate_sound(self):
-        arcade.play_sound(choice(self._activate_sounds))
+        ref = choice(self._activate_sounds)
+        arcade.play_sound(ref)
+        ref.set_volume(100000000)
+        #arcade.play_sound(choice(self._activate_sounds))
 
     def play_hit_sound(self):
         arcade.play_sound(choice(self._hit_sounds))

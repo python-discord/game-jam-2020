@@ -65,7 +65,7 @@ class MovingSprite(arcade.Sprite):
         self.change_x = math.cos(radians_angle) * self.speed
         self.change_y = math.sin(radians_angle) * self.speed
 
-    def update(self) -> None:
+    def on_update(self, delta_time: float = 1/60) -> None:
         if self.target is not None:
             if (
                 self.target[0] - SCALED_TILE / 2 < self.center_x < self.target[0] + SCALED_TILE / 2 and
