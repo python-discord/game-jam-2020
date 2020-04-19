@@ -4,18 +4,19 @@ from typing import Optional
 
 import arcade
 
-from triple_vision.constants import SCALED_TILE
+from triple_vision import Tile
+from triple_vision.utils import get_change_vector
 
 
 class MovingSprite(arcade.Sprite):
     def __init__(self, moving_speed, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.speed_multiplier = 1
         self.speed = moving_speed
+        self.speed_multiplier = 1
         self.target = None
 
-    def move_to(self, x, y, rotate: bool = True, set_target: bool = True) -> None:
+    def move_to(self, x: float, y: float, *, rotate: bool = True, set_target: bool = True) -> None:
         """
         Move the MovingSprite into a given point on the screen.
 
@@ -26,50 +27,49 @@ class MovingSprite(arcade.Sprite):
         :param rotate: represents if we need to rotate the sprite or not
         """
 
-        # Do math to calculate how to get the sprite to the destination.
-        # Calculation the angle in radians between the start points
-        # and end points. This is the angle the sprite will travel.
-        x_diff = x - self.center_x
-        y_diff = y - self.center_y
-
-        angle = math.atan2(y_diff, x_diff)
+        self.change_x, self.change_y, angle = get_change_vector(
+            start_position=self.position,
+            destination_position=(x, y),
+            speed_multiplier=self.speed * self.speed_multiplier
+        )
 
         if rotate:
             # Angle the sprite
             self.angle = math.degrees(angle)
-
-        # Taking into account the angle, calculate our change_x
-        # and change_y. Velocity is how fast the sprite travels.
-        self.change_x = math.cos(angle) * self.speed * self.speed_multiplier
-        self.change_y = math.sin(angle) * self.speed * self.speed_multiplier
 
         if set_target:
             self.target = (x, y)
 
-    def move_to_sprite(self, sprite: arcade.Sprite, rotate: bool = True, set_target: bool = True):
-        # should we return target here?
+    def move_to_sprite(
+            self,
+            sprite: arcade.Sprite,
+            *,
+            rotate: bool = True,
+            set_target: bool = True
+    ) -> None:
         self.move_to(sprite.center_x, sprite.center_y, rotate=rotate, set_target=set_target)
 
-    def move_to_angle(self, angle, rotate: bool = True):
+    def move_to_angle(self, angle: int, *, rotate: bool = False) -> None:
+        """
+        Move in direction of angle.
+        :param angle: angle in degrees to which to move the sprite (90 means to move sprite up)
+        :param rotate: should we rotate the sprite around it's center to align it to the new
+                       direction. Useful for example projectiles.
+        """
         if rotate:
-            # Angle the sprite
-            self.angle = math.degrees(angle)
+            self.angle = angle
 
-        # Taking into account the angle, calculate our change_x
-        # and change_y. Velocity is how fast the sprite travels.
-        self.change_x = math.cos(angle) * self.speed
-        self.change_y = math.sin(angle) * self.speed
+        radians_angle = math.radians(angle)
 
-    def distance_to(self, sprite: arcade.Sprite) -> float:
-        x_diff = sprite.center_x - self.center_x
-        y_diff = sprite.center_y - self.center_y
-        return math.hypot(x_diff, y_diff)
+        # Taking into account the angle, calculate our change_x and change_y.
+        self.change_x = math.cos(radians_angle) * self.speed
+        self.change_y = math.sin(radians_angle) * self.speed
 
     def update(self) -> None:
         if self.target is not None:
             if (
-                self.target[0] - SCALED_TILE / 2 < self.center_x < self.target[0] + SCALED_TILE / 2 and
-                self.target[1] - SCALED_TILE / 2 < self.center_y < self.target[1] + SCALED_TILE / 2
+                self.target[0] - Tile.SCALED / 2 < self.center_x < self.target[0] + Tile.SCALED / 2 and
+                self.target[1] - Tile.SCALED / 2 < self.center_y < self.target[1] + Tile.SCALED / 2
             ):
                 self.change_x = 0
                 self.change_y = 0

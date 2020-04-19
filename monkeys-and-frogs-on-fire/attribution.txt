@@ -1,0 +1,6 @@
+Dungeon tileset [MIT]: https://0x72.itch.io/dungeontileset-ii
+Melee sounds [Public domain]: https://opengameart.org/content/3-melee-sounds
+Punch sounds [Public domain]: https://opengameart.org/content/37-hitspunches
+Monster growls [Public domain]: https://opengameart.org/content/monster-sound-pack-volume-1
+Laser fire [Public domain]: https://opengameart.org/content/laser-fire-0
+Misc sounds [cc03]: https://opengameart.org/content/100-plus-game-sound-effects-wavoggm4a

@@ -1,10 +1,10 @@
 import enum
-from pathlib import Path
 import time
+from pathlib import Path
 
 import arcade
 
-from triple_vision.constants import SCALING
+from triple_vision import Settings as s
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import MovingSprite
 from triple_vision.entities.weapons import LaserProjectile
@@ -27,7 +27,7 @@ class BaseEnemy(LivingEntity):
         super().__init__(
             sprite_name=enemy.name,
             assets_path=self.enemy_assets_path,
-            scale=SCALING,
+            scale=s.SCALING,
             **kwargs
         )
 
@@ -89,7 +89,7 @@ class StationaryEnemy(BaseEnemy):
         if not is_in_radius(self, self.target_sprite, self.detection_radius):
             return
 
-        if time.time() - self.last_shot < 0.75:
+        if time.time() - self.last_shot < 0.75:  # TODO should be a constant
             return
 
         laser = LaserProjectile(
@@ -102,6 +102,7 @@ class StationaryEnemy(BaseEnemy):
             rotate=True,
             set_target=False
         )
+        laser.play_activate_sound()
 
         self.ctx.enemy_projectiles.append(laser)
         self.last_shot = time.time()

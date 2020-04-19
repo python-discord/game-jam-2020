@@ -1,15 +1,15 @@
-import arcade
-
 from typing import Tuple
 
-from triple_vision.constants import SCALING, WINDOW_SIZE
+import arcade
+
+from triple_vision import Settings as s
 from triple_vision.entities import DamageIndicator
 
 
 class GameManager:
 
-    def __init__(self, window) -> None:
-        self.window = window
+    def __init__(self, view) -> None:
+        self.view = view
 
         self.enemies = arcade.SpriteList()
         self.player_projectiles = arcade.SpriteList()
@@ -39,8 +39,8 @@ class GameManager:
                     projectile.kill()
 
         for projectile in self.enemy_projectiles:
-            if arcade.check_for_collision(projectile, self.window.player):
-                self.window.player.hit(projectile)
+            if arcade.check_for_collision(projectile, self.view.player):
+                self.view.player.hit(projectile)
                 projectile.kill()
 
         self.enemies.update()
@@ -51,13 +51,13 @@ class GameManager:
 
 class CardManager:
 
-    def __init__(self, ctx) -> None:
-        self.ctx = ctx
+    def __init__(self, view) -> None:
+        self.view = view
 
         self.cards = arcade.SpriteList()
         self.colors = ('red', 'green', 'blue')
 
-        card_scale = SCALING / 6
+        card_scale = s.SCALING / 6
 
         self.MIN_CARD_HEIGHT = -132 * card_scale
         self.MAX_CARD_HEIGHT = 84 * card_scale
@@ -68,7 +68,7 @@ class CardManager:
                 arcade.Sprite(
                     filename=f'assets/wizard/{color}_card.png',
                     scale=card_scale,
-                    center_x=WINDOW_SIZE[0] / 2 + (idx - 1) * 400 * card_scale,
+                    center_x=s.WINDOW_SIZE[0] / 2 + (idx - 1) * 400 * card_scale,
                     center_y=self.MIN_CARD_HEIGHT
                 )
             )
@@ -76,6 +76,8 @@ class CardManager:
         self.show_cards = False
         self.hover_card = None
         self.prev_hover_card = None
+
+        self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
 
     def set_hover_card(self, card):
         if card != self.hover_card:
@@ -96,13 +98,13 @@ class CardManager:
                     break
 
             self.show_cards = True
-            self.ctx.paused = True
+            self.view.paused = True
 
         else:
             self.show_cards = False
-            self.ctx.paused = False
+            self.view.paused = False
 
-    def check_mouse_press(self, x, y, button, modifiers) -> bool:
+    def process_mouse_press(self, x, y, button) -> bool:
         if button == arcade.MOUSE_BUTTON_LEFT:
             if (
                 self.cards[0].left < x < self.cards[-1].right and
@@ -114,9 +116,9 @@ class CardManager:
                         card.left < x < card.right and
                         card.bottom < y < card.top
                     ):
-                        self.ctx.player.curr_color = self.colors[idx]
+                        self.view.player.curr_color = self.colors[idx]
                         self.show_cards = False
-                        self.ctx.paused = False
+                        self.view.paused = False
 
                 return True
 
@@ -126,20 +128,32 @@ class CardManager:
         self.cards.draw()
 
     def update(self, delta_time: float = 1/60):
+        viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
+
+        if self.prev_viewport != viewport:
+            for card in self.cards:
+                card.center_x += viewport[0] - self.prev_viewport[0]
+                card.center_y += viewport[1] - self.prev_viewport[1]
+
+            self.prev_viewport = viewport
+
+        max_hover_height = self.MAX_CARD_HOVER_HEIGHT + viewport[1]
+        max_height = self.MAX_CARD_HEIGHT + viewport[1]
+        min_height = self.MIN_CARD_HEIGHT + viewport[1]
+
         for card in self.cards:
-            max_height = self.MAX_CARD_HOVER_HEIGHT \
-                if card == self.hover_card else self.MAX_CARD_HEIGHT
+            max_card_height = max_hover_height if card == self.hover_card else max_height
 
             if (
                 self.show_cards and
                 card == self.prev_hover_card and
-                card.center_y >= self.MAX_CARD_HEIGHT
+                card.center_y >= max_height
             ):
                 card.change_y = -10
 
             elif (
-                (self.show_cards and card.center_y >= max_height) or
-                (not self.show_cards and card.center_y <= self.MIN_CARD_HEIGHT)
+                (self.show_cards and card.center_y >= max_card_height) or
+                (not self.show_cards and card.center_y <= min_height)
             ):
                 card.change_y = 0
 

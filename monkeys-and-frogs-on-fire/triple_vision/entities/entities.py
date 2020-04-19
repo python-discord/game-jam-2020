@@ -1,13 +1,12 @@
 import itertools
-import math
 from pathlib import Path
 from typing import Any, Optional, Tuple
 
 import arcade
 
-from triple_vision.constants import Direction
-from triple_vision.utils import load_texture_pair
+from triple_vision import Direction
 from triple_vision.entities.weapons import Weapon
+from triple_vision.utils import get_change_vector, load_texture_pair
 
 
 class AnimatedEntity(arcade.Sprite):
@@ -142,8 +141,9 @@ class LivingEntity(AnimatedEntity):
                                      maybe this check should be done in manager?
                                      So if hits wall and being_pushed True then deduct hp
         """
-        self.hp -= weapon.dmg * (1 - self.resistance)
+        weapon.play_hit_sound()
 
+        self.hp -= weapon.dmg * (1 - self.resistance)
         if self.hp <= 0:
             self.kill()
             return
@@ -151,16 +151,12 @@ class LivingEntity(AnimatedEntity):
         if self.being_pushed:
             return
 
-        # TODO DRY
-        dest_x = self.center_x
-        dest_y = self.center_y
-
-        x_diff = dest_x - weapon.center_x
-        y_diff = dest_y - weapon.center_y
-        angle = math.atan2(y_diff, x_diff)
-
-        self.change_x = math.cos(angle) * weapon.throwback_force
-        self.change_y = math.sin(angle) * weapon.throwback_force
+        change = get_change_vector(
+            start_position=weapon.position,
+            destination_position=self.position,
+            speed_multiplier=weapon.throwback_force
+        )
+        self.change_x, self.change_y = change[0], change[1]
 
         self.color = (255, 0, 0)
         self.being_pushed = True

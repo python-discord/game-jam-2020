@@ -1,12 +1,8 @@
-import random
-
 import arcade
 
-from triple_vision.constants import (
-    SCALED_TILE,
-    SCALING,
-    WINDOW_SIZE,
-)
+from triple_vision import Settings as s
+from triple_vision import Tile
+from triple_vision.camera import Camera
 from triple_vision.entities import (
     ChasingEnemy,
     Enemies,
@@ -14,6 +10,7 @@ from triple_vision.entities import (
     StationaryEnemy
 )
 from triple_vision.managers import CardManager, GameManager
+from triple_vision.map import Map
 
 
 class TripleVision(arcade.View):
@@ -22,11 +19,13 @@ class TripleVision(arcade.View):
 
         self.paused = False
 
-        self.tiles = None
+        self.map = None
 
+        self.collision_list = None
         self.bullet_list = None
 
         self.player = None
+        self.camera = None
 
         self.card_manager = None
         self.game_manager = None
@@ -34,22 +33,16 @@ class TripleVision(arcade.View):
         self.physics_engine = None
 
     def setup(self) -> None:
-        self.tiles = arcade.SpriteList()
+        self.collision_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
 
-        for y in range(0, WINDOW_SIZE[1], SCALED_TILE):
-            for x in range(0, WINDOW_SIZE[0], SCALED_TILE):
-                self.tiles.append(
-                    arcade.Sprite(
-                        filename=f'assets/dungeon/frames/floor_{random.randint(1, 8)}.png',
-                        scale=SCALING,
-                        center_x=x + SCALED_TILE / 2,
-                        center_y=y + SCALED_TILE / 2
-                    )
-                )
+        self.map = Map(self, (50, 50))
+        self.map.setup()
 
         self.player = Player(self, 'm')
         self.player.setup()
+
+        self.camera = Camera(self, s.WINDOW_SIZE[0] / 2.5, s.WINDOW_SIZE[1] / 2.5)
 
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
@@ -59,7 +52,7 @@ class TripleVision(arcade.View):
                 ChasingEnemy,
                 Enemies.big_demon,
                 self.player,
-                SCALED_TILE * 10,
+                Tile.SCALED * 10,
                 center_x=50,
                 center_y=y * 250,
                 moving_speed=1
@@ -70,20 +63,28 @@ class TripleVision(arcade.View):
                 StationaryEnemy,
                 Enemies.imp,
                 self.player,
-                SCALED_TILE * 10,
+                Tile.SCALED * 10,
                 center_x=50,
                 center_y=y * 200
             )
 
-    def on_mouse_motion(self, x, y, dx, dy) -> None:
-        self.card_manager.check_mouse_motion(x, y)
+        self.physics_engine = arcade.PhysicsEngineSimple(self.player, self.collision_list)
 
-    def on_mouse_press(self, *args) -> None:
+    def on_mouse_motion(self, x, y, dx, dy) -> None:
+        self.card_manager.check_mouse_motion(
+            x + self.camera.viewport_left,
+            y + self.camera.viewport_bottom
+        )
+
+    def on_mouse_press(self, x: float, y: float, button: int, modifiers: int) -> None:
         if not self.player.is_alive:
             return
 
-        if not self.card_manager.check_mouse_press(*args):
-            self.player.check_mouse_press(*args)
+        x += self.camera.viewport_left
+        y += self.camera.viewport_bottom
+
+        if not self.card_manager.process_mouse_press(x, y, button):
+            self.player.process_mouse_press(x, y, button)
 
     # def on_key_press(self, key, modifiers):
     #     """Called whenever a key is pressed. """
@@ -130,19 +131,24 @@ class TripleVision(arcade.View):
             self.player.cur_color = 'blue'
 
     def on_draw(self) -> None:
-        self.tiles.draw()
+        arcade.start_render()
+
+        self.map.draw()
+        self.game_manager.draw()
 
         if self.player.is_alive:
             self.player.draw()
 
-        self.game_manager.draw()
         self.card_manager.draw()
 
-    def on_update(self, delta_time: float) -> None:
+    def on_update(self, delta_time: float = 1/60) -> None:
         if not self.paused:
             if self.player.is_alive:
                 self.player.update(delta_time)
 
             self.game_manager.update(delta_time)
+            self.physics_engine.update()
+            self.map.update()
+            self.camera.update()
 
         self.card_manager.update()

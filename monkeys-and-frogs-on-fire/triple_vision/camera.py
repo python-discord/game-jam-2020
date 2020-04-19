@@ -1,46 +1,48 @@
 import arcade
 
+from triple_vision import Settings as s
+
 
 class Camera:
+
     def __init__(
         self,
-        player_sprite,
-        window_height,
-        window_width,
-        viewport_left,
-        viewport_bottom,
-        viewport_margin,
-    ):
-        """viewport is a tuple of coordinates (x, y)"""
-        self.player_sprite = player_sprite
-        self.window_height = window_height
-        self.window_width = window_width
-        self.margin = viewport_margin
-        self.viewport_left, self.viewport_bottom = viewport_left, viewport_bottom
+        view,
+        viewport_left_margin,
+        viewport_bottom_margin
+    ) -> None:
+        self.view = view
+        self.player_sprite = view.player
+
+        self.viewport_left_margin = viewport_left_margin
+        self.viewport_bottom_margin = viewport_bottom_margin
+
+        self.viewport_left = 0
+        self.viewport_bottom = 0
 
     def update(self):
         changed = False
 
         # Scroll left
-        left_boundary = self.viewport_left + self.margin
+        left_boundary = self.viewport_left + self.viewport_left_margin
         if self.player_sprite.left < left_boundary:
             self.viewport_left -= left_boundary - self.player_sprite.left
             changed = True
 
         # Scroll right
-        right_boundary = self.viewport_left + self.window_width - self.margin
+        right_boundary = self.viewport_left + s.WINDOW_SIZE[0] - self.viewport_left_margin
         if self.player_sprite.right > right_boundary:
             self.viewport_left += self.player_sprite.right - right_boundary
             changed = True
 
         # Scroll up
-        top_boundary = self.viewport_bottom + self.window_width - self.margin
+        top_boundary = self.viewport_bottom + s.WINDOW_SIZE[1] - self.viewport_bottom_margin
         if self.player_sprite.top > top_boundary:
             self.viewport_bottom += self.player_sprite.top - top_boundary
             changed = True
 
         # Scroll down
-        bottom_boundary = self.viewport_bottom + self.margin
+        bottom_boundary = self.viewport_bottom + self.viewport_bottom_margin
         if self.player_sprite.bottom < bottom_boundary:
             self.viewport_bottom -= bottom_boundary - self.player_sprite.bottom
             changed = True
@@ -48,7 +50,7 @@ class Camera:
         if changed:
             arcade.set_viewport(
                 self.viewport_left,
-                self.window_width + self.viewport_left,
+                s.WINDOW_SIZE[0] + self.viewport_left,
                 self.viewport_bottom,
-                self.window_height + self.viewport_bottom,
+                s.WINDOW_SIZE[1] + self.viewport_bottom,
             )

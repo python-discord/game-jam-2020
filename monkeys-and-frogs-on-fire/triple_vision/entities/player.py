@@ -1,9 +1,9 @@
-import time
 import random
+import time
 
 import arcade
 
-from triple_vision.constants import SCALING
+from triple_vision import Settings as s
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import MovingSprite
 from triple_vision.entities.weapons import LaserProjectile
@@ -11,7 +11,7 @@ from triple_vision.entities.weapons import LaserProjectile
 
 class Player(LivingEntity, MovingSprite):
 
-    def __init__(self, window: arcade.Window, gender: str) -> None:
+    def __init__(self, view: arcade.View, gender: str) -> None:
         super().__init__(
             sprite_name='wizzard',
             assets_path='assets/wizard',
@@ -19,13 +19,13 @@ class Player(LivingEntity, MovingSprite):
             has_hit_frame=True,
             gender=gender,
             moving_speed=3,
-            scale=SCALING,
+            scale=s.SCALING,
             center_x=500,
             center_y=500,
             hp=1000
         )
 
-        self.window = window
+        self.view = view
         self.last_shot = time.time()
 
         self.is_alive = True
@@ -64,9 +64,19 @@ class Player(LivingEntity, MovingSprite):
         self._curr_color = value
 
     def setup(self) -> None:
+        self.set_hit_box([
+            (-4.0, -1.0),
+            (4.0, -1.0),
+            (6.0, -3.0),
+            (6.0, -11.0),
+            (4.0, -13.0),
+            (-4.0, -13.0),
+            (-6.0, -11.0),
+            (-6.0, -3.0)
+        ])
         self.curr_color = 'red'
 
-    def check_mouse_press(self, x, y, button, modifiers) -> None:
+    def process_mouse_press(self, x, y, button) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.move_to(x, y, rotate=False)
 
@@ -83,7 +93,8 @@ class Player(LivingEntity, MovingSprite):
                 moving_speed=5
             )
             bullet.move_to(x, y, rotate=True, set_target=False)
-            self.window.game_manager.player_projectiles.append(bullet)
+            bullet.play_activate_sound()
+            self.view.game_manager.player_projectiles.append(bullet)
             self.last_shot = time.time()
 
     def kill(self):
