@@ -8,6 +8,7 @@ import arcade
 
 from config import Config
 from map import Level
+from mobs import Enemy
 
 
 class Game(arcade.Window):
@@ -23,6 +24,7 @@ class Game(arcade.Window):
         # go into a list.
         self.wall_list = None
         self.floor_list = None
+        self.enemy_list = None
         self.player_list = None
 
         # Separate variable that holds the player sprite
@@ -43,9 +45,8 @@ class Game(arcade.Window):
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
         # Create the Sprite lists
-        self.wall_list = arcade.SpriteList()
-        self.floor_list = arcade.SpriteList()
         self.player_list = arcade.SpriteList()
+        self.enemy_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
         image_source = "resources/images/monsters/skeleton.png"
@@ -58,6 +59,10 @@ class Game(arcade.Window):
         # Create the level
         self.floor_list, self.wall_list = Level.load_file('resources/levels/box.json')
 
+        # Create monsters
+        self.enemy_list.append(Enemy(image_source, 100, 100).get_enemy())
+        self.enemy_list.append(Enemy(image_source, Config.SCREEN_WIDTH / 2 + 10, Config.SCREEN_HEIGHT / 2 + 10).get_enemy())
+
         # Create the 'physics engine'
         self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.wall_list)
 
@@ -66,10 +71,11 @@ class Game(arcade.Window):
 
         # Clear the screen to the background color
         arcade.start_render()
-
+        
         # Draw our sprites
         self.floor_list.draw()
         self.player_list.draw()
+        self.enemy_list.draw()
         self.wall_list.draw()
 
     def on_key_press(self, key, modifiers):

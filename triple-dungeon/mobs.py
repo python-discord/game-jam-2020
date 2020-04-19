@@ -12,11 +12,14 @@ class Mob(object):
     """
     Represents a Mob. No defined behaviour, it has no intelligence.
     """
-    def __init__(self, sprite, max_health=100, max_armor=0) -> None:
+    def __init__(self, sprite, x, y, max_health=100, max_armor=0) -> None:
         self.sprite_path = sprite
         self.sprite = arcade.Sprite(self.sprite_path, Config.CHARACTER_SCALING)
         self.max_health, self.max_armor = max_health, max_armor
         self.health, self.armor = max_health, max_armor
+        self.sprite.scale = 4
+        self.sprite.center_x = x
+        self.sprite.center_y = y
 
     def tick(self) -> None:
         """
@@ -48,6 +51,9 @@ class Enemy(Mob):
     """
     def __init__(self, *args, **kwargs) -> None:
         super(Enemy, self).__init__(*args, **kwargs)
+
+    def get_enemy(self):
+        return self.sprite
 
     def tick(self) -> None:
         """
