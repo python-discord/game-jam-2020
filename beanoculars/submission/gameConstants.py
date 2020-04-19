@@ -1,10 +1,4 @@
 import os
-# SETUP CONSTANTS
-DEBUG_MODE = True
-if DEBUG_MODE:
-    PATH_ADD = ''
-else:
-    PATH_ADD = 'submission\\'
 
 FULLSCREEN = True
 
@@ -39,9 +33,19 @@ T_VACUUM = 12
 VOLUME = 0.5
 
 # UPDATE RATES FOR ENTITIES
-ER_MOSQUITO = 5
+UR_PLAYER = 1
+
+UR_MOSQUITO = 3
+UR_ANT = 10
+UR_SPIDER = 10
+UR_DUNG_BEETLE = 10
+
+UR_SPRAY = 10
+UR_LAMP = 10
+UR_VACUUM = 10
 
 from pathlib import Path
+
 PATH = {}
 PATH['project'] = Path(os.path.dirname(__file__))
 PATH['img'] = PATH['project'] / "images"

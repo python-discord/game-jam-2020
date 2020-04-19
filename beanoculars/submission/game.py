@@ -64,9 +64,7 @@ class MyGame(arcade.Window):
         self.path_list = arcade.SpriteList()
         self.entity_list = arcade.SpriteList()
 
-        self.player_sprite = arcade.Sprite(PATH['img'] / "sprite\\player.png", PLAYER_SCALING)
-        self.player_sprite.center_x = self.destination[0] * TILE_SIZE + TILE_SIZE / 2 + self.window_offset_x
-        self.player_sprite.center_y = self.destination[1] * TILE_SIZE + TILE_SIZE / 2 + self.window_offset_y
+        self.player_sprite = AnimatedPlayer('player', 4)
         self.player_list.append(self.player_sprite)
 
         self.path_list = loadPathTilemap()
@@ -109,6 +107,7 @@ class MyGame(arcade.Window):
             self.player_sprite.center_y = self.destination[1] * TILE_SIZE + TILE_SIZE/2 + self.window_offset_y
             self.destination = [-1,-1]
 
+        self.player_list.update_animation()
         self.entity_list.update_animation()
 
     def on_key_press(self, symbol: int, modifiers: int):
