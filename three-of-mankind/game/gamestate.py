@@ -6,6 +6,8 @@ FLOOR_TEXTURE_LENGTH = 100
 GRAVITY = 1
 PLAYER_JUMP_SPEED = 20
 PLAYER_MOVEMENT_SPEED = 5
+GROUND_CONTROL = 0.5
+AIR_CONTROL = 0.05
 
 
 class GameState:
@@ -28,6 +30,11 @@ class GameState:
 
     def on_update(self, delta_time: float) -> None:
         """Handle update event."""
+        if self.engine.can_jump():
+            self.player.movement_control = GROUND_CONTROL
+        else:
+            self.player.movement_control = AIR_CONTROL
+        self.player.update()
         self.engine.update()
 
     def on_draw(self) -> None:
@@ -42,15 +49,15 @@ class GameState:
             if self.engine.can_jump():
                 self.player.change_y = PLAYER_JUMP_SPEED
         elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player.change_x = -PLAYER_MOVEMENT_SPEED
+            self.player.movement_x = -PLAYER_MOVEMENT_SPEED
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player.change_x = PLAYER_MOVEMENT_SPEED
+            self.player.movement_x = PLAYER_MOVEMENT_SPEED
 
     def on_key_release(self, key, modifiers):
-        """Called when the user releases a key. """
+        """Called when the user releases a key."""
         if key == arcade.key.LEFT or key == arcade.key.A:
-            if self.player.change_x < 0:
-                self.player.change_x = 0
+            if self.player.movement_x < 0:
+                self.player.movement_x = 0
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            if self.player.change_x > 0:
-                self.player.change_x = 0
+            if self.player.movement_x > 0:
+                self.player.movement_x = 0
