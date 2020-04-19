@@ -83,6 +83,7 @@ class Player(LivingEntity, MovingSprite):
                 moving_speed=5
             )
             bullet.move_to(x, y, rotate=True, set_target=False)
+            bullet.play_activate_sound()
             self.window.game_manager.player_projectiles.append(bullet)
             self.last_shot = time.time()
 

@@ -102,6 +102,7 @@ class StationaryEnemy(BaseEnemy):
             rotate=True,
             set_target=False
         )
+        laser.play_activate_sound()
 
         self.ctx.enemy_projectiles.append(laser)
         self.last_shot = time.time()

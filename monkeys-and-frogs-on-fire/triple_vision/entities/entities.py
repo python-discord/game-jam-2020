@@ -142,8 +142,9 @@ class LivingEntity(AnimatedEntity):
                                      maybe this check should be done in manager?
                                      So if hits wall and being_pushed True then deduct hp
         """
-        self.hp -= weapon.dmg * (1 - self.resistance)
+        weapon.play_hit_sound()
 
+        self.hp -= weapon.dmg * (1 - self.resistance)
         if self.hp <= 0:
             self.kill()
             return
