@@ -1,11 +1,14 @@
 import arcade
+from .base import Base
 
 
-class Lobby:
-    def __init__(self):
+class Lobby(Base):
+    def __init__(self, display):
+        self.display = display
+
         self.spritelist = arcade.SpriteList()
         self.spritedict = dict()
-        self.timeAlive = 0
+        self.sceneTime = 0
 
         self.sprite_setup()
 
@@ -27,7 +30,7 @@ class Lobby:
         self.spritelist.extend(self.spritedict.values())
 
     def update(self, delta_time: float) -> None:
-        self.timeAlive += delta_time
+        self.sceneTime += delta_time
 
     def draw(self):
         self.spritelist.draw()
