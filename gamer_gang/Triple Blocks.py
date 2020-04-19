@@ -107,10 +107,9 @@ class MyGame(arcade.Window):
         for i in range(1, 30):  # make the ground
             object = GroundSprite(self.ground_texture_list, 1, (i - 10) * 32, 0)
             self.ground_sprite_list.append(object)
-
-        a.append(object)
-        b.append(object)
-        c.append(object)
+            a.append(object)
+            b.append(object)
+            c.append(object)
 
         self.physics_engines = []  # make the physics engines
         self.physics_engines.append(
@@ -149,28 +148,7 @@ class MyGame(arcade.Window):
         elif key == arcade.key.UP or key == arcade.key.W:
             self.key_pressed[2] = 0
 
-    def on_update(self, x):
-        """ Move everything """
-
-        self.frame_count += 1
-        self.player_sprite_list[self.controlled].acc_x = self.key_pressed[0] + self.key_pressed[1]
-        if self.player_sprite_list[self.controlled].top < -1000:
-            self.game_over = True
-        # accelerate the controlled sprite to a maximum speed of 3.5
-        if abs(self.player_sprite_list[self.controlled].change_x) < 3.5:
-            self.player_sprite_list[self.controlled].change_x += self.player_sprite_list[self.controlled].acc_x
-
-        self.player_sprite_list[self.controlled].change_y = self.key_pressed[2] if self.physics_engines[
-            self.controlled].can_jump() else self.player_sprite_list[self.controlled].change_y
-
-        if self.key_pressed[0] + self.key_pressed[1] == 0:  # if left AND right keys are pressed, cancel it
-            if abs(self.player_sprite_list[self.controlled].change_x) < 0.4:
-                self.player_sprite_list[self.controlled].change_x = 0
-            elif self.player_sprite_list[self.controlled].change_x < 0:  # these two serve deceleration
-                self.player_sprite_list[self.controlled].change_x += 0.3
-            else:
-                self.player_sprite_list[self.controlled].change_x = -0.3
-
+    def camera_shift(self):
         changed = False
         left_boundary = self.view_left + SCREEN_MARGIN
         if self.player_sprite_list[self.controlled].left < left_boundary:
@@ -202,6 +180,34 @@ class MyGame(arcade.Window):
                                 self.view_bottom,
                                 SCREEN_HEIGHT + self.view_bottom - 1)
 
+    def on_update(self, x):
+        """ Move everything """
+
+        self.frame_count += 1
+        self.player_sprite_list[self.controlled].acc_x = self.key_pressed[0] + self.key_pressed[1]
+        if self.player_sprite_list[self.controlled].top < -1000:
+            self.game_over = True
+        # accelerate the controlled sprite to a maximum speed of 3.5
+        if abs(self.player_sprite_list[self.controlled].change_x) < 3.5:
+            self.player_sprite_list[self.controlled].change_x += self.player_sprite_list[self.controlled].acc_x
+
+        self.player_sprite_list[self.controlled].change_y = self.key_pressed[2] if self.physics_engines[
+            self.controlled].can_jump() else self.player_sprite_list[self.controlled].change_y
+
+        if self.key_pressed[0] + self.key_pressed[1] == 0:  # if left AND right keys are pressed, cancel it
+            if abs(self.player_sprite_list[self.controlled].change_x) < 0.4:
+                self.player_sprite_list[self.controlled].change_x = 0
+            elif self.player_sprite_list[self.controlled].change_x < 0:  # these two serve deceleration
+                self.player_sprite_list[self.controlled].change_x += 0.3
+            else:
+                self.player_sprite_list[self.controlled].change_x = -0.3
+
+        self.camera_shift()
+
+        for s in self.player_sprite_list:
+            if s.top < -500:
+                self.game_over = True
+
         if not self.game_over:
             for i in self.ground_sprite_list:
                 i.update(self.camera_zoom, self.camera_x, self.camera_y)
@@ -209,3 +215,11 @@ class MyGame(arcade.Window):
                 i.update(self.camera_zoom, self.camera_x, self.camera_y)
             for i in self.physics_engines:
                 i.update()
+        else:
+            self.close()
+
+def main():
+    actualGame = MyGame()
+    arcade.run()
+
+main()
