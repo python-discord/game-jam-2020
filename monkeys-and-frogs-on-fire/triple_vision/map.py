@@ -63,6 +63,9 @@ class Map:
                         else:
                             map_[i][j] = self.FLOOR
 
+        # Make all the corners walls
+        map_[0][0] = map_[0][-1] = map_[-1][0] = map_[-1][-1] = self.WALL
+
         return map_
 
 
