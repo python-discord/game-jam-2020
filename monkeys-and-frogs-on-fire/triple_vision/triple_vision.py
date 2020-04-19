@@ -1,11 +1,7 @@
-import random
-
 import arcade
 
 from triple_vision.constants import (
     SCALED_TILE,
-    SCALING,
-    WINDOW_SIZE,
 )
 from triple_vision.entities import (
     ChasingEnemy,
@@ -118,6 +114,8 @@ class TripleVision(arcade.View):
     #     self.bullet_list.append(bullet)
 
     def on_draw(self) -> None:
+        arcade.start_render()
+
         self.map.draw()
 
         if self.player.is_alive:
