@@ -1,4 +1,4 @@
-Make all the _x and _y stuff just be 2-element tuples
-Fix issue of planets getting stuck outside screen
+Add audio
+Add combat effects (not just lines)
 
-Have attack distance be based on the closest points, not the center points
+Add an "abscond" button that lets you end the game with the amount of lithium you have

@@ -1,6 +1,7 @@
 import arcade
-from util import get_distance
+from util import get_distance, closest_distance_between_planets
 import logging
+import random
 from config import (
     SCREEN_SIZE, PLANET_BASE_SPEED, PUSH_BASE_SPEED,
     PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
@@ -45,13 +46,13 @@ class Planet(arcade.Sprite):
 
     def move(self, delta_x=None, delta_y=None):
         if self.center_y > SCREEN_SIZE[1] - 5:
-            self.speed_y = -abs(self.speed_y)
+            self.speed_y = -abs(self.speed_y) - (random.random() / 100)
         if self.center_y < 0 + 5:
-            self.speed_y = abs(self.speed_y)
+            self.speed_y = abs(self.speed_y) + (random.random() / 100)
         if self.center_x > SCREEN_SIZE[0] - 5:
-            self.speed_x = -abs(self.speed_x)
+            self.speed_x = -abs(self.speed_x) - (random.random() / 100)
         if self.center_x < 0 + 5:
-            self.speed_x = abs(self.speed_x)
+            self.speed_x = abs(self.speed_x) + (random.random() / 100)
 
         if delta_x is None:
             delta_x = self.speed_x * PLANET_BASE_SPEED
@@ -66,7 +67,7 @@ class Planet(arcade.Sprite):
         if not self.can_push_planets:
             return
         for other in self.others:
-            distance = arcade.get_distance_between_sprites(self, other)
+            distance = closest_distance_between_planets(self, other)
             if distance < PUSH_MAX_DISTANCE:
                 self.push_other(other)
 
@@ -102,13 +103,13 @@ class Planet(arcade.Sprite):
 
     def try_attack_others(self):
         for other in self.others:
-            distance = arcade.get_distance_between_sprites(self, other)
+            distance = closest_distance_between_planets(self, other)
             if distance < self.max_attack_distance:
                 self.attack_other(other)
 
     def attack_other(self, other):
         self.attacked_last_round.append(other)
-        distance_between = arcade.get_distance_between_sprites(self, other)
+        distance_between = closest_distance_between_planets(self, other)
         logger.debug(
             f"{self.name} attacking {other.name} "
             f"({distance_between=} for {self.base_damage}")
