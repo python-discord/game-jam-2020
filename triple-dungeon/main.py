@@ -7,7 +7,7 @@ Holds the main game window, as well as manages basic functions for organizing th
 import arcade
 
 from config import Config
-from map import Level
+from map import Dungeon
 from mobs import Player
 from mobs import Enemy
 
@@ -54,8 +54,10 @@ class Game(arcade.Window):
         # Set up the player, specifically placing it at these coordinates.
         Player.setup(self)
 
-        # Create the level
-        self.floor_list, self.wall_list = Level.load_file('resources/levels/test1.json')
+        # Create the dungeon
+        dungeon = Dungeon()
+        self.floor_list, self.wall_list = dungeon.get_lists()
+        
 
         # Create monsters
         self.enemy_list.append(Enemy("resources/images/monsters/ghost/ghost1.png", 200, 200).get_enemy())
