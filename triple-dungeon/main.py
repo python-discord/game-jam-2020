@@ -46,6 +46,7 @@ class Game(arcade.Window):
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
         # Create the Sprite lists
+
         self.wall_list = arcade.SpriteList()
         self.floor_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
