@@ -14,6 +14,7 @@ from triple_vision.entities import (
     StationaryEnemy
 )
 from triple_vision.managers import CardManager, GameManager
+from triple_vision.map import Map
 
 
 class TripleVision(arcade.View):
@@ -22,7 +23,7 @@ class TripleVision(arcade.View):
 
         self.paused = False
 
-        self.tiles = None
+        self.map = None
 
         self.bullet_list = None
 
@@ -34,19 +35,10 @@ class TripleVision(arcade.View):
         self.physics_engine = None
 
     def setup(self) -> None:
-        self.tiles = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
-
-        for y in range(0, WINDOW_SIZE[1], SCALED_TILE):
-            for x in range(0, WINDOW_SIZE[0], SCALED_TILE):
-                self.tiles.append(
-                    arcade.Sprite(
-                        filename=f'assets/dungeon/frames/floor_{random.randint(1, 8)}.png',
-                        scale=SCALING,
-                        center_x=x + SCALED_TILE / 2,
-                        center_y=y + SCALED_TILE / 2
-                    )
-                )
+    
+        self.map = Map((50, 50))
+        self.map.setup()
 
         self.player = Player(self, 'm')
         self.player.setup()
@@ -122,7 +114,7 @@ class TripleVision(arcade.View):
     #     self.bullet_list.append(bullet)
 
     def on_draw(self) -> None:
-        self.tiles.draw()
+        self.map.draw()
 
         if self.player.is_alive:
             self.player.draw()
@@ -136,5 +128,6 @@ class TripleVision(arcade.View):
                 self.player.update(delta_time)
 
             self.game_manager.update(delta_time)
+            self.map.update()
 
         self.card_manager.update()

@@ -1,7 +1,14 @@
 import random
 from typing import List, Tuple
 
+import arcade
 import numpy as np
+
+from triple_vision.constants import (
+    SCALED_TILE,
+    SCALING,
+    TILE_SIZE
+)
 
 
 class Map:
@@ -14,6 +21,8 @@ class Map:
         self.FLOOR = 2
         self.GENERATIONS = 6
         self.FILL_PROBABILITY = 0.4
+
+        self.sprites = None
 
     def generate(self) -> List[List[int]]:
         map_ = np.ones(self.shape)
@@ -70,8 +79,41 @@ class Map:
 
         return map_
 
+    def spritify(self, map_) -> arcade.SpriteList:
+        sprites = arcade.SpriteList()
 
-if __name__ == "__main__":
-    map_ = Map((20, 20))
-    gen = map_.generate()
-    print(gen)
+        for i in range(self.shape[0]):
+            for j in range(self.shape[1]):
+                val = map_[i][j]
+
+                if val == 0:
+                    continue
+
+                filename = 'wall_mid' if val == self.WALL else f'floor_{random.randint(1, 8)}'
+
+                sprites.append(
+                    arcade.Sprite(
+                        filename=f'assets/dungeon/frames/{filename}.png',
+                        scale=SCALING,
+                        center_x=i * SCALED_TILE + SCALED_TILE / 2,
+                        center_y=j * SCALED_TILE + SCALED_TILE / 2
+                    )
+                )
+
+        return sprites
+
+    def setup(self) -> None:
+        floor_count = 0
+        map_ = None
+
+        while floor_count < (self.shape[0] * self.shape[1]) // 3:
+            map_ = self.generate()
+            floor_count = len(np.where(map_.flatten() == self.FLOOR)[0])
+
+        self.sprites = self.spritify(map_)
+
+    def draw(self) -> None:
+        self.sprites.draw()
+
+    def update(self, delta_time: float = 1/60) -> None:
+        self.sprites.update()
