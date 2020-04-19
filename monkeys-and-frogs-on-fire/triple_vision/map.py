@@ -13,7 +13,8 @@ from triple_vision.constants import (
 
 class Map:
 
-    def __init__(self, shape: Tuple[int, int]) -> None:
+    def __init__(self, view: arcade.View, shape: Tuple[int, int]) -> None:
+        self.view = view
         self.shape = shape
 
         self.AIR = 0
@@ -91,14 +92,17 @@ class Map:
 
                 filename = 'wall_mid' if val == self.WALL else f'floor_{random.randint(1, 8)}'
 
-                sprites.append(
-                    arcade.Sprite(
-                        filename=f'assets/dungeon/frames/{filename}.png',
-                        scale=SCALING,
-                        center_x=i * SCALED_TILE + SCALED_TILE / 2,
-                        center_y=j * SCALED_TILE + SCALED_TILE / 2
-                    )
+                sprite = arcade.Sprite(
+                    filename=f'assets/dungeon/frames/{filename}.png',
+                    scale=SCALING,
+                    center_x=i * SCALED_TILE + SCALED_TILE / 2,
+                    center_y=j * SCALED_TILE + SCALED_TILE / 2
                 )
+
+                if val == self.WALL:
+                    self.view.collision_list.append(sprite)
+
+                sprites.append(sprite)
 
         return sprites
 

@@ -25,6 +25,7 @@ class TripleVision(arcade.View):
 
         self.map = None
 
+        self.collision_list = None
         self.bullet_list = None
 
         self.player = None
@@ -35,9 +36,10 @@ class TripleVision(arcade.View):
         self.physics_engine = None
 
     def setup(self) -> None:
+        self.collision_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
     
-        self.map = Map((50, 50))
+        self.map = Map(self, (50, 50))
         self.map.setup()
 
         self.player = Player(self, 'm')
@@ -66,6 +68,8 @@ class TripleVision(arcade.View):
                 center_x=50,
                 center_y=y * 200
             )
+
+        self.physics_engine = arcade.PhysicsEngineSimple(self.player, self.collision_list)
 
     def on_mouse_motion(self, x, y, dx, dy) -> None:
         self.card_manager.check_mouse_motion(x, y)
@@ -128,6 +132,7 @@ class TripleVision(arcade.View):
                 self.player.update(delta_time)
 
             self.game_manager.update(delta_time)
+            self.physics_engine.update()
             self.map.update()
 
         self.card_manager.update()
