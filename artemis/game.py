@@ -5,8 +5,9 @@ import math
 from constants import WIDTH, HEIGHT, SCALING, SIDE, TOP, BACKGROUND
 from engine import BiDirectionalPhysicsEnginePlatformer
 from player import Player
-from sprites import Block, Gem
+from sprites import Block, Gem, RandomBlock
 from displays import Box
+from scores import get_hiscore, add_score
 import views
 
 
@@ -26,8 +27,9 @@ class Game(arcade.View):
             Block(self, x, size//2, True)
 
         self.gems = arcade.SpriteList()
-        for _ in range(2):
+        for _ in range(3):
             Gem(self)
+            RandomBlock(self)
 
         self.boxes = arcade.SpriteList()
         for n in range(5):
@@ -46,12 +48,20 @@ class Game(arcade.View):
         ]
         self.left = 0
         self.score = 0
+        self.hiscore = get_hiscore()
 
     def on_draw(self):
         arcade.start_render()
         arcade.draw_text(
-            text=f'Score: {self.score}', start_x=self.left + WIDTH - 50,
-            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2,
+            text=f'Hiscore: {self.hiscore:03d}',
+            start_x=self.left + WIDTH - 50,
+            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2 - 15,
+            color=arcade.color.WHITE, font_size=20, anchor_x='right',
+            anchor_y='center'
+        )
+        arcade.draw_text(
+            text=f'Score: {self.score:03d}', start_x=self.left + WIDTH - 50,
+            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2  + 15,
             color=arcade.color.WHITE, font_size=20, anchor_x='right',
             anchor_y='center'
         )
@@ -82,7 +92,7 @@ class Game(arcade.View):
         if all_three:
             self.score += 1
             self.remove_three(all_three)
-        elif len(colours) == 5 - colours.count('p'):
+        elif len(colours) >= 5 - colours.count('p'):
             self.game_over('Inventory Full')
 
     def remove_three(self, colour):
@@ -102,11 +112,17 @@ class Game(arcade.View):
         assert False, 'Should not get here.'
 
     def game_over(self, message):
+        add_score(self.score)
         self.window.show_view(views.GameOver(message))
 
     def scroll(self):
         self.left += self.player.speed
         arcade.set_viewport(self.left, WIDTH + self.left, 0, HEIGHT)
+        if self.left > self.player.right:
+            self.game_over('Got Stuck')
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        self.player.switch()
 
     def on_key_press(self, key, modifiers):
         self.player.switch()

@@ -30,6 +30,7 @@ class Player(arcade.Sprite):
         self.speed = speed
         self.time_since_change = 0
         self.num = 0
+        self.last_x = -1
 
     def switch(self):
         if self.game.engine.can_jump():
@@ -37,13 +38,15 @@ class Player(arcade.Sprite):
 
     def update(self, timedelta):
         direction = ['up', 'down'][self.game.engine.gravity_constant < 0]
-        if self.change_x < 1:
+        if abs(self.center_x - self.last_x) < 1:
             name = f'walk_forward_{direction}'
         elif self.game.engine.can_jump():
             name = f'walk_right_{self.num}_{direction}'
         else:
             name = f'jump_{self.num}'
         self.texture = self.textures[Player.TEXTURES.index(name)]
+
+        self.last_x = self.center_x
 
         # check touching sprites
         gems = arcade.check_for_collision_with_list(self, self.game.gems)

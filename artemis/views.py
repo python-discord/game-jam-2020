@@ -92,3 +92,6 @@ class GameOver(View):
 
     def on_mouse_release(self, x, y, button, modifiers):
         self.window.show_view(Game())
+
+    def on_key_release(self, key, modifiers):
+        self.window.show_view(Game())
