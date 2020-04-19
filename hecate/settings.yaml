@@ -1,0 +1,19 @@
+scaling:
+  tile:
+    1
+  mob:
+    0.25
+  player:
+    0.25
+grid:
+  width:
+    100
+  height:
+    100
+window:
+  width:
+    1920
+  height:
+    1080
+  title:
+    Hecate's Dungeon
