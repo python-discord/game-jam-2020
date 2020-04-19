@@ -8,6 +8,7 @@ import arcade
 
 from config import Config
 from map import Level
+from mobs import Player
 
 
 class Game(arcade.Window):
@@ -45,15 +46,9 @@ class Game(arcade.Window):
         # Create the Sprite lists
         self.wall_list = arcade.SpriteList()
         self.floor_list = arcade.SpriteList()
-        self.player_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
-        image_source = "resources/images/monsters/skeleton.png"
-        self.player_sprite = arcade.Sprite(image_source, Config.CHARACTER_SCALING)
-        self.player_sprite.center_x = Config.SCREEN_WIDTH / 2
-        self.player_sprite.center_y = Config.SCREEN_HEIGHT / 2
-        self.player_sprite.scale = 4
-        self.player_list.append(self.player_sprite)
+        Player.setup(self)
 
         # Create the level
         self.floor_list, self.wall_list = Level.load_file('resources/levels/box.json')
