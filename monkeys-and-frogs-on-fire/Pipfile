@@ -9,6 +9,7 @@ pre-commit = "*"
 
 [packages]
 arcade = "*"
+numpy = "*"
 
 [requires]
 python_version = "3.8"

@@ -1,4 +1,5 @@
 import time
+import random
 
 import arcade
 
@@ -26,20 +27,60 @@ class Player(LivingEntity, MovingSprite):
 
         self.window = window
         self.last_shot = time.time()
+
         self.is_alive = True
+        self.attack_multiplier = 1
+        self.dexterity = 0.75
+
+        self._curr_color = self.curr_color
+
+    @property
+    def curr_color(self):
+        return self._curr_color
+
+    @curr_color.setter
+    def curr_color(self, value):
+        if value == 'red':
+            self.resistance = 0.1
+            self.attack_multiplier = 1.5
+            self.speed_multiplier = 1.1
+            self.dexterity = 0.6
+
+        elif value == 'green':
+            self.resistance = 0.5
+            self.attack_multiplier = 1.1
+            self.speed_multiplier = 1
+            self.dexterity = 0.75
+
+        elif value == 'blue':
+            self.resistance = 0
+            self.attack_multiplier = 1
+            self.speed_multiplier = 1.5
+            self.dexterity = 0.5
+
+        else:
+            raise ValueError('Color can only be red, green, or blue.')
+
+        self._curr_color = value
+
+    def setup(self) -> None:
+        self.curr_color = 'red'
 
     def check_mouse_press(self, x, y, button, modifiers) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:
             self.move_to(x, y, rotate=False)
 
         elif button == arcade.MOUSE_BUTTON_RIGHT:
-            if time.time() - self.last_shot < 0.75:  # TODO hardcoded
+
+            if time.time() - self.last_shot < self.dexterity:
                 # TODO Play empty gun sound or something similar
                 return
 
             bullet = LaserProjectile(
                 center_x=self.center_x,
-                center_y=self.center_y
+                center_y=self.center_y,
+                dmg=round(random.randrange(60, 70) * self.attack_multiplier, 2),
+                moving_speed=5
             )
             bullet.move_to(x, y, rotate=True, set_target=False)
             self.window.game_manager.player_projectiles.append(bullet)

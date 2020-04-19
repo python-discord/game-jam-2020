@@ -124,11 +124,13 @@ class AnimatedEntity(arcade.Sprite):
 
 class LivingEntity(AnimatedEntity):
 
-    def __init__(self, hp: int = 0, *args, **kwargs) -> None:
+    def __init__(self, hp: float = 0, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.hp = hp
         self.being_pushed = False
+
+        self.resistance = 0
 
     def hit(self, weapon: Weapon, wall_reference: arcade.SpriteList = tuple()) -> None:
         """
@@ -140,7 +142,8 @@ class LivingEntity(AnimatedEntity):
                                      maybe this check should be done in manager?
                                      So if hits wall and being_pushed True then deduct hp
         """
-        self.hp -= weapon.dmg
+        self.hp -= weapon.dmg * (1 - self.resistance)
+
         if self.hp <= 0:
             self.kill()
             return

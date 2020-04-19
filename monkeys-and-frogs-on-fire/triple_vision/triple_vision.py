@@ -49,6 +49,8 @@ class TripleVision(arcade.View):
                 )
 
         self.player = Player(self, 'm')
+        self.player.setup()
+
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
 

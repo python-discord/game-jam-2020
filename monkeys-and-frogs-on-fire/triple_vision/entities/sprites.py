@@ -11,6 +11,7 @@ class MovingSprite(arcade.Sprite):
     def __init__(self, moving_speed, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.speed_multiplier = 1
         self.speed = moving_speed
         self.target = None
 
@@ -39,8 +40,8 @@ class MovingSprite(arcade.Sprite):
 
         # Taking into account the angle, calculate our change_x
         # and change_y. Velocity is how fast the sprite travels.
-        self.change_x = math.cos(angle) * self.speed
-        self.change_y = math.sin(angle) * self.speed
+        self.change_x = math.cos(angle) * self.speed * self.speed_multiplier
+        self.change_y = math.sin(angle) * self.speed * self.speed_multiplier
 
         if set_target:
             self.target = (x, y)
