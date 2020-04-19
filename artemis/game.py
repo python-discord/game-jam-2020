@@ -22,8 +22,8 @@ class Game(arcade.View):
 
         size = int(128 * SCALING)
         for x in range(-SIDE, WIDTH+SIDE, size):
-            Block(self, x, HEIGHT - TOP)
-            Block(self, x, size//2)
+            Block(self, x, HEIGHT - TOP, False)
+            Block(self, x, size//2, True)
 
         self.gems = arcade.SpriteList()
         for _ in range(2):
@@ -34,13 +34,16 @@ class Game(arcade.View):
             Box(self, n)
 
         self.others = arcade.SpriteList()
+        self.spikes = arcade.SpriteList()
         
         self.engine = BiDirectionalPhysicsEnginePlatformer(
             self.player, self.blocks, 1
         )
 
         # keep track of things
-        self.pressed = []
+        self.sprite_lists = [
+            self.blocks, self.gems, self.boxes, self.others, self.spikes
+        ]
         self.left = 0
         self.score = 0
 
@@ -52,18 +55,14 @@ class Game(arcade.View):
             color=arcade.color.WHITE, font_size=20, anchor_x='right',
             anchor_y='center'
         )
-        self.blocks.draw()
-        self.gems.draw()
-        self.boxes.draw()
-        self.others.draw()
+        for sprite_list in self.sprite_lists:
+            sprite_list.draw()
         self.player.draw()
 
     def on_update(self, timedelta):
-        self.gems.update()
-        self.blocks.update()
+        for sprite_list in self.sprite_lists:
+            sprite_list.update()
         self.player.update(timedelta)
-        self.boxes.update()
-        self.others.update()
         self.engine.update()
         self.scroll()
 
@@ -74,7 +73,7 @@ class Game(arcade.View):
             if colour == 'w':
                 for key in counts:
                     counts[key] += 1
-            else:
+            elif colour in counts:
                 counts[colour] += 1
         all_three = None
         for colour in counts:
@@ -83,8 +82,8 @@ class Game(arcade.View):
         if all_three:
             self.score += 1
             self.remove_three(all_three)
-        elif len(colours) == 5:
-            self.game_over()
+        elif len(colours) == 5 - colours.count('p'):
+            self.game_over('Inventory Full')
 
     def remove_three(self, colour):
         removed = 0
@@ -102,16 +101,12 @@ class Game(arcade.View):
                     return
         assert False, 'Should not get here.'
 
-    def game_over(self):
-        self.window.show_view(views.GameOver('Inventory Full'))
+    def game_over(self, message):
+        self.window.show_view(views.GameOver(message))
 
     def scroll(self):
         self.left += self.player.speed
         arcade.set_viewport(self.left, WIDTH + self.left, 0, HEIGHT)
 
     def on_key_press(self, key, modifiers):
-        self.pressed.append(key)
-
-    def on_key_release(self, key, modifiers):
-        if key in self.pressed:
-            self.pressed.remove(key)
+        self.player.switch()

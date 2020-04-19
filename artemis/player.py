@@ -5,10 +5,10 @@ from constants import ASSETS, WIDTH, HEIGHT, SPEED, SCALING
 
 class Player(arcade.Sprite):
     TEXTURES = [
-        'jump_0', 'jump_1', 'jump_2', 'jump_3', 'walk_forward',
-        'walk_right_0', 'walk_right_1', 'walk_right_2', 'walk_right_3',
-        'walk_forward_u', 'walk_right_0_u', 'walk_right_1_u',
-        'walk_right_2_u', 'walk_right_3_u'
+        'jump_0', 'jump_1', 'jump_2', 'jump_3', 'walk_forward_up',
+        'walk_right_0_up', 'walk_right_1_up', 'walk_right_2_up',
+        'walk_right_3_up', 'walk_forward_down', 'walk_right_0_down',
+        'walk_right_1_down', 'walk_right_2_down', 'walk_right_3_down'
     ]
 
     def __init__(
@@ -30,13 +30,21 @@ class Player(arcade.Sprite):
         self.speed = speed
         self.time_since_change = 0
         self.num = 0
-        self.cooldown = 1
 
-    def can_move(self):
-        return True
+    def switch(self):
+        if self.game.engine.can_jump():
+            self.game.engine.gravity_constant *= -1
 
     def update(self, timedelta):
-        self.cooldown -= timedelta
+        direction = ['up', 'down'][self.game.engine.gravity_constant < 0]
+        if self.change_x < 1:
+            name = f'walk_forward_{direction}'
+        elif self.game.engine.can_jump():
+            name = f'walk_right_{self.num}_{direction}'
+        else:
+            name = f'jump_{self.num}'
+        self.texture = self.textures[Player.TEXTURES.index(name)]
+
         # check touching sprites
         gems = arcade.check_for_collision_with_list(self, self.game.gems)
         for gem in gems:
@@ -46,30 +54,17 @@ class Player(arcade.Sprite):
                     break
             gem.place()
 
-        # check key presses
-        if arcade.key.SPACE in self.game.pressed:
-            if not self.change_y and self.cooldown < 0:
-                if self.game.engine.can_jump():
-                    self.game.engine.gravity_constant *= -1
-                    self.cooldown = 1
+        spikes = arcade.check_for_collision_with_list(self, self.game.spikes)
+        if spikes:
+            self.game.game_over('Hit a Spike')
+            return
 
-        if self.can_move():
-            self.change_x = self.speed
-            if self.center_x < self.game.left + WIDTH//5:
-                self.change_x *= 1.5
+        self.change_x = self.speed
+        if self.center_x < self.game.left + WIDTH//5:
+            self.change_x *= 1.5
 
         self.time_since_change += timedelta
         if self.time_since_change > 0.1:
             self.time_since_change = 0
             self.num += 1
             self.num %= 4
-
-        if not self.can_move():
-            name = 'walk_forward'
-        elif self.game.engine.can_jump():
-            name = f'walk_right_{self.num}'
-            if self.game.engine.gravity_constant < 0:
-                name += '_u'
-        else:
-            name = f'jump_{self.num}'
-        self.texture = self.textures[Player.TEXTURES.index(name)]
