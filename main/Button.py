@@ -1,24 +1,6 @@
 import arcade
 
 
-class EventHandler:
-    left_game_button = arcade.key.A
-    center_game_button = arcade.key.S
-    right_game_button = arcade.key.D
-
-    @classmethod
-    def update_events(cls):
-        pass
-
-    @classmethod
-    def get_game_buttons_pressed(cls) -> "tuple of channels active <left, center, right>":
-        left_pressed = cls.left_game_button in "<pressed keys>: list"
-        center_pressed = cls.center_game_button in "<pressed keys>: list"
-        right_pressed = cls.right_game_button in "<pressed keys>: list"
-
-        return left_pressed, center_pressed, right_pressed
-
-
 class Button:
 
     def __init__(self, x_pos, y_pos, width, height, colour=(255, 255, 255), action=None, draw_func=None, name=None):
