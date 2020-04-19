@@ -1,8 +1,6 @@
 import arcade
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-SCREEN_TITLE = "Game"
+from .gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE
 
 
 class MyGame(arcade.Window):
