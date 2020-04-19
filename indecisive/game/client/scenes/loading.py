@@ -1,9 +1,12 @@
 import arcade
 from .util import make_colour_valid
+from .base import Base
 
 
-class LoadingScreen:
-    def __init__(self):
+class LoadingScreen(Base):
+    def __init__(self, display):
+        self.display = display
+
         self.spritelist = arcade.SpriteList()
         self.spritedict = dict()
         self.sceneTime = 0

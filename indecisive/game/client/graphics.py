@@ -7,12 +7,12 @@ class Display(arcade.Window):
         super().__init__(1280, 720, "Three of a king")
         self.title = arcade.sprite_list
         arcade.set_background_color((255, 255, 255))
-        self.scene = "loading"
+        self.scene = "lobby"
         self.scenes = dict()
 
     def setup(self):
-        self.scenes["loading"] = LoadingScreen()
-        self.scenes["lobby"] = Lobby
+        self.scenes["loading"] = LoadingScreen(self)
+        self.scenes["lobby"] = Lobby(self)
 
     def on_draw(self):
 
@@ -21,6 +21,9 @@ class Display(arcade.Window):
 
     def on_update(self, delta_time: float):
         self.scenes[self.scene].update(delta_time)
+
+    def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
+        self.scenes[self.scene].mouse_release(x, y, button, modifiers)
 
 
 def main():
