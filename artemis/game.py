@@ -1,6 +1,7 @@
 import arcade
 import random
 import math
+import sys
 
 from constants import WIDTH, HEIGHT, SCALING, SIDE, TOP
 from engine import BiDirectionalPhysicsEnginePlatformer
@@ -42,11 +43,22 @@ class Game(arcade.Window):
         self.pressed = []
         self.left = 0
         self.score = 0
+        self.die_after = -1
 
         arcade.run()
 
     def on_draw(self):
         arcade.start_render()
+        self.die_after -= 1
+        if self.die_after == 0:
+            sys.exit()
+        if self.die_after > 0:
+            arcade.draw_text(
+                'Game Over\nInventory Full', self.left+WIDTH/2, HEIGHT/2,
+                arcade.color.RED, 100, width=WIDTH, align='center',
+                anchor_x='center', anchor_y='center'
+            )
+            return
         arcade.draw_text(
             text=f'Score: {self.score}', start_x=self.left + WIDTH - 50,
             start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2,
@@ -67,6 +79,44 @@ class Game(arcade.Window):
         self.others.update()
         self.engine.update()
         self.scroll()
+
+    def gem_added(self):
+        colours = [box.colour for box in self.boxes if box.colour]
+        counts = {'r': 0, 'b': 0, 'y': 0}
+        for colour in colours:
+            if colour == 'w':
+                for key in counts:
+                    counts[key] += 1
+            else:
+                counts[colour] += 1
+        all_three = None
+        for colour in counts:
+            if counts[colour] >= 3:
+                all_three = colour
+        if all_three:
+            self.score += 1
+            self.remove_three(all_three)
+        elif len(colours) == 5:
+            self.game_over()
+
+    def remove_three(self, colour):
+        removed = 0
+        for box in self.boxes:
+            if box.colour == colour:
+                box.remove_gem()
+                removed += 1
+                if removed == 3:
+                    return
+        for box in self.boxes:
+            if box.colour == 'w':
+                box.remove_gem()
+                removed += 1
+                if removed == 3:
+                    return
+        assert False, 'Should not get here.'
+
+    def game_over(self):
+        self.die_after = 1000
 
     def scroll(self):
         self.left += self.player.speed

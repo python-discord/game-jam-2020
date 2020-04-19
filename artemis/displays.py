@@ -33,6 +33,7 @@ class Box(arcade.Sprite):
         self.colour = colour
         self.gem = BoxGem(self)
         self.alpha = 100
+        self.game.gem_added()
 
     def remove_gem(self):
         if self.gem:
