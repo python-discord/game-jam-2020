@@ -1,10 +1,11 @@
 import arcade
+from util import get_distance
 import logging
 from config import SCREEN_SIZE_Y, SCREEN_SIZE_X
 
 logger = logging.getLogger()
 
-BASE_SPEED = 1
+BASE_SPEED = 1e-1
 PLANET_BASE_SPEED = 5 * BASE_SPEED
 PUSH_BASE_SPEED = 2 * BASE_SPEED
 PUSH_MAX_DISTANCE = 200  # The most a planet can be away from Yogh to be pushed
@@ -19,7 +20,7 @@ MAX_ATTACK_DISTANCE = {
     "yogh": 300,
     "ezh": 300
 }
-ATTACK_COLORS = {
+PLANET_COLORS = {
     "ze": arcade.color.SILVER,
     "yogh": arcade.color.GOLD,
     "ezh": arcade.color.BRONZE
@@ -44,7 +45,7 @@ class Planet(arcade.Sprite):
         self.can_range_planets = self.name == "ezh"
         self.max_attack_distance = MAX_ATTACK_DISTANCE[self.name]
         self.base_damage = BASE_DAMAGE * PLANET_DAMAGE[self.name]
-        self.attack_color = ATTACK_COLORS[self.name]
+        self.color = PLANET_COLORS[self.name]
 
         self.parent = None
         self.others = None
@@ -148,3 +149,12 @@ class Planet(arcade.Sprite):
             other: round(self.damage_on_others[other], 4)
             for other in self.damage_on_others}
         return f"{self.name}:\t{total_damage_on_others=}, {damage_on_others=}"
+
+    def draw_triangulation_circle(self):
+        lithium_location = self.parent.lithium_location
+        distance_to_lithium = get_distance(
+            self.center_x, self.center_y, *lithium_location
+        )
+        arcade.draw_circle_outline(
+            self.center_x, self.center_y, distance_to_lithium,
+            color=self.color)
