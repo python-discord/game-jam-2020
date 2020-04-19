@@ -50,6 +50,7 @@ def generate(nodes, depth, count):
                                     node)
                     #Adding it to the parent
                     node.neighbors[index] = new_room
+                    new_room.neighbors[index - 2] = node
                     #Adding it to the tmp list
                     new_node_list.append(new_room)
                     count += 1
@@ -63,10 +64,10 @@ def generate(nodes, depth, count):
     else:
         for n in node:
             if(depth == 0):
-                print(n, n.parent)
+                print(n, n.parent, n.id)
             for k in n.neighbors:
                 if k is not None:
-                    print('_' * depth, k, k.parent.id)
+                    print('_' * depth, k, k.id,k.parent.id)
                     depth += 1
                     count += 1
                     traverseAndPrint([k], depth ,count)

@@ -14,6 +14,7 @@ import map_generator
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Starting Template"
+PLAYER_SIZE = 40
 
 def handle_left(self, press):
     if(press):
@@ -64,6 +65,8 @@ class MyGame(arcade.Window):
         self.current_room = None
         self.wall = None
         self.wall_list = None
+        self.current_camera_pos = None
+        self.camera_target = None
         # If you have sprite lists, you should create them here,
         # and set them to None
 
@@ -80,7 +83,9 @@ class MyGame(arcade.Window):
                     
         map_generator.generate([self.root], 0, 0)
 
-        self.player = arcade.SpriteSolidColor(40, 40, arcade.csscolor.BLACK)
+        self.current_camera_pos = (0,0)
+        self.camera_target = (0,0)
+        self.player = arcade.SpriteSolidColor(PLAYER_SIZE, PLAYER_SIZE, arcade.csscolor.BLACK)
         self.player.center_x = SCREEN_WIDTH // 2
         self.player.center_y = SCREEN_HEIGHT // 2
         self.player_list = arcade.SpriteList()
@@ -131,7 +136,17 @@ class MyGame(arcade.Window):
         """
         self.physics_engine.update()
         self.update_player_room()
-        self.set_viewport(self.player.center_x - SCREEN_WIDTH / 2, self.player.center_x + SCREEN_WIDTH / 2, self.player.center_y - SCREEN_HEIGHT / 2, self.player.center_y + SCREEN_HEIGHT / 2)
+
+        target_x, target_y = self.camera_target
+        cam_x, cam_y = self.current_camera_pos
+
+
+        if abs(target_x - cam_x) > 1 or abs(target_y - cam_y) > 1:
+            cam_x = arcade.lerp(cam_x, target_x, 0.1)
+            cam_y = arcade.lerp(cam_y, target_y, 0.1)
+            self.current_camera_pos = cam_x, cam_y
+            self.set_viewport(cam_x, cam_x + SCREEN_WIDTH, cam_y, cam_y + SCREEN_HEIGHT)
+        #self.set_viewport(self.player.center_x - SCREEN_WIDTH / 2, self.player.center_x + SCREEN_WIDTH / 2, self.player.center_y - SCREEN_HEIGHT / 2, self.player.center_y + SCREEN_HEIGHT / 2)
 
     def on_key_press(self, key, key_modifiers):
         if key in self.key_mapping:
@@ -151,7 +166,7 @@ class MyGame(arcade.Window):
 
     def draw_room_with_neighbors(self, room):
         self.draw_room(room)
-        for n in self.root.neighbors:
+        for n in room.neighbors:
             if n is not None:
                 self.draw_room(n)
  
@@ -170,7 +185,7 @@ class MyGame(arcade.Window):
  
         node_x = node_ix * node_width
         node_y = node_iy * node_height
- 
+
         if player_x > node_x + node_width:
             # go right
             next_id = node_ix + 1, node_iy
@@ -185,11 +200,18 @@ class MyGame(arcade.Window):
             next_id = node_ix, node_iy - 1
         else:
             return
- 
+
         for n in self.current_room.neighbors:
             if n is not None and n.id == next_id:
                 self.current_room = n
-                break
+                target_x, target_y = n.id
+                self.camera_target = target_x * n.width, target_y * n.height
+                return
+        
+        
+        self.player.center_x = max(node_x, min(node_x + node_width, player_x))
+        self.player.center_y = max(node_y, min(node_y + node_height, player_y))
+                
 
 """    def draw_room_smol(self, rooms, count):
         if(count == map_generator.MAX_ROOM_NUM): 
