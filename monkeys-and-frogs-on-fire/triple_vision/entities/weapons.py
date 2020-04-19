@@ -21,11 +21,11 @@ class Weapon(arcade.Sprite):
         super().__init__(*args, **kwargs)
         self.dmg = dmg
         self.throwback_force = throwback_force
-        self._activate_sounds = self._load_sounds(activate_sounds)
-        self._hit_sounds = self._load_sounds(hit_sounds)
+        self._activate_sounds = self.load_sounds(activate_sounds)
+        self._hit_sounds = self.load_sounds(hit_sounds)
 
     @classmethod
-    def _load_sounds(cls, sounds: Tuple[str]):
+    def load_sounds(cls, sounds: Tuple[str]):
         return [arcade.load_sound(str(cls.assets_path / sound)) for sound in sounds]
 
     def play_activate_sound(self):
