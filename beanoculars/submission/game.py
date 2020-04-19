@@ -8,8 +8,8 @@ from submission.sounds import loadSounds
 from random import randint
 import math
 
-def getGridCase(position):
-    case = [math.floor(position[0]/32)-22*FULLSCREEN,math.floor(position[1]/32)-9*FULLSCREEN]
+def getGridCase(position, offset_x, offset_y):
+    case = [math.floor((position[0]-offset_x)/32), math.floor((position[1]-offset_y)/32)]
     print(case)
     return case
 
@@ -68,6 +68,8 @@ class MyGame(arcade.Window):
         self.player_list.append(self.player_sprite)
 
         self.path_list = loadPathTilemap()
+        for i in list(self.path_list):
+            print(i)
 
         for i in range(len(self.path_list)):
             self.path_list[i].center_x += self.window_offset_x
@@ -81,7 +83,7 @@ class MyGame(arcade.Window):
                 ground.center_y = y + TILE_SIZE * TILE_SCALING / 2 + self.window_offset_y
                 self.ground_list.append(ground)
 
-        loadSounds(PATH['sound'], self.sound_dict)
+        loadSounds(self.sound_dict)
 
 
     def on_draw(self):
@@ -131,14 +133,14 @@ class MyGame(arcade.Window):
 
             else:
                 self.mouse_click = [self.mouse_x, self.mouse_y]
-                self.destination = getGridCase(self.mouse_click)
+                self.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
                 if button == 1:  # Si clique gauche
                     pass
                 elif button == 4:  # Si clique droit
                     pass
         else:
             self.mouse_click = [self.mouse_x, self.mouse_y]
-            self.destination = getGridCase(self.mouse_click)
+            self.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
             if button == 1: # Si clique gauche
                 pass
             elif button == 4: # Si clique droit
