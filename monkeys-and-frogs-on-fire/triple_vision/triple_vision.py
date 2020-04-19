@@ -34,12 +34,13 @@ class TripleVision(arcade.View):
     def setup(self) -> None:
         self.collision_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
-    
-        self.map = Map(self, (50, 50))
+
+        self.map = Map(self, (24, 24))
         self.map.setup()
 
         self.player = Player(self, 'm')
         self.player.setup()
+        print(self.player.get_hit_box())
 
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
@@ -120,6 +121,7 @@ class TripleVision(arcade.View):
 
         if self.player.is_alive:
             self.player.draw()
+            self.player.draw_hit_box()
 
         self.game_manager.draw()
         self.card_manager.draw()

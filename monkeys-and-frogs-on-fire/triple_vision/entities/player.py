@@ -64,6 +64,16 @@ class Player(LivingEntity, MovingSprite):
         self._curr_color = value
 
     def setup(self) -> None:
+        self.set_hit_box([
+            (-4.0, -1.0),
+            (4.0, -1.0),
+            (6.0, -3.0),
+            (6.0, -11.0),
+            (4.0, -13.0),
+            (-4.0, -13.0),
+            (-6.0, -11.0),
+            (-6.0, -3.0)
+        ])
         self.curr_color = 'red'
 
     def process_mouse_press(self, x, y, button) -> None:

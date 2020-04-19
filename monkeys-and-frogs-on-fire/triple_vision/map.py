@@ -4,11 +4,7 @@ from typing import List, Tuple
 import arcade
 import numpy as np
 
-from triple_vision.constants import (
-    SCALED_TILE,
-    SCALING,
-    TILE_SIZE
-)
+from triple_vision.constants import SCALED_TILE, SCALING
 
 
 class Map:
@@ -110,7 +106,7 @@ class Map:
         floor_count = 0
         map_ = None
 
-        while floor_count < (self.shape[0] * self.shape[1]) // 3:
+        while floor_count < (self.shape[0] * self.shape[1]) / 2.5:
             map_ = self.generate()
             floor_count = len(np.where(map_.flatten() == self.FLOOR)[0])
 
