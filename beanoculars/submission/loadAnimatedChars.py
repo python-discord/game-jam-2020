@@ -56,7 +56,7 @@ class AnimatedEntity(arcade.Sprite):
         elif e_type == T_VACUUM:
             self.update_rate = UR_VACUUM
 
-        self.character_face_direction = UP_FACING
+        self.character_face_direction = LEFT_FACING
 
         self.numberFrames = num_of_frames
 

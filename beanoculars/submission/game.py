@@ -5,12 +5,12 @@ from submission.gameConstants import *
 from submission.loadAnimatedChars import *
 from submission.tileMapLoader import *
 from submission.sounds import loadSounds
+from submission.motion import movePlayer
 from random import randint
 import math
 
 def getGridCase(position, offset_x, offset_y):
     case = [math.floor((position[0]-offset_x)/32), math.floor((position[1]-offset_y)/32)]
-    print(case)
     return case
 
 # Class defining
@@ -104,13 +104,14 @@ class MyGame(arcade.Window):
         # Turrets layer
 
         # Player layer
-        self.player_sprite.draw()
+        self.player_list.draw()
 
         # GUI layer
 
     def on_update(self, delta_time: float):
         """ On Update method"""
         if self.destination != [-1,-1]:
+            movePlayer(self.destination, self.player_sprite)
             self.player_sprite.center_x = self.destination[0] * TILE_SIZE + TILE_SIZE/2 + self.window_offset_x
             self.player_sprite.center_y = self.destination[1] * TILE_SIZE + TILE_SIZE/2 + self.window_offset_y
             self.destination = [-1,-1]
