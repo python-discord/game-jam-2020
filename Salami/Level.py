@@ -5,7 +5,7 @@ import pyglet.gl as gl
 import Engine
 import Entity
 
-from Constants import WIDTH, HEIGHT, TILE_SIZE, GRAVITY
+from Constants import WIDTH, HEIGHT, TILE_SIZE, GRAVITY, SQUARE_HIT_BOX
 
 
 class Level:
@@ -15,7 +15,7 @@ class Level:
         self.camera = camera
         self.keyboard = keyboard
 
-        self.tiles = arcade.SpriteList()
+        self.tiles = arcade.SpriteList(use_spatial_hash=True, is_static=True)
         self.entities = arcade.SpriteList()
 
         self.movespeed = 5
@@ -23,21 +23,28 @@ class Level:
 
         for x in range(0, WIDTH // TILE_SIZE, TILE_SIZE):
             tile = Entity.Entity(Entity.ROCK_TILE, x + 32, 48)
+            tile.set_hit_box(SQUARE_HIT_BOX)
             self.tiles.append(tile)
 
         for y in range(TILE_SIZE, TILE_SIZE * 4, TILE_SIZE):
             tile = Entity.Entity(Entity.ROCK_TILE, 0, y)
+            tile.set_hit_box(SQUARE_HIT_BOX)
             self.tiles.append(tile)
         
         for x in range(0, WIDTH, TILE_SIZE):
             tile = Entity.Entity(Entity.ROCK_TILE, x, 0)
+            tile.set_hit_box(SQUARE_HIT_BOX)
             self.tiles.append(tile)
 
         self.player = Entity.Entity(Entity.PLAYER, 64, 64)
+        self.player.set_hit_box(SQUARE_HIT_BOX)
         self.entities.append(self.player)
 
-        print(f"Top: {self.player.top} | Left: {self.player.right}")
-        print(f"Bottom: {self.player.top} | Right: {self.player.right}")
+        print(self.player.get_hit_box())
+        print(self.tiles[0].get_hit_box())
+
+        # print(f"Top: {self.player.top} | Left: {self.player.right}")
+        # print(f"Bottom: {self.player.top} | Right: {self.player.right}")
         
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player, self.tiles, GRAVITY)
 
@@ -59,4 +66,7 @@ class Level:
         self.tiles.draw(filter=gl.GL_NEAREST)
         self.entities.draw(filter=gl.GL_NEAREST)
 
-        self.player.draw_hit_box(arcade.color.BLUE)
+        # for tile in self.tiles:
+        #     tile.draw_hit_box(arcade.color.RED)
+
+        # self.player.draw_hit_box(arcade.color.BLUE)

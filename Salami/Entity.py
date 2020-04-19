@@ -25,4 +25,4 @@ class Entity(arcade.Sprite):
         pass
 
 ROCK_TILE = Tex("Salami/spritesheet.png", 0, 0, TILE_SIZE)
-PLAYER = Tex("Salami/spritesheet.png", TILE_SIZE * 2, 0, TILE_SIZE)
+PLAYER = Tex("Salami/spritesheet.png", TILE_SIZE, 0, TILE_SIZE)
