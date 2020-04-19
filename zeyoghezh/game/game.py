@@ -100,7 +100,6 @@ class Game(arcade.Window):
             planet.attacked_last_round = []
             planet.pushed_last_round = []
 
-            # TODO make this last some time, not just 1 frame
             if planet.is_triangulating:
                 planet.draw_triangulation_circle()
         self.planets.draw()
@@ -108,6 +107,8 @@ class Game(arcade.Window):
         arcade.draw_text(
             f"{lithium_count_text}", *self.lithium_score_location,
             color=arcade.color.WHITE, font_size=24)
+
+        self.abscond_button.draw()
 
     @log_exceptions
     def on_mouse_press(self, x, y, button, modifiers):
