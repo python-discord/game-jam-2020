@@ -81,3 +81,4 @@ class SoundManager:
             return
 
         self.curr_sound.set_volume(self.curr_sound.get_volume() + SOUND_FADE_AMOUNT)
+        self.tick_delta = 0.0
