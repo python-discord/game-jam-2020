@@ -1,5 +1,5 @@
 import itertools
-from typing import List
+from typing import List, Optional
 
 import arcade
 
@@ -22,7 +22,6 @@ class Sound(arcade.Sound):
         if volume > self.max_volume:
             return
         super().set_volume(volume)
-
 
 
 class SoundManager:
@@ -52,24 +51,20 @@ class SoundManager:
         self._sounds_cycle = itertools.cycle(self._sounds)
 
     @staticmethod
-    def load_sound(file_name: str):
-        """
-        Load a sound.
-
-        :param str file_name: Name of the sound file to load.
-
-        :returns: Sound object
-        :rtype: Sound
-        """
+    def load_sound(
+        file_name: str,
+        is_faded: bool = False,
+        max_volume: float = 1.0
+    ) -> Optional[Sound]:
 
         try:
-            sound = Sound(file_name)
+            sound = Sound(file_name, is_faded=is_faded, max_volume=max_volume)
             return sound
         except Exception as e:
             print(f"Unable to load sound file: \"{file_name}\". Exception: {e}")
             return None
 
-    def on_update(self, delta_time: float) -> None:
+    def update(self, delta_time: float) -> None:
         self.tick_delta += delta_time
 
         if self.curr_sound is None:
