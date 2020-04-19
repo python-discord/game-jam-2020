@@ -2,7 +2,7 @@ import arcade
 
 from typing import Tuple
 
-from triple_vision.constants import SCALING, WINDOW_SIZE
+from triple_vision.constants import SCALING, WINDOW_SIZE, ON_CARD_HOVER_SLOWDOWN_MULTIPLIER
 from triple_vision.entities import DamageIndicator
 
 
@@ -30,7 +30,7 @@ class GameManager:
         dmg_indicator = DamageIndicator(text, *position)
         self.damage_indicators.append(dmg_indicator)
 
-    def on_update(self, delta_time) -> None:
+    def update(self, *, slow_down=False) -> None:
         for enemy in self.enemies:
             for projectile in self.player_projectiles:
                 if arcade.check_for_collision(projectile, enemy):
@@ -44,9 +44,36 @@ class GameManager:
                 projectile.kill()
 
         self.enemies.update()
-        self.player_projectiles.on_update(delta_time)
-        self.enemy_projectiles.on_update(delta_time)
+        self.player_projectiles.update()
+        self.enemy_projectiles.update()
         self.damage_indicators.update()
+
+        if slow_down:
+            slowdown = 1 / ON_CARD_HOVER_SLOWDOWN_MULTIPLIER
+
+            for enemy in self.enemies:
+                enemy.position = [
+                    enemy.center_x - (enemy.change_x - enemy.change_x * slowdown),
+                    enemy.center_y - (enemy.change_y - enemy.change_y * slowdown)
+                ]
+
+            for player_projectile in self.player_projectiles:
+                player_projectile.position = [
+                    player_projectile.center_x - (player_projectile.change_x - player_projectile.change_x * slowdown),
+                    player_projectile.center_y - (player_projectile.change_y - player_projectile.change_y * slowdown)
+                ]
+
+            for enemy_projectile in self.enemy_projectiles:
+                enemy_projectile.position = [
+                    enemy_projectile.center_x - (enemy_projectile.change_x - enemy_projectile.change_x * slowdown),
+                    enemy_projectile.center_y - (enemy_projectile.change_y - enemy_projectile.change_y * slowdown)
+                ]
+
+            for damage_indicator in self.damage_indicators:
+                damage_indicator.position = [
+                    damage_indicator.center_x - (damage_indicator.change_x - damage_indicator.change_x * slowdown),
+                    damage_indicator.center_y - (damage_indicator.change_y - damage_indicator.change_y * slowdown)
+                ]
 
 
 class CardManager:
@@ -96,11 +123,11 @@ class CardManager:
                     break
 
             self.show_cards = True
-            self.ctx.slowed_down = True
+            self.ctx.slow_down = True
 
         else:
             self.show_cards = False
-            self.ctx.slowed_down = False
+            self.ctx.slow_down = False
 
     def process_mouse_press(self, x, y, button) -> bool:
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -116,7 +143,7 @@ class CardManager:
                     ):
                         self.ctx.player.curr_color = self.colors[idx]
                         self.show_cards = False
-                        self.ctx.slowed_down = False
+                        self.ctx.slow_down = False
 
                 return True
 
