@@ -8,11 +8,7 @@ from triple_vision.constants import SOUND_FADE_AMOUNT, SOUND_FADE_FREQUENCY
 
 class Sound(arcade.Sound):
     def __init__(
-            self,
-            *args,
-            is_faded: bool = False,
-            max_volume: float = 1.0,
-            **kwargs
+        self, *args, is_faded: bool = False, max_volume: float = 1.0, **kwargs
     ) -> None:
         self.faded = is_faded
         self.max_volume = max_volume
@@ -36,13 +32,17 @@ class SoundManager:
         self._sounds.append(sound)
         self.update_cycle()
 
-    def play_sound(self, index: int = None, sound: arcade.Sound = None) -> None:
-        if sound:
-            self.curr_sound = sound
-        elif index is not None:
-            self.curr_sound = self._sounds[index] if index - len(self._sounds) <= index < len(self._sounds) else None
-        else:
-            raise Exception("Not passed sounds to play, aborting.")
+    def play_external_sound(
+        self, sound_name: str = None, faded: bool = False, max_volume: float = 1.0
+    ) -> None:
+        self.curr_sound = Sound(sound_name, is_faded=faded, max_volume=max_volume)
+
+    def play_sound_from_list(self, index):
+        self.curr_sound = (
+            self._sounds[index]
+            if index - len(self._sounds) <= index < len(self._sounds)
+            else self.curr_sound
+        )
 
     def toggle_next_sound(self) -> None:
         self.curr_sound = next(self._sounds_cycle)
@@ -52,16 +52,14 @@ class SoundManager:
 
     @staticmethod
     def load_sound(
-        file_name: str,
-        is_faded: bool = False,
-        max_volume: float = 1.0
+        file_name: str, is_faded: bool = False, max_volume: float = 1.0
     ) -> Optional[Sound]:
 
         try:
             sound = Sound(file_name, is_faded=is_faded, max_volume=max_volume)
             return sound
         except Exception as e:
-            print(f"Unable to load sound file: \"{file_name}\". Exception: {e}")
+            print(f'Unable to load sound file: "{file_name}". Exception: {e}')
             return None
 
     def update(self, delta_time: float) -> None:
