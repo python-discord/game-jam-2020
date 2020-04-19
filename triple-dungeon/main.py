@@ -64,7 +64,7 @@ class Game(arcade.Window):
 
         # Draw our sprites
         self.floor_list.draw()
-        self.player_list.draw()
+        self.player_sprite.draw()
         self.wall_list.draw()
 
     def on_key_press(self, key, modifiers):

@@ -34,14 +34,11 @@ class Player(Mob):
         super(Player, self).__init__(*args, **kwargs)
 
     def setup(self):
-        self.player_list = arcade.SpriteList()
-		
         image_source = "resources/images/monsters/skeleton.png"
         self.player_sprite = arcade.Sprite(image_source, Config.CHARACTER_SCALING)
         self.player_sprite.center_x = Config.SCREEN_WIDTH / 2
         self.player_sprite.center_y = Config.SCREEN_HEIGHT / 2
         self.player_sprite.scale = 4
-        self.player_list.append(self.player_sprite)
 
     def tick(self):
         """
