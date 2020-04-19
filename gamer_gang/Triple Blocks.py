@@ -2,6 +2,8 @@ import random
 import math
 import arcade
 import os
+import pymunk
+from PIL import Image
 
 from typing import cast
 
@@ -19,52 +21,82 @@ SCREEN_MARGIN = 200
 
 
 class GroundSprite(arcade.Sprite):
-    def __init__(self, textures, scale, x, y):
-        super().__init__()
+  def __init__(self, pymunk_shape, textures, scale, x, y):
+    super().__init__()
+    self.pymunk_shape = pymunk_shape
 
-        self.textures = textures
-        self.texture = self.textures[0]
+    self.textures = textures
+    self.texture = self.textures[0]
 
-        self.scaling = scale
+    self.scaling = scale
 
-        self.x = x
-        self.y = y
+    self.x = x
+    self.y = y
 
-    def update(self, zoom, cx, cy):
-        """ Move the sprite """
-        super().update()
+  def update(self,zoom,cx,cy):
+    """ Move the sprite """
+    super().update()
 
-        self.scale = zoom * self.scaling
+    self.scale = zoom * self.scaling
 
-        self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
-        self.center_y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
-
+    self.center_x = self.pymunk_shape.body.position.x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
+    self.center_y = self.pymunk_shape.body.position.y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
 
 class PlayerSprite(arcade.Sprite):
-    def __init__(self, textures, scale, x, y, zoom, cx, cy):
-        super().__init__()
+  def __init__(self, pymunk_shape, textures, scale, x, y):
+    super().__init__()
+    self.pymunk_shape = pymunk_shape
+    self.can_jump = True
 
-        self.textures = textures
-        self.texture = self.textures[0]
+    self.textures = textures
+    self.texture = self.textures[0]
 
-        self.scaling = scale
+    self.scaling = scale
 
-        self.x = x
-        self.y = y
+    self.x = x
+    self.y = y
 
-        self.acc_x = 0  # acceleration
-        self.acc_y = 0
+    self.acc_x = 0
+    self.acc_y = 0
 
-        self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
-        self.center_y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
-        self.og_x = self.center_x  # original x, which is x in the prev frame
-        self.og_y = self.center_y
+    self.center_x = self.pymunk_shape.body.position.x
+    self.center_y = self.pymunk_shape.body.position.y
 
-    def update(self, zoom, cx, cy):
-        self.scale = zoom * self.scaling
-        self.og_x = self.center_x
-        self.og_y = self.center_y
-        # self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
+    self.og_x = self.center_x
+    self.og_y = self.center_y
+
+  def update(self,zoom,cx,cy):
+    self.scale = zoom * self.scaling
+    self.og_x = self.center_x
+    self.og_y = self.center_y
+
+def make_player_sprite(mass,space, textures, scale, x,y, zoom, cx, cy):
+  pos_x = (x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
+  pos_y = (y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
+
+  width, height = textures[0].width, textures[0].height
+  mass = mass
+  moment = pymunk.moment_for_box(mass, (width, height))
+  body = pymunk.Body(mass, moment)
+  body.position = pymunk.Vec2d((pos_x,pos_y))
+  shape = pymunk.Poly.create_box(body, (width, height))
+  shape.friction = 0.5
+  space.add(body, shape)
+  sprite = PlayerSprite(shape, textures, scale,x,y)
+  return sprite
+
+def make_ground_sprite(space, textures, scale, x, y, zoom, cx, cy):
+  pos_x = (x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
+  pos_y = (y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
+
+  width, height = textures[0].width, textures[0].height
+  body = pymunk.Body(body_type=pymunk.Body.STATIC)
+  body.position = pymunk.Vec2d((pos_x-width, pos_y-height))
+  shape = pymunk.Poly.create_box(body, (width, height))
+  shape.friction = 0.5
+  space.add(body, shape)
+  sprite = GroundSprite(shape, textures, scale, x, y)
+  return sprite
 
 
 class MyGame(arcade.Window):
@@ -223,10 +255,11 @@ class MyGame(arcade.Window):
 
 
 def main():
-    """ Start the game """
-    window = MyGame()
-    arcade.run()
+  """ Start the game """
+  window = MyGame()
+  window.start_new_game()
+  arcade.run()
 
 
 if __name__ == "__main__":
-    main()
+  main()
