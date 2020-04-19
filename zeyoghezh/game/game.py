@@ -5,7 +5,7 @@ from arcade.gui import Theme, TextButton
 from util import get_distance, log_exceptions
 from planet import Planet
 from config import (
-    SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS
+    SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE
 )
 import sys
 
@@ -33,10 +33,13 @@ class Game(arcade.Window):
         self.lithium_count = 0
         self.lithium_score_location = (SCREEN_SIZE[0]/3, SCREEN_SIZE[1]/20)
         self.theme = None
+        self.background = None
 
         self.abscond_button = None
 
     def setup(self):
+        self.background = arcade.load_texture(
+            BACKGROUND_IMAGE)
         planets = [Planet(planet_name) for planet_name in ALL_PLANETS]
         self.setup_theme()
         self.abscond_button = TextButton(
@@ -82,6 +85,8 @@ class Game(arcade.Window):
     def on_draw(self):
         """ Draw everything """
         arcade.start_render()
+        arcade.draw_lrwh_rectangle_textured(
+            0, 0, SCREEN_SIZE[0], SCREEN_SIZE[1], self.background)
         super().on_draw()
         for planet in self.planets:
             for other in planet.attacked_last_round:

@@ -29,6 +29,7 @@ PLANET_SPRITES = {
     "yogh": ":resources:images/items/coinGold.png",
     "ezh": ":resources:images/items/coinBronze.png"
 }
+BACKGROUND_IMAGE = ":resources:images/backgrounds/abstract_1.jpg"
 
 
 SCREEN_TITLE = "Zeyoghezh"
