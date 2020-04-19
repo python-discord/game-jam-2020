@@ -8,13 +8,12 @@ from triple_vision.constants import SOUND_FADE_AMOUNT, SOUND_FADE_FREQUENCY
 
 class Sound(arcade.Sound):
     def __init__(
-        self,
-        *args,
-        is_faded: bool = False,
-        max_volume: float = 1.0,
-        **kwargs
+            self,
+            *args,
+            is_faded: bool = False,
+            max_volume: float = 1.0,
+            **kwargs
     ) -> None:
-
         self.faded = is_faded
         self.max_volume = max_volume
         super().__init__(*args, **kwargs)
@@ -33,8 +32,9 @@ class SoundManager:
         self.tick_delta = 0.0
         self.playing = False
 
-    def add_sound(self) -> None:
-        pass
+    def add_sound(self, sound: Sound) -> None:
+        self._sounds.append(sound)
+        self.update_cycle()
 
     def play_sound(self, index: int = None, sound: arcade.Sound = None) -> None:
         if sound:
@@ -46,6 +46,9 @@ class SoundManager:
 
     def toggle_next_sound(self) -> None:
         self.curr_sound = next(self._sounds_cycle)
+
+    def update_cycle(self):
+        self._sounds_cycle = itertools.cycle(self._sounds)
 
     def on_update(self, delta_time: float) -> None:
         self.tick_delta += delta_time
@@ -64,4 +67,3 @@ class SoundManager:
             return
 
         self.curr_sound.set_volume(self.curr_sound.get_volume() + SOUND_FADE_AMOUNT)
-
