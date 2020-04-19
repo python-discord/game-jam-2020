@@ -29,7 +29,13 @@ PLANET_SPRITES = {
     "yogh": ":resources:images/items/coinGold.png",
     "ezh": ":resources:images/items/coinBronze.png"
 }
+ATTACK_SOUND = {
+    "ze": ":resources:sounds/gameover3.wav",
+    "yogh": ":resources:sounds/hurt2.wav",
+    "ezh": ":resources:sounds/explosion1.wav"
+}
 BACKGROUND_IMAGE = ":resources:images/backgrounds/abstract_1.jpg"
+PUSH_SOUND = ":resources:sounds/upgrade1.wav"
 
 
 SCREEN_TITLE = "Zeyoghezh"

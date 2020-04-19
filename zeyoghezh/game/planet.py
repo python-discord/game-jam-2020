@@ -6,7 +6,7 @@ from config import (
     SCREEN_SIZE, PLANET_BASE_SPEED, PUSH_BASE_SPEED,
     PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
     PLANET_COLORS, PLANET_SPRITES, TRIANGULATION_START_LIKELIHOOD,
-    TRIANGULATION_END_LIKELIHOOD
+    TRIANGULATION_END_LIKELIHOOD, ATTACK_SOUND
 )
 
 logger = logging.getLogger()
@@ -26,6 +26,7 @@ class Planet(arcade.Sprite):
         self.max_attack_distance = MAX_ATTACK_DISTANCE[self.name]
         self.base_damage = BASE_DAMAGE * PLANET_DAMAGE[self.name]
         self.color = PLANET_COLORS[self.name]
+        self.attack_sound = arcade.Sound(ATTACK_SOUND[self.name])
 
         self.parent = None
         self.others = None
@@ -111,6 +112,8 @@ class Planet(arcade.Sprite):
                 self.attack_other(other)
 
     def attack_other(self, other):
+        if random.random() > 0.9:  # TODO store in config
+            self.attack_sound.play()
         self.attacked_last_round.append(other)
         distance_between = closest_distance_between_planets(self, other)
         logger.debug(
