@@ -26,6 +26,7 @@ class Player(LivingEntity, MovingSprite):
 
         self.window = window
         self.last_shot = time.time()
+        self.is_alive = True
 
     def check_mouse_press(self, x, y, button, modifiers) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -43,3 +44,7 @@ class Player(LivingEntity, MovingSprite):
             bullet.move_to(x, y, rotate=True, set_target=False)
             self.window.game_manager.player_projectiles.append(bullet)
             self.last_shot = time.time()
+
+    def kill(self):
+        self.is_alive = False
+        super().kill()

@@ -24,6 +24,8 @@ class TripleVision(arcade.View):
 
         self.tiles = None
 
+        self.bullet_list = None
+
         self.player = None
 
         self.card_manager = None
@@ -75,6 +77,9 @@ class TripleVision(arcade.View):
         self.card_manager.check_mouse_motion(x, y)
 
     def on_mouse_press(self, *args) -> None:
+        if not self.player.is_alive:
+            return
+
         if not self.card_manager.check_mouse_press(*args):
             self.player.check_mouse_press(*args)
 
@@ -116,14 +121,18 @@ class TripleVision(arcade.View):
 
     def on_draw(self) -> None:
         self.tiles.draw()
-        self.player.draw()
+
+        if self.player.is_alive:
+            self.player.draw()
 
         self.game_manager.draw()
         self.card_manager.draw()
 
     def on_update(self, delta_time: float) -> None:
         if not self.paused:
-            self.player.update(delta_time)
+            if self.player.is_alive:
+                self.player.update(delta_time)
+
             self.game_manager.update(delta_time)
 
         self.card_manager.update()

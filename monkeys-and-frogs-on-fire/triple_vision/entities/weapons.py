@@ -18,7 +18,7 @@ class Projectile(Weapon, TemporarySprite, MovingSprite):
 
 class LaserProjectile(Projectile):
 
-    def __init__(self, center_x: int, center_y: int, *args, **kwargs):
+    def __init__(self, center_x: float, center_y: float, *args, **kwargs):
         super().__init__(
             dmg=random.randrange(60, 70),
             throwback_force=8,
