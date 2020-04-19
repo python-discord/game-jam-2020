@@ -1,35 +1,13 @@
 import arcade
 from util import get_distance
 import logging
-from config import SCREEN_SIZE_Y, SCREEN_SIZE_X
+from config import (
+    SCREEN_SIZE, PLANET_BASE_SPEED, PUSH_BASE_SPEED,
+    PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
+    PLANET_COLORS, PLANET_SPRITES
+)
 
 logger = logging.getLogger()
-
-BASE_SPEED = 1e-1
-PLANET_BASE_SPEED = 5 * BASE_SPEED
-PUSH_BASE_SPEED = 2 * BASE_SPEED
-PUSH_MAX_DISTANCE = 200  # The most a planet can be away from Yogh to be pushed
-BASE_DAMAGE = 1e-4
-PLANET_DAMAGE = {
-    "ze": 20,
-    "yogh": 5,
-    "ezh": 7
-}
-MAX_ATTACK_DISTANCE = {
-    "ze": 100,
-    "yogh": 300,
-    "ezh": 300
-}
-PLANET_COLORS = {
-    "ze": arcade.color.SILVER,
-    "yogh": arcade.color.GOLD,
-    "ezh": arcade.color.BRONZE
-}
-PLANET_SPRITES = {
-    "ze": ":resources:images/items/coinSilver.png",
-    "yogh": ":resources:images/items/coinGold.png",
-    "ezh": ":resources:images/items/coinBronze.png"
-}
 
 
 class Planet(arcade.Sprite):
@@ -52,6 +30,7 @@ class Planet(arcade.Sprite):
         self.damage_on_others = None
 
         self.attacked_last_round = []
+        self.total_healing = 0
 
     def setup(
             self, parent, others, center_x, center_y,
@@ -65,11 +44,11 @@ class Planet(arcade.Sprite):
         self.speed_y = start_speed_y
 
     def move(self, delta_x=None, delta_y=None):
-        if self.center_y > SCREEN_SIZE_Y - 5:
+        if self.center_y > SCREEN_SIZE[1] - 5:
             self.speed_y = -abs(self.speed_y)
         if self.center_y < 0 + 5:
             self.speed_y = abs(self.speed_y)
-        if self.center_x > SCREEN_SIZE_X - 5:
+        if self.center_x > SCREEN_SIZE[0] - 5:
             self.speed_x = -abs(self.speed_x)
         if self.center_x < 0 + 5:
             self.speed_x = abs(self.speed_x)
@@ -148,7 +127,10 @@ class Planet(arcade.Sprite):
         damage_on_others = {
             other: round(self.damage_on_others[other], 4)
             for other in self.damage_on_others}
-        return f"{self.name}:\t{total_damage_on_others=}, {damage_on_others=}"
+        return (
+            f"{self.name}:\t{total_damage_on_others=}, {damage_on_others=}, "
+            f"{self.total_healing=}"
+        )
 
     def draw_triangulation_circle(self):
         lithium_location = self.parent.lithium_location
@@ -158,3 +140,9 @@ class Planet(arcade.Sprite):
         arcade.draw_circle_outline(
             self.center_x, self.center_y, distance_to_lithium,
             color=self.color)
+
+    def get_healed(self, health):
+        self.health += health
+        self.total_healing += health
+        self.scale = self.health
+        assert self.health > 0
