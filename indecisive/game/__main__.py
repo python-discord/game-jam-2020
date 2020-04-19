@@ -2,7 +2,7 @@ from server import Server
 import asyncio
 
 
-what = int(input("What are you (0 - server, 1 - client)"))
+what = 1
 
 if what == 0:
     print("You are a Server")

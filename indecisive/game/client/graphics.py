@@ -1,5 +1,6 @@
 import arcade
 from .scenes import *
+from typing import Union, Optional
 
 
 class Display(arcade.Window):
@@ -7,12 +8,16 @@ class Display(arcade.Window):
         super().__init__(1280, 720, "Three of a king")
         self.title = arcade.sprite_list
         arcade.set_background_color((255, 255, 255))
-        self.scene = "lobby"
+        self.scene = "loading"
         self.scenes = dict()
 
     def setup(self):
         self.scenes["loading"] = LoadingScreen(self)
         self.scenes["lobby"] = Lobby(self)
+
+    def change_scenes(self, scene: str, *args, **kwargs):
+        self.scenes[scene].reset(*args, **kwargs)
+        self.scene = scene
 
     def on_draw(self):
 
@@ -24,6 +29,9 @@ class Display(arcade.Window):
 
     def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
         self.scenes[self.scene].mouse_release(x, y, button, modifiers)
+
+    def on_key_press(self, key, modifiers):
+        self.scenes[self.scene].key_press(key, modifiers)
 
 
 def main():
