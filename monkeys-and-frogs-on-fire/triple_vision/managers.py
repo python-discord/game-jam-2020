@@ -48,32 +48,26 @@ class GameManager:
         self.enemy_projectiles.update()
         self.damage_indicators.update()
 
+        def yes_ofc(sprite: arcade.Sprite):
+            sprite.position = [
+                sprite.center_x - (sprite.change_x - sprite.change_x * slowdown),
+                sprite.center_y - (sprite.change_y - sprite.change_y * slowdown)
+            ]
+
         if slow_down:
             slowdown = 1 / ON_CARD_HOVER_SLOWDOWN_MULTIPLIER
 
             for enemy in self.enemies:
-                enemy.position = [
-                    enemy.center_x - (enemy.change_x - enemy.change_x * slowdown),
-                    enemy.center_y - (enemy.change_y - enemy.change_y * slowdown)
-                ]
+                yes_ofc(enemy)
 
             for player_projectile in self.player_projectiles:
-                player_projectile.position = [
-                    player_projectile.center_x - (player_projectile.change_x - player_projectile.change_x * slowdown),
-                    player_projectile.center_y - (player_projectile.change_y - player_projectile.change_y * slowdown)
-                ]
+                yes_ofc(player_projectile)
 
             for enemy_projectile in self.enemy_projectiles:
-                enemy_projectile.position = [
-                    enemy_projectile.center_x - (enemy_projectile.change_x - enemy_projectile.change_x * slowdown),
-                    enemy_projectile.center_y - (enemy_projectile.change_y - enemy_projectile.change_y * slowdown)
-                ]
+                yes_ofc(enemy_projectile)
 
             for damage_indicator in self.damage_indicators:
-                damage_indicator.position = [
-                    damage_indicator.center_x - (damage_indicator.change_x - damage_indicator.change_x * slowdown),
-                    damage_indicator.center_y - (damage_indicator.change_y - damage_indicator.change_y * slowdown)
-                ]
+                yes_ofc(damage_indicator)
 
 
 class CardManager:

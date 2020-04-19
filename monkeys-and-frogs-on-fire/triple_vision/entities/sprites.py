@@ -76,20 +76,6 @@ class MovingSprite(arcade.Sprite):
 
                 self.target = None
 
-        self._update(delta_time)
-
-    def _update(self, delta_time):
-        """
-        Update that works with delta time, so it support slowdown.
-        The lower it is the slower will the change position happen.
-        """
-        slowdown = delta_time * 60
-        self.position = [
-            self._position[0] + self.change_x * slowdown,
-            self._position[1] + self.change_y * slowdown
-        ]
-        self.angle += self.change_angle * slowdown
-
 
 class TemporarySprite(arcade.Sprite):
     def __init__(self, lifetime: Optional[int], *args, **kwargs) -> None:
