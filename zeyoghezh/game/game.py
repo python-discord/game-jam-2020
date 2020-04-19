@@ -28,8 +28,7 @@ def get_new_lithium_location():
 class Game(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_SIZE[0], SCREEN_SIZE[1], SCREEN_TITLE)
-        self.planets = None
-        self.planet_sprites = arcade.SpriteList()
+        self.planets = arcade.SpriteList()
         self.lithium_location = get_new_lithium_location()
         self.lithium_count = 0
         self.lithium_score_location = (SCREEN_SIZE[0]/3, SCREEN_SIZE[1]/20)
@@ -38,24 +37,21 @@ class Game(arcade.Window):
         self.abscond_button = None
 
     def setup(self):
-        self.planets = [Planet(planet_name) for planet_name in ALL_PLANETS]
+        planets = [Planet(planet_name) for planet_name in ALL_PLANETS]
         self.setup_theme()
         self.abscond_button = TextButton(
             SCREEN_SIZE[0]/6, SCREEN_SIZE[1]/15, 200, 50,
             "Abscond", theme=self.theme)
-        self.abscond_button.on_press = (
-            lambda: self.abscond_press())
-        self.abscond_button.on_release = (
-            lambda: self.abscond_release())
+        self.abscond_button.on_press = lambda: self.abscond_press()
+        self.abscond_button.on_release = lambda: self.abscond_release()
         self.button_list.append(self.abscond_button)
-        for i, planet in enumerate(self.planets):
+        for i, planet in enumerate(planets):
             # TODO improve this
-            self.planet_sprites.append(planet)
-            planets_copy = self.planets.copy()
-            planets_copy.remove(planet)
+            self.planets.append(planet)
+            others = [other for other in planets if other != planet]
             planet.setup(
                 parent=self,
-                others=planets_copy,
+                others=others,
                 center_x=random.random()*SCREEN_SIZE[0],
                 center_y=random.random()*SCREEN_SIZE[1],
                 start_speed_x=random.random(),
@@ -107,7 +103,7 @@ class Game(arcade.Window):
             # TODO make this last some time, not just 1 frame
             if TRIANGULATION_FREQUENCY > random.random():
                 planet.draw_triangulation_circle()
-        self.planet_sprites.draw()
+        self.planets.draw()
         lithium_count_text = f"Lithium count: {self.lithium_count:.2f}"
         arcade.draw_text(
             f"{lithium_count_text}", *self.lithium_score_location,
@@ -137,7 +133,7 @@ class Game(arcade.Window):
     def on_update(self, delta_time):
         logger.debug("\nNew Round\n")
         self.run_assertions()
-        self.planet_sprites.update()
+        self.planets.update()
         [planet.move() for planet in self.planets]
         [planet.try_attack_others() for planet in self.planets]
         [planet.try_push_others() for planet in self.planets]

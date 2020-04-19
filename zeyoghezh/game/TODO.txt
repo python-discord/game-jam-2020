@@ -1,4 +1,2 @@
 Add audio
 Add combat effects (not just lines)
-
-Add an "abscond" button that lets you end the game with the amount of lithium you have
