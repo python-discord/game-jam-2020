@@ -48,14 +48,28 @@ class Game(arcade.Window):
 
         self.enemy_list = arcade.SpriteList()
 
-        # Set up the player, specifically placing it at these coordinates.
-        self.player = Player()
-        self.player.scale = 1
-
         # Create the dungeon
         self.dungeon = Dungeon(0, 3)
 
-        self.player.center_x, self.player.center_y = random.choice(self.dungeon.levelList).center()
+        # level = random.choice(self.dungeon.levelList)
+        level = self.dungeon.levels[1][1]
+
+        # Set up the player, specifically placing it at these coordinates.
+        x, y = level.center()
+        self.player = Player(center_x=x, center_y=y)
+        self.player.scale = 1
+
+        # Debug statement
+        print((level.x, level.y), level.center(), (self.player.center_x, self.player.center_y))
+
+        # Setup viewport
+        self.view_bottom = x - (0.5 * Config.SCREEN_WIDTH)
+        self.view_left = y - (0.5 * Config.SCREEN_WIDTH)
+        arcade.set_viewport(self.view_left,
+                            Config.SCREEN_WIDTH + self.view_left,
+                            self.view_bottom,
+                            Config.SCREEN_HEIGHT + self.view_bottom)
+        self.player.center_x, self.player.center_y = x, y
 
         # Create monsters
         # This needs to be updated to comply with the new mobs.py code
@@ -77,8 +91,9 @@ class Game(arcade.Window):
         self.enemy_list.draw()
         self.wall_list.draw()
 
-        x, y = self.player.center_x, self.player.center_y + 100
-        arcade.draw_text(f"({x}, {y})", x, y, arcade.color.WHITE, 15)
+        x, y = self.view_left + 50, self.view_bottom + 50
+        arcade.draw_text(str((self.player.center_x,  self.player.center_y)), x, y, arcade.color.WHITE, 15)
+        print('Here.')
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """

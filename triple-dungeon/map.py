@@ -142,8 +142,6 @@ class Level:
                     level.floorSprites.append(sprite)
                 elif 'wall' in tilePath:
                     level.wallSprites.append(sprite)
-                else:
-                    print(f'Could not handle Tile: {tilePath}')
 
         # Move everything into correct positions
         level.floorSprites.move(*level.center())
@@ -156,7 +154,7 @@ class Level:
         Returns the pixel center of the level.
         :return: A tuple containing the X and Y coordinates of the level's center
         """
-        return self.x * Config.LEVEL_SIZE, self.y * Config.LEVEL_SIZE
+        return int((self.x + 0.5) * Config.LEVEL_SIZE), int((self.y + 0.5) * Config.LEVEL_SIZE)
 
     def rotate_level(self, times_rotated):
         """
