@@ -17,7 +17,7 @@ class Config(object):
     """
     A simple class dedicated to loading, storing and organizing constants.
     """
-
+    
     # Constants
     SCREEN_WIDTH = 1650
     SCREEN_HEIGHT = 1000
@@ -29,6 +29,7 @@ class Config(object):
     # Constants used to scale our sprites from their original size
     CHARACTER_SCALING = 1
     TILE_SCALING = 2
+    BULLET_SCALING = 0.8
 
     # The number of pixels across the level
     LEVEL_SIZE = 10 * TILE_SCALING * TILE_WIDTH
@@ -42,9 +43,9 @@ class Config(object):
     BOTTOM_VIEWPORT_MARGIN = 50
     TOP_VIEWPORT_MARGIN = 100
 	
-	#Bullet constants
-	BULLET_SPEED = 5
-	SPRITE_SCALING_BULLET = 0.8
+    #Bullet constants
+    BULLET_SPEED = 5
+    
 
 
 class Enums(Enum):
