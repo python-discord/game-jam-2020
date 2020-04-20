@@ -9,6 +9,7 @@ from pathlib import Path
 
 # Third Party
 import arcade
+from math import atan2, degrees
 from pyglet import gl
 
 UPDATES_PER_FRAME = 3
@@ -168,9 +169,17 @@ class ShipView(arcade.View):
     def __init__(self):
         super().__init__()
 
+        arcade.set_background_color(arcade.color.AMAZON)
+
+        # Track the current state of what key is pressed
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
+
         self.ship_sprite = Ship(path['img']/'ship'/'ship.png')
 
-        self.ship_sprite.set_position(100, 100)
+        self.ship_sprite.set_position(800, 800)
 
         self.layer_shift_count = 0
         self.map = arcade.tilemap.read_tmx(path['maps'] / "test_map.tmx")
@@ -178,14 +187,16 @@ class ShipView(arcade.View):
         self.map_layers = [arcade.process_layer(
             self.map, layer.name) for layer in self.map.layers]
 
-        # self.physics_engine = arcade.PhysicsEngineSimple(
-        #     self.ship_sprite, self.map_layers[2])
+        self.physics_engine = arcade.PhysicsEngineSimple(
+            self.ship_sprite, self.map_layers[2])
 
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
 
         # self.player_view = PlayerView()
+
+        self.ship_sprite.target_angle = 0
 
     def scroll(self):
         # --- Manage Scrolling ---
@@ -243,7 +254,7 @@ class ShipView(arcade.View):
         self.ship_sprite.draw()
 
     def on_update(self, delta_time):
-        print("TEST")
+        print(self.ship_sprite._get_position(), self.ship_sprite._get_angle())
         self.scroll()
 
         self.map_layers[0].move(1, 0)
@@ -256,31 +267,84 @@ class ShipView(arcade.View):
         self.ship_sprite.change_x = 0
         self.ship_sprite.change_y = 0
 
-        if self.window.up_pressed and not self.window.down_pressed:
+        self.ship_sprite.change_angle = 0
+
+        if self.up_pressed and not self.down_pressed:
             self.ship_sprite.change_y = SHIP_MOVEMENT_SPEED * delta_time
-        elif self.window.down_pressed and not self.window.up_pressed:
+            self.ship_sprite.target_angle = 180
+        elif self.down_pressed and not self.up_pressed:
             self.ship_sprite.change_y = -SHIP_MOVEMENT_SPEED * delta_time
-        if self.window.left_pressed and not self.window.right_pressed:
+            self.ship_sprite.target_angle = 0
+        if self.left_pressed and not self.right_pressed:
             self.ship_sprite.change_x = -SHIP_MOVEMENT_SPEED * delta_time
-        elif self.window.right_pressed and not self.window.left_pressed:
+            self.ship_sprite.target_angle = 270
+        elif self.right_pressed and not self.left_pressed:
             self.ship_sprite.change_x = SHIP_MOVEMENT_SPEED * delta_time
+            self.ship_sprite.target_angle = 90
 
-        print(delta_time)
+        if self.ship_sprite.change_x > 0 or self.ship_sprite.change_y > 0:
+            self.ship_sprite.angle = 90+degrees(atan2(self.ship_sprite.change_y,  self.ship_sprite.change_x))
+        else:
+            self.ship_sprite.angle = self.ship_sprite.angle
+        # self.ship_sprite.on_update(delta_time)
 
-        self.ship_sprite.update(delta_time)
+        # print(self.get_viewport())
+        width, height = arcade.get_viewport()[1], arcade.get_viewport()[3]
 
-        # self.physics_engine.update()
+        if self.ship_sprite.left < 0:
+            self.ship_sprite.left = 0
+        elif self.ship_sprite.right > width - 1:
+            self.ship_sprite.right = width - 1
+
+        if self.ship_sprite.bottom < 0:
+            self.ship_sprite.bottom = 0
+        elif self.ship_sprite.top > height - 1:
+            self.ship_sprite.top = height - 1
+
+        self.physics_engine.update()
 
     def on_key_press(self, key, key_modifiers):
-        pass
+        """
+        Called whenever a key on the keyboard is pressed.
+
+        For a full list of keys, see:
+        http://arcade.academy/arcade.key.html
+        """
+        if key == arcade.key.W:
+            self.up_pressed = True
+        elif key == arcade.key.S:
+            self.down_pressed = True
+        elif key == arcade.key.A:
+            self.left_pressed = True
+        elif key == arcade.key.D:
+            self.right_pressed = True
 
     def on_key_release(self, key, key_modifiers):
-        pass
+        """
+        Called whenever the user lets off a previously pressed key.
+        """
+        if key == arcade.key.W:
+            self.up_pressed = False
+        elif key == arcade.key.S:
+            self.down_pressed = False
+        elif key == arcade.key.A:
+            self.left_pressed = False
+        elif key == arcade.key.D:
+            self.right_pressed = False
 
 
 class PlayerView(arcade.View):
     def __init__(self):
         super().__init__()
+
+        arcade.set_background_color(arcade.color.AMAZON)
+
+        # Track the current state of what key is pressed
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
+
         self.player_sprites = arcade.SpriteList()
 
         self.player_sprite = Pirate('captain')
@@ -374,7 +438,7 @@ class PlayerView(arcade.View):
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED * delta_time
 
         # print(self.get_viewport())
-        width, height = self.get_viewport()[1:4:2]
+        width, height = arcade.get_viewport()[1:4:2]
 
         if self.player_sprite.left < 0:
             self.player_sprite.left = 0
@@ -389,10 +453,33 @@ class PlayerView(arcade.View):
         self.physics_engine.update()
 
     def on_key_press(self, key, key_modifiers):
-        pass
+        """
+        Called whenever a key on the keyboard is pressed.
+
+        For a full list of keys, see:
+        http://arcade.academy/arcade.key.html
+        """
+        if key == arcade.key.W:
+            self.up_pressed = True
+        elif key == arcade.key.S:
+            self.down_pressed = True
+        elif key == arcade.key.A:
+            self.left_pressed = True
+        elif key == arcade.key.D:
+            self.right_pressed = True
 
     def on_key_release(self, key, key_modifiers):
-        pass
+        """
+        Called whenever the user lets off a previously pressed key.
+        """
+        if key == arcade.key.W:
+            self.up_pressed = False
+        elif key == arcade.key.S:
+            self.down_pressed = False
+        elif key == arcade.key.A:
+            self.left_pressed = False
+        elif key == arcade.key.D:
+            self.right_pressed = False
 
 
 class MyGame(arcade.Window):
@@ -404,14 +491,6 @@ class MyGame(arcade.Window):
         super().__init__(width, height, title)
 
         # self.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
-
-        arcade.set_background_color(arcade.color.AMAZON)
-
-        # Track the current state of what key is pressed
-        self.left_pressed = False
-        self.right_pressed = False
-        self.up_pressed = False
-        self.down_pressed = False
 
 
         # If you have sprite lists, you should create them here,
@@ -497,9 +576,10 @@ class MyGame(arcade.Window):
 
 def main():
     """ Main method """
-    window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    # window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     ship_view = ShipView()
-    # player_view = PlayerView()
+    player_view = PlayerView()
 
     window.show_view(ship_view)
 
