@@ -100,8 +100,7 @@ class Level:
         self.wall_list = []
         # self.entrances = []
 
-    @staticmethod
-    def load_file(path: str) -> Level:
+    def load_file(self, path: str):
         """
         Builds a Level from a given file path.
 
