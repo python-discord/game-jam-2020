@@ -6,6 +6,7 @@ from util import get_distance, log_exceptions
 from planet import Planet
 from config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
+    BACKGROUND_MUSIC_VOLUME
 )
 import sys
 
@@ -37,11 +38,13 @@ class Game(arcade.Window):
         self.background_music = None
 
         self.abscond_button = None
+        # self.game_is_over = False
 
     def setup(self):
         self.background = arcade.load_texture(
             BACKGROUND_IMAGE)
         self.background_music = arcade.Sound(BACKGROUND_MUSIC, streaming=True)
+        self.background_music.play(BACKGROUND_MUSIC_VOLUME)
         planets = [Planet(planet_name) for planet_name in ALL_PLANETS]
         self.setup_theme()
         self.abscond_button = TextButton(
