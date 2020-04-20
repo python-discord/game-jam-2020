@@ -5,7 +5,7 @@ Organizes all classes related to Mobs, Entities, Enemies, Players and Items.
 
 import arcade
 
-from config import Config
+from config import Config, Sprites
 
 
 class Mob(object):
@@ -37,8 +37,7 @@ class Player(Mob):
         super(Player, self).__init__(*args, **kwargs)
 
     def setup(self):
-        image_source = "resources/images/monsters/skeleton.png"
-        self.player_sprite = arcade.Sprite(image_source, Config.CHARACTER_SCALING)
+        self.player_sprite = arcade.Sprite(Sprites.SKELETON, Config.CHARACTER_SCALING)
         self.player_sprite.center_x = Config.SCREEN_WIDTH / 2
         self.player_sprite.center_y = Config.SCREEN_HEIGHT / 2
         self.player_sprite.scale = 4

@@ -6,9 +6,9 @@ Holds the main game window, as well as manages basic functions for organizing th
 
 import arcade
 
-from config import Config
 from map import Dungeon
 from mobs import Player, Enemy
+from config import Config, Sprites
 
 
 class Game(arcade.Window):
@@ -59,8 +59,8 @@ class Game(arcade.Window):
 
         # Create monsters
         self.enemy_list.extend([
-                Enemy("resources/images/monsters/ghost/ghost1.png", 200, 200).get_enemy(),
-                Enemy("resources/images/monsters/frog/frog1.png", 200, 1000).get_enemy()
+                Enemy(Sprites.GHOST, 200, 200).get_enemy(),
+                Enemy(Sprites.FROG, 200, 1000).get_enemy()
         ])
 
         # Create the 'physics engine'
