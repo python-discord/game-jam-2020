@@ -1,9 +1,10 @@
 """
 
-'Tricerasect' a game of the python-discord game jam 2020
-Made in 10 days, using the arcade library and based on
+'Insane Irradiated Insects'
+A game of the python-discord game jam 2020, made
+in 10 days, using the Arcade library and based on
 the theme : Three of a kind
-Author: sachapomme
+Author: sachapomme (or Sacha#8175)
 
 """
 import arcade
