@@ -44,5 +44,3 @@ class Sprites(object):
     SKELETON = os.path.join(__MONSTERS,  "skeleton.png")
     GHOST = os.path.join(__MONSTERS, "ghost", "ghost1.png")
     FROG = os.path.join(__MONSTERS, "frog", "frog1.png")
-
-    print(SKELETON, GHOST, FROG)

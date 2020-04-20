@@ -55,7 +55,7 @@ class Game(arcade.Window):
 
         # Create the dungeon
         dungeon = Dungeon()
-        self.floor_list, self.wall_list = dungeon.get_lists()
+        self.floor_list, self.wall_list = dungeon.floor_list, dungeon.wall_list
 
         # Create monsters
         self.enemy_list.extend([

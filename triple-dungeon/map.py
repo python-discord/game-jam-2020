@@ -59,16 +59,11 @@ class Dungeon(object):
         self.floor_list.extend(room_floor)
         self.wall_list.extend(room_wall)
 
-
-        #self.level_count, self.size = level_count, size
-        #self.levels = [[None for y in range(size)] for x in range(size)]  # array[x][y] style access
+        # self.level_count, self.size = level_count, size
+        # self.levels = [[None for y in range(size)] for x in range(size)]  # array[x][y] style access
 
     def get_lists(self):
-        return (self.floor_list, self.wall_list)
-
-    def add_level(self, sprit_list):
-        for x in sprit_list:
-            self.levels.append(x)
+        return self.floor_list, self.wall_list
 
     def render(self) -> None:
         """
