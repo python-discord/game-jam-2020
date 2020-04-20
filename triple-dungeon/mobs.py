@@ -43,39 +43,12 @@ class Player(Mob):
         super(Player, self).__init__(*args, **kwargs)
 
         self.animations = PlayerAnimations(SpritePaths.KNIGHT)
-        self.character_dir = Enums.FRONT_FACING  # Face front by default.
-
-        # for i in range(4):
-        #     texture = arcade.load_texture(f"{main_path}knight iso char_idle_{i}.png")
-        #     self.idle_textures.append(texture)
-        #
-        # # Load textures for running horizontally
-        # for i in range(6):
-        #     self.walking_textures.append([arcade.load_texture(f"{main_path}knight iso char_run left_{i}.png"),
-        #                                   arcade.load_texture(f"{main_path}knight iso char_run left_{i}.png",
-        #                                                       mirrored=True)])
-        #
-        # # Load textures for running down
-        # for i in range(5):
-        #     self.down_textures.append(arcade.load_texture(f"{main_path}knight iso char_run down_{i}.png"))
-        #
-        # # Load textures for running up
-        # for i in range(5):
-        #     self.up_textures.append(arcade.load_texture(f"{main_path}knight iso char_run up_{i}.png"))
 
     def update_animation(self, delta_time: float = 1 / 60) -> None:
         """
         Updates animations for the Player.
         :param delta_time: No idea.
         """
-
-        # Figure out if we need to flip face left, right, up, or down
-        # if self.change_x > 0:
-        #     self.character_dir = Enums.LEFT_FACING
-        # elif self.change_x < 0:
-        #     self.character_dir = Enums.RIGHT_FACING
-        # elif self.change_x == 0 and self.change_y == 0:
-        #     self.character_dir = Enums.FRONT_FACING
 
         if self.change_x == 0 and self.change_y == 0:
             self.texture = next(self.animations.idles)
@@ -87,28 +60,6 @@ class Player(Mob):
             self.texture = next(self.animations.right)
         elif self.change_x < 0:  # Right
             self.texture = next(self.animations.left)
-
-        # Idle Animation
-        # if self.change_x == 0 and self.change_y == 0:
-        #     self.cur_texture = (self.cur_texture + 1) % (Config.RUN_UPDATES_PER_FRAME * 3)
-        #     self.texture = self.idle_textures[self.cur_texture // Config.IDLE_UPDATES_PER_FRAME]
-        #     return
-        #
-        # # walk up animation
-        # if self.change_y > 0:
-        #     self.cur_texture = (self.cur_texture + 1) % (Config.RUN_UPDATES_PER_FRAME * 4)
-        #     self.texture = self.up_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME]
-        #     return
-        #
-        # # walk down animation
-        # if self.change_y < 0:
-        #     self.cur_texture = (self.cur_texture + 1) % (Config.RUN_UPDATES_PER_FRAME * 4)
-        #     self.texture = self.down_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME]
-        #     return
-
-        # # Walking left/right animation
-        # self.cur_texture = (self.cur_texture + 1) % (Config.RUN_UPDATES_PER_FRAME * 5)
-        # self.texture = self.walking_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME][self.character_dir.value]
 
     def tick(self):
         """
