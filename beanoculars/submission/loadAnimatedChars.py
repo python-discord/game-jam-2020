@@ -18,12 +18,12 @@ def load_texture_pack(filename: str, e_type: int):  # à revoir
     Load the four/three directions of textures. For the entities
     """
 
-    if e_type > 7:  # si tourelle (load 3 directions)
+    if e_type > 7:  # si tourelle (load 4 directions)
         return [
             arcade.load_texture(PATH['img'] / filename),
             arcade.load_texture(PATH['img'] / filename, mirrored=True),
-            arcade.load_texture(PATH['img'] / filename + 'UD'),
-            arcade.load_texture(PATH['img'] / filename + 'UD', mirrored=True)
+            #arcade.load_texture(PATH['img'] / filename + 'UD'),
+            #arcade.load_texture(PATH['img'] / filename + 'UD', mirrored=True)
         ]
     elif e_type < 7:  # si ennemi (load 3 directions)
         return [
@@ -32,29 +32,39 @@ def load_texture_pack(filename: str, e_type: int):  # à revoir
             # arcade.load_texture(PATH['img'] / filename + 'U')
         ]
 
+    else:
+        raise Exception('Problem with loading an entity sprite')
+
 
 class AnimatedEntity(arcade.Sprite):
     """
     Creates animated entity (except player) with init and update_animation
     """
 
-    def __init__(self, anim_filename: str, num_of_frames: int, e_type: int):
+    def __init__(self, e_type: int, num_of_frames: int, coor: [int, int]):
         super().__init__()
 
         if e_type == E_ANT:
             self.update_rate = UR_ANT
+            main_path = PATH['img'] / 'sprite' / 'ant'
         elif e_type == E_MOSQUITO:
             self.update_rate = UR_MOSQUITO
+            main_path = PATH['img'] / 'sprite' / 'mosquito'
         elif e_type == E_SPIDER:
             self.update_rate = UR_SPIDER
+            main_path = PATH['img'] / 'sprite' / 'spider'
         elif e_type == E_DUNG_BEETLE:
             self.update_rate = UR_DUNG_BEETLE
+            main_path = PATH['img'] / 'sprite' / 'dung_beetle'
         elif e_type == T_SPRAY:
             self.update_rate = UR_SPRAY
+            main_path = PATH['img'] / 'sprite' / 'spray'
         elif e_type == T_LAMP:
             self.update_rate = UR_LAMP
+            main_path = PATH['img'] / 'sprite' / 'lamp'
         elif e_type == T_VACUUM:
             self.update_rate = UR_VACUUM
+            main_path = PATH['img'] / 'sprite' / 'vacuum'
 
         self.character_face_direction = LEFT_FACING
 
@@ -62,13 +72,16 @@ class AnimatedEntity(arcade.Sprite):
 
         self.cur_texture_index = 0
 
-        main_path = PATH['img'] / 'sprite' / anim_filename  # path
+          # path
 
         self.basic_textures = []
 
         for i in range(num_of_frames):  # nb of frames of the animation
-            texture_pair = load_texture_pack(f"{main_path}_f{i + 1}.png", e_type)
-            self.basic_textures.append(texture_pair)
+            texture_pack = load_texture_pack(f"{main_path}_f{i + 1}.png", e_type)
+            self.basic_textures.append(texture_pack)
+
+        self.center_x = coor[0]*32 + 16
+        self.center_y = coor[1]*32 + 16
 
         self.texture = self.basic_textures[0][0]
 
@@ -77,7 +90,7 @@ class AnimatedEntity(arcade.Sprite):
         self.cur_texture_index += 1
         if self.cur_texture_index >= self.numberFrames * self.update_rate:
             self.cur_texture_index = 0
-        self.texture = self.basic_textures[self.cur_texture_index // self.update_rate][0]
+        self.texture = self.basic_textures[self.cur_texture_index // self.update_rate][self.character_face_direction]
 
 
 class AnimatedPlayer(arcade.Sprite):
@@ -113,6 +126,7 @@ class AnimatedPlayer(arcade.Sprite):
         self.cur_speed = MOVE_SPEED
 
         self.inventory = 0
+        self.actual_cur_pos = []
 
     def update_animation(self, delta_time: float = 1 / 60):
         self.cur_texture_index += 1
