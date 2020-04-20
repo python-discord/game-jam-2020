@@ -43,7 +43,7 @@ class Config(object):
     BOTTOM_VIEWPORT_MARGIN = 50
     TOP_VIEWPORT_MARGIN = 100
 	
-    #Bullet constants
+    #Bullet constants TEMP change to speed factor in projectiles.py
     BULLET_SPEED = 5
     
 

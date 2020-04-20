@@ -124,7 +124,7 @@ class Game(arcade.Window):
         """
         Called whenever the mouse is clicked.
         """
-        # Create a bullet NEED SPRITE, currently wielding frog slingshot
+        # Create a bullet TEMP SPRITE, currently wielding frog slingshot
         bullet = arcade.Sprite("resources/images/monsters/frog/frog1.png", Config.BULLET_SCALING)
 
         # Position the bullet at the player's current location
@@ -208,8 +208,8 @@ class Game(arcade.Window):
             if len(hit_list) > 0:
                 bullet.remove_from_sprite_lists()
 
-            # If the bullet flies off-screen, remove it.
-            if bullet.bottom > self.width or bullet.top < 0 or bullet.right < 0 or bullet.left > self.width:
+            # If the bullet flies off-screen, remove it. TEMP change to range calc
+            if bullet.bottom < self.view_bottom or bullet.top > self.view_bottom+Config.SCREEN_HEIGHT or bullet.right > self.view_left+Config.SCREEN_WIDTH or bullet.left < self.view_left:
                 bullet.remove_from_sprite_lists()
 
 
