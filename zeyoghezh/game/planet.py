@@ -40,6 +40,8 @@ class Planet(arcade.Sprite):
 
         self.is_triangulating = False
 
+        self.proper_name = self.name[0].upper() + self.name[1:].lower()
+
     def setup(
             self, parent, others, center_x, center_y,
             start_speed_x, start_speed_y):
@@ -116,7 +118,8 @@ class Planet(arcade.Sprite):
             logger.info(f"Removing {self.name} from others in {planet.name}")
             planet.others.remove(self)
         self.parent.planets.remove(self)
-        self.parent.game_over(f"You cannot leave now; {self.name} has died.")
+        self.parent.game_over(
+            f"You cannot leave now; {self.proper_name} has died.")
 
     def get_stats_str(self):
         total_damage_on_others = round(sum(self.damage_on_others.values()), 4)
