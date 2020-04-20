@@ -1,33 +1,47 @@
 import arcade
+from arcade import sprite_list
 
 from submission.gameConstants import *
+from submission.loadAnimatedChars import AnimatedEntity
 
 
-def pickUp(sprite: arcade.sprite, path_list: arcade.sprite_list): # called when q is pressed
+def pickUp(sprite: arcade.sprite, player_list: arcade.sprite_list, path_list: arcade.sprite_list,
+           turret_list: arcade.sprite_list):  # called when q is pressed
     """
     Manage the pick up of turrets and so on
     :param sprite: player sprite
     :return: current inventory state
     """
+
     if not sprite.is_moving:
-        if sprite.inventory != 0: # free it
-            #check if turret can be placed
-            sprite.cur_speed = MOVE_SPEED # reset speed
-            sprite.inventory = 0 # reset inventory
-            #actually place the turret on the actual_cur_pos maybe do a new var
+        if sprite.inventory != 0:  # free it
+            if not sprite.actual_cur_pos[0] > 28:  # if in town
+                if not arcade.sprite_list.get_sprites_at_point([sprite.center_x, sprite.center_y],
+                                                               path_list):  # check if turret can be placed
+                    if not arcade.sprite_list.get_sprites_at_point([sprite.center_x, sprite.center_y],
+                                                                   turret_list):
+                        t_type = sprite.inventory
+                        newTurret = AnimatedEntity(t_type, 2, sprite.actual_cur_pos)
+                        turret_list.append(newTurret)
+                        sprite.cur_speed = MOVE_SPEED  # reset speed
+                        sprite.inventory = 0  # reset inventory
 
             return 0
 
         if sprite.inventory == 0:
-            #check if turret underneath
-            #check if turret can be picked up
-            #return 0 if false
-            #else
-            sprite.inventory = T_SPRAY #following the actual turret
-            #kill the turret instance on the ground
+            if arcade.sprite_list.get_sprites_at_point([sprite.center_x, sprite.center_y],
+                                                       turret_list):
+                # if there's a turret under the player
 
-            sprite.cur_speed = MOVE_SPEED_CHARGED
+                t_list = arcade.sprite_list.get_sprites_at_point([sprite.center_x, sprite.center_y], turret_list)
+                # get the turrets at the player position
 
-            return sprite.inventory
+                sprite.inventory = t_list[0].e_type  # put the turret in  the inventory
 
-    #else play sound?
+                t_list[0].kill()  # kill picked up turret
+
+                sprite.cur_speed = MOVE_SPEED_CHARGED  # slow down the player
+
+                return 0  # return the inventory
+
+    # else play sound?
