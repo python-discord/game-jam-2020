@@ -5,7 +5,8 @@ Organizes all classes related to Mobs, Entities, Enemies, Players and Items.
 
 import arcade
 
-from config import Config, Enums
+from config import Config, Enums, SpritePaths
+from sprites import PlayerAnimations
 
 
 class Mob(arcade.Sprite):
@@ -41,12 +42,12 @@ class Player(Mob):
     def __init__(self, *args, **kwargs) -> None:
         super(Player, self).__init__(*args, **kwargs)
 
-        main_path = "resources/images/character/knight/"
-
-        # Default to face-front
-        self.character_dir = Enums.FRONT_FACING
+        self.animations = PlayerAnimations(SpritePaths.KNIGHT)
+        self.character_dir = Enums.FRONT_FACING  # Face front by default.
 
         # Load textures for idle standing
+        self.idle_textures = self.animations.idles
+        self.walking_textures = self.animations.
         for i in range(4):
             texture = arcade.load_texture(f"{main_path}knight iso char_idle_{i}.png")
             self.idle_textures.append(texture)
@@ -81,32 +82,24 @@ class Player(Mob):
 
         # Idle Animation
         if self.change_x == 0 and self.change_y == 0:
-            self.cur_texture += 1
-            if self.cur_texture > 3 * Config.IDLE_UPDATES_PER_FRAME:
-                self.cur_texture = 0
+            self.cur_texture = (self.cur_texture + 1) % (Config.RUN_UPDATES_PER_FRAME * 3)
             self.texture = self.idle_textures[self.cur_texture // Config.IDLE_UPDATES_PER_FRAME]
             return
 
         # walk up animation
         if self.change_y > 0:
-            self.cur_texture += 1
-            if self.cur_texture > 4 * Config.RUN_UPDATES_PER_FRAME:
-                self.cur_texture = 0
+            self.cur_texture = (self.cur_texture + 1) % (Config.RUN_UPDATES_PER_FRAME * 4)
             self.texture = self.up_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME]
             return
 
         # walk down animation
         if self.change_y < 0:
-            self.cur_texture += 1
-            if self.cur_texture > 4 * Config.RUN_UPDATES_PER_FRAME:
-                self.cur_texture = 0
+            self.cur_texture = (self.cur_texture + 1) % (Config.RUN_UPDATES_PER_FRAME * 4)
             self.texture = self.down_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME]
             return
 
         # Walking left/right animation
-        self.cur_texture += 1
-        if self.cur_texture > 5 * Config.RUN_UPDATES_PER_FRAME:
-            self.cur_texture = 0
+        self.cur_texture = (self.cur_texture + 1) % (Config.RUN_UPDATES_PER_FRAME * 5)
         self.texture = self.walking_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME][self.character_dir.value]
 
     def tick(self):

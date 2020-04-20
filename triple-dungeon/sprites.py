@@ -7,7 +7,7 @@ import arcade
 import os
 import re
 
-from itertools import cycle
+from typing import Pattern
 
 
 class AnimationSet(object):
@@ -25,7 +25,7 @@ class AnimationSet(object):
         self.directory = directory
         self.animations = os.listdir(directory)
 
-    def getAnimations(self, pattern: re.Pattern) -> iter:
+    def getAnimations(self, pattern: Pattern) -> iter:
         """
         Loads all animations from the AnimationSet's directory that match the pattern.
         The pattern must have 1 group that specifies the animation's index.
@@ -40,20 +40,24 @@ class AnimationSet(object):
         matches.sort(key=lambda match: int(match.group(1)))
         # Grab the filename and load it to the file directory
         matches = list(map(lambda match: arcade.load_texture(os.path.join(self.directory, match.group(0))), matches))
-        return cycle(matches)
+        return matches
 
 
 class PlayerAnimations(AnimationSet):
     """
     A class dedicated to serving player animations.
     Player animations must be served to the class in the correct format.
+
+    The correct format is: {action}[_{direction}]_{index}.png
+    action: [idle, run, slice] - The action being taken.
+    direction: [down, right, left, up] - The direction of the action, if applicable. Omit the underscore if not.
+    index: [0,) - The index of the animation. Index should be enumerated in ascending order.
     """
 
     def __init__(self, directory: str):
         """
         Initializes the PlayerAnimations class.
         """
-
         super(PlayerAnimations, self).__init__(directory)
 
         # Grabs all animations needed. These are infinite iters, use next(iter) to grab the next animation.
