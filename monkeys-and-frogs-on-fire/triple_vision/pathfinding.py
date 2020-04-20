@@ -46,7 +46,7 @@ class Node:
 
 class PathFinder:
 
-    def __init__(self, max_tries: int = 500) -> None:
+    def __init__(self, max_tries: int = 1000) -> None:
         self.max_tries = max_tries
 
     def find(
