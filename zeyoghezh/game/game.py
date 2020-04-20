@@ -2,9 +2,9 @@ import random
 import arcade
 import logging
 from arcade.gui import Theme, TextButton
-from util import get_distance, log_exceptions
-from planet import Planet
-from config import (
+from .util import get_distance, log_exceptions
+from .planet import Planet
+from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
     BACKGROUND_MUSIC_VOLUME
 )

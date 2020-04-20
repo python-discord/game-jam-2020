@@ -44,8 +44,9 @@ def get_unit_push_distance(planet_coords, other_coords):
         assert y_distance_normalized == 0
     if abs(x_distance) > abs(y_distance):
         assert abs(x_distance_normalized) > abs(y_distance_normalized)
-    assert abs(x_distance_normalized) + abs(y_distance_normalized) == 1, (
-        f"{x_distance_normalized=}, {y_distance_normalized=}, "
+    abs_sum = abs(x_distance_normalized) + abs(y_distance_normalized)
+    assert 0.9 < abs_sum < 1.1, (
+        f"{abs_sum=}, {x_distance_normalized=}, {y_distance_normalized=}, "
         f"{planet_coords=}, {other_coords=}")
     return (x_distance_normalized, y_distance_normalized)
 

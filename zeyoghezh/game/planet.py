@@ -1,15 +1,16 @@
 import arcade
-from util import get_distance, closest_distance_between_planets
+from .util import (
+    get_distance, closest_distance_between_planets, get_unit_push_distance
+)
 import logging
 import random
-from config import (
+from .config import (
     SCREEN_SIZE, PLANET_BASE_SPEED, PUSH_BASE_SPEED,
     PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
     PLANET_COLORS, PLANET_SPRITES, TRIANGULATION_START_LIKELIHOOD,
     TRIANGULATION_END_LIKELIHOOD, ATTACK_SOUND, ATTACK_PLAYS_SOUND_CHANCE,
     SOUND_VOLUME
 )
-from util import get_unit_push_distance
 
 logger = logging.getLogger()
 

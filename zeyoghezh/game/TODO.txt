@@ -1,6 +1,6 @@
 Test attack sounds
 Add combat effects (not just lines)
 Add space background
+Improve aesthetic
 
 Set up pipenv
-Add game over screen
