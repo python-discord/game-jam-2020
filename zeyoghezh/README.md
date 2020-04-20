@@ -39,3 +39,5 @@ Inputs by the player:
 * Choose to strengthen one of the planets
 * Use the results of the planets' triangulation to answer some question about where the lithium is
   * Maybe the planets occasionally give off circles around them, and you have to click where the triangulated location is
+
+Music made by missingfragment#1983
