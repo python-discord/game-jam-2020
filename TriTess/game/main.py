@@ -19,7 +19,7 @@ import arcade
 from TriTess.game import trigrid
 
 
-BOARD_SIZE = 15
+BOARD_SIZE = 12
 
 # This sets the WIDTH of each grid location
 WIDTH = 30
@@ -65,8 +65,24 @@ class TriTess(arcade.Window):
         # Draw the grid
         self.trigrid.on_draw()
 
-    def on_mouse_press(self, x, y, button, modifiers):
-        pass
+    def on_mouse_press(self, coord_x, coord_y, button, modifiers):
+        """
+        Called when the user presses a mouse button.
+        """
+        x, y, r = self.trigrid.get_grid_position(coord_x, coord_y)
+        print(f"Click coordinates: ({coord_x}, {coord_y}). Grid coordinates: ({x}, {y}, {r})")
+
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            self.trigrid.toggle_cell(x, y, r)
+            self.trigrid.update_shape_list()
+        elif button == arcade.MOUSE_BUTTON_RIGHT:
+            self.trigrid.toggle_cell(x, y, r)
+            neighbor_list = self.trigrid.get_grid_neighbor(coord_x, coord_y)
+            for neighbor in neighbor_list:
+                self.trigrid.toggle_cell(*neighbor)
+
+        self.trigrid.update_shape_list()
+        self.on_draw()
 
 
 def main():
