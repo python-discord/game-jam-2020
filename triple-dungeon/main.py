@@ -6,6 +6,7 @@ Holds the main game window, as well as manages basic functions for organizing th
 import random
 
 import arcade
+import math
 
 from config import Config
 from map import Dungeon
@@ -26,6 +27,7 @@ class Game(arcade.Window):
         self.wall_list = None
         self.floor_list = None
         self.enemy_list = None
+        self.bullet_list = None
         self.player = None
 
         self.dungeon = None
@@ -47,6 +49,7 @@ class Game(arcade.Window):
         # Create the Sprite lists
 
         self.enemy_list = arcade.SpriteList()
+        self.bullet_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
         self.player = Player()
@@ -76,6 +79,7 @@ class Game(arcade.Window):
         self.player.draw()
         self.enemy_list.draw()
         self.wall_list.draw()
+        self.bullet_list.draw()
 
         x, y = self.player.center_x, self.player.center_y + 100
         arcade.draw_text(f"({x}, {y})", x, y, arcade.color.WHITE, 15)
@@ -116,13 +120,48 @@ class Game(arcade.Window):
         if self.prev_keypress:
             self.on_key_press(self.prev_keypress.pop(0), 0)
 
+    def on_mouse_press(self, x, y, button, modifiers):
+        """
+        Called whenever the mouse is clicked.
+        """
+        # Create a bullet NEED SPRITE, currently wielding frog slingshot
+        bullet = arcade.Sprite("resources/images/monsters/frog/frog1.png", Config.BULLET_SCALING)
+
+        # Position the bullet at the player's current location
+        start_x = self.player_list.center_x
+        start_y = self.player_list.center_y
+        bullet.center_x = start_x
+        bullet.center_y = start_y
+
+        # Get from the mouse the destination location for the bullet
+        dest_x = x+self.view_left
+        dest_y = y+self.view_bottom
+
+        # Do math to calculate how to get the bullet to the destination.
+        # Calculation the angle in radians between the start points
+        # and end points. This is the angle the bullet will travel.
+        x_diff = dest_x - start_x
+        y_diff = dest_y - start_y
+        angle = math.atan2(y_diff, x_diff)
+
+        # Angle the bullet sprite so it doesn't look like it is flying sideways.
+        bullet.angle = math.degrees(angle)
+
+        # Taking into account the angle, calculate our change_x
+        # and change_y. Velocity is how fast the bullet travels.
+        bullet.change_x = math.cos(angle) * Config.BULLET_SPEED
+        bullet.change_y = math.sin(angle) * Config.BULLET_SPEED
+
+        # Add the bullet to the appropriate lists
+        self.bullet_list.append(bullet)
+
     def on_update(self, delta_time):
         """ Movement and game logic """
 
         # Move the player with the physics engine
         self.physics_engine.update()
-
         self.player.update_animation()
+
         changed = False  # Track if we need to change the viewport
 
         # Below manages all scrolling mechanics
@@ -158,6 +197,20 @@ class Game(arcade.Window):
                                 Config.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
+
+        #Projectile updates
+        self.bullet_list.update()
+        for bullet in self.bullet_list:
+            # Collision Checks
+            hit_list = arcade.check_for_collision_with_list(bullet, self.wall_list)
+
+            # If it did, get rid of the bullet
+            if len(hit_list) > 0:
+                bullet.remove_from_sprite_lists()
+
+            # If the bullet flies off-screen, remove it.
+            if bullet.bottom > self.width or bullet.top < 0 or bullet.right < 0 or bullet.left > self.width:
+                bullet.remove_from_sprite_lists()
 
 
 def main() -> None:
