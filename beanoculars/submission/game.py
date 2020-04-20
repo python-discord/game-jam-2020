@@ -4,6 +4,7 @@ import arcade
 from submission.gameConstants import *
 from submission.loadAnimatedChars import *
 from submission.tileMapLoader import *
+from submission.spell import pickUp
 from submission.sounds import loadSounds
 from submission.motion import *
 from random import randint
@@ -31,6 +32,7 @@ class MyGame(arcade.Window):
         self.path_list = None
         self.player_list = None
         self.entity_list = None
+        self.turret_list = None
 
         self.player_sprite = None
 
@@ -57,6 +59,8 @@ class MyGame(arcade.Window):
         self.currentOrder = None
         self.orderCount = None
 
+        self.nameList = None
+
         arcade.set_background_color((94, 132, 63))
 
     def setup(self):
@@ -70,6 +74,7 @@ class MyGame(arcade.Window):
         self.ground_list = arcade.SpriteList(is_static=True)
         self.path_list = arcade.SpriteList(is_static=True)
         self.entity_list = arcade.SpriteList()
+        self.turret_list = arcade.SpriteList()
 
         self.player_sprite = AnimatedPlayer('player', 4)
         self.player_sprite.center_x = 16
@@ -108,6 +113,7 @@ class MyGame(arcade.Window):
         self.ground_list.draw()
         self.path_list.draw()
         # Entity layer
+        self.turret_list.draw()
         self.entity_list.draw()
         # Turrets layer
 
@@ -118,15 +124,25 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time: float):
         """ On Update method"""
-        print(self.player_sprite.is_moving)
+        updateActualPos(self.player_sprite)
         movePlayer(self.player_sprite, delta_time)
 
         self.player_list.update_animation()
         self.entity_list.update_animation()
+        self.turret_list.update_animation()
 
     def on_key_press(self, symbol: int, modifiers: int):
         """ Get keyboard's presses. """
-        pass
+        if symbol == arcade.key.Q:
+            pickUp(self.player_sprite, self.player_list, self.path_list, self.turret_list)
+
+        if symbol == arcade.key.D:
+            self.entity_list.append(AnimatedEntity(E_ANT, 2, [0, 0]))
+            self.entity_list.append(AnimatedEntity(E_MOSQUITO, 4, [1, 0]))
+            self.entity_list.append(AnimatedEntity(E_SPIDER, 2, [2, 0]))
+            self.turret_list.append(AnimatedEntity(T_SPRAY, 2, [4, 0]))
+            self.turret_list.append(AnimatedEntity(T_LAMP, 2, [5, 0]))
+            self.turret_list.append(AnimatedEntity(T_VACUUM, 2, [6, 0]))
 
     def on_key_release(self, symbol: int, modifiers: int):
         """ Get keyboard's releases. """
@@ -149,8 +165,7 @@ class MyGame(arcade.Window):
                 self.mouse_click = [self.mouse_x, self.mouse_y]
                 self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
 
-    def on_mouse_release(self, x: float, y: float, button: int,
-                         modifiers: int):
+    def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
         """ Get mouse's releases. """
         pass
 
