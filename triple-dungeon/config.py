@@ -41,6 +41,10 @@ class Config(object):
     RIGHT_VIEWPORT_MARGIN = 250
     BOTTOM_VIEWPORT_MARGIN = 50
     TOP_VIEWPORT_MARGIN = 100
+	
+	#Bullet constants
+	BULLET_SPEED = 5
+	SPRITE_SCALING_BULLET = 0.8
 
 
 class Enums(Enum):
