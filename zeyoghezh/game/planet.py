@@ -8,6 +8,7 @@ from config import (
     PLANET_COLORS, PLANET_SPRITES, TRIANGULATION_START_LIKELIHOOD,
     TRIANGULATION_END_LIKELIHOOD, ATTACK_SOUND, ATTACK_PLAYS_SOUND_CHANCE
 )
+from util import get_unit_push_distance
 
 logger = logging.getLogger()
 
@@ -76,34 +77,15 @@ class Planet(arcade.Sprite):
                 self.push_other(other)
 
     def push_other(self, other):
-        # TODO improve this logic
-        x_distance = other.center_x - self.center_x
-        y_distance = other.center_y - self.center_y
-        distance_sum = abs(x_distance) + abs(y_distance)
-        x_distance_normalized = x_distance / distance_sum
-        y_distance_normalized = y_distance / distance_sum
-        x_push = x_distance_normalized * PUSH_BASE_SPEED
-        y_push = y_distance_normalized * PUSH_BASE_SPEED
+        self_coords = (self.center_x, self.center_y)
+        other_coords = (other.center_x, other.center_y)
+        unit_push_distance = get_unit_push_distance(self_coords, other_coords)
         logger.debug(
-            f"{self.name} pushing {other.name}  ({x_distance=}, {y_distance=} "
-            f"by {x_push=}, {y_push=}")
-
-        if self.center_x > other.center_x:
-            assert x_push < 0
-        if self.center_x < other.center_x:
-            assert x_push > 0
-        if self.center_x == other.center_x:
-            assert x_push == 0
-        if self.center_y > other.center_y:
-            assert y_push < 0
-        if self.center_y < other.center_y:
-            assert y_push > 0
-        if self.center_y == other.center_y:
-            assert y_push == 0
-        if abs(x_distance) > abs(y_distance):
-            assert abs(x_distance_normalized) > abs(y_distance_normalized)
-
-        other.move(delta_x=x_push, delta_y=y_push)
+            f"{self.name} ({self_coords}) pushing {other.name} "
+            f"({other_coords}) by {unit_push_distance}")
+        other.move(
+            delta_x=unit_push_distance[0]*PUSH_BASE_SPEED,
+            delta_y=unit_push_distance[1]*PUSH_BASE_SPEED)
 
     def try_attack_others(self):
         for other in self.others:
@@ -119,7 +101,6 @@ class Planet(arcade.Sprite):
         logger.debug(
             f"{self.name} attacking {other.name} "
             f"({distance_between=} for {self.base_damage}")
-        # TODO improve this
         other.health -= self.base_damage
         self.damage_on_others[other.name] += self.base_damage
         other.scale = other.health

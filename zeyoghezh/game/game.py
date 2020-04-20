@@ -51,7 +51,6 @@ class Game(arcade.Window):
         self.abscond_button.on_release = self.abscond_release
         self.button_list.append(self.abscond_button)
         for planet in planets:
-            # TODO improve this
             self.planets.append(planet)
             others = [other for other in planets if other != planet]
             planet.setup(
