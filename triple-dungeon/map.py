@@ -148,6 +148,6 @@ class Level:
     def rotate_level(self, times_rotated):
         m = np.array(self.level)
         print(m)
-        for i in range(0, times_rotated):
+        for _ in range(0, times_rotated % 4):
             m = np.rot90(m)
         self.level = m.tolist()
