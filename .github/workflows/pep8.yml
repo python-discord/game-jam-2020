@@ -15,6 +15,7 @@ jobs:
         python-version: 3.8
     - name: Install pipenv & sync
       run: |
+        cd triple-dungeon
         python -m pip install --upgrade pip
         pip install pipenv
         pipenv lock
@@ -23,7 +24,7 @@ jobs:
       run: |
         pip install pycodestyle
         # PyCharm sets line length at 120 chars
-        pycodestyle --count --statistics --max-line-length=120
+        pycodestyle . --count --statistics --max-line-length=120
         
         # stop the build if there are Python syntax errors or undefined names
         # flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
