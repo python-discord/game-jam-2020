@@ -144,15 +144,18 @@ class Level:
                     level.wallSprites.append(sprite)
 
         # Move everything into correct positions
-        level.floorSprites.move(Config.LEVEL_SIZE * level.x, Config.LEVEL_SIZE * level.y)
-        level.wallSprites.move(Config.LEVEL_SIZE * level.x, Config.LEVEL_SIZE * level.y)
+        level.floorSprites.move(*level.bottomLeft())
+        level.wallSprites.move(*level.bottomLeft())
 
         return level
 
-    def topleft(self) -> tuple:
+    def bottomLeft(self) -> tuple:
         """
-        :return:
+        Return the pixel bottom left corner of a Level.
+
+        :return: A tuple containing the X and Y coordinates of the level's bottom left corner.
         """
+        return Config.LEVEL_SIZE * self.x, Config.LEVEL_SIZE * self.y
 
     def center(self) -> tuple:
         """
