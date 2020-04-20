@@ -1,3 +1,5 @@
 Test attack sounds
 Add combat effects (not just lines)
 Improve aesthetic
+
+Could the damage lines be cones, big on source and point on target? (Won't matter if George finishes)
