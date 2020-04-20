@@ -166,17 +166,19 @@ class LivingEntity(AnimatedEntity):
 
         self.being_pushed = True
 
-    def reduce_throwback(self) -> None:
+    def reduce_throwback(self, delta_time: float) -> None:
+        relative_time = delta_time * 60
+
         if self.being_pushed:
             if self.change_x > 0:
-                self.change_x -= 1
+                self.change_x -= 1 * relative_time
             elif self.change_x < 0:
-                self.change_x += 1
+                self.change_x += 1 * relative_time
 
             if self.change_y > 0:
-                self.change_y -= 1
+                self.change_y -= 1 * relative_time
             elif self.change_y < 0:
-                self.change_y += 1
+                self.change_y += 1 * relative_time
 
             # Change is float so we can't really check if it's exactly 0
             # because it can be 0.1 so we just round it from -1 to 1
@@ -195,6 +197,6 @@ class LivingEntity(AnimatedEntity):
                 self._red_color_ticks += delta_time
 
         if self.being_pushed and self.is_pushable:
-            self.reduce_throwback()
+            self.reduce_throwback(delta_time)
 
         super().on_update(delta_time)
