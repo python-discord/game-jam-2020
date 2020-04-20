@@ -26,6 +26,16 @@ class Mob(arcade.Sprite):
         self.down_textures = []
         self.cur_texture = 0
 
+
+        # Used for mapping directions to animations
+        self.map = {
+            Enums.IDLE : self.animations.idles,
+            Enums.UP : self.animations.up,
+            Enums.DOWN : self.animations.down,
+            Enums.RIGHT : self.animations.right,
+            Enums.LEFT : self.animations.left
+        }
+
     def tick(self) -> None:
         """
         A on_update function, the Mob should decide it's next actions here.
@@ -43,6 +53,7 @@ class Player(Mob):
         super(Player, self).__init__(*args, **kwargs)
 
         self.animations = PlayerAnimations(SpritePaths.KNIGHT)
+        self.refreshIndex = 0
 
     def update_animation(self, delta_time: float = 1 / 60) -> None:
         """
@@ -50,16 +61,21 @@ class Player(Mob):
         :param delta_time: No idea.
         """
 
-        if self.change_x == 0 and self.change_y == 0:
-            self.texture = next(self.animations.idles)
+        self.refreshIndex = (self.refreshIndex + 1) % Config.RUN_UPDATES_PER_FRAME
+
+        if self.change_x == 0 and self.change_y == 0: # Idle
+            dir = Enums.IDLE
         elif self.change_y > 0:  # Up
-            self.texture = next(self.animations.up)
+            dir = Enums.UP
         elif self.change_y < 0:  # Down
-            self.texture = next(self.animations.down)
+            dir = Enums.DOWN
         elif self.change_x > 0:  # Left
-            self.texture = next(self.animations.right)
+            dir = Enums.LEFT
         elif self.change_x < 0:  # Right
-            self.texture = next(self.animations.left)
+            dir = Enums.RIGHT
+
+        if self.prev != dir or not wait:
+            self.texture = next(self.map[dir])
 
     def tick(self):
         """
