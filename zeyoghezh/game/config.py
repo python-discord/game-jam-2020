@@ -36,7 +36,12 @@ ATTACK_SOUND = {
 }
 BACKGROUND_IMAGE = ":resources:images/backgrounds/abstract_1.jpg"
 PUSH_SOUND = ":resources:sounds/upgrade1.wav"
-BACKGROUND_MUSIC = "./music.ogg"  # Music made by missingfragment#1983
+# Music made by missingfragment#1983
+BACKGROUND_MUSIC = "./zeyoghezh/game/music.ogg"
+ATTACK_PLAYS_SOUND_CHANCE = 0.9
+
+BACKGROUND_MUSIC_VOLUME = 0.5
+SOUND_VOLUME = 1  # TODO use
 
 
 SCREEN_TITLE = "Zeyoghezh"
