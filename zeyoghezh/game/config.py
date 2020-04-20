@@ -7,7 +7,7 @@ TRIANGULATION_END_LIKELIHOOD = 0.05
 BASE_SPEED = 1e-1  # TODO change to 1e-1 when this is over
 PLANET_BASE_SPEED = 5 * BASE_SPEED
 PUSH_BASE_SPEED = 3 * BASE_SPEED
-PUSH_MAX_DISTANCE = 40  # The most a planet can be away from Yogh to be pushed
+PUSH_MAX_DISTANCE = 80  # The most a planet can be away from Yogh to be pushed
 BASE_DAMAGE = 1e-4  # TODO change to 1e-4 when this is over
 PLANET_DAMAGE = {
     "ze": 25,
@@ -15,9 +15,9 @@ PLANET_DAMAGE = {
     "ezh": 7
 }
 MAX_ATTACK_DISTANCE = {
-    "ze": 30,
-    "yogh": 50,
-    "ezh": 50
+    "ze": 60,
+    "yogh": 100,
+    "ezh": 100
 }
 PLANET_COLORS = {
     "ze": arcade.color.SILVER,
