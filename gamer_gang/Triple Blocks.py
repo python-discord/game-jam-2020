@@ -63,7 +63,7 @@ class MyGame(arcade.Window):
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
 
-        # set up the actual game
+    def setup(self):
         self.frame_count = 0
         self.total_time = 0
         self.game_over = False
@@ -82,7 +82,7 @@ class MyGame(arcade.Window):
 
         self.controlled = 0
 
-        self.ground_texture_list = [arcade.load_texture("images/ground/debug.png")]
+        self.ground_texture_list = [arcade.load_texture("images/ground/debug.jpg")]
         self.player_texture_list = [[arcade.load_texture("images/player/player1.jpg")],
                                     [arcade.load_texture("images/player/player2.jpg")],
                                     [arcade.load_texture("images/player/player3.jpg")]]
@@ -129,7 +129,7 @@ class MyGame(arcade.Window):
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.key_pressed[0] = 0.3
         elif key == arcade.key.UP or key == arcade.key.W:
-            self.key_pressed[2] = 8
+            self.key_pressed[2] = 6
         # these are for when the player wants the switch
         elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
             self.controlled = 0
@@ -189,10 +189,9 @@ class MyGame(arcade.Window):
                         topList.append(v)
                     elif p.name == down.name:
                         bottomList.append(v)
-                print(topList, bottomList)
                 stackName = f'{self.players[topList[0]].name}on{self.players[bottomList[0]].name}'
                 for i in topList + bottomList:
-                    self.players[i] = PlayerSprite([arcade.load_texture(f'images/player/{stackName}.png')],
+                    self.players[i] = PlayerSprite([arcade.load_texture(f'images/player/{stackName}.jpg')],
                                                    SCALE, (up.left + up.right) // 2, up.bottom, stackName)
 
                     newEnginePlayers = copy.deepcopy(self.ground_sprite_list)
@@ -200,9 +199,7 @@ class MyGame(arcade.Window):
                         if v not in topList + bottomList:
                             newEnginePlayers.append(p)
                     self.physics_engines[i] = arcade.PhysicsEnginePlatformer(self.players[i], newEnginePlayers)
-
-                print(self.players)
-                break
+                break  # you can't have two things joining at the same time... right?
 
     def movement(self):
         controlledSprite = self.players[self.controlled].name
@@ -247,6 +244,7 @@ class MyGame(arcade.Window):
 
 def main():
     actualGame = MyGame()
+    actualGame.setup()
     arcade.run()
 
 
