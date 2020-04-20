@@ -5,11 +5,13 @@ Pathfinding will also depend on objects here, and is thus integral to it's funct
 """
 
 from __future__ import annotations
-from config import Config
+
+import json
 
 import arcade
-import json
 import numpy as np
+
+from config import Config
 
 
 class Dungeon(object):
@@ -24,10 +26,13 @@ class Dungeon(object):
         :param level_count: The number of Active Levels that should be stored within the Dungeon.
         :param size: The diameter of the dungeon. Allows for a total of size^2 slots for levels.
         """
-        # setup
+
+        self.level_count = level_count
+        self.size = size
+
         self.floor_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
-        level_size =  10 * Config.TILE_SCALING * Config.TILE_WIDTH
+        level_size = 10 * Config.TILE_SCALING * Config.TILE_WIDTH
 
         # get center level
 
@@ -43,7 +48,7 @@ class Dungeon(object):
         room.load_file('resources/levels/map1/room.json')
         room.rotate_level(2)
         room.render()
-        room_floor, room_wall = room.get_lists()
+        room_floor, room_wall = room.floor_list, room.wall_list
         room_floor.move(level_size, 0)
         room_wall.move(level_size, 0)
         self.floor_list.extend(room_floor)
@@ -53,7 +58,7 @@ class Dungeon(object):
         room = Level()
         room.load_file('resources/levels/map1/room.json')
         room.render()
-        room_floor, room_wall = room.get_lists()
+        room_floor, room_wall = room.floor_list, room.wall_list
         room_floor.move(-level_size, 0)
         room_wall.move(-level_size, 0)
         self.floor_list.extend(room_floor)
@@ -112,10 +117,9 @@ class Level:
 
         with open(path) as file:
             level = json.load(file)
+            self.sprites = level['elements']
+            self.level = level['structure']
 
-        self.sprites = level['elements']
-        self.level = level['structure']
-        
     def render(self) -> None:
         """
         Calls render on all sprites.
@@ -126,7 +130,7 @@ class Level:
 
         # Create the level
         # This shows using a loop to place multiple sprites horizontally and vertically
-        for y_pos in range(0, level_size , 63 * Config.TILE_SCALING):
+        for y_pos in range(0, level_size, 63 * Config.TILE_SCALING):
             for x_pos in range(0, level_size, 63 * Config.TILE_SCALING):
                 cur_tile = self.level[y][x]
                 sprite = self.sprites[cur_tile]
@@ -145,6 +149,11 @@ class Level:
         return self.floor_list, self.wall_list
 
     def rotate_level(self, times_rotated):
+        """
+        Rotates the
+        :param times_rotated:
+        :return:
+        """
         m = np.array(self.level)
         for i in range(0, times_rotated % 4):
             m = np.rot90(m)

@@ -6,9 +6,9 @@ Holds the main game window, as well as manages basic functions for organizing th
 
 import arcade
 
+from config import Config
 from map import Dungeon
-from mobs import Player, Enemy
-from config import Config, Sprites
+from mobs import Player
 
 
 class Game(arcade.Window):
@@ -31,11 +31,11 @@ class Game(arcade.Window):
         self.player = None
 
         # list to keep track of keypresses
-        self.prev_keypress = []    
+        self.prev_keypress = []
 
         # Our physics engine
         self.physics_engine = None
-        
+
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
@@ -58,17 +58,16 @@ class Game(arcade.Window):
         self.player.center_y = Config.SCREEN_HEIGHT / 2
         self.player_list = self.player
 
-
         # Create the dungeon
         dungeon = Dungeon()
-        
+
         self.floor_list = dungeon.floor_list
         self.wall_list = dungeon.wall_list
-        
+
         # Create monsters
         # This needs to be updated to comply with the new mobs.py code
-        #self.enemy_list.append(Enemy("resources/images/monsters/ghost/ghost1.png", 200, 200, 4).get_enemy())
-        #self.enemy_list.append(Enemy("resources/images/monsters/frog/frog1.png", 200, 1000, 4).get_enemy())
+        # self.enemy_list.append(Enemy("resources/images/monsters/ghost/ghost1.png", 200, 200, 4).get_enemy())
+        # self.enemy_list.append(Enemy("resources/images/monsters/frog/frog1.png", 200, 1000, 4).get_enemy())
 
         # Create the 'physics engine'
         self.physics_engine = arcade.PhysicsEngineSimple(self.player, self.wall_list)
@@ -101,7 +100,7 @@ class Game(arcade.Window):
             self.player_list.change_x = Config.PLAYER_MOVEMENT_SPEED
             self.prev_keypress.append(key)
         elif key == 65307:
-        	self.close()
+            self.close()
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
