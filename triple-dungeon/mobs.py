@@ -58,9 +58,6 @@ class Enemy(Mob):
     def __init__(self, *args, **kwargs) -> None:
         super(Enemy, self).__init__(*args, **kwargs)
 
-    def get_enemy(self):
-        return self.sprite
-
     def tick(self) -> None:
         """
         A on_update function, the Enemy Mob should scan for the player, decide how to path to it, and

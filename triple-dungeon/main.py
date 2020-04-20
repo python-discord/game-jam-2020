@@ -59,8 +59,8 @@ class Game(arcade.Window):
 
         # Create monsters
         self.enemy_list.extend([
-                Enemy(Sprites.GHOST, 200, 200).get_enemy(),
-                Enemy(Sprites.FROG, 200, 1000).get_enemy()
+                Enemy(Sprites.GHOST, 200, 200).sprite,
+                Enemy(Sprites.FROG, 200, 1000).sprite
         ])
 
         # Create the 'physics engine'
