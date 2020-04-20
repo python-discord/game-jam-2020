@@ -9,6 +9,7 @@ BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 RESOURCES = os.path.join(BASE_PATH, "resources")
 IMAGES = os.path.join(RESOURCES, "images")
 
+
 class Config(object):
     """
     A simple class dedicated to loading, storing and organizing constants.

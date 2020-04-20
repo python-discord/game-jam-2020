@@ -51,7 +51,7 @@ class Game(arcade.Window):
         self.floor_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
 
-        # Set up the player, specifically placing it at these coordinates. 
+        # Set up the player, specifically placing it at these coordinates.
         self.player = Player()
         self.player.scale = 1
         self.player.center_x = Config.SCREEN_WIDTH / 2
