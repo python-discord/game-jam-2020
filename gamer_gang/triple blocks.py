@@ -4,6 +4,7 @@ import arcade
 import os
 import pymunk
 import pymunk.pygame_util
+import itertools
 
 SCALE = 1
 OFFSCREEN_SPACE = 0
@@ -31,54 +32,49 @@ class GroundSprite(arcade.Sprite):
         self.center_x = x
         self.center_y = y
 
-    def update(self):
-        """ Move the sprite """
-        super().update()
+    def __repr__(self):
+        return f"{self.center_x}, {self.center_y}"
 
 
 class PlayerSprite(arcade.Sprite):
-    def __init__(self, pymunk_shape, textures, scale, x, y):
+    def __init__(self, pymunk_shape, textures, scale, x, y, name):
         super().__init__()
         self.pymunk_shape = pymunk_shape
         self.can_jump = True
 
         self.textures = textures
         self.texture = self.textures[0]
+        self.name = name
 
         self.scaling = scale
 
         self.acc_x = 0
         self.acc_y = 0
 
-        self.center_x = self.pymunk_shape.body.position.x
-        self.center_y = self.pymunk_shape.body.position.y
-
-        self.og_x = self.center_x
-        self.og_y = self.center_y
+        self.center_x, self.center_y = x, y
+        self.og_x, self.og_y = self.center_x, self.center_y
 
     def update(self):
         self.og_x = self.center_x
         self.og_y = self.center_y
 
 
-def make_player_sprite(mass, space, textures, scale, x, y):
+def make_player_sprite(mass, space, textures, scale, x, y, name):
     pos_x, pos_y = x, y
 
     width, height = textures[0].width, textures[0].height
     mass = mass
-    # moment = pymunk.moment_for_box(mass, (width, height))
     body = pymunk.Body(mass, pymunk.inf)
     body.position = pymunk.Vec2d((pos_x, pos_y))
     shape = pymunk.Poly.create_box(body, (width, height))
     shape.friction = 0.5
     space.add(body, shape)
-    sprite = PlayerSprite(shape, textures, scale, pos_x, pos_y)
+    sprite = PlayerSprite(shape, textures, scale, pos_x, pos_y, name)
     return sprite, body
 
 
 def make_ground_sprite(space, textures, scale, x, y):
     pos_x, pos_y = x, y
-
     width, height = textures[0].width, textures[0].height
     body = pymunk.Body(body_type=pymunk.Body.STATIC)
     body.position = pymunk.Vec2d((pos_x, pos_y))
@@ -90,8 +86,6 @@ def make_ground_sprite(space, textures, scale, x, y):
 
 
 class MyGame(arcade.Window):
-    """ Main application class. """
-
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         file_path = os.path.dirname(os.path.abspath(__file__))
@@ -101,7 +95,7 @@ class MyGame(arcade.Window):
         self.frame_count = 0
         self.total_time = 0
         self.game_over = False
-        self.debug_mode = False
+        self.debugging = False
         # self.set_location(0, 0)
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
@@ -109,34 +103,37 @@ class MyGame(arcade.Window):
 
         self.key_pressed = [0, 0, 0]  # controllable
 
-        self.floorList = arcade.SpriteList()
-        self.players = arcade.SpriteList()
+        self.floor_list = arcade.SpriteList()
+        self.players = []
 
         self.controlled = 0
 
         self.ground_texture_list = [arcade.load_texture("images/ground/debug.png")]
-        self.player_texture_list = [arcade.load_texture("images/player/debug.png")]
+        self.player_texture_list = [[arcade.load_texture("images/player/player1.png")],
+                                    [arcade.load_texture("images/player/player2.png")],
+                                    [arcade.load_texture("images/player/player3.png")]]
 
         self.bodies = []
         self.joints = [None, None, None]
         for i in range(1, 4):
-            object, body = make_player_sprite(1, self.space, self.player_texture_list, 1, 32, 32 * i)
+            object, body = make_player_sprite(1, self.space, self.player_texture_list[i-1], 1, 32 * (i + 3), 32, str(i))
             self.bodies.append(body)
             object.set_hit_box([[object.width / -2, object.height / -2 - 1], [object.width / 2, object.height / -2 - 1],
                                 [object.width / 2, object.height / 2], [object.width / -2, object.height / 2]])
-            object.color = (i * 100 - 50, i * 100 - 50, i * 100 - 50)
             self.players.append(object)
 
-        for i in range(1, 30):
-            object = make_ground_sprite(self.space, self.ground_texture_list, 1, i * 32, 32 * 0)
-            self.floorList.append(object)
+        for i in range(20):
+            object = make_ground_sprite(self.space, self.ground_texture_list, 10, i * 32, 0)
+            self.floor_list.append(object)
 
     def on_draw(self):
         arcade.start_render()
 
-        self.floorList.draw()
-        self.players.draw()
-        if self.debug_mode:
+        self.floor_list.draw()
+        for p in self.players:
+            p.draw()
+
+        if self.debugging:
             for i in self.players:
                 i.draw_hit_box((100, 100, 100), 3)
 
@@ -145,7 +142,7 @@ class MyGame(arcade.Window):
             self.key_pressed[1] = -30
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.key_pressed[0] = 30
-        elif key == arcade.key.UP or key == arcade.key.W:
+        elif (key == arcade.key.UP or key == arcade.key.W) and self.players[self.controlled].can_jump:
             self.key_pressed[2] = 450
         elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
             self.controlled = 0
@@ -179,11 +176,6 @@ class MyGame(arcade.Window):
             self.view_bottom += self.players[self.controlled].top - top_boundary
             changed = True
 
-        bottom_boundary = self.view_bottom + SCREEN_MARGIN
-        if self.players[self.controlled].bottom < bottom_boundary:
-            self.view_bottom -= bottom_boundary - self.players[self.controlled].bottom
-            changed = True
-
         self.view_left = int(self.view_left)
         self.view_bottom = int(self.view_bottom)
 
@@ -192,53 +184,75 @@ class MyGame(arcade.Window):
             arcade.set_viewport(self.view_left, SCREEN_WIDTH + self.view_left - 1,
                                 self.view_bottom, SCREEN_HEIGHT + self.view_bottom - 1)
 
+    def stack_check(self):
+        for up, down in itertools.permutations(self.players, 2):
+            if up.name != down.name:
+                if abs(up.bottom - down.top) < 5 and abs((up.left + up.right)/2 - (down.left + down.right)/2) < 10:
+                    stackName = f'{up.name}on{down.name}'
+                    topList = []
+                    bottomList = []
+                    for v, p in enumerate(self.players):
+                        if p.name == up.name:
+                            topList.append(v)
+                        elif p.name == down.name:
+                            bottomList.append(v)
+
+                    object, body = make_player_sprite(1, self.space,
+                                                      [arcade.load_texture(f'images/player/{stackName}.png')],
+                                                      1, (down.left + down.right)/2, down.top, stackName)
+                    object.set_hit_box(
+                        [[object.width / -2, object.height / -2 - 1], [object.width / 2, object.height / -2 - 1],
+                         [object.width / 2, object.height / 2], [object.width / -2, object.height / 2]])
+                    for i in topList + bottomList:
+                        self.players[i] = object
+                        self.bodies[i] = body
+
+                    break  # break bc we can only have 2 things join at a time, right?
+
+    def movement(self):
+        for p in self.players:
+            if p.name == self.players[self.controlled].name:
+                self.players[self.controlled].pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.key_pressed[:2]), 0))
+                if self.players[self.controlled].can_jump:
+                    self.players[self.controlled].pymunk_shape.body.velocity += pymunk.Vec2d((0, self.key_pressed[2]))
+                    self.players[self.controlled].can_jump = False
+
+                if self.players[self.controlled].pymunk_shape.body.velocity.x > 300:
+                    self.players[self.controlled].pymunk_shape.body.velocity = pymunk.Vec2d(
+                        (150, self.players[self.controlled].pymunk_shape.body.velocity.y))
+
+                if self.players[self.controlled].pymunk_shape.body.velocity.x < -300:
+                    self.players[self.controlled].pymunk_shape.body.velocity = pymunk.Vec2d(
+                        (-150, self.players[self.controlled].pymunk_shape.body.velocity.y))
+
     def on_update(self, x):
         self.frame_count += 1
-        # self.players[self.controlled].pymunk_shape.body.rotation_vector = pymunk.Vec2d((0,0))
         for i in range(10):
             self.space.step(1 / 600.0)
-        # self.players[self.controlled].pymunk_shape.body.angle = 0
-
-        self.players[self.controlled].pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.key_pressed[:2]), 0))
-        if self.players[self.controlled].can_jump:
-            self.players[self.controlled].pymunk_shape.body.velocity += pymunk.Vec2d((0, self.key_pressed[2]))
-            self.players[self.controlled].can_jump = False
-
-        if self.players[self.controlled].pymunk_shape.body.velocity.x > 300:
-            self.players[self.controlled].pymunk_shape.body.velocity = pymunk.Vec2d(
-                (150, self.players[self.controlled].pymunk_shape.body.velocity.y))
-
-        if self.players[self.controlled].pymunk_shape.body.velocity.x < -300:
-            self.players[self.controlled].pymunk_shape.body.velocity = pymunk.Vec2d(
-                (-150, self.players[self.controlled].pymunk_shape.body.velocity.y))
-
+        self.movement()
         self.camera_shift()
+        self.stack_check()
+        for p in self.players:
+            if p.top < -100:
+                self.game_over = True
 
         if not self.game_over:
-            for i in self.floorList:
+            for i in self.floor_list:
                 i.update()
             for p in self.players:
                 p.update()
-                boxes = arcade.check_for_collision_with_list(p, self.floorList)
+                boxes = arcade.check_for_collision_with_list(p, self.floor_list)
                 if_collide = [True for pl in self.players if arcade.check_for_collision(p, pl) and pl != p]
 
                 if (boxes != [] or True in if_collide) and abs(p.pymunk_shape.body.velocity.y) < 3:
                     p.can_jump = True
 
-            for i in self.players:
-                i.center_x = i.pymunk_shape.body.position.x
-                i.center_y = i.pymunk_shape.body.position.y
-                i.angle = math.degrees(i.pymunk_shape.body.angle)
-                # print(i.pymunk_shape.body.angle)
-                # print(i.pymunk_shape.body.rotation_vector)
-            # for x, i in enumerate(self.players):
-            #   if x != self.controlled:
-            #     i.change_y = 0
-            #     i.change_x = 0
-            # for i in [self.players[self.controlled]]:
-            #   i.x += i.center_x - i.og_x
-            #   i.y += i.center_y - i.og_y
-            #   i.center_x,i.center_y = i.og_x,i.og_y
+            for p in self.players:
+                p.center_x = p.pymunk_shape.body.position.x
+                p.center_y = p.pymunk_shape.body.position.y
+                p.angle = math.degrees(p.pymunk_shape.body.angle)
+        else:  # TODO: implement a game over/restart screen
+            self.close()
 
 
 def main():
