@@ -109,6 +109,10 @@ class Planet(arcade.Sprite):
             other.die()
 
     def die(self):
+        for planet in self.others:
+            logger.info(f"Removing {self.name} from others in {planet.name}")
+            planet.others.remove(self)
+        self.parent.planets.remove(self)
         self.parent.game_over(f"{self.name} has died")
 
     def get_stats_str(self):

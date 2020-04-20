@@ -38,7 +38,10 @@ class Game(arcade.Window):
         self.background_music = None
 
         self.abscond_button = None
-        # self.game_is_over = False
+
+        self.game_is_over = False
+        self.game_over_reason = None
+        self.game_over_location = (SCREEN_SIZE[0]/10, SCREEN_SIZE[1]/2)
 
     def setup(self):
         self.background = arcade.load_texture(
@@ -119,8 +122,16 @@ class Game(arcade.Window):
 
         self.abscond_button.draw()
 
+        if self.game_is_over:
+            arcade.draw_text(
+                f"Game over! {self.game_over_reason}",
+                *self.game_over_location,
+                color=arcade.color.WHITE, font_size=24)
+
     @log_exceptions
     def on_mouse_press(self, x, y, button, modifiers):
+        if self.game_is_over:
+            return
         if get_distance(x, y, *self.lithium_location) < 10:
             self.clicked_lithium()
         for planet in self.planets:
@@ -150,10 +161,16 @@ class Game(arcade.Window):
         [planet.update_triangulating() for planet in self.planets]
 
     def run_assertions(self):
-        assert len(self.planets) == 3
+        if self.game_is_over:
+            assert len(self.planets) in (1, 2)
+        else:
+            assert len(self.planets) == 3
         assert self.lithium_count >= 0
         for planet in self.planets:
-            assert len(planet.others) == 2
+            if self.game_is_over:
+                assert len(planet.others) in (0, 1)
+            else:
+                assert len(planet.others) == 2
             assert planet.center_x > -SCREEN_SIZE[0]
             assert planet.center_x < SCREEN_SIZE[0] * 2
             assert planet.center_y > -SCREEN_SIZE[1]
@@ -162,10 +179,11 @@ class Game(arcade.Window):
             assert planet.speed_y != 0
 
     def game_over(self, reason):
-        print(f"Game over! {reason}")
+        self.game_over_reason = reason
+        logger.info(f"Game over! {reason}")
         for planet in self.planets:
             logger.info(planet.get_stats_str())
-        sys.exit(0)
+        self.game_is_over = True
 
 
 def main():
