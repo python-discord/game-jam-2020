@@ -18,7 +18,7 @@ class Player(LivingEntity, MovingSprite):
             is_colored=True,
             has_hit_frame=True,
             gender=gender,
-            moving_speed=10,
+            moving_speed=3,
             scale=SCALING,
             center_x=500,
             center_y=500,
