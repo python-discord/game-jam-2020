@@ -18,7 +18,7 @@ class MainMenu(Base):
                 center_y=120
             ),
             "options": arcade.Sprite(
-                "./assets/Options.png",
+                "./assets/Mainmenu_options.png",
                 scale=0.25,
                 center_x=640,
                 center_y=220
