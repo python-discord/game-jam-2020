@@ -8,8 +8,7 @@ import arcade
 
 from config import Config
 from map import Dungeon
-from mobs import Player
-from mobs import Enemy
+from mobs import Player, Enemy
 
 
 class Game(arcade.Window):
@@ -31,55 +30,11 @@ class Game(arcade.Window):
         # Separate variable that holds the player sprite
         self.player = None
 
-        # Our physics engine
-        self.physics_engine = None
-
         # list to keep track of keypresses
-        self.prev_keypress = []
-
-        # Used to keep track of our scrolling
-        self.view_bottom = 0
-        self.view_left = 0
-
-        arcade.set_background_color(arcade.csscolor.BLACK)
-"""
-main.py
-The main class used to load the game.
-Holds the main game window, as well as manages basic functions for organizing the game.
-"""
-
-import arcade
-
-from config import Config
-from map import Dungeon
-from mobs import Player
-from mobs import Enemy
-
-
-class Game(arcade.Window):
-    """
-    Main application class.
-    """
-
-    def __init__(self):
-        # Call the parent class and set up the window
-        super().__init__(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT, Config.SCREEN_TITLE)
-
-        # These are 'lists' that keep track of our sprites. Each sprite should
-        # go into a list.
-        self.wall_list = None
-        self.floor_list = None
-        self.enemy_list = None
-        self.player_list = None
-
-        # Separate variable that holds the player sprite
-        self.player = None
+        self.prev_keypress = []    
 
         # Our physics engine
         self.physics_engine = None
-
-        # list to keep track of keypresses
-        self.prev_keypress = []
 
         # Used to keep track of our scrolling
         self.view_bottom = 0
@@ -267,16 +222,12 @@ if __name__ == "__main__":
 
         if key == arcade.key.UP or key == arcade.key.W:
             self.player_list.change_y = Config.PLAYER_MOVEMENT_SPEED
-            self.prev_keypress.append(key)
         elif key == arcade.key.DOWN or key == arcade.key.S:
             self.player_list.change_y = -Config.PLAYER_MOVEMENT_SPEED
-            self.prev_keypress.append(key)
         elif key == arcade.key.LEFT or key == arcade.key.A:
             self.player_list.change_x = -Config.PLAYER_MOVEMENT_SPEED
-            self.prev_keypress.append(key)
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.player_list.change_x = Config.PLAYER_MOVEMENT_SPEED
-            self.prev_keypress.append(key)
         elif key == 65307:
             self.close()
 
@@ -285,18 +236,12 @@ if __name__ == "__main__":
 
         if key == arcade.key.UP or key == arcade.key.W:
             self.player_list.change_y = 0
-            self.prev_keypress.remove(key)
         elif key == arcade.key.DOWN or key == arcade.key.S:
             self.player_list.change_y = 0
-            self.prev_keypress.remove(key)
         elif key == arcade.key.LEFT or key == arcade.key.A:
             self.player_list.change_x = 0
-            self.prev_keypress.remove(key)
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.player_list.change_x = 0
-            self.prev_keypress.remove(key)
-        if self.prev_keypress:
-            self.on_key_press(self.prev_keypress.pop(0), 0)
 
     def on_update(self, delta_time):
         """ Movement and game logic """
