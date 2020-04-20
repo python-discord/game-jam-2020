@@ -43,7 +43,7 @@ class GameManager:
                 self.window.player.hit(projectile)
                 projectile.kill()
 
-        self.enemies.update()
+        self.enemies.on_update(delta_time)
         self.player_projectiles.on_update(delta_time)
         self.enemy_projectiles.on_update(delta_time)
         self.damage_indicators.on_update(delta_time)

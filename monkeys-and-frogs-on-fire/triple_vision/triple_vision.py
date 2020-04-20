@@ -62,6 +62,7 @@ class TripleVision(arcade.View):
                 Enemies.imp,
                 self.player,
                 SCALED_TILE * 10,
+                0.75,
                 center_x=50,
                 center_y=y * 200
             )
