@@ -11,6 +11,9 @@ class Settings(arcade.View):
     mouse_x = 0
     mouse_y = 0
 
+    brightness_slide = Slider(int(width*0.1), int(height*0.4), int(width*0.3), int(height*0.01), name="Brightness")
+    volume_slide = Slider(int(width*0.1), int(height*0.7), int(width*0.3), int(height*0.01), name="Volume")
+
     def on_draw(self):
         arcade.start_render()
         arcade.set_background_color([0, 0, 0])
@@ -23,12 +26,21 @@ class Settings(arcade.View):
         self.mouse_y = y
 
     def on_mouse_press(self, x, y, button, modifiers):  # Click options / volume & brightness slider
-        pass
+        self.brightness_slide.update_slide(self.mouse_x, self.mouse_y)
+        self.volume_slide.update_slide(self.mouse_x, self.mouse_y)
 
     def on_mouse_release(self, x, y, button, modifiers):  # Release for sliders
         pass
 
     def on_key_press(self, symbol, modifiers):  # Setting key binds
         pass
+
+    @property
+    def volume(self):
+        return self.volume_slide()
+
+    @property
+    def brightness(self):
+        return self.brightness_slide()
 
 

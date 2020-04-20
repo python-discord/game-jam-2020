@@ -42,7 +42,7 @@ class Button:
 
 class Slider:
 
-    def __init__(self, x, y, width, height, rotation="hor", colour=(255, 255, 255), start_value=1.0):
+    def __init__(self, x, y, width, height, rotation="hor", colour=(255, 255, 255), start_value=1.0, name="slider"):
         self.x = x
         self.y = y
         self.width = width
@@ -50,10 +50,15 @@ class Slider:
         self.rotation = rotation
         self.colour = colour
         self.slide_dist = int(width * start_value)
-        self.dragging = False
+        self.name = name
 
     def __call__(self):
         return self.pct_value
+
+    def __eq__(self, other):
+        if self.name == "slider":
+            raise AttributeError("Cannot compare name if name is default value 'slider'")
+        return self.name == other
 
     @property
     def pct_value(self):
