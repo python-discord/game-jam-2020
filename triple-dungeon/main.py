@@ -67,7 +67,7 @@ class Game(arcade.Window):
         # self.enemy_list.append(Enemy("resources/images/monsters/frog/frog1.png", 200, 1000, 4).get_enemy())
 
         # Create the 'physics engine'
-        self.physics_engine = arcade.PhysicsEngineSimple(self.player, *(dungeon.getWalls()))
+        self.physics_engine = arcade.PhysicsEngineSimple(self.player, self.dungeon.getWalls())
 
     def on_draw(self):
         """ Render the screen. """
@@ -75,8 +75,12 @@ class Game(arcade.Window):
         # Clear the screen to the background color
         arcade.start_render()
 
+        x, y = self.player.center_x, self.player.center_y + 100
+        arcade.draw_text(f"({x}, {y})", x, y, arcade.color.WHITE, 15)
+
         # Draw our sprites
         self.dungeon.render()
+        self.player_list.draw()
         self.enemy_list.draw()
         self.wall_list.draw()
 

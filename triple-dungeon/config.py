@@ -30,6 +30,9 @@ class Config(object):
     CHARACTER_SCALING = 1
     TILE_SCALING = 2
 
+    # The number of pixels across the level
+    LEVEL_SIZE = 10 * TILE_SCALING * TILE_WIDTH
+
     # Movement speed of player, in pixels per frame
     PLAYER_MOVEMENT_SPEED = 7
 
