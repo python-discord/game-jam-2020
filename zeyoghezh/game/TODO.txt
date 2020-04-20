@@ -2,4 +2,5 @@ Test attack sounds
 Add combat effects (not just lines)
 Improve aesthetic
 
-Add a helper cheatsheet image
+Add a helper cheatsheet image (Can we have a link in the markdown that shows the image when rendered?)
+Have the edges cause planets to bump back, not the center
