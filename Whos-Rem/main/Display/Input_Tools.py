@@ -42,9 +42,46 @@ class Button:
 
 class Slider:
 
-    def __init__(self, x, y, slide_dist, rotation="hor", colour=(255, 255, 255)):
+    def __init__(self, x, y, width, height, rotation="hor", colour=(255, 255, 255), start_value=1.0):
         self.x = x
         self.y = y
-        self.slide_dist = slide_dist
+        self.width = width
+        self.height = height
         self.rotation = rotation
         self.colour = colour
+        self.slide_dist = int(width * start_value)
+        self.dragging = False
+
+    def __call__(self):
+        return self.pct_value
+
+    @property
+    def pct_value(self):
+        return self.slide_dist / self.width
+
+    @property
+    def slide_dist(self):
+        return self.__slide_dist
+
+    @slide_dist.setter
+    def slide_dist(self, value):
+        if value < 0:
+            self.__slide_dist = 0
+        elif value > self.width:
+            self.__slide_dist = self.width
+        else:
+            self.__slide_dist = value
+
+    def update_slide(self, mouse_x, mouse_y):
+        if self.hit_box(mouse_x, mouse_y):
+            if self.rotation == "hor":
+                self.slide_dist = mouse_x - self.x
+            else:
+                self.__slide_dist = mouse_y - self.y
+
+    def hit_box(self, mouse_x, mouse_y):
+        if 0 <= mouse_x - self.x <= self.width:
+            if 0 <= mouse_y - self.y <= self.height:
+                return True
+
+        return False

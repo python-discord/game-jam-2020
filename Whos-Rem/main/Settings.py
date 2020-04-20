@@ -1,6 +1,6 @@
 import arcade
 from screeninfo import get_monitors
-from Display.Input_Tools import Button
+from Display.Input_Tools import Button, Slider
 
 
 class Settings(arcade.View):
