@@ -29,7 +29,6 @@ class Config(object):
     # Constants used to scale our sprites from their original size
     CHARACTER_SCALING = 1
     TILE_SCALING = 2
-    BULLET_SCALING = 0.8
 
     # The number of pixels across the level
     LEVEL_SIZE = 10 * TILE_SCALING * TILE_WIDTH
@@ -42,9 +41,6 @@ class Config(object):
     RIGHT_VIEWPORT_MARGIN = 250
     BOTTOM_VIEWPORT_MARGIN = 50
     TOP_VIEWPORT_MARGIN = 100
-	
-    #Bullet constants TEMP change to speed factor in projectiles.py
-    BULLET_SPEED = 5
     
 
 

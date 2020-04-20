@@ -10,8 +10,9 @@ import math
 
 from config import Config
 from map import Dungeon
-from mobs import Player
-
+from mobs import Player, Enemy
+from config import Config, Sprites
+from projectiles import Temp
 
 class Game(arcade.Window):
     """
@@ -125,8 +126,7 @@ class Game(arcade.Window):
         Called whenever the mouse is clicked.
         """
         # Create a bullet TEMP SPRITE, currently wielding frog slingshot
-        bullet = arcade.Sprite("resources/images/monsters/frog/frog1.png", Config.BULLET_SCALING)
-
+        bullet = Temp()
         # Position the bullet at the player's current location
         start_x = self.player_list.center_x
         start_y = self.player_list.center_y
@@ -149,8 +149,8 @@ class Game(arcade.Window):
 
         # Taking into account the angle, calculate our change_x
         # and change_y. Velocity is how fast the bullet travels.
-        bullet.change_x = math.cos(angle) * Config.BULLET_SPEED
-        bullet.change_y = math.sin(angle) * Config.BULLET_SPEED
+        bullet.change_x = math.cos(angle) * bullet.speed
+        bullet.change_y = math.sin(angle) * bullet.speed
 
         # Add the bullet to the appropriate lists
         self.bullet_list.append(bullet)
