@@ -21,8 +21,8 @@ logger = logging.getLogger()
 
 def get_new_lithium_location():
     return (
-        random.randint(SCREEN_SIZE[0]/10, 9*SCREEN_SIZE[0]/10),
-        random.randint(SCREEN_SIZE[1]/10, 9*SCREEN_SIZE[1]/10),
+        random.randint(int(SCREEN_SIZE[0]/6), int(9*SCREEN_SIZE[0]/10)),
+        random.randint(int(SCREEN_SIZE[1]/10), int(9*SCREEN_SIZE[1]/10)),
     )
 
 
