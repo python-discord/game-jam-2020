@@ -36,6 +36,7 @@ ATTACK_SOUND = {
 }
 BACKGROUND_IMAGE = ":resources:images/backgrounds/abstract_1.jpg"
 PUSH_SOUND = ":resources:sounds/upgrade1.wav"
+BACKGROUND_MUSIC = "./music.ogg"  # Music made by missingfragment#1983
 
 
 SCREEN_TITLE = "Zeyoghezh"

@@ -5,7 +5,7 @@ from arcade.gui import Theme, TextButton
 from util import get_distance, log_exceptions
 from planet import Planet
 from config import (
-    SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE
+    SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
 )
 import sys
 
@@ -34,12 +34,14 @@ class Game(arcade.Window):
         self.lithium_score_location = (SCREEN_SIZE[0]/3, SCREEN_SIZE[1]/20)
         self.theme = None
         self.background = None
+        self.background_music = None
 
         self.abscond_button = None
 
     def setup(self):
         self.background = arcade.load_texture(
             BACKGROUND_IMAGE)
+        self.background_music = arcade.Sound(BACKGROUND_MUSIC, streaming=True)
         planets = [Planet(planet_name) for planet_name in ALL_PLANETS]
         self.setup_theme()
         self.abscond_button = TextButton(
