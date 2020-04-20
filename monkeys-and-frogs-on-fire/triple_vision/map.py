@@ -5,7 +5,7 @@ import arcade
 import numpy as np
 
 from triple_vision import Settings as s
-from triple_vision import Tile
+from triple_vision.utils import tile_to_pixels
 
 
 class Map:
@@ -90,11 +90,13 @@ class Map:
 
                 filename = 'wall_mid' if val == self.WALL else f'floor_{random.randint(1, 8)}'
 
+                center_x, center_y = tile_to_pixels(i, j)
+
                 sprite = arcade.Sprite(
                     filename=f'assets/dungeon/frames/{filename}.png',
                     scale=s.SCALING,
-                    center_x=i * Tile.SCALED + Tile.SCALED / 2,
-                    center_y=j * Tile.SCALED + Tile.SCALED / 2
+                    center_x=center_x,
+                    center_y=center_y
                 )
 
                 if val == self.WALL:

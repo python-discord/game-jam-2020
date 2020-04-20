@@ -5,6 +5,7 @@ class Settings:
     TITLE = 'Triple Vision'
     WINDOW_SIZE = (1280, 720)
     SCALING = 3
+    MAP_SIZE = (50, 50)
 
 
 class Tile:

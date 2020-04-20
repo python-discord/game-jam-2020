@@ -3,6 +3,8 @@ from typing import Tuple
 
 import arcade
 
+from triple_vision import Tile
+
 
 def load_texture_pair(filename: str) -> Tuple[arcade.Texture, arcade.Texture]:
     return (
@@ -15,6 +17,20 @@ def is_in_radius(center_object: arcade.Sprite, target_object: arcade.Sprite, rad
     return (
         abs(center_object.center_x - target_object.center_x) <= radius and
         abs(center_object.center_y - target_object.center_y) <= radius
+    )
+
+
+def tile_to_pixels(x: int, y: int) -> Tuple[float, float]:
+    return (
+        x * Tile.SCALED + Tile.SCALED / 2,
+        y * Tile.SCALED + Tile.SCALED / 2
+    )
+
+
+def pixels_to_tile(x: float, y: float) -> Tuple[int, int]:
+    return(
+        (x - Tile.SCALED / 2) // Tile.SCALED,
+        (y - Tile.SCALED / 2) // Tile.SCALED
     )
 
 

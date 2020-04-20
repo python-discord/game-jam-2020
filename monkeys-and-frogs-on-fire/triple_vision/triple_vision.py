@@ -36,7 +36,7 @@ class TripleVision(arcade.View):
         self.collision_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
 
-        self.map = Map(self, (50, 50))
+        self.map = Map(self, s.MAP_SIZE)
         self.map.setup()
 
         self.player = Player(self, 'm')
