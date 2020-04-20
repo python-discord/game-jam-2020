@@ -90,3 +90,16 @@ class Slider:
                 return True
 
         return False
+
+    def draw(self):
+        arcade.draw_lrtb_rectangle_filled(self.x, self.x + self.width,
+                                          self.y + self.height, self.y,
+                                          self.colour)
+        if self.rotation == "hor":
+            arcade.draw_circle_filled(self.x + self.slide_dist,
+                                      self.y + self.width // 2,
+                                      self.height * 3, self.colour)
+        else:
+            arcade.draw_circle_filled(self.x + self.width // 2,
+                                      self.y + self.slide_dist,
+                                      self.width * 3, self.colour)
