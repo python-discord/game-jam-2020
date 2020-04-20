@@ -5,11 +5,15 @@ Pathfinding will also depend on objects here, and is thus integral to it's funct
 """
 
 from __future__ import annotations
-from config import Config
+
+import json
 
 import arcade
-import json
 import numpy as np
+
+from itertools import chain
+
+from config import Config
 
 
 class Dungeon(object):
@@ -24,44 +28,37 @@ class Dungeon(object):
         :param level_count: The number of Active Levels that should be stored within the Dungeon.
         :param size: The diameter of the dungeon. Allows for a total of size^2 slots for levels.
         """
-        # setup
+
+        self.level_count = level_count
+        self.size = size
+
         self.floor_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
-        level_size =  10 * Config.TILE_SCALING * Config.TILE_WIDTH
 
-        # get center level
+        # center = Level.load_file(1, 1, 'resources/levels/map1/center.json')
+        # side = Level.load_file(2, 1, 'resources/levels/map1/room.json')
 
-        center = Level()
-        center.load_file('resources/levels/map1/center.json')
-        center.render()
-        center_floor, center_wall = center.floor_list, center.wall_list
-        self.floor_list.extend(center_floor)
-        self.wall_list.extend(center_wall)
+        center = "resources/levels/map1/center.json"
+        self.levels = [
+            [Level.load_file(x, y, center) for y in range(size)] for x in range(size)
+        ]
 
-        # get a side room
-        room = Level()
-        room.load_file('resources/levels/map1/room.json')
-        room.rotate_level(2)
-        room.render()
-        room_floor, room_wall = room.get_lists()
-        room_floor.move(level_size, 0)
-        room_wall.move(level_size, 0)
-        self.floor_list.extend(room_floor)
-        self.wall_list.extend(room_wall)
+    def getWalls(self) -> arcade.SpriteList:
+        """
+        Simple one time function for getting all Wall sprites from all Levels.
+        Used by the physics engine during game startup.
 
-        # get a side room
-        room = Level()
-        room.load_file('resources/levels/map1/room.json')
-        room.render()
-        room_floor, room_wall = room.get_lists()
-        room_floor.move(-level_size, 0)
-        room_wall.move(-level_size, 0)
-        self.floor_list.extend(room_floor)
-        self.wall_list.extend(room_wall)
+        :return: A SpriteList containing all Sprites.
+        """
 
-    def add_level(self, sprit_list):
-        for x in sprit_list:
-            self.levels.append(x)
+        walls = arcade.SpriteList()
+        walls.extend(
+            list(chain.from_iterable(
+                chain.from_iterable([level.wallSprites for level in column if level is not None]) for column in
+                self.levels
+            ))
+        )
+        return walls
 
     def render(self) -> None:
         """
@@ -71,7 +68,19 @@ class Dungeon(object):
         for column in self.levels:
             for level in column:
                 if level is not None:
-                    level.render()
+                    level.floorSprites.draw()
+                    level.wallSprites.draw()
+
+    @property
+    def levelList(self) -> list:
+        """
+        Retrieves all Level objects from Dungeon instance.
+        :return: A list containing all Level objects.
+        """
+
+        return list(filter(
+            lambda level: level is not None, chain.from_iterable(self.levels)
+        ))
 
 
 class Level:
@@ -91,60 +100,70 @@ class Level:
 
         self.x, self.y = level_x, level_y
         self.sprites = []
-        self.level = []
+        self.structure = []
+
+        self.floorSprites = arcade.SpriteList()
+        self.wallSprites = arcade.SpriteList()
 
         # Tuples containing the Node positions of where walls, floor and entrances are.
         # All positions are generated based on the level's X and Y position, so that all points within
         # the dungeon can be mapped by a proper pathfinding system.
         self.floor_list = []
         self.wall_list = []
-        # self.entrances = []
 
-    def load_file(self, path: str):
+    @staticmethod
+    def load_file(level_x: int, level_y: int, path: str) -> Level:
         """
         Builds a Level from a given file path.
 
+        :param level_x: The level's X position within the Dungeon level matrix.
+        :param level_y: The level's Y position within the Dungeon level matrix.
         :param path: Path to the Level file.
         :return: The new generated Level file.
         """
-        self.floor_list = arcade.SpriteList()
-        self.wall_list = arcade.SpriteList()
 
+        level = Level(level_x, level_y)
         with open(path) as file:
-            level = json.load(file)
+            data = json.load(file)
+            # Loads elements and structure data from level file
+            level.sprites = data['elements']
+            level.structure = data['structure']
 
-        self.sprites = level['elements']
-        self.level = level['structure']
-        
-    def render(self) -> None:
+        tile_scale = Config.TILE_WIDTH * Config.TILE_SCALING
+
+        # Places all of the tiles & sprites
+        for x in range(0, 10):
+            for y in range(0, 10):
+                tilePath = level.sprites[level.structure[x][y]]
+                sprite = arcade.Sprite(tilePath, Config.TILE_SCALING)
+                sprite.center_x, sprite.center_y = x * tile_scale, y * tile_scale
+
+                if 'floor' in tilePath:
+                    level.floorSprites.append(sprite)
+                elif 'wall' in tilePath:
+                    level.wallSprites.append(sprite)
+                else:
+                    print(f'Could not handle Tile: {tilePath}')
+
+        # Move everything into correct positions
+        level.floorSprites.move(*level.center())
+        level.wallSprites.move(*level.center())
+
+        return level
+
+    def center(self) -> tuple:
         """
-        Calls render on all sprites.
+        Returns the pixel center of the level.
+        :return: A tuple containing the X and Y coordinates of the level's center
         """
-        x = 0
-        y = 0
-        level_size = 10 * Config.TILE_SCALING * Config.TILE_WIDTH
-
-        # Create the level
-        # This shows using a loop to place multiple sprites horizontally and vertically
-        for y_pos in range(0, level_size , 63 * Config.TILE_SCALING):
-            for x_pos in range(0, level_size, 63 * Config.TILE_SCALING):
-                cur_tile = self.level[y][x]
-                sprite = self.sprites[cur_tile]
-                floor = arcade.Sprite(sprite, Config.TILE_SCALING)
-                floor.center_x = x_pos
-                floor.center_y = y_pos
-                if cur_tile == ' ':
-                    self.floor_list.append(floor)
-                elif cur_tile == 'w':
-                    self.wall_list.append(floor)
-                x += 1
-            x = 0
-            y += 1
-
-    def get_lists(self):
-        return self.floor_list, self.wall_list
+        return self.x * Config.LEVEL_SIZE, self.y * Config.LEVEL_SIZE
 
     def rotate_level(self, times_rotated):
+        """
+        Rotates the
+        :param times_rotated:
+        :return:
+        """
         m = np.array(self.level)
         for i in range(0, times_rotated % 4):
             m = np.rot90(m)
