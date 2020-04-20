@@ -4,7 +4,7 @@ from typing import Optional
 
 import arcade
 
-from triple_vision.constants import SCALED_TILE, ON_CARD_HOVER_SLOWDOWN_MULTIPLIER
+from triple_vision.constants import SCALED_TILE
 from triple_vision.utils import get_change_vector
 
 
@@ -65,7 +65,19 @@ class MovingSprite(arcade.Sprite):
         self.change_x = math.cos(radians_angle) * self.speed
         self.change_y = math.sin(radians_angle) * self.speed
 
+    def force_moving_sprite_on_update(self, delta_time: float) -> None:
+        """
+        Another name for on_update
+        For easier calling in case of heavy polymorphism
+        """
+        self._reached_target_check()
+        self.update_(delta_time)
+
     def on_update(self, delta_time: float = 1/60) -> None:
+        self._reached_target_check()
+        self.update_(delta_time)
+
+    def _reached_target_check(self):
         if self.target is not None:
             if (
                 self.target[0] - SCALED_TILE / 2 < self.center_x < self.target[0] + SCALED_TILE / 2 and
@@ -74,17 +86,16 @@ class MovingSprite(arcade.Sprite):
                 self.change_x = 0
                 self.change_y = 0
 
-                self.target = None
-
-        self.update_(delta_time)
-
     def update_(self, delta_time):
-        slowdown = delta_time * 60
+        """
+        Update method that works with slow-down.
+        """
+        relative_speed = delta_time * 60
         self.position = [
-            self._position[0] + self.change_x * slowdown,
-            self._position[1] + self.change_y * slowdown
+            self._position[0] + self.change_x * relative_speed,
+            self._position[1] + self.change_y * relative_speed
         ]
-        self.angle += self.change_angle * slowdown
+        self.angle += self.change_angle * relative_speed
 
 
 class TemporarySprite(arcade.Sprite):

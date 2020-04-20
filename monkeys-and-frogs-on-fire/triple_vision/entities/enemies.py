@@ -53,7 +53,7 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
 
-    def update(self, delta_time: float = 1/60):
+    def on_update(self, delta_time: float = 1/60) -> None:
         if not self.being_pushed:
             if is_in_radius(self, self.target_sprite, self.detection_radius):
                 self.move_to(self.target_sprite.center_x,
@@ -63,7 +63,10 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
                 self.change_x = 0
                 self.change_y = 0
 
-        super().update()
+        # Since both are defined in both parents it's gonna call only from BaseEnemy
+        # so we're forcing the call for MovingSprite
+        super().on_update(delta_time)
+        super().force_moving_sprite_on_update(delta_time)
 
 
 class StationaryEnemy(BaseEnemy):

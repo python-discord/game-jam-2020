@@ -18,7 +18,7 @@ class Player(LivingEntity, MovingSprite):
             is_colored=True,
             has_hit_frame=True,
             gender=gender,
-            moving_speed=3,
+            moving_speed=10,
             scale=SCALING,
             center_x=500,
             center_y=500,
@@ -90,3 +90,7 @@ class Player(LivingEntity, MovingSprite):
     def kill(self):
         self.is_alive = False
         super().kill()
+
+    def on_update(self, delta_time: float = 1/60):
+        super().on_update(delta_time)
+        super().force_moving_sprite_on_update(delta_time)

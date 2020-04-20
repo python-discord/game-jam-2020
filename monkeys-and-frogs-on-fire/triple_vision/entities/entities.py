@@ -116,9 +116,8 @@ class AnimatedEntity(arcade.Sprite):
 
             self._prev_anim_delta = 0
 
-    def update(self, delta_time: float = 1/60) -> None:
+    def on_update(self, delta_time: float = 1/60) -> None:
         self.update_animation(delta_time)
-        super().update()
 
 
 class LivingEntity(AnimatedEntity):
@@ -182,7 +181,7 @@ class LivingEntity(AnimatedEntity):
                 self.change_y = 0
                 self.color = (255, 255, 255)
 
-    def update(self, delta_time: float = 1/60) -> None:
+    def on_update(self, delta_time: float = 1/60):
         if self.being_pushed and self.is_pushable:
             self.reduce_throwback()
-        super().update(delta_time)
+        super().on_update(delta_time)
