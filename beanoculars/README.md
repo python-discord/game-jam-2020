@@ -1,7 +1,7 @@
 ![beanoculars' logo](submission/images/icons/beanocularsMINI.png)
 ### Beanoculars' submission for the python-discord game jam 2020
 ---
-# TRICERASECT (NOT DEFINITIVE)
+# INSANE IRRADIATED INSECTS
 ---
 > Made by sachapomme (Sacha#8175)
 
