@@ -161,9 +161,8 @@ class Game(arcade.Window):
         [planet.update_triangulating() for planet in self.planets]
 
     def run_assertions(self):
-        if self.game_is_over:
-            assert len(self.planets) in (1, 2)
-        else:
+        assert len(self.planets) in (1, 2, 3)
+        if not self.game_is_over:
             assert len(self.planets) == 3
         assert self.lithium_count >= 0
         for planet in self.planets:
