@@ -15,6 +15,7 @@ class Config(object):
     SCREEN_HEIGHT = 1000
     SCREEN_TITLE = "Triple Dungeon"
     TILE_WIDTH = 63
+    UPDATES_PER_FRAME = 20
 
     # Constants used to scale our sprites from their original size
     CHARACTER_SCALING = 1
