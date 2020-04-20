@@ -2,3 +2,5 @@ Test attack sounds
 Add combat effects (not just lines)
 Add space background
 Improve aesthetic
+
+Add a helper cheatsheet image
