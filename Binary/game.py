@@ -174,6 +174,7 @@ class MyGame(arcade.Window):
         x, y = room.id
         width, height = room.width, room.height
         arcade.draw_rectangle_filled(x * width + width / 2, y * height + height / 2, width, height, room.color)
+        arcade.draw_polygon_filled(room.inside, arcade.csscolor.VIOLET)
  
     def update_player_room(self):
         player_x = self.player.center_x
@@ -211,7 +212,7 @@ class MyGame(arcade.Window):
         
         self.player.center_x = max(node_x, min(node_x + node_width, player_x))
         self.player.center_y = max(node_y, min(node_y + node_height, player_y))
-                
+
 
 """    def draw_room_smol(self, rooms, count):
         if(count == map_generator.MAX_ROOM_NUM): 

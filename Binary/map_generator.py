@@ -1,14 +1,31 @@
 import random
 
-SCALE_FACTOR = 4
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 MAX_ROOM_NUM = 20
 MAX_ROOM_NEIGH = 4
 ROOM_W = SCREEN_WIDTH
 ROOM_H = SCREEN_HEIGHT
+RECT_WIDTH = SCREEN_WIDTH // 4
+RECT_HEIGHT = SCREEN_HEIGHT // 4
 
-
+def generate_polygon_points(coord):
+    #(x, y)
+    x,y = coord
+    left_points = sorted([ (x * ROOM_W + random.random() * RECT_HEIGHT,
+                            y * ROOM_H + random.random() * ROOM_H) for i in range(2)], 
+                            key=lambda x: x[1])
+    right_points = sorted([(x * ROOM_W + ROOM_W - RECT_HEIGHT + random.random() * RECT_HEIGHT, 
+                            y * ROOM_H + random.random() * ROOM_H) for i in range(2)], 
+                            key=lambda x: x[1], reverse = True)
+    down_points = sorted([( x * ROOM_W + RECT_HEIGHT + random.random() * (ROOM_W - RECT_HEIGHT), 
+                            y * ROOM_H + random.random() * RECT_WIDTH) for i in range(2)], 
+                            key=lambda x: x[0], reverse = True)
+    up_points = sorted([( x * ROOM_W + RECT_HEIGHT + random.random() * (ROOM_W - 2 * RECT_HEIGHT), 
+                          y * ROOM_H + ROOM_H - RECT_WIDTH + random.random() * RECT_WIDTH) for i in range(2)], 
+                          key=lambda x: x[0])
+    return up_points + right_points + down_points + left_points
+    
 class Room():
     def __init__(self, width, height, color, neighbors, id, parent):
         self.width = width
@@ -17,6 +34,7 @@ class Room():
         self.neighbors = neighbors
         self.id = id
         self.parent = parent
+        self.inside = generate_polygon_points(id)
 
 def generate(nodes, depth, count):
     # If I reach max depth OR max count then I return
@@ -57,17 +75,17 @@ def generate(nodes, depth, count):
         depth += 1
         #Recurse!
         generate(new_node_list, depth, count)
-
-"""def traverseAndPrint(node, depth, count):
+"""
+def traverseAndPrint(node, depth, count):
     if(count == MAX_ROOM_NUM):
         return
     else:
         for n in node:
             if(depth == 0):
-                print(n, n.parent, n.id)
+                print(n.inside)
             for k in n.neighbors:
                 if k is not None:
-                    print('_' * depth, k, k.id,k.parent.id)
+                    print('_' * depth, k.inside)
                     depth += 1
                     count += 1
                     traverseAndPrint([k], depth ,count)
@@ -80,4 +98,7 @@ root = Room(ROOM_W, ROOM_H, (random.randrange(0,255),
                             None)
                         
 generate([root], 0, 0)
-traverseAndPrint([root], 0, 1)"""
+print(root.inside)
+
+traverseAndPrint([root], 0, 1)
+"""
