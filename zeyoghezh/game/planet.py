@@ -1,15 +1,16 @@
 import arcade
-from util import get_distance, closest_distance_between_planets
+from .util import (
+    get_distance, closest_distance_between_planets, get_unit_push_distance
+)
 import logging
 import random
-from config import (
+from .config import (
     SCREEN_SIZE, PLANET_BASE_SPEED, PUSH_BASE_SPEED,
     PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
     PLANET_COLORS, PLANET_SPRITES, TRIANGULATION_START_LIKELIHOOD,
     TRIANGULATION_END_LIKELIHOOD, ATTACK_SOUND, ATTACK_PLAYS_SOUND_CHANCE,
     SOUND_VOLUME
 )
-from util import get_unit_push_distance
 
 logger = logging.getLogger()
 
@@ -39,6 +40,8 @@ class Planet(arcade.Sprite):
 
         self.is_triangulating = False
 
+        self.proper_name = self.name[0].upper() + self.name[1:].lower()
+
     def setup(
             self, parent, others, center_x, center_y,
             start_speed_x, start_speed_y):
@@ -51,13 +54,15 @@ class Planet(arcade.Sprite):
         self.speed_y = start_speed_y
 
     def move(self, delta_x=None, delta_y=None):
-        if self.center_y > SCREEN_SIZE[1] - 5:
+        # I have no idea why this needs to be 4 and not 2
+        planet_radius = self.width / 4
+        if self.center_y > SCREEN_SIZE[1] - planet_radius:
             self.speed_y = -abs(self.speed_y) - (random.random() / 100)
-        if self.center_y < 0 + 5:
+        if self.center_y < planet_radius:
             self.speed_y = abs(self.speed_y) + (random.random() / 100)
-        if self.center_x > SCREEN_SIZE[0] - 5:
+        if self.center_x > SCREEN_SIZE[0] - planet_radius:
             self.speed_x = -abs(self.speed_x) - (random.random() / 100)
-        if self.center_x < 0 + 5:
+        if self.center_x < planet_radius:
             self.speed_x = abs(self.speed_x) + (random.random() / 100)
 
         if delta_x is None:
@@ -109,7 +114,12 @@ class Planet(arcade.Sprite):
             other.die()
 
     def die(self):
-        self.parent.game_over(f"{self.name} has died")
+        for planet in self.others:
+            logger.info(f"Removing {self.name} from others in {planet.name}")
+            planet.others.remove(self)
+        self.parent.planets.remove(self)
+        self.parent.game_over(
+            f"You cannot leave now; {self.proper_name} has died.")
 
     def get_stats_str(self):
         total_damage_on_others = round(sum(self.damage_on_others.values()), 4)
@@ -122,13 +132,16 @@ class Planet(arcade.Sprite):
         )
 
     def draw_triangulation_circle(self):
+        health_normalized = int(255 * min(self.health, 1))
+        transparentized_color = arcade.make_transparent_color(
+            self.color, health_normalized)
         lithium_location = self.parent.lithium_location
         distance_to_lithium = get_distance(
             self.center_x, self.center_y, *lithium_location
         )
         arcade.draw_circle_outline(
             self.center_x, self.center_y, distance_to_lithium,
-            color=self.color)
+            color=transparentized_color)
 
     def get_healed(self, health):
         self.health += health
