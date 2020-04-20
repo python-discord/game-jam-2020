@@ -40,7 +40,7 @@ class Game(arcade.Window):
         self.view_bottom = 0
         self.view_left = 0
 
-        arcade.set_background_color(arcade.csscolor.BLACK)
+        arcade.set_background_color(arcade.color.BLACK)
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
@@ -53,7 +53,7 @@ class Game(arcade.Window):
         self.player.scale = 1
 
         # Create the dungeon
-        self.dungeon = Dungeon()
+        self.dungeon = Dungeon(0, 3)
 
         self.player.center_x, self.player.center_y = random.choice(self.dungeon.levelList).center()
 
@@ -71,14 +71,14 @@ class Game(arcade.Window):
         # Clear the screen to the background color
         arcade.start_render()
 
-        x, y = self.player.center_x, self.player.center_y + 100
-        arcade.draw_text(f"({x}, {y})", x, y, arcade.color.WHITE, 15)
-
         # Draw our sprites
         self.dungeon.render()
         self.player.draw()
         self.enemy_list.draw()
         self.wall_list.draw()
+
+        x, y = self.player.center_x, self.player.center_y + 100
+        arcade.draw_text(f"({x}, {y})", x, y, arcade.color.WHITE, 15)
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """

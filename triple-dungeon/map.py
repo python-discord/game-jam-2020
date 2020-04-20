@@ -43,7 +43,14 @@ class Dungeon(object):
             [Level.load_file(x, y, center) for y in range(size)] for x in range(size)
         ]
 
-    def getWalls(self):
+    def getWalls(self) -> arcade.SpriteList:
+        """
+        Simple one time function for getting all Wall sprites from all Levels.
+        Used by the physics engine during game startup.
+
+        :return: A SpriteList containing all Sprites.
+        """
+
         walls = arcade.SpriteList()
         walls.extend(
             list(chain.from_iterable(
@@ -67,7 +74,7 @@ class Dungeon(object):
     @property
     def levelList(self) -> list:
         """
-        Retrieves all Level objects from Dungeon intance.
+        Retrieves all Level objects from Dungeon instance.
         :return: A list containing all Level objects.
         """
 
