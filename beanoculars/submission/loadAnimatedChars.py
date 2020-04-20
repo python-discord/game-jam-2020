@@ -44,25 +44,40 @@ class AnimatedEntity(arcade.Sprite):
     def __init__(self, e_type: int, num_of_frames: int, coor: [int, int]):
         super().__init__()
 
+        main_path = ''
+
         if e_type == E_ANT:
+            self.e_type = E_ANT
             self.update_rate = UR_ANT
             main_path = PATH['img'] / 'sprite' / 'ant'
+
         elif e_type == E_MOSQUITO:
+            self.e_type = E_MOSQUITO
             self.update_rate = UR_MOSQUITO
             main_path = PATH['img'] / 'sprite' / 'mosquito'
+
         elif e_type == E_SPIDER:
+            self.e_type = E_SPIDER
             self.update_rate = UR_SPIDER
             main_path = PATH['img'] / 'sprite' / 'spider'
+
         elif e_type == E_DUNG_BEETLE:
+            self.e_type = E_DUNG_BEETLE
             self.update_rate = UR_DUNG_BEETLE
             main_path = PATH['img'] / 'sprite' / 'dung_beetle'
+
         elif e_type == T_SPRAY:
+            self.e_type = T_SPRAY
             self.update_rate = UR_SPRAY
             main_path = PATH['img'] / 'sprite' / 'spray'
+
         elif e_type == T_LAMP:
+            self.e_type = T_LAMP
             self.update_rate = UR_LAMP
             main_path = PATH['img'] / 'sprite' / 'lamp'
+
         elif e_type == T_VACUUM:
+            self.e_type = T_VACUUM
             self.update_rate = UR_VACUUM
             main_path = PATH['img'] / 'sprite' / 'vacuum'
 
@@ -71,8 +86,6 @@ class AnimatedEntity(arcade.Sprite):
         self.numberFrames = num_of_frames
 
         self.cur_texture_index = 0
-
-          # path
 
         self.basic_textures = []
 
