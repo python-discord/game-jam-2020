@@ -78,8 +78,8 @@ class Map:
         return map_
 
     def spritify(self, map_) -> arcade.SpriteList:
-        sprites = arcade.SpriteList()
-        collision_list = arcade.SpriteList()
+        sprites = arcade.SpriteList(use_spatial_hash=True)
+        collision_list = arcade.SpriteList(use_spatial_hash=True)
 
         for i in range(self.shape[0]):
             for j in range(self.shape[1]):

@@ -33,7 +33,6 @@ class TripleVision(arcade.View):
         self.physics_engine = None
 
     def setup(self) -> None:
-        self.collision_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
 
         self.map = Map(self, s.MAP_SIZE)
