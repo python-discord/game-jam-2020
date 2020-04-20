@@ -203,43 +203,62 @@ class ShipView(arcade.View):
 
         # Track if we need to change the viewport
 
-        changed = False
-
-        # Scroll left
-        left_boundary = self.view_left + LEFT_VIEWPORT_MARGIN
-        if self.ship_sprite.left < left_boundary:
-            self.view_left -= left_boundary - self.ship_sprite.left
-            changed = True
-
-        # Scroll right
-        right_boundary = self.view_left + SCREEN_WIDTH - RIGHT_VIEWPORT_MARGIN
-        if self.ship_sprite.right > right_boundary:
-            self.view_left += self.ship_sprite.right - right_boundary
-            changed = True
-
-        # Scroll up
-        top_boundary = self.view_bottom + SCREEN_HEIGHT - TOP_VIEWPORT_MARGIN
-        if self.ship_sprite.top > top_boundary:
-            self.view_bottom += self.ship_sprite.top - top_boundary
-            changed = True
-
-        # Scroll down
-        bottom_boundary = self.view_bottom + BOTTOM_VIEWPORT_MARGIN
-        if self.ship_sprite.bottom < bottom_boundary:
-            self.view_bottom -= bottom_boundary - self.ship_sprite.bottom
-            changed = True
-
-        if changed:
-            # Only scroll to integers. Otherwise we end up with pixels that
-            # don't line up on the screen
-            self.view_bottom = int(self.view_bottom)
-            self.view_left = int(self.view_left)
+        # changed = False
+        #
+        # # Scroll left
+        # left_boundary = self.view_left + LEFT_VIEWPORT_MARGIN
+        # if self.ship_sprite.left < left_boundary:
+        #     self.view_left -= left_boundary - self.ship_sprite.left
+        #     changed = True
+        #
+        # # Scroll right
+        # right_boundary = self.view_left + SCREEN_WIDTH - RIGHT_VIEWPORT_MARGIN
+        # if self.ship_sprite.right > right_boundary:
+        #     self.view_left += self.ship_sprite.right - right_boundary
+        #     changed = True
+        #
+        # # Scroll up
+        # top_boundary = self.view_bottom + SCREEN_HEIGHT - TOP_VIEWPORT_MARGIN
+        # if self.ship_sprite.top > top_boundary:
+        #     self.view_bottom += self.ship_sprite.top - top_boundary
+        #     changed = True
+        #
+        # # Scroll down
+        # bottom_boundary = self.view_bottom + BOTTOM_VIEWPORT_MARGIN
+        # if self.ship_sprite.bottom < bottom_boundary:
+        #     self.view_bottom -= bottom_boundary - self.ship_sprite.bottom
+        #     changed = True
+        #
+        # if changed:
+        #     # Only scroll to integers. Otherwise we end up with pixels that
+        #     # don't line up on the screen
+        #     self.view_bottom = int(self.view_bottom)
+        #     self.view_left = int(self.view_left)
 
             # Do the scrolling
-            arcade.set_viewport(self.view_left,
-                                SCREEN_WIDTH + self.view_left,
-                                self.view_bottom,
-                                SCREEN_HEIGHT + self.view_bottom)
+            # arcade.set_viewport(self.view_left,
+            #                     SCREEN_WIDTH + self.view_left,
+            #                     self.view_bottom,
+            #                     SCREEN_HEIGHT + self.view_bottom)
+            left = int(self.ship_sprite._get_position()[0]-SCREEN_WIDTH/2)
+            right = int(self.ship_sprite._get_position()[0]+SCREEN_WIDTH/2)
+            bottom = int(self.ship_sprite._get_position()[1]-SCREEN_HEIGHT/2)
+            top = int(self.ship_sprite._get_position()[1]+SCREEN_HEIGHT/2)
+
+            if left < 75:
+                left = 75
+                right = 75+SCREEN_WIDTH
+            if right > 4000:
+                right = 4000
+                left = right-SCREEN_WIDTH
+            if top > 2300:
+                top = 2300
+                bottom = 2300 - SCREEN_HEIGHT
+            if bottom < 0:
+                bottom = 0
+                top = SCREEN_HEIGHT
+
+            arcade.set_viewport(left, right, bottom, top)
 
     def on_show(self):
         print("Switched to ShipView")
@@ -271,21 +290,29 @@ class ShipView(arcade.View):
 
         if self.up_pressed and not self.down_pressed:
             self.ship_sprite.change_y = SHIP_MOVEMENT_SPEED * delta_time
-            self.ship_sprite.target_angle = 180
+            if int(self.ship_sprite.angle)%360 != 180:
+                self.ship_sprite.change_angle = 1
+                if int(self.ship_sprite.angle)%360 not in range(0, 180):
+                    self.ship_sprite.change_angle = -1
         elif self.down_pressed and not self.up_pressed:
             self.ship_sprite.change_y = -SHIP_MOVEMENT_SPEED * delta_time
-            self.ship_sprite.target_angle = 0
+            if int(self.ship_sprite.angle)%360 != 0:
+                self.ship_sprite.change_angle = 1
+                if int(self.ship_sprite.angle)%360 in range(0, 180):
+                    self.ship_sprite.change_angle = -1
         if self.left_pressed and not self.right_pressed:
             self.ship_sprite.change_x = -SHIP_MOVEMENT_SPEED * delta_time
-            self.ship_sprite.target_angle = 270
+            if int(self.ship_sprite.angle)%360 != 270:
+                self.ship_sprite.change_angle = 1
+                if int(self.ship_sprite.angle)%360 not in range(90, 270):
+                    self.ship_sprite.change_angle = -1
         elif self.right_pressed and not self.left_pressed:
             self.ship_sprite.change_x = SHIP_MOVEMENT_SPEED * delta_time
-            self.ship_sprite.target_angle = 90
+            if int(self.ship_sprite.angle)%360 != 90:
+                self.ship_sprite.change_angle = 1
+                if int(self.ship_sprite.angle)%360 in range(90, 270):
+                    self.ship_sprite.change_angle = -1
 
-        if self.ship_sprite.change_x > 0 or self.ship_sprite.change_y > 0:
-            self.ship_sprite.angle = 90+degrees(atan2(self.ship_sprite.change_y,  self.ship_sprite.change_x))
-        else:
-            self.ship_sprite.angle = self.ship_sprite.angle
         # self.ship_sprite.on_update(delta_time)
 
         # print(self.get_viewport())
