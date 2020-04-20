@@ -28,11 +28,11 @@ def tile_to_pixels(x: int, y: int) -> Tuple[float, float]:
 
 
 def pixels_to_tile(x: float, y: float) -> Tuple[int, int]:
-    return(
-        (x - Tile.SCALED / 2) // Tile.SCALED,
-        (y - Tile.SCALED / 2) // Tile.SCALED
-    )
+    x = int((x - (x % Tile.SCALED)) / Tile.SCALED)
+    y = int((y - (y % Tile.SCALED)) / Tile.SCALED)
 
+    print(x, y)
+    return x, y
 
 def distance_between(center_object: arcade.Sprite, target_object: arcade.Sprite) -> float:
     x_diff = target_object.center_x - center_object.center_x

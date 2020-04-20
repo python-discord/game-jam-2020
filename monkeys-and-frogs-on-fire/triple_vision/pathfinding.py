@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import List, Optional, Tuple
 
 import arcade
@@ -64,11 +65,7 @@ class PathFinder:
         open_nodes.append(start_node)
 
         for _ in range(self.max_tries):
-            current_node = open_nodes[0]
-
-            for node in open_nodes:
-                if node.f < current_node.f:
-                    current_node = node
+            current_node = min(open_nodes, key=lambda node: node.f)
 
             open_nodes.remove(current_node)
             closed_nodes.append(current_node)
@@ -79,7 +76,7 @@ class PathFinder:
                 current = current_node
                 while current is not None:
                     path.append(current.pos)
-                    current = current_node.parent
+                    current = current.parent
 
                 return path[::-1]
 
@@ -95,15 +92,16 @@ class PathFinder:
             ]
 
             children = [
-                current + Node(pos) for pos in surroundings
-                if not self._tile_is_blocked(*pos, collision_list)
+                current_node + Node(pos) for pos in surroundings
+                if not self._tile_is_blocked(*(current_node + Node(pos)).pos, collision_list)
             ]
 
             for child in children:
 
-                for closed_node in closed_nodes:
-                    if child == closed_node:
-                        continue
+                if any(
+                    child == closed_node for closed_node in closed_nodes
+                ):
+                    continue
 
                 # http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html#the-a-star-algorithm
                 child.g = current_node.g + 1
@@ -113,9 +111,10 @@ class PathFinder:
 
                 child.f = child.g + child.h
 
-                for open_node in open_nodes:
-                    if child == open_node and child.g > open_node.g:
-                        continue
+                if any(
+                    child == open_node and child.g > open_node.g for open_node in open_nodes
+                ):
+                    continue
 
                 open_nodes.append(child)
 

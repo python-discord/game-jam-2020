@@ -7,6 +7,8 @@ from triple_vision import Settings as s
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import MovingSprite
 from triple_vision.entities.weapons import LaserProjectile
+from triple_vision.pathfinding import PathFinder
+from triple_vision.utils import pixels_to_tile, tile_to_pixels
 
 
 class Player(LivingEntity, MovingSprite):
@@ -33,6 +35,9 @@ class Player(LivingEntity, MovingSprite):
         self.dexterity = 0.75
 
         self._curr_color = self.curr_color
+
+        self.path_finder = PathFinder()
+        self.path = None
 
     @property
     def curr_color(self):
@@ -78,7 +83,13 @@ class Player(LivingEntity, MovingSprite):
 
     def process_mouse_press(self, x, y, button) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:
-            self.move_to(x, y, rotate=False)
+            self.path = iter(
+                self.path_finder.find(
+                    pixels_to_tile(self.center_x, self.center_y),
+                    pixels_to_tile(x, y),
+                    self.view.collision_list
+                )
+            )
 
         elif button == arcade.MOUSE_BUTTON_RIGHT:
 
@@ -100,3 +111,16 @@ class Player(LivingEntity, MovingSprite):
     def kill(self):
         self.is_alive = False
         super().kill()
+
+    def update(self, delta_time: float = 1/60) -> None:
+        if self.path is not None and self.target is None:
+            try:
+                pos = tile_to_pixels(*next(self.path))
+
+            except StopIteration:
+                self.path = None
+
+            else:
+                self.move_to(*pos, rotate=False)
+
+        super().update(delta_time)
