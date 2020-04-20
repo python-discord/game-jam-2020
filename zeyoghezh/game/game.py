@@ -101,12 +101,12 @@ class Game(arcade.Window):
                     start_x=planet.center_x, start_y=planet.center_y,
                     end_x=(
                         other.center_x+(
-                            random.random()*other.width/2)
-                        - (other.width/2)),
+                            random.random()*other.width/4)
+                        - (other.width/4)),
                     end_y=(
                         other.center_y+(
-                            random.random()*other.height/2)
-                        - (other.height/2)),
+                            random.random()*other.height/4)
+                        - (other.height/4)),
                     color=planet.color,
                     line_width=planet.base_damage * 1e4)
             planet.attacked_last_round = []

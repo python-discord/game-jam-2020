@@ -52,13 +52,15 @@ class Planet(arcade.Sprite):
         self.speed_y = start_speed_y
 
     def move(self, delta_x=None, delta_y=None):
-        if self.center_y > SCREEN_SIZE[1] - 5:
+        # I have no idea why this needs to be 4 and not 2
+        planet_radius = self.width / 4
+        if self.center_y > SCREEN_SIZE[1] - planet_radius:
             self.speed_y = -abs(self.speed_y) - (random.random() / 100)
-        if self.center_y < 0 + 5:
+        if self.center_y < planet_radius:
             self.speed_y = abs(self.speed_y) + (random.random() / 100)
-        if self.center_x > SCREEN_SIZE[0] - 5:
+        if self.center_x > SCREEN_SIZE[0] - planet_radius:
             self.speed_x = -abs(self.speed_x) - (random.random() / 100)
-        if self.center_x < 0 + 5:
+        if self.center_x < planet_radius:
             self.speed_x = abs(self.speed_x) + (random.random() / 100)
 
         if delta_x is None:

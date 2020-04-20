@@ -23,7 +23,6 @@ def log_exceptions(func):
 
 
 def get_unit_push_distance(planet_coords, other_coords):
-    # TODO improve this logic
     x_distance = other_coords[0] - planet_coords[0]
     y_distance = other_coords[1] - planet_coords[1]
     distance_sum = abs(x_distance) + abs(y_distance)
@@ -54,8 +53,9 @@ def get_unit_push_distance(planet_coords, other_coords):
 def closest_distance_between_planets(planet1, planet2):
     # Only works cuz the planets are circles
     center_distance = arcade.get_distance_between_sprites(planet1, planet2)
-    planet1_radius = planet1.height / 2
-    planet2_radius = planet2.height / 2
+    # Unclear why this is 4 instead of 2 but it works better
+    planet1_radius = planet1.height / 4
+    planet2_radius = planet2.height / 4
     closest_distance = center_distance - planet1_radius - planet2_radius
     logger.debug(f"{center_distance=}, {closest_distance=}")
     return closest_distance
