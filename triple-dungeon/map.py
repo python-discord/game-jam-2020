@@ -32,40 +32,15 @@ class Dungeon(object):
 
         self.floor_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
-        level_size = 10 * Config.TILE_SCALING * Config.TILE_WIDTH
 
-        # get center level
         center = Level.load_file(1, 1, 'resources/levels/map1/center.json')
-        room_floor.move(level_size, 0)
-        room_wall.move(level_size, 0)
         side = Level.load_file(2, 1, 'resources/levels/map1/room.json')
-        room_floor.move(level_size, 0)
-        room_wall.move(level_size, 0)
 
-        center = Level()
-        center.load_file('resources/levels/map1.center.json')
-        self.floor_list.extend(center.floor_list)
-        self.wall_list.extend(center.wall_list)
-
-        # get a side room
-        room = Level()
-        room.load_file('resources/levels/map1/room.json')
-        room.rotate_level(2)
-        room.render()
-        room_floor, room_wall = room.floor_list, room.wall_list
-
-        self.floor_list.extend(room_floor)
-        self.wall_list.extend(room_wall)
-
-        # get a side room
-        room = Level()
-        room.load_file('resources/levels/map1/room.json')
-        room.render()
-        room_floor, room_wall = room.floor_list, room.wall_list
-        room_floor.move(-level_size, 0)
-        room_wall.move(-level_size, 0)
-        self.floor_list.extend(room_floor)
-        self.wall_list.extend(room_wall)
+        self.levels = [
+            [None, None, None],
+            [center, side, None],
+            [None, None, None]
+        ]
 
     def render(self) -> None:
         """
@@ -75,7 +50,9 @@ class Dungeon(object):
         for column in self.levels:
             for level in column:
                 if level is not None:
-                    level.render()
+                    print('Rendering Level')
+                    level.floorSprites.draw()
+                    level.wallSprites.draw()
 
 
 class Level:
@@ -108,7 +85,7 @@ class Level:
         # self.entrances = []
 
     @staticmethod
-    def load_file(level_x: int, level_y:int,  path: str) -> Level:
+    def load_file(level_x: int, level_y: int, path: str) -> Level:
         """
         Builds a Level from a given file path.
 
@@ -128,7 +105,7 @@ class Level:
 
         # Places all of the tiles & sprites
         for x in range(0, 10):
-            for y in range(0, 11):
+            for y in range(0, 10):
                 tilePath = level.sprites[level.structure[x][y]]
                 sprite = arcade.Sprite(tilePath, Config.TILE_SCALING)
                 sprite.center_x, sprite.center_y = x * tile_scale, y * tile_scale
@@ -139,6 +116,7 @@ class Level:
                     level.wallSprites.append(sprite)
                 else:
                     print(f'Could not handle Tile: {tilePath}')
+
         # Move everything into correct positions
         level.floorSprites.move(level_scale * level_x, level_scale * level_y)
         level.wallSprites.move(level_scale * level_x, level_scale * level_y)

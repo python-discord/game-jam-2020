@@ -30,6 +30,8 @@ class Game(arcade.Window):
         # Separate variable that holds the player sprite
         self.player = None
 
+        self.dungeon = None
+
         # list to keep track of keypresses
         self.prev_keypress = []
 
@@ -47,8 +49,6 @@ class Game(arcade.Window):
         # Create the Sprite lists
 
         self.player_list = arcade.SpriteList()
-        self.wall_list = arcade.SpriteList()
-        self.floor_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
@@ -59,10 +59,7 @@ class Game(arcade.Window):
         self.player_list = self.player
 
         # Create the dungeon
-        dungeon = Dungeon()
-
-        self.floor_list = dungeon.floor_list
-        self.wall_list = dungeon.wall_list
+        self.dungeon = Dungeon()
 
         # Create monsters
         # This needs to be updated to comply with the new mobs.py code
@@ -70,7 +67,7 @@ class Game(arcade.Window):
         # self.enemy_list.append(Enemy("resources/images/monsters/frog/frog1.png", 200, 1000, 4).get_enemy())
 
         # Create the 'physics engine'
-        self.physics_engine = arcade.PhysicsEngineSimple(self.player, self.wall_list)
+        self.physics_engine = arcade.PhysicsEngineSimple(self.player, *(dungeon.getWalls()))
 
     def on_draw(self):
         """ Render the screen. """
@@ -79,8 +76,7 @@ class Game(arcade.Window):
         arcade.start_render()
 
         # Draw our sprites
-        self.floor_list.draw()
-        self.player_list.draw()
+        self.dungeon.render()
         self.enemy_list.draw()
         self.wall_list.draw()
 
