@@ -11,6 +11,7 @@ import arcade
 import json
 import numpy as np
 
+
 class Dungeon(object):
     """
     Organizes Level objects into an easy to render and path through object.
@@ -33,10 +34,9 @@ class Dungeon(object):
         center = Level()
         center.load_file('resources/levels/map1/center.json')
         center.render()
-        center_floor, center_wall = center.get_lists()
+        center_floor, center_wall = center.floor_list, center.wall_list
         self.floor_list.extend(center_floor)
         self.wall_list.extend(center_wall)
-
 
         # get a side room
         room = Level()
@@ -58,10 +58,6 @@ class Dungeon(object):
         room_wall.move(-level_size, 0)
         self.floor_list.extend(room_floor)
         self.wall_list.extend(room_wall)
-
-
-        #self.level_count, self.size = level_count, size
-        #self.levels = [[None for y in range(size)] for x in range(size)]  # array[x][y] style access
 
     def add_level(self, sprit_list):
         for x in sprit_list:
@@ -102,10 +98,9 @@ class Level:
         # the dungeon can be mapped by a proper pathfinding system.
         self.floor_list = []
         self.wall_list = []
-        #self.entrances = []
+        # self.entrances = []
 
-    #@staticmethod
-    def load_file(self, path: str) -> Level:
+    def load_file(self, path: str):
         """
         Builds a Level from a given file path.
 
@@ -114,10 +109,10 @@ class Level:
         """
         self.floor_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
-        
 
         with open(path) as file:
             level = json.load(file)
+
         self.sprites = level['elements']
         self.level = level['structure']
         
@@ -138,19 +133,19 @@ class Level:
                 floor = arcade.Sprite(sprite, Config.TILE_SCALING)
                 floor.center_x = x_pos
                 floor.center_y = y_pos
-                if(cur_tile == ' '):
+                if cur_tile == ' ':
                     self.floor_list.append(floor)
-                elif(cur_tile == 'w'):
+                elif cur_tile == 'w':
                     self.wall_list.append(floor)
                 x += 1
             x = 0
             y += 1
 
     def get_lists(self):
-        return (self.floor_list, self.wall_list)
+        return self.floor_list, self.wall_list
 
     def rotate_level(self, times_rotated):
         m = np.array(self.level)
-        for i in range(0, times_rotated):
+        for i in range(0, times_rotated % 4):
             m = np.rot90(m)
         self.level = m.tolist()

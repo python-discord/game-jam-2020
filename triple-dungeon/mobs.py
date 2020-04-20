@@ -5,7 +5,7 @@ Organizes all classes related to Mobs, Entities, Enemies, Players and Items.
 
 import arcade
 
-from config import Config
+from config import Config, Sprites
 
 # Constants used to track if the player is facing left or right
 RIGHT_FACING = 0
@@ -106,7 +106,6 @@ class Player(Mob):
         if self.cur_texture > 5 * Config.RUN_UPDATES_PER_FRAME:
             self.cur_texture = 0
         self.texture = self.walking_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME][self.character_face_direction]
-
 
     def tick(self):
         """

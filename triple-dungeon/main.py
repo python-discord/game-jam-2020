@@ -6,9 +6,9 @@ Holds the main game window, as well as manages basic functions for organizing th
 
 import arcade
 
-from config import Config
 from map import Dungeon
 from mobs import Player, Enemy
+from config import Config, Sprites
 
 
 class Game(arcade.Window):
@@ -35,7 +35,7 @@ class Game(arcade.Window):
 
         # Our physics engine
         self.physics_engine = None
-
+        
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
@@ -61,6 +61,7 @@ class Game(arcade.Window):
 
         # Create the dungeon
         dungeon = Dungeon()
+        
         self.floor_list = dungeon.floor_list
         self.wall_list = dungeon.wall_list
         
