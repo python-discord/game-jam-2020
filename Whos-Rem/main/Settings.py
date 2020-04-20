@@ -1,7 +1,7 @@
 import arcade
 from screeninfo import get_monitors
 from Display.Input_Tools import Button, Slider
-from Display.Utility import ColourBlend
+from Display.Utility import ColourBlend as cb
 
 
 class Settings(arcade.View):
@@ -24,16 +24,19 @@ class Settings(arcade.View):
         arcade.start_render()
         arcade.set_background_color([0, 0, 0])
         arcade.draw_text("SETTINGS", self.width*0.2, self.height*0.8,
-                         [255, 255, 255], min(self.width, self.height)/8,
-                         align="center", width=int(self.width*0.6))
-        self.brightness_slide.draw()
+                         cb.brightness([255, 255, 255], self.brightness),
+                         min(self.width, self.height)/8, align="center",
+                         width=int(self.width*0.6))
+        self.brightness_slide.draw(self.brightness)
         arcade.draw_text("BRIGHTNESS", self.width*0.5, self.height*0.45,
-                         [255, 255, 255], min(self.width, self.height)/12,
-                         align="center", width=int(self.width*0.6))
-        self.volume_slide.draw()
+                         cb.brightness([255, 255, 255], self.brightness),
+                         min(self.width, self.height)/12, align="center",
+                         width=int(self.width*0.6))
+        self.volume_slide.draw(self.brightness)
         arcade.draw_text("VOLUME", self.width * 0.5, self.height * 0.65,
-                         [255, 255, 255], min(self.width, self.height) / 12,
-                         align="center", width=int(self.width * 0.6))
+                         cb.brightness([255, 255, 255], self.brightness),
+                         min(self.width, self.height) / 12, align="center",
+                         width=int(self.width * 0.6))
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_x = x

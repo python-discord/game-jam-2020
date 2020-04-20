@@ -1,4 +1,5 @@
 import arcade
+from Input_Tools import ColourBlend as cb
 
 
 class Button:
@@ -12,11 +13,11 @@ class Button:
         self.name = name
 
         if draw_func is None:
-            self.draw = arcade.draw_lrtb_rectangle_filled(self.x, self.x + self.height,
-                                                          self.y + self.height, self.y,
-                                                          self.colour)
+            self.draw = lambda brightness: arcade.draw_lrtb_rectangle_filled(self.x, self.x + self.height,
+                                                                             self.y + self.height, self.y,
+                                                                             cb.brightness(self.colour, brightness))
         else:
-            self.draw = draw_func
+            self.draw = lambda brightness, *args, **kwargs: draw_func(brightness, *args, **kwargs)
 
         if activation is None:
             self.activation = lambda: None
@@ -91,21 +92,23 @@ class Slider:
 
         return False
 
-    def draw(self):
+    def draw(self, brightness):
         arcade.draw_lrtb_rectangle_filled(self.x, self.x + self.width,
                                           self.y + self.height, self.y,
-                                          self.colour)
+                                          cb.brightness(self.colour, brightness))
         if self.rotation == "hor":
             arcade.draw_circle_filled(self.x + self.slide_dist,
                                       self.y + self.height // 2,
                                       self.height * 3.2, [0, 0, 0])
             arcade.draw_circle_filled(self.x + self.slide_dist,
                                       self.y + self.height // 2,
-                                      self.height * 3, self.colour)
+                                      self.height * 3,
+                                      cb.brightness(self.colour, brightness))
         else:
             arcade.draw_circle_filled(self.x + self.width // 2,
                                       self.y + self.slide_dist,
                                       self.width * 3.2, [0, 0, 0])
             arcade.draw_circle_filled(self.x + self.width // 2,
                                       self.y + self.slide_dist,
-                                      self.width * 3, self.colour)
+                                      self.width * 3,
+                                      cb.brightness(self.colour, brightness))
