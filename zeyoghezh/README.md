@@ -62,7 +62,7 @@ Ze ![alt text](https://arcade.academy/resources/images/items/coinSilver.png "Ze"
 * We are Warrors.
 * Our constellation is Rock.
 * Our world is Silver.
-* We are **strong** against Ezh<img src="https://arcade.academy/resources/images/items/coinBronze.png" alt="drawing" width="50"/>Their arrows do little damage and we need only touch them to crush them.
+* We are **strong** against Ezh<img src="https://arcade.academy/resources/images/items/coinBronze.png" alt="drawing" width="50"/>Their arrows do little damage and we need only get near them to crush them.
 * We are *weak* against Yogh<img src="https://arcade.academy/resources/images/items/coinGold.png" alt="drawing" width="50"/>Their mages can keep us back, while casting spells from a distance.
 
 Yogh ![alt text](https://arcade.academy/resources/images/items/coinGold.png "Yogh")
@@ -79,7 +79,7 @@ Ezh ![alt text](https://arcade.academy/resources/images/items/coinBronze.png "Ez
 * Our constellation is Scissors.
 * Our world is Bronze.
 * We are **strong** against Yogh<img src="https://arcade.academy/resources/images/items/coinGold.png" alt="drawing" width="50"/>Our arrows fly faster than their blasts, and pushing us away only strengthens us.
-* We are *weak* against Ze<img src="https://arcade.academy/resources/images/items/coinSilver.png" alt="drawing" width="50"/>Our arrows do little damage and they need only touch us to crush us.
+* We are *weak* against Ze<img src="https://arcade.academy/resources/images/items/coinSilver.png" alt="drawing" width="50"/>Our arrows do little damage and they need only get near us to crush us.
 
 
 Music made by missingfragment#1983
