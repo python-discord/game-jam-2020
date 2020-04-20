@@ -123,10 +123,11 @@ class AnimatedEntity(arcade.Sprite):
 
 class LivingEntity(AnimatedEntity):
 
-    def __init__(self, hp: float = 0, *args, **kwargs) -> None:
+    def __init__(self, hp: float = 0, is_pushable: bool = True, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.hp = hp
+        self.is_pushable = is_pushable
         self.being_pushed = False
 
         self.resistance = 0
@@ -148,7 +149,7 @@ class LivingEntity(AnimatedEntity):
             self.kill()
             return
 
-        if self.being_pushed:
+        if self.being_pushed or not self.is_pushable:
             return
 
         change = get_change_vector(
@@ -182,6 +183,6 @@ class LivingEntity(AnimatedEntity):
                 self.color = (255, 255, 255)
 
     def update(self, delta_time: float = 1/60) -> None:
-        if self.being_pushed:
+        if self.being_pushed and self.is_pushable:
             self.reduce_throwback()
         super().update(delta_time)

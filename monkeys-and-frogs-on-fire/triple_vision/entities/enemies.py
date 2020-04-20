@@ -77,7 +77,7 @@ class StationaryEnemy(BaseEnemy):
         detection_radius: int,
         **kwargs
     ) -> None:
-        super().__init__(enemy, **kwargs)
+        super().__init__(enemy, is_pushable=False, **kwargs)
         self.ctx = ctx
 
         self.target_sprite = target_sprite
