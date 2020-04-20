@@ -64,10 +64,6 @@ class Dungeon(object):
         self.floor_list.extend(room_floor)
         self.wall_list.extend(room_wall)
 
-    def add_level(self, sprit_list):
-        for x in sprit_list:
-            self.levels.append(x)
-
     def render(self) -> None:
         """
         Calls render on all level
@@ -144,9 +140,6 @@ class Level:
                 x += 1
             x = 0
             y += 1
-
-    def get_lists(self):
-        return self.floor_list, self.wall_list
 
     def rotate_level(self, times_rotated):
         """

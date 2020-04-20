@@ -5,7 +5,7 @@ Organizes all classes related to Mobs, Entities, Enemies, Players and Items.
 
 import arcade
 
-from config import Config, Sprites
+from config import Config
 
 # Constants used to track if the player is facing left or right
 RIGHT_FACING = 0
@@ -14,10 +14,12 @@ FRONT_FACING = 2
 UP_FACING = 3
 DOWN_FACING = 4
 
+
 class Mob(arcade.Sprite):
     """
     Represents a Mob. No defined behaviour, it has no intelligence.
     """
+
     def __init__(self, max_health=100, max_armor=0, *args, **kwargs) -> None:
         # Set up parent class
         super().__init__()
@@ -42,6 +44,7 @@ class Player(Mob):
     Represents a Player.
     While this is a instance, there should only be one in the world at any given time.
     """
+
     def __init__(self, *args, **kwargs) -> None:
         super(Player, self).__init__(*args, **kwargs)
 
@@ -57,8 +60,10 @@ class Player(Mob):
 
         # Load textures for running horizontally
         for i in range(6):
-            self.walking_textures.append([arcade.load_texture(f"{main_path}knight iso char_run left_{i}.png"),arcade.load_texture(f"{main_path}knight iso char_run left_{i}.png", mirrored=True)])
-        
+            self.walking_textures.append([arcade.load_texture(f"{main_path}knight iso char_run left_{i}.png"),
+                                          arcade.load_texture(f"{main_path}knight iso char_run left_{i}.png",
+                                                              mirrored=True)])
+
         # Load textures for running down
         for i in range(5):
             self.down_textures.append(arcade.load_texture(f"{main_path}knight iso char_run down_{i}.png"))
@@ -66,8 +71,13 @@ class Player(Mob):
         # Load textures for running up
         for i in range(5):
             self.up_textures.append(arcade.load_texture(f"{main_path}knight iso char_run up_{i}.png"))
-        
-    def update_animation(self, delta_time: float = 1/60):
+
+    def update_animation(self, delta_time: float = 1 / 60) -> None:
+        """
+        Updates animations for the Player.
+        :param delta_time: No idea.
+        """
+
         # Figure out if we need to flip face left, right, up, or down
         if self.change_x > 0:
             self.character_face_direction = LEFT_FACING
@@ -75,7 +85,6 @@ class Player(Mob):
             self.character_face_direction = RIGHT_FACING
         elif self.change_x == 0 and self.change_y == 0:
             self.character_face_direction = FRONT_FACING
-
 
         # idle animation
         if self.change_x == 0 and self.change_y == 0:
@@ -85,7 +94,7 @@ class Player(Mob):
             self.texture = self.idle_textures[self.cur_texture // Config.IDLE_UPDATES_PER_FRAME]
             return
 
-        #walk up animation
+        # walk up animation
         if self.change_y > 0:
             self.cur_texture += 1
             if self.cur_texture > 4 * Config.RUN_UPDATES_PER_FRAME:
@@ -93,7 +102,7 @@ class Player(Mob):
             self.texture = self.up_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME]
             return
 
-        #walk down animation
+        # walk down animation
         if self.change_y < 0:
             self.cur_texture += 1
             if self.cur_texture > 4 * Config.RUN_UPDATES_PER_FRAME:
@@ -105,7 +114,8 @@ class Player(Mob):
         self.cur_texture += 1
         if self.cur_texture > 5 * Config.RUN_UPDATES_PER_FRAME:
             self.cur_texture = 0
-        self.texture = self.walking_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME][self.character_face_direction]
+        self.texture = self.walking_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME][
+            self.character_face_direction]
 
     def tick(self):
         """
@@ -120,11 +130,9 @@ class Enemy(Mob):
     Represents an Enemy Mob.
     Will take basic offensive actions against Player objects.
     """
+
     def __init__(self, *args, **kwargs) -> None:
         super(Enemy, self).__init__(*args, **kwargs)
-
-    def get_enemy(self):
-        return self
 
     def tick(self) -> None:
         """
