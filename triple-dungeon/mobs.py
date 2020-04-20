@@ -7,6 +7,7 @@ import arcade
 
 from config import Config, Enums
 
+
 class Mob(arcade.Sprite):
     """
     Represents a Mob. No defined behaviour, it has no intelligence.

@@ -37,10 +37,11 @@ class AnimationSet(object):
         # Finds all matching files
         matches = [file for file in self.animations if re.match(pattern, file)]
         # Sort in ascending order based on the connected animation index. Zero-indexing or not does not affect order.
-        matches.sort(key=lambda match : int(match.group(1)))
+        matches.sort(key=lambda match: int(match.group(1)))
         # Grab the filename and load it to the file directory
-        matches = list(map(lambda match : arcade.load_texture(os.path.join(self.directory, match.group(0))), matches))
+        matches = list(map(lambda match: arcade.load_texture(os.path.join(self.directory, match.group(0))), matches))
         return cycle(matches)
+
 
 class PlayerAnimations(AnimationSet):
     """
@@ -48,12 +49,12 @@ class PlayerAnimations(AnimationSet):
     Player animations must be served to the class in the correct format.
     """
 
-    def __init__(self):
+    def __init__(self, directory: str):
         """
         Initializes the PlayerAnimations class.
         """
 
-        super(PlayerAnimations, self).__init__()
+        super(PlayerAnimations, self).__init__(directory)
 
         # Grabs all animations needed. These are infinite iters, use next(iter) to grab the next animation.
         self.idles = self.getAnimations(re.compile(r'idle_(\d+).png'))
@@ -61,5 +62,3 @@ class PlayerAnimations(AnimationSet):
         self.right = self.getAnimations(re.compile(r'run_right_(\d+).png'))
         self.up = self.getAnimations(re.compile(r'run_up_(\d+).png'))
         self.down = self.getAnimations(re.compile(r'run_left_(\d+).png'))
-
-    def __loadAnimations(self):
