@@ -35,13 +35,12 @@ class Dungeon(object):
         self.floor_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
 
-        center = Level.load_file(1, 1, 'resources/levels/map1/center.json')
-        side = Level.load_file(2, 1, 'resources/levels/map1/room.json')
+        # center = Level.load_file(1, 1, 'resources/levels/map1/center.json')
+        # side = Level.load_file(2, 1, 'resources/levels/map1/room.json')
 
+        center = "resources/levels/map1/center.json"
         self.levels = [
-            [None, None, None],
-            [center, side, None],
-            [None, None, None]
+            [Level.load_file(x, y, center) for y in range(size)] for x in range(size)
         ]
 
     def getWalls(self):
@@ -64,6 +63,17 @@ class Dungeon(object):
                 if level is not None:
                     level.floorSprites.draw()
                     level.wallSprites.draw()
+
+    @property
+    def levelList(self) -> list:
+        """
+        Retrieves all Level objects from Dungeon intance.
+        :return: A list containing all Level objects.
+        """
+
+        return list(filter(
+            lambda level: level is not None, chain.from_iterable(self.levels)
+        ))
 
 
 class Level:
