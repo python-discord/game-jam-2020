@@ -13,7 +13,7 @@ from pyglet import gl
 
 UPDATES_PER_FRAME = 3
 
-MOVEMENT_SPEED = 100
+MOVEMENT_SPEED = 300
 
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
@@ -22,7 +22,7 @@ RIGHT_VIEWPORT_MARGIN = 100
 BOTTOM_VIEWPORT_MARGIN = 50
 TOP_VIEWPORT_MARGIN = 100
 
-SPRITE_SCALING = 1.5
+SPRITE_SCALING = 0.5
 
 # Constants used to track if the player is facing left or right
 RIGHT_FACING = 0
@@ -235,9 +235,15 @@ class MyGame(arcade.Window):
 
         self.map = arcade.tilemap.read_tmx(path['maps'] / "test_map.tmx")
 
-        self.map_layers = [arcade.process_layer(self.map, layer.name) for layer in self.map.layers]
+        self.map_layers = [arcade.process_layer(
+            self.map, layer.name) for layer in self.map.layers]
 
-        self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.map_layers[2])
+        self.layer_positions = [layer._get_position() for layer in self.map_layers[0]]
+
+        self.layer_shift_count = 0
+
+        self.physics_engine = arcade.PhysicsEngineSimple(
+            self.player_sprite, self.map_layers[2])
 
     def on_draw(self):
         """
@@ -266,8 +272,12 @@ class MyGame(arcade.Window):
 
         self.player_sprite.update_animation()
 
-        for sprite in self.map_layers[0]:
-            sprite.center_x += 1
+        self.map_layers[0].move(1,0)
+        self.layer_shift_count += 1
+        if self.layer_shift_count == 64:
+            self.map_layers[0].move(-64, 0)
+            self.layer_shift_count = 0
+
 
         # Calculate speed based on the keys pressed
         self.player_sprite.change_x = 0
