@@ -209,9 +209,13 @@ class Game(arcade.Window):
                 bullet.remove_from_sprite_lists()
 
             # If the bullet flies off-screen, remove it. TEMP change to range calc
-            if (bullet.bottom < self.view_bottom or bullet.top > self.view_bottom+Config.SCREEN_HEIGHT
-                or bullet.right > self.view_left+Config.SCREEN_WIDTH or bullet.left < self.view_left):
-                    bullet.remove_from_sprite_lists()
+            if (
+                bullet.bottom < self.view_bottom or
+                bullet.top > self.view_bottom+Config.SCREEN_HEIGHT or
+                bullet.right > self.view_left+Config.SCREEN_WIDTH or
+                bullet.left < self.view_left
+            ):
+                bullet.remove_from_sprite_lists()
 
 
 def main() -> None:
