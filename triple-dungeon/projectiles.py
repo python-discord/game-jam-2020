@@ -28,8 +28,8 @@ class Temp(Projectile):
     def __init__(self, *args, **kwargs) -> None:
         super(Temp, self).__init__(*args, **kwargs)
         self.texture = arcade.load_texture("resources/images/monsters/frog/frog1.png")
-        self.speed = 12
-        self.scale = 4
+        self.speed = 20
+        self.scale = 1
         # collision list for who/what to collide with: wall, player, enemy
 
     # Can place function for starting on player or enemy
