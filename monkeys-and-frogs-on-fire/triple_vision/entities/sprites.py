@@ -85,6 +85,7 @@ class MovingSprite(arcade.Sprite):
             ):
                 self.change_x = 0
                 self.change_y = 0
+                self.target = None
 
     def update_(self, delta_time):
         """
