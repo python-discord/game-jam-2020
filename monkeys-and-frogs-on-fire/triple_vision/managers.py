@@ -46,7 +46,7 @@ class GameManager:
         self.enemies.update()
         self.player_projectiles.on_update(delta_time)
         self.enemy_projectiles.on_update(delta_time)
-        self.damage_indicators.update()
+        self.damage_indicators.on_update(delta_time)
 
 
 class CardManager:
