@@ -1,16 +1,19 @@
-from server import Server
-import asyncio
+from server import run as srun
+from client.network import run as crun
+import threading
 
 
-what = 1
+what = int(input("0-server: \n$"))
 
 if what == 0:
-    print("You are a Server")
-    server = Server()
-    loop = asyncio.get_event_loop()
-    loop.create_task(server.start())
-    loop.run_until_complete(server.websocket())
-    loop.run_forever()
-    server.close()
+    network_thread = threading.Thread(target=srun, name="network")
+    network_thread.start()
+    print("server started!")
+    network_thread.join()
+    print("server Closed!")
 else:
-    import client
+    network_thread = threading.Thread(target=crun, name="network")
+    network_thread.start()
+    print("server started!")
+    network_thread.join()
+    print("server Closed!")

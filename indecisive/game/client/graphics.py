@@ -8,7 +8,7 @@ class Display(arcade.Window):
         super().__init__(1280, 720, "Three of a king")
         self.title = arcade.sprite_list
         arcade.set_background_color((255, 255, 255))
-        self.scene = "loading"
+        self.scene = "playAsClient"
         self.scenes = dict()
 
     def setup(self):
@@ -16,6 +16,7 @@ class Display(arcade.Window):
         self.scenes["lobby"] = Lobby(self)
         self.scenes["mainMenu"] = MainMenu(self)
         # self.scenes["options"] = Options()
+        self.scenes["playAsClient"] = PlayAsClient(self)
 
     def change_scenes(self, scene: str, *args, **kwargs):
         self.scenes[scene].reset(*args, **kwargs)

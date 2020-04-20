@@ -5,7 +5,6 @@ import websockets
 
 class Server:
     def __init__(self):
-        self.server = websockets.serve(self.connection_manager, "localhost", 10000)
         self.connections = []
         self.loop = asyncio.get_event_loop()
 
@@ -26,3 +25,12 @@ class Server:
 
     def close(self):
         pass
+
+
+def run():
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    server = Server()
+    loop.create_task(server.start())
+    loop.run_until_complete(server.websocket())
+    loop.run_forever()
