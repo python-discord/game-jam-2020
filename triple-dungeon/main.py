@@ -11,8 +11,9 @@ import math
 from config import Config
 from map import Dungeon
 from mobs import Player, Enemy
-from config import Config, Sprites
+from config import Config
 from projectiles import Temp
+
 
 class Game(arcade.Window):
     """
@@ -79,11 +80,10 @@ class Game(arcade.Window):
         self.dungeon.render()
         self.player.draw()
         self.enemy_list.draw()
-        self.wall_list.draw()
         self.bullet_list.draw()
 
         x, y = self.player.center_x, self.player.center_y + 100
-        arcade.draw_text(f"({x}, {y})", x, y, arcade.color.WHITE, 15)
+        # arcade.draw_text(f"({x}, {y})", x, y, arcade.color.WHITE, 15)
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
@@ -128,8 +128,8 @@ class Game(arcade.Window):
         # Create a bullet TEMP SPRITE, currently wielding frog slingshot
         bullet = Temp()
         # Position the bullet at the player's current location
-        start_x = self.player_list.center_x
-        start_y = self.player_list.center_y
+        start_x = self.player.center_x
+        start_y = self.player.center_y
         bullet.center_x = start_x
         bullet.center_y = start_y
 
@@ -198,20 +198,20 @@ class Game(arcade.Window):
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
 
-        #Projectile updates
+        # Projectile updates
         self.bullet_list.update()
         for bullet in self.bullet_list:
             # Collision Checks
-            hit_list = arcade.check_for_collision_with_list(bullet, self.wall_list)
+            hit_list = arcade.check_for_collision_with_list(bullet, self.dungeon.getWalls())
 
             # If it did, get rid of the bullet
             if len(hit_list) > 0:
                 bullet.remove_from_sprite_lists()
 
             # If the bullet flies off-screen, remove it. TEMP change to range calc
-            if bullet.bottom < self.view_bottom or bullet.top > self.view_bottom+Config.SCREEN_HEIGHT or bullet.right > self.view_left+Config.SCREEN_WIDTH or bullet.left < self.view_left:
+            if (bullet.bottom < self.view_bottom or bullet.top > self.view_bottom+Config.SCREEN_HEIGHT
+                or bullet.right > self.view_left+Config.SCREEN_WIDTH or bullet.left < self.view_left):
                 bullet.remove_from_sprite_lists()
-
 
 def main() -> None:
     """

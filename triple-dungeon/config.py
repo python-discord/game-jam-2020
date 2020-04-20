@@ -17,7 +17,7 @@ class Config(object):
     """
     A simple class dedicated to loading, storing and organizing constants.
     """
-    
+
     # Constants
     SCREEN_WIDTH = 1650
     SCREEN_HEIGHT = 1000
@@ -41,7 +41,6 @@ class Config(object):
     RIGHT_VIEWPORT_MARGIN = 250
     BOTTOM_VIEWPORT_MARGIN = 50
     TOP_VIEWPORT_MARGIN = 100
-    
 
 
 class Enums(Enum):
