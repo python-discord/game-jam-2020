@@ -144,10 +144,15 @@ class Level:
                     level.wallSprites.append(sprite)
 
         # Move everything into correct positions
-        level.floorSprites.move(*level.center())
-        level.wallSprites.move(*level.center())
+        level.floorSprites.move(Config.LEVEL_SIZE * level.x, Config.LEVEL_SIZE * level.y)
+        level.wallSprites.move(Config.LEVEL_SIZE * level.x, Config.LEVEL_SIZE * level.y)
 
         return level
+
+    def topleft(self) -> tuple:
+        """
+        :return:
+        """
 
     def center(self) -> tuple:
         """

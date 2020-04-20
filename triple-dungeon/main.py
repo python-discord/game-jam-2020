@@ -49,28 +49,22 @@ class Game(arcade.Window):
         # Create the dungeon
         self.dungeon = Dungeon(0, 3)
 
-        # level = random.choice(self.dungeon.levelList)
-        level = self.dungeon.levels[1][1]
-
         # Set up the player, specifically placing it at these coordinates.
-        x, y = level.center()
-        self.player = Player(center_x=x, center_y=y)
+        self.player = Player()
         self.player.scale = 1
-
-        # Debug statement
-        print((level.x, level.y), level.center(), (self.player.center_x, self.player.center_y))
+        level = random.choice(self.dungeon.levelList)
+        self.player.center_x, self.player.center_y = level.center()
+        # x, y = level.center()
 
         # Setup viewport
-        self.view_bottom = x - (0.5 * Config.SCREEN_WIDTH)
-        self.view_left = y - (0.5 * Config.SCREEN_WIDTH)
+        self.view_bottom = self.player.center_x - (0.5 * Config.SCREEN_WIDTH) + 300
+        self.view_left = self.player.center_x - (0.5 * Config.SCREEN_WIDTH)
         arcade.set_viewport(self.view_left,
                             Config.SCREEN_WIDTH + self.view_left,
                             self.view_bottom,
                             Config.SCREEN_HEIGHT + self.view_bottom)
-        self.player.center_x, self.player.center_y = x, y
 
         # Create monsters
-        # This needs to be updated to comply with the new mobs.py code
         # self.enemy_list.append(Enemy("resources/images/monsters/ghost/ghost1.png", 200, 200, 4))
         # self.enemy_list.append(Enemy("resources/images/monsters/frog/frog1.png", 200, 1000, 4))
 
@@ -79,17 +73,22 @@ class Game(arcade.Window):
 
     def on_draw(self):
         """ Render the screen. """
+        try:
 
-        # Clear the screen to the background color
-        arcade.start_render()
+            # Clear the screen to the background color
+            arcade.start_render()
 
-        # Draw our sprites
-        self.dungeon.render()
-        self.player.draw()
-        self.enemy_list.draw()
+            # Draw our sprites
+            self.dungeon.render()
+            self.player.draw()
+            self.enemy_list.draw()
 
-        x, y = self.view_left + 50, self.view_bottom + 50
-        arcade.draw_text(str((self.player.center_x,  self.player.center_y)), x, y, arcade.color.WHITE, 15)
+            self.player.draw_hit_box()
+            x, y = self.player.center_x, self.player.center_y
+            arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15)
+        except Exception:
+            import traceback
+            traceback.print_exc()
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
