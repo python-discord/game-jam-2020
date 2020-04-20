@@ -7,8 +7,8 @@ class Display(arcade.Window):
     def __init__(self):
         super().__init__(1280, 720, "Three of a king")
         self.title = arcade.sprite_list
-        arcade.set_background_color((255, 100, 255))
-        self.scene = "lobby"
+        arcade.set_background_color((255, 255, 255))
+        self.scene = "mainMenu"
         self.scenes = dict()
 
     def setup(self):
