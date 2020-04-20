@@ -128,6 +128,9 @@ class LivingEntity(AnimatedEntity):
         self.hp = hp
         self.is_pushable = is_pushable
         self.being_pushed = False
+        self._is_hit = False
+        self._red_color_ticks = 0.0
+        self._red_color_duration = 0.5
 
         self.resistance = 0
 
@@ -141,6 +144,9 @@ class LivingEntity(AnimatedEntity):
                                      maybe this check should be done in manager?
                                      So if hits wall and being_pushed True then deduct hp
         """
+        self._is_hit = True
+        self.color = (255, 0, 0)
+
         weapon.play_hit_sound()
 
         self.hp -= weapon.dmg * (1 - self.resistance)
@@ -158,7 +164,6 @@ class LivingEntity(AnimatedEntity):
         )
         self.change_x, self.change_y = change[0], change[1]
 
-        self.color = (255, 0, 0)
         self.being_pushed = True
 
     def reduce_throwback(self) -> None:
@@ -179,9 +184,17 @@ class LivingEntity(AnimatedEntity):
                 self.being_pushed = False
                 self.change_x = 0
                 self.change_y = 0
-                self.color = (255, 255, 255)
 
     def on_update(self, delta_time: float = 1/60):
+        if self._is_hit:
+            if self._red_color_ticks >= self._red_color_duration:
+                self._is_hit = False
+                self.color = (255, 255, 255)
+                self._red_color_ticks = 0.0
+            else:
+                self._red_color_ticks += delta_time
+
         if self.being_pushed and self.is_pushable:
             self.reduce_throwback()
+
         super().on_update(delta_time)

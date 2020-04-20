@@ -89,6 +89,7 @@ class StationaryEnemy(BaseEnemy):
         self._passed_time = 0.0
 
     def on_update(self, delta_time: float = 1/60):
+        super().on_update(delta_time)
         self._passed_time += delta_time
 
         if not is_in_radius(self, self.target_sprite, self.detection_radius):
