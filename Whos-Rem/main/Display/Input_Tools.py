@@ -3,12 +3,13 @@ import arcade
 
 class Button:
 
-    def __init__(self, x, y, width, height, colour=(255, 255, 255), draw_func=None, activation=None):
+    def __init__(self, x, y, width, height, colour=(255, 255, 255), draw_func=None, activation=None, name="button"):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.colour = colour
+        self.name = name
 
         if draw_func is None:
             self.draw = arcade.draw_lrtb_rectangle_filled(self.x, self.x + self.height,
@@ -24,6 +25,12 @@ class Button:
 
     def __call__(self, *args, **kwargs):
         return self.activation(*args, **kwargs)
+
+    def __eq__(self, other):
+        if self.name == "button":
+            raise AttributeError("Cannot compare name if name is default value 'button'")
+        else:
+            return self.name == other
 
     def pressed(self, mouse_x, mouse_y):
         if 0 <= mouse_x - self.x <= self.width:
