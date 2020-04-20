@@ -104,9 +104,12 @@ class AnimatedPlayer(arcade.Sprite):
 
         self.texture = self.basic_textures[0][0]
 
+        self.cur_pos = []
         self.is_moving = False
-        self.pause_frame = True
-        self.order = []
+        self.direction = None
+        self.corr_x = False
+        self.corr_y = False
+        self.destination = [-1,-1]
 
     def update_animation(self, delta_time: float = 1 / 60):
         self.cur_texture_index += 1

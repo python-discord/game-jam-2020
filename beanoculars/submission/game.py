@@ -53,14 +53,18 @@ class MyGame(arcade.Window):
 
         self.mosquito = None
 
+        self.newOrder = None
+        self.currentOrder = None
+        self.orderCount = None
+
         arcade.set_background_color((94, 132, 63))
 
     def setup(self):
         """ Set up the test here. Call this function to restart the test. """
         if FULLSCREEN:
             self.screen_x, self.screen_y = self.get_size()
-            self.window_offset_x = self.screen_x / 2 - WINDOW_WIDTH / 2
-            self.window_offset_y = self.screen_y / 2 - WINDOW_HEIGHT / 2
+            self.window_offset_x = (self.screen_x / 2) - WINDOW_WIDTH / 2
+            self.window_offset_y = (self.screen_y / 2) - WINDOW_HEIGHT / 2
 
         self.player_list = arcade.SpriteList()
         self.ground_list = arcade.SpriteList(is_static=True)
@@ -114,15 +118,14 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time: float):
         """ On Update method"""
-        if self.destination != [-1, -1]:
-            movePlayer(self.destination, self.player_sprite, delta_time)
+        print(self.player_sprite.is_moving)
+        movePlayer(self.player_sprite, delta_time)
 
         self.player_list.update_animation()
         self.entity_list.update_animation()
 
     def on_key_press(self, symbol: int, modifiers: int):
         """ Get keyboard's presses. """
-
         pass
 
     def on_key_release(self, symbol: int, modifiers: int):
@@ -131,26 +134,20 @@ class MyGame(arcade.Window):
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """ Get mouse's presses. """
-        if FULLSCREEN:
-            if self.mouse_x > self.screen_x / 2 + WINDOW_WIDTH / 2 or self.mouse_x < self.screen_x / 2 - WINDOW_WIDTH / 2:
-                print('Cannot move')
-            elif self.mouse_y > self.screen_y / 2 + WINDOW_HEIGHT / 2 or self.mouse_y < self.screen_y / 2 - WINDOW_HEIGHT / 2:
-                print('Cannot move')
+        if not self.player_sprite.is_moving:
+            if FULLSCREEN:
+                if self.mouse_x > self.screen_x / 2 + WINDOW_WIDTH / 2 or self.mouse_x < self.screen_x / 2 - WINDOW_WIDTH / 2:
+                    print('Cannot move')
+                elif self.mouse_y > self.screen_y / 2 + WINDOW_HEIGHT / 2 or self.mouse_y < self.screen_y / 2 - WINDOW_HEIGHT / 2:
+                    print('Cannot move')
+
+                else:
+                    self.mouse_click = [self.mouse_x, self.mouse_y]
+                    self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
 
             else:
                 self.mouse_click = [self.mouse_x, self.mouse_y]
-                self.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
-                if button == 1:  # Si clique gauche
-                    pass
-                elif button == 4:  # Si clique droit
-                    pass
-        else:
-            self.mouse_click = [self.mouse_x, self.mouse_y]
-            self.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
-            if button == 1:  # Si clique gauche
-                pass
-            elif button == 4:  # Si clique droit
-                pass
+                self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
 
     def on_mouse_release(self, x: float, y: float, button: int,
                          modifiers: int):
