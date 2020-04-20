@@ -11,6 +11,7 @@ from triple_vision.entities import (
 )
 from triple_vision.managers import CardManager, GameManager
 from triple_vision.map import Map
+from triple_vision import constants
 
 
 class TripleVision(arcade.View):
@@ -125,11 +126,17 @@ class TripleVision(arcade.View):
         self.card_manager.draw()
 
     def on_update(self, delta_time: float) -> None:
+        if self.slow_down:
+            self.update_(delta_time / constants.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
+        else:
+            self.update_(delta_time)
+
+        self.card_manager.update()
+
+    def update_(self, delta_time: float) -> None:
         if self.player.is_alive:
             self.player.update(delta_time)
 
-        self.game_manager.update(slow_down=self.slow_down)
+        self.game_manager.on_update(delta_time)
         self.physics_engine.update()
         self.map.update()
-
-        self.card_manager.update()

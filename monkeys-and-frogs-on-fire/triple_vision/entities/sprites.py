@@ -4,7 +4,7 @@ from typing import Optional
 
 import arcade
 
-from triple_vision.constants import SCALED_TILE
+from triple_vision.constants import SCALED_TILE, ON_CARD_HOVER_SLOWDOWN_MULTIPLIER
 from triple_vision.utils import get_change_vector
 
 
@@ -76,17 +76,29 @@ class MovingSprite(arcade.Sprite):
 
                 self.target = None
 
+        self.update_(delta_time)
+
+    def update_(self, delta_time):
+        slowdown = delta_time * 60
+        self.position = [
+            self._position[0] + self.change_x * slowdown,
+            self._position[1] + self.change_y * slowdown
+        ]
+        self.angle += self.change_angle * slowdown
+
 
 class TemporarySprite(arcade.Sprite):
     def __init__(self, lifetime: Optional[int], *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.lifetime = lifetime
+        self._passed_time = 0.0
         self.created_at = time.time()
 
-    def update(self):
-        if self.lifetime and time.time() - self.created_at > self.lifetime:
+    def on_update(self, delta_time: float):
+        self._passed_time += delta_time
+        if self.lifetime and self._passed_time > self.lifetime:
             self.kill()
-        super().update()
+        super().on_update(delta_time)
 
 
 class DamageIndicator(TemporarySprite, MovingSprite):

@@ -30,7 +30,7 @@ class GameManager:
         dmg_indicator = DamageIndicator(text, *position)
         self.damage_indicators.append(dmg_indicator)
 
-    def update(self, *, slow_down=False) -> None:
+    def on_update(self, delta_time) -> None:
         for enemy in self.enemies:
             for projectile in self.player_projectiles:
                 if arcade.check_for_collision(projectile, enemy):
@@ -44,30 +44,9 @@ class GameManager:
                 projectile.kill()
 
         self.enemies.update()
-        self.player_projectiles.update()
-        self.enemy_projectiles.update()
+        self.player_projectiles.on_update(delta_time)
+        self.enemy_projectiles.on_update(delta_time)
         self.damage_indicators.update()
-
-        def yes_ofc(sprite: arcade.Sprite):
-            sprite.position = [
-                sprite.center_x - (sprite.change_x - sprite.change_x * slowdown),
-                sprite.center_y - (sprite.change_y - sprite.change_y * slowdown)
-            ]
-
-        if slow_down:
-            slowdown = 1 / ON_CARD_HOVER_SLOWDOWN_MULTIPLIER
-
-            for enemy in self.enemies:
-                yes_ofc(enemy)
-
-            for player_projectile in self.player_projectiles:
-                yes_ofc(player_projectile)
-
-            for enemy_projectile in self.enemy_projectiles:
-                yes_ofc(enemy_projectile)
-
-            for damage_indicator in self.damage_indicators:
-                yes_ofc(damage_indicator)
 
 
 class CardManager:
