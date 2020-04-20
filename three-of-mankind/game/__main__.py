@@ -5,7 +5,7 @@ from .gamestate import GameState
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-SCREEN_TITLE = "something"
+SCREEN_TITLE = "epic"
 
 format_string = "%(asctime)s | %(filename)s#%(lineno)d | %(levelname)s | %(message)s"
 logging.basicConfig(format=format_string, level=logging.DEBUG)
@@ -50,4 +50,5 @@ class Game(arcade.Window):
 
 # Start game
 game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=True)
+arcade.set_background_color((20, 20, 20))
 arcade.run()
