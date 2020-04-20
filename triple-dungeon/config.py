@@ -24,7 +24,7 @@ class Config(object):
     SCREEN_TITLE = "Triple Dungeon"
     TILE_WIDTH = 63
     IDLE_UPDATES_PER_FRAME = 20
-    RUN_UPDATES_PER_FRAME = 10
+    RUN_UPDATES_PER_FRAME = 8
 
     # Constants used to scale our sprites from their original size
     CHARACTER_SCALING = 1
@@ -46,11 +46,11 @@ class Enums(Enum):
     """
 
     # Play Direction Enums
-    RIGHT_FACING = 0
-    LEFT_FACING = 1
-    FRONT_FACING = 2
-    UP_FACING = 3
-    DOWN_FACING = 4
+    RIGHT = 0
+    LEFT = 1
+    UP = 2
+    DOWN = 3
+    IDLE = 4
 
 
 class SpritePaths(object):
