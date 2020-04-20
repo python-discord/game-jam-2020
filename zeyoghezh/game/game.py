@@ -179,6 +179,8 @@ class Game(arcade.Window):
             assert planet.speed_y != 0
 
     def game_over(self, reason):
+        if self.game_is_over:
+            return
         self.game_over_reason = reason
         logger.info(f"Game over! {reason}")
         for planet in self.planets:
