@@ -9,13 +9,14 @@ from pathlib import Path
 
 # Third Party
 import arcade
-from math import atan2, degrees
+from math import atan2, degrees, radians, sin, cos
 from pyglet import gl
 
 UPDATES_PER_FRAME = 3
 
 PLAYER_MOVEMENT_SPEED = 300
 SHIP_MOVEMENT_SPEED = 200
+CANNONBALL_SPEED = 50
 
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
@@ -197,6 +198,8 @@ class ShipView(arcade.View):
 
         self.ship_sprite = Ship(path['img']/'ship'/'ship.png')
 
+        self.cannonballs = arcade.SpriteList()
+
         self.ship_sprite.set_position(800, 800)
 
         self.layer_shift_count = 0
@@ -259,10 +262,14 @@ class ShipView(arcade.View):
         for layer in self.map_layers:
             layer.draw(filter=gl.GL_NEAREST)
 
+        self.cannonballs.draw()
+
         self.ship_sprite.draw()
 
     def on_update(self, delta_time):
-        print(self.ship_sprite._get_position(), self.ship_sprite._get_angle())
+
+        self.cannonballs.update()
+
         self.scroll()
 
         self.map_layers[0].move(1, 0)
@@ -346,6 +353,33 @@ class ShipView(arcade.View):
             self.left_pressed = True
         elif key == arcade.key.D:
             self.right_pressed = True
+        if key == arcade.key.Q:
+            cannonball = arcade.Sprite(path['img'] / 'ship' / 'cannonBall.png', 1)
+
+            start_x, start_y = self.ship_sprite._get_position()
+            cannonball.set_position(start_x, start_y)
+
+            cannonball.change_x = cos(radians(self.ship_sprite.angle)) * CANNONBALL_SPEED
+            cannonball.change_y = sin(radians(self.ship_sprite.angle)) * CANNONBALL_SPEED
+
+            print(self.ship_sprite.angle%360)
+
+            self.cannonballs.append(cannonball)
+
+            # TODO: Add collision detection to remove sprites and cause damage
+
+        if key == arcade.key.E:
+            cannonball = arcade.Sprite(path['img'] / 'ship' / 'cannonBall.png', 1)
+
+            start_x, start_y = self.ship_sprite._get_position()
+            cannonball.set_position(start_x, start_y)
+
+            cannonball.change_x = cos(radians(self.ship_sprite.angle+180)) * CANNONBALL_SPEED
+            cannonball.change_y = sin(radians(self.ship_sprite.angle+180)) * CANNONBALL_SPEED
+
+            print(self.ship_sprite.angle%360)
+
+            self.cannonballs.append(cannonball)
 
     def on_key_release(self, key, key_modifiers):
         """
