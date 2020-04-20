@@ -143,7 +143,7 @@ class Game(arcade.Window):
 
     def clicked_lithium(self):
         planet_avg_health = self.avg_planet_health()
-        self.lithium_count += planet_avg_health
+        self.lithium_count += planet_avg_health * 1.5
         self.lithium_location = get_new_lithium_location()
 
     def avg_planet_health(self):
