@@ -81,13 +81,9 @@ class PathFinder:
                 return path[::-1]
 
             surroundings = [
-                (-1, -1),
                 (0, -1),
-                (1, -1),
                 (1, 0),
-                (1, 1),
                 (0, 1),
-                (-1, 1),
                 (-1, 0)
             ]
 
