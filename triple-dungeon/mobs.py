@@ -7,6 +7,13 @@ import arcade
 
 from config import Config
 
+# Constants used to track if the player is facing left or right
+RIGHT_FACING = 0
+LEFT_FACING = 1
+FRONT_FACING = 2
+UP_FACING = 3
+DOWN_FACING = 4
+
 class Mob(arcade.Sprite):
     """
     Represents a Mob. No defined behaviour, it has no intelligence.
@@ -18,6 +25,9 @@ class Mob(arcade.Sprite):
         self.max_health, self.max_armor = max_health, max_armor
         self.health, self.armor = max_health, max_armor
         self.idle_textures = []
+        self.walking_textures = []
+        self.up_textures = []
+        self.down_textures = []
         self.cur_texture = 0
 
     def tick(self) -> None:
@@ -37,18 +47,66 @@ class Player(Mob):
 
         main_path = "resources/images/character/knight/"
 
+        # Default to face-front
+        self.character_face_direction = FRONT_FACING
+
         # Load textures for idle standing
         for i in range(4):
             texture = arcade.load_texture(f"{main_path}knight iso char_idle_{i}.png")
             self.idle_textures.append(texture)
+
+        # Load textures for running horizontally
+        for i in range(6):
+            self.walking_textures.append([arcade.load_texture(f"{main_path}knight iso char_run left_{i}.png"),arcade.load_texture(f"{main_path}knight iso char_run left_{i}.png", mirrored=True)])
+        
+        # Load textures for running down
+        for i in range(5):
+            self.down_textures.append(arcade.load_texture(f"{main_path}knight iso char_run down_{i}.png"))
+
+        # Load textures for running up
+        for i in range(5):
+            self.up_textures.append(arcade.load_texture(f"{main_path}knight iso char_run up_{i}.png"))
         
     def update_animation(self, delta_time: float = 1/60):
+        # Figure out if we need to flip face left, right, up, or down
+        if self.change_x > 0:
+            self.character_face_direction = LEFT_FACING
+        elif self.change_x < 0:
+            self.character_face_direction = RIGHT_FACING
+        elif self.change_x == 0 and self.change_y == 0:
+            self.character_face_direction = FRONT_FACING
+
+
         # idle animation
+        if self.change_x == 0 and self.change_y == 0:
+            self.cur_texture += 1
+            if self.cur_texture > 3 * Config.IDLE_UPDATES_PER_FRAME:
+                self.cur_texture = 0
+            self.texture = self.idle_textures[self.cur_texture // Config.IDLE_UPDATES_PER_FRAME]
+            return
+
+        #walk up animation
+        if self.change_y > 0:
+            self.cur_texture += 1
+            if self.cur_texture > 4 * Config.RUN_UPDATES_PER_FRAME:
+                self.cur_texture = 0
+            self.texture = self.up_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME]
+            return
+
+        #walk down animation
+        if self.change_y < 0:
+            self.cur_texture += 1
+            if self.cur_texture > 4 * Config.RUN_UPDATES_PER_FRAME:
+                self.cur_texture = 0
+            self.texture = self.down_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME]
+            return
+
+        # Walking left/right animation
         self.cur_texture += 1
-        if self.cur_texture > 3 * Config.UPDATES_PER_FRAME:
+        if self.cur_texture > 5 * Config.RUN_UPDATES_PER_FRAME:
             self.cur_texture = 0
-        self.texture = self.idle_textures[self.cur_texture // Config.UPDATES_PER_FRAME]
-        print('test')
+        self.texture = self.walking_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME][self.character_face_direction]
+
 
     def tick(self):
         """
