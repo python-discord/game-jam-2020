@@ -46,11 +46,11 @@ class Enums(Enum):
     """
 
     # Play Direction Enums
-    RIGHT_FACING
-    LEFT_FACING
-    FRONT_FACING
-    UP_FACING
-    DOWN_FACING
+    RIGHT_FACING = 0
+    LEFT_FACING = 1
+    FRONT_FACING = 2
+    UP_FACING = 3
+    DOWN_FACING = 4
 
 class Sprites(object):
     """

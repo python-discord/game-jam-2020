@@ -43,7 +43,7 @@ class Player(Mob):
         main_path = "resources/images/character/knight/"
 
         # Default to face-front
-        self.character_face_direction = Enums.FRONT_FACING
+        self.character_dir = Enums.FRONT_FACING
 
         # Load textures for idle standing
         for i in range(4):
@@ -72,13 +72,13 @@ class Player(Mob):
 
         # Figure out if we need to flip face left, right, up, or down
         if self.change_x > 0:
-            self.character_face_direction = Enums.LEFT_FACING
+            self.character_dir = Enums.LEFT_FACING
         elif self.change_x < 0:
-            self.character_face_direction = Enums.RIGHT_FACING
+            self.character_dir = Enums.RIGHT_FACING
         elif self.change_x == 0 and self.change_y == 0:
-            self.character_face_direction = Enums.FRONT_FACING
+            self.character_dir = Enums.FRONT_FACING
 
-        # idle animation
+        # Idle Animation
         if self.change_x == 0 and self.change_y == 0:
             self.cur_texture += 1
             if self.cur_texture > 3 * Config.IDLE_UPDATES_PER_FRAME:
@@ -106,8 +106,7 @@ class Player(Mob):
         self.cur_texture += 1
         if self.cur_texture > 5 * Config.RUN_UPDATES_PER_FRAME:
             self.cur_texture = 0
-        self.texture = self.walking_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME][
-            self.character_face_direction]
+        self.texture = self.walking_textures[self.cur_texture // Config.RUN_UPDATES_PER_FRAME][self.character_dir.value]
 
     def tick(self):
         """
