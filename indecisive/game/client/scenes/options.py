@@ -1,7 +1,6 @@
 import arcade
 
-
-class Options:
+class Options():
     def __init__(self):
         self.spritelist = arcade.SpriteList()
         self.buttonlist = arcade.View.button_list()
