@@ -127,13 +127,17 @@ class Planet(arcade.Sprite):
         )
 
     def draw_triangulation_circle(self):
+        health_normalized = int(255 * min(self.health, 1))
+        transparentized_color = arcade.make_transparent_color(
+            self.color, health_normalized)
+        logger.info(f"{transparentized_color=}")
         lithium_location = self.parent.lithium_location
         distance_to_lithium = get_distance(
             self.center_x, self.center_y, *lithium_location
         )
         arcade.draw_circle_outline(
             self.center_x, self.center_y, distance_to_lithium,
-            color=self.color)
+            color=transparentized_color)
 
     def get_healed(self, health):
         self.health += health

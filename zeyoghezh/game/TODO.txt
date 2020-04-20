@@ -2,6 +2,3 @@ Test attack sounds
 Add combat effects (not just lines)
 Add space background
 Improve aesthetic
-
-Make weaker planets have a more transparent circle
-Make sure other game overs don't override abscond game over
