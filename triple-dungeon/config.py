@@ -52,7 +52,8 @@ class Enums(Enum):
     UP_FACING = 3
     DOWN_FACING = 4
 
-class Sprites(object):
+
+class SpritePaths(object):
     """
     Simple class for holding sprite paths.
     """
