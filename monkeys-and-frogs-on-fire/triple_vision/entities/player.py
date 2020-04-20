@@ -90,7 +90,6 @@ class Player(LivingEntity, MovingSprite):
                     self.view.collision_list
                 )
             )
-            # self.move_to(x, y, rotate=False)
 
         elif button == arcade.MOUSE_BUTTON_RIGHT:
 
@@ -113,7 +112,7 @@ class Player(LivingEntity, MovingSprite):
         self.is_alive = False
         super().kill()
 
-    def update(self, delta_time: float = 1/60) -> None:
+    def on_update(self, delta_time: float = 1/60) -> None:
         if self.path is not None and self.target is None:
             try:
                 pos = tile_to_pixels(*next(self.path))
@@ -124,7 +123,5 @@ class Player(LivingEntity, MovingSprite):
             else:
                 self.move_to(*pos, rotate=False)
 
-        super().update(delta_time)
-
-        # super().on_update(delta_time)
-        # super().force_moving_sprite_on_update(delta_time)
+        super().on_update(delta_time)
+        super().force_moving_sprite_on_update(delta_time)

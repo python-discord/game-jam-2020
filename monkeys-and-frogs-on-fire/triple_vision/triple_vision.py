@@ -144,7 +144,7 @@ class TripleVision(arcade.View):
 
     def on_update(self, delta_time: float) -> None:
         if self.slow_down:
-            self.update_(delta_time / constants.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
+            self.update_(delta_time / s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
         else:
             self.update_(delta_time)
 
@@ -155,6 +155,6 @@ class TripleVision(arcade.View):
             self.player.on_update(delta_time)
 
         self.game_manager.on_update(delta_time)
-        self.physics_engine.update()
+        # self.physics_engine.update() # it can burn in hell
         self.map.update()
         self.camera.update()
