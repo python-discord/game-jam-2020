@@ -32,9 +32,6 @@ class GroundSprite(arcade.Sprite):
         self.center_x = x
         self.center_y = y
 
-    def __repr__(self):
-        return f"{self.center_x}, {self.center_y}"
-
 
 class PlayerSprite(arcade.Sprite):
     def __init__(self, pymunk_shape, textures, scale, x, y, name):
@@ -96,7 +93,7 @@ class MyGame(arcade.Window):
         self.total_time = 0
         self.game_over = False
         self.debugging = False
-        # self.set_location(0, 0)
+        self.set_location(0, 0)
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
         self.view_left = self.view_bottom = 0
@@ -142,7 +139,7 @@ class MyGame(arcade.Window):
             self.key_pressed[1] = -30
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.key_pressed[0] = 30
-        elif (key == arcade.key.UP or key == arcade.key.W) and self.players[self.controlled].can_jump:
+        elif (key == arcade.key.UP or key == arcade.key.W):
             self.key_pressed[2] = 450
         elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
             self.controlled = 0
@@ -212,23 +209,24 @@ class MyGame(arcade.Window):
     def movement(self):
         for p in self.players:
             if p.name == self.players[self.controlled].name:
-                self.players[self.controlled].pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.key_pressed[:2]), 0))
-                if self.players[self.controlled].can_jump:
-                    self.players[self.controlled].pymunk_shape.body.velocity += pymunk.Vec2d((0, self.key_pressed[2]))
-                    self.players[self.controlled].can_jump = False
+                p.pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.key_pressed[:2]), 0))
+                if p.can_jump:
+                    p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.key_pressed[2]))
+                    p.can_jump = False
 
-                if self.players[self.controlled].pymunk_shape.body.velocity.x > 300:
-                    self.players[self.controlled].pymunk_shape.body.velocity = pymunk.Vec2d(
-                        (150, self.players[self.controlled].pymunk_shape.body.velocity.y))
+                if p.pymunk_shape.body.velocity.x > 300:
+                    p.pymunk_shape.body.velocity = pymunk.Vec2d(
+                        (150, p.pymunk_shape.body.velocity.y))
 
-                if self.players[self.controlled].pymunk_shape.body.velocity.x < -300:
-                    self.players[self.controlled].pymunk_shape.body.velocity = pymunk.Vec2d(
-                        (-150, self.players[self.controlled].pymunk_shape.body.velocity.y))
+                if p.pymunk_shape.body.velocity.x < -300:
+                    p.pymunk_shape.body.velocity = pymunk.Vec2d(
+                        (-150, p.pymunk_shape.body.velocity.y))
 
     def on_update(self, x):
         self.frame_count += 1
         for i in range(10):
             self.space.step(1 / 600.0)
+
         self.movement()
         self.camera_shift()
         self.stack_check()
