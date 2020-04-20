@@ -22,7 +22,8 @@ RIGHT_VIEWPORT_MARGIN = 100
 BOTTOM_VIEWPORT_MARGIN = 50
 TOP_VIEWPORT_MARGIN = 100
 
-SPRITE_SCALING = 0.5
+CHARACTER_SCALING = 1
+SHIP_SCALING = 1
 
 # Constants used to track if the player is facing left or right
 RIGHT_FACING = 0
@@ -51,6 +52,17 @@ def load_texture_pair(filename):
     ]
 
 
+class Ship(arcade.Sprite):
+    '''
+    Playable Pirate Ship
+    '''
+    def __init__(self, filename):
+        super().__init__(filename)
+        self.name = 'Ship'
+
+        self.scale = SHIP_SCALING
+
+
 class Pirate(arcade.Sprite):
     '''
     Player class
@@ -59,7 +71,7 @@ class Pirate(arcade.Sprite):
         super().__init__()
         self.name = sprite_root
 
-        self.scale = SPRITE_SCALING
+        self.scale = CHARACTER_SCALING
 
         sprite_path = path['img'] / sprite_root
         self.texture_dict = {}
@@ -151,6 +163,40 @@ class Pirate(arcade.Sprite):
         self.update_animation()
 
 
+class ShipView(arcade.View):
+    def __init__(self):
+        super().__init__()
+
+    def on_show():
+        pass
+
+    def on_draw():
+        pass
+
+    def on_key_press():
+        pass
+
+    def on_key_release():
+        pass
+
+
+class PlayerView(arcade.View):
+    def __init__(self):
+        super().__init__()
+
+    def on_show():
+        pass
+
+    def on_draw():
+        pass
+
+    def on_key_press():
+        pass
+
+    def on_key_release():
+        pass
+
+
 class MyGame(arcade.Window):
     """
     Main application class.
@@ -238,7 +284,9 @@ class MyGame(arcade.Window):
         self.map_layers = [arcade.process_layer(
             self.map, layer.name) for layer in self.map.layers]
 
-        self.layer_positions = [layer._get_position() for layer in self.map_layers[0]]
+        self.layer_positions = [
+            layer._get_position() for layer in self.map_layers[0]
+        ]
 
         self.layer_shift_count = 0
 
@@ -272,12 +320,11 @@ class MyGame(arcade.Window):
 
         self.player_sprite.update_animation()
 
-        self.map_layers[0].move(1,0)
+        self.map_layers[0].move(1, 0)
         self.layer_shift_count += 1
         if self.layer_shift_count == 64:
             self.map_layers[0].move(-64, 0)
             self.layer_shift_count = 0
-
 
         # Calculate speed based on the keys pressed
         self.player_sprite.change_x = 0
