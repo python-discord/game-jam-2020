@@ -1,26 +1,26 @@
 import arcade
 
 from .gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE
-
-
-class MyGame(arcade.Window):
-    def __init__(self):
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-
-        arcade.set_background_color(arcade.csscolor.WHITE)
-
-    def setup(self) -> None:
-        """Inital settings. Useful when restarting the game."""
-
-    def on_draw(self) -> None:
-        """Render the screen."""
-        arcade.start_render()
+from .views.mainview import MainView
 
 
 def main() -> None:
     """Entry point of the game."""
-    window = MyGame()
-    window.setup()
+    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+
+    joysticks = arcade.get_joysticks()
+    """
+    Add support for the first joystick found, it can be changed later
+    in settings.
+    """
+    window.joystick = None
+    if joysticks:
+        window.joystick = joysticks[0]
+        window.joystick.open()
+
+    main_view = MainView()
+    main_view.setup()
+    window.show_view(main_view)
     arcade.run()
 
 
