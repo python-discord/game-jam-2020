@@ -59,8 +59,9 @@ class Dungeon(object):
         self.floor_list.extend(room_floor)
         self.wall_list.extend(room_wall)
 
-        # self.level_count, self.size = level_count, size
-        # self.levels = [[None for y in range(size)] for x in range(size)]  # array[x][y] style access
+    def add_level(self, sprit_list):
+        for x in sprit_list:
+            self.levels.append(x)
 
     def render(self) -> None:
         """
@@ -146,7 +147,6 @@ class Level:
 
     def rotate_level(self, times_rotated):
         m = np.array(self.level)
-        print(m)
-        for _ in range(0, times_rotated % 4):
+        for i in range(0, times_rotated % 4):
             m = np.rot90(m)
         self.level = m.tolist()
