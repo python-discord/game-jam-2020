@@ -2,7 +2,8 @@ import random
 import math
 import arcade
 import os
-from typing import cast
+import itertools
+import copy
 
 SCALE = 1
 OFFSCREEN_SPACE = 0
@@ -14,7 +15,7 @@ RIGHT_LIMIT = SCREEN_WIDTH + OFFSCREEN_SPACE
 BOTTOM_LIMIT = -OFFSCREEN_SPACE
 TOP_LIMIT = SCREEN_HEIGHT + OFFSCREEN_SPACE
 SCREEN_DIST = math.sqrt(SCREEN_HEIGHT ** 2 + SCREEN_WIDTH ** 2) / 2
-SCREEN_MARGIN = 50
+SCREEN_MARGIN = 200
 
 
 class GroundSprite(arcade.Sprite):
@@ -23,36 +24,32 @@ class GroundSprite(arcade.Sprite):
         self.textures = textures
         self.texture = self.textures[0]
         self.scaling = scale
-        self.x = x
-        self.y = y
+        self.center_x = x
+        self.center_y = y
 
-    def update(self, zoom, cx, cy):
+    def update(self):
         """ Move the sprite """
         super().update()
-        self.scale = zoom * self.scaling
-        self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
-        self.center_y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
 
 
 class PlayerSprite(arcade.Sprite):
-    def __init__(self, textures, scale, x, y, zoom, cx, cy):
+    def __init__(self, textures, scale, x, y, name):
         super().__init__()
         self.textures = textures
         self.texture = self.textures[0]
         self.scaling = scale
-        self.x = x
-        self.y = y
+        self.name = name
 
         self.acc_x = 0  # acceleration
         self.acc_y = 0
 
-        self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
-        self.center_y = (self.y - cy - SCREEN_HEIGHT / 2) * zoom + SCREEN_HEIGHT / 2
+        self.center_x = x
+        self.center_y = y
         self.og_x = self.center_x  # original x, which is x in the prev frame
         self.og_y = self.center_y
 
-    def update(self, zoom, cx, cy):
-        self.scale = zoom * self.scaling
+    def update(self):
+        super().update()
         self.og_x = self.center_x
         self.og_y = self.center_y
         # self.center_x = (self.x - cx - SCREEN_WIDTH / 2) * zoom + SCREEN_WIDTH / 2
@@ -61,7 +58,7 @@ class PlayerSprite(arcade.Sprite):
 class MyGame(arcade.Window):
     """ Main application class. """
 
-    def __init__(self):
+    def __init__(self):  # TODO: remember to add back the third sprite
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
@@ -79,30 +76,30 @@ class MyGame(arcade.Window):
         self.key_pressed = [0, 0, 0]  # controllable
 
         self.ground_sprite_list = arcade.SpriteList()
-        self.player_sprite_list = arcade.SpriteList()
+        self.players = []
         self.view_left = 0
         self.view_bottom = 0
 
         self.controlled = 0
 
         self.ground_texture_list = [arcade.load_texture("images/ground/debug.png")]
-        self.player_texture_list = [arcade.load_texture("images/player/debug.png")]
+        self.player_texture_list = [[arcade.load_texture("images/player/player1.jpg")],
+                                    [arcade.load_texture("images/player/player2.jpg")],
+                                    [arcade.load_texture("images/player/player3.jpg")]]
 
         for i in range(1, 4):  # TODO: make sprites
-            object = PlayerSprite(self.player_texture_list, 1, i * 32, 32 * 1, self.camera_zoom, self.camera_x,
-                                  self.camera_y)  # create the players
-            self.player_sprite_list.append(object)
+            object = PlayerSprite(self.player_texture_list[i - 1], SCALE, i * 32, 32 * 1, str(i))  # create the players
+            self.players.append(object)
 
-            # so the players can interact with each other and not just give the game a seizure
         a = arcade.SpriteList()
         b = arcade.SpriteList()
         c = arcade.SpriteList()
-        a.append(self.player_sprite_list[1])
-        a.append(self.player_sprite_list[2])
-        b.append(self.player_sprite_list[0])
-        b.append(self.player_sprite_list[2])
-        c.append(self.player_sprite_list[0])
-        c.append(self.player_sprite_list[1])
+        a.append(self.players[1])
+        a.append(self.players[2])
+        b.append(self.players[0])
+        b.append(self.players[2])
+        c.append(self.players[0])
+        c.append(self.players[1])
 
         for i in range(1, 30):  # make the ground
             object = GroundSprite(self.ground_texture_list, 1, (i - 10) * 32, 0)
@@ -113,17 +110,18 @@ class MyGame(arcade.Window):
 
         self.physics_engines = []  # make the physics engines
         self.physics_engines.append(
-            arcade.PhysicsEnginePlatformer(self.player_sprite_list[0], a, gravity_constant=self.gravity))
+            arcade.PhysicsEnginePlatformer(self.players[0], a, gravity_constant=self.gravity))
         self.physics_engines.append(
-            arcade.PhysicsEnginePlatformer(self.player_sprite_list[1], b, gravity_constant=self.gravity))
+            arcade.PhysicsEnginePlatformer(self.players[1], b, gravity_constant=self.gravity))
         self.physics_engines.append(
-            arcade.PhysicsEnginePlatformer(self.player_sprite_list[2], c, gravity_constant=self.gravity))
+            arcade.PhysicsEnginePlatformer(self.players[2], c, gravity_constant=self.gravity))
 
     def on_draw(self):  # simple rendering
         arcade.start_render()
 
         self.ground_sprite_list.draw()
-        self.player_sprite_list.draw()
+        for p in self.players:
+            p.draw()
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
@@ -151,23 +149,23 @@ class MyGame(arcade.Window):
     def camera_shift(self):
         changed = False
         left_boundary = self.view_left + SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].left < left_boundary:
-            self.view_left -= left_boundary - self.player_sprite_list[self.controlled].left
+        if self.players[self.controlled].left < left_boundary:
+            self.view_left -= left_boundary - self.players[self.controlled].left
             changed = True
 
         right_boundary = self.view_left + SCREEN_WIDTH - SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].right > right_boundary:
-            self.view_left += self.player_sprite_list[self.controlled].right - right_boundary
+        if self.players[self.controlled].right > right_boundary:
+            self.view_left += self.players[self.controlled].right - right_boundary
             changed = True
 
         top_boundary = self.view_bottom + SCREEN_HEIGHT - SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].top > top_boundary:
-            self.view_bottom += self.player_sprite_list[self.controlled].top - top_boundary
+        if self.players[self.controlled].top > top_boundary:
+            self.view_bottom += self.players[self.controlled].top - top_boundary
             changed = True
 
         bottom_boundary = self.view_bottom + SCREEN_MARGIN
-        if self.player_sprite_list[self.controlled].bottom < bottom_boundary:
-            self.view_bottom -= bottom_boundary - self.player_sprite_list[self.controlled].bottom
+        if self.players[self.controlled].bottom < bottom_boundary:
+            self.view_bottom -= bottom_boundary - self.players[self.controlled].bottom
             changed = True
 
         self.view_left = int(self.view_left)
@@ -180,46 +178,76 @@ class MyGame(arcade.Window):
                                 self.view_bottom,
                                 SCREEN_HEIGHT + self.view_bottom - 1)
 
+    def check_stack(self):  # tests if one character is on top of another- if so, join
+        for up, down in itertools.permutations(self.players, 2):
+            # print(abs(up.left - down.left) < 20, abs(up.left - down.left))
+            if up.bottom == down.top and abs(up.left - down.left) < 20:
+                topList = []
+                bottomList = []
+                for v, p in enumerate(self.players):
+                    if p.name == up.name:
+                        topList.append(v)
+                    elif p.name == down.name:
+                        bottomList.append(v)
+                print(topList, bottomList)
+                stackName = f'{self.players[topList[0]].name}on{self.players[bottomList[0]].name}'
+                for i in topList + bottomList:
+                    self.players[i] = PlayerSprite([arcade.load_texture(f'images/player/{stackName}.png')],
+                                                   SCALE, (up.left + up.right) // 2, up.bottom, stackName)
+
+                    newEnginePlayers = copy.deepcopy(self.ground_sprite_list)
+                    for v, p in enumerate(self.players):  # make a new engine
+                        if v not in topList + bottomList:
+                            newEnginePlayers.append(p)
+                    self.physics_engines[i] = arcade.PhysicsEnginePlatformer(self.players[i], newEnginePlayers)
+
+                print(self.players)
+                break
+
+    def movement(self):
+        controlledSprite = self.players[self.controlled].name
+        for v, p in enumerate(self.players):
+            if p.name == controlledSprite:  # probs not the best implementation
+                p.acc_x = self.key_pressed[0] + self.key_pressed[1]
+                # accelerate the controlled sprite to a maximum speed of 3.5
+                if abs(p.change_x) < 3.5:
+                    p.change_x += p.acc_x
+
+                p.change_y = self.key_pressed[2] if self.physics_engines[v].can_jump() else p.change_y
+
+                if self.key_pressed[0] + self.key_pressed[1] == 0:  # if left AND right keys are pressed, cancel it
+                    if abs(p.change_x) < 0.4:
+                        p.change_x = 0
+                    elif p.change_x < 0:  # these two serve deceleration
+                        p.change_x += 0.3
+                    else:
+                        p.change_x = -0.3
+
     def on_update(self, x):
-        """ Move everything """
-
         self.frame_count += 1
-        self.player_sprite_list[self.controlled].acc_x = self.key_pressed[0] + self.key_pressed[1]
-        if self.player_sprite_list[self.controlled].top < -1000:
-            self.game_over = True
-        # accelerate the controlled sprite to a maximum speed of 3.5
-        if abs(self.player_sprite_list[self.controlled].change_x) < 3.5:
-            self.player_sprite_list[self.controlled].change_x += self.player_sprite_list[self.controlled].acc_x
-
-        self.player_sprite_list[self.controlled].change_y = self.key_pressed[2] if self.physics_engines[
-            self.controlled].can_jump() else self.player_sprite_list[self.controlled].change_y
-
-        if self.key_pressed[0] + self.key_pressed[1] == 0:  # if left AND right keys are pressed, cancel it
-            if abs(self.player_sprite_list[self.controlled].change_x) < 0.4:
-                self.player_sprite_list[self.controlled].change_x = 0
-            elif self.player_sprite_list[self.controlled].change_x < 0:  # these two serve deceleration
-                self.player_sprite_list[self.controlled].change_x += 0.3
-            else:
-                self.player_sprite_list[self.controlled].change_x = -0.3
-
+        self.players[self.controlled].acc_x = self.key_pressed[0] + self.key_pressed[1]
+        self.movement()
         self.camera_shift()
+        self.check_stack()
 
-        for s in self.player_sprite_list:
+        for s in self.players:
             if s.top < -500:
                 self.game_over = True
 
         if not self.game_over:
             for i in self.ground_sprite_list:
-                i.update(self.camera_zoom, self.camera_x, self.camera_y)
-            for i in self.player_sprite_list:
-                i.update(self.camera_zoom, self.camera_x, self.camera_y)
+                i.update()
+            for i in self.players:
+                i.update()
             for i in self.physics_engines:
                 i.update()
         else:
             self.close()
 
+
 def main():
     actualGame = MyGame()
     arcade.run()
+
 
 main()
