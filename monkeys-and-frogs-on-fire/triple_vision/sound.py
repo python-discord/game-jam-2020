@@ -81,8 +81,8 @@ class SoundManager:
         if not self.curr_sound.faded:
             return
 
-        if self.tick_delta < ss.SOUND_FADE_FREQUENCY:
+        if self.tick_delta < ss.FADE_FREQUENCY:
             return
 
-        self.curr_sound.set_volume(self.curr_sound.get_volume() + ss.SOUND_FADE_AMOUNT)
+        self.curr_sound.set_volume(self.curr_sound.get_volume() + ss.FADE_AMOUNT)
         self.tick_delta = 0.0
