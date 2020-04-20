@@ -23,8 +23,6 @@ class Game(arcade.Window):
 
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
-        self.wall_list = None
-        self.floor_list = None
         self.enemy_list = None
         self.player = None
 
@@ -89,11 +87,9 @@ class Game(arcade.Window):
         self.dungeon.render()
         self.player.draw()
         self.enemy_list.draw()
-        self.wall_list.draw()
 
         x, y = self.view_left + 50, self.view_bottom + 50
         arcade.draw_text(str((self.player.center_x,  self.player.center_y)), x, y, arcade.color.WHITE, 15)
-        print('Here.')
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
