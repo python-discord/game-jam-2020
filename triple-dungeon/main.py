@@ -8,8 +8,7 @@ import arcade
 
 from config import Config
 from map import Dungeon
-from mobs import Player
-from mobs import Enemy
+from mobs import Player, Enemy
 
 
 class Game(arcade.Window):
@@ -34,7 +33,7 @@ class Game(arcade.Window):
         # Our physics engine
         self.physics_engine = None
 
-        # list to keep track of keypresses
+        # list to keep track of key presses
         self.prev_keypress = []
 
         # Used to keep track of our scrolling
@@ -57,11 +56,12 @@ class Game(arcade.Window):
         # Create the dungeon
         dungeon = Dungeon()
         self.floor_list, self.wall_list = dungeon.get_lists()
-        
 
         # Create monsters
-        self.enemy_list.append(Enemy("resources/images/monsters/ghost/ghost1.png", 200, 200).get_enemy())
-        self.enemy_list.append(Enemy("resources/images/monsters/frog/frog1.png", 200, 1000).get_enemy())
+        self.enemy_list.extend([
+                Enemy("resources/images/monsters/ghost/ghost1.png", 200, 200).get_enemy(),
+                Enemy("resources/images/monsters/frog/frog1.png", 200, 1000).get_enemy()
+        ])
 
         # Create the 'physics engine'
         self.physics_engine = arcade.PhysicsEngineSimple(self.player_sprite, self.wall_list)
