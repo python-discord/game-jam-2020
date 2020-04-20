@@ -63,14 +63,7 @@ class PathFinder:
 
         open_nodes.append(start_node)
 
-        count = 0
-        while len(open_nodes) > 0:
-            count += 1
-
-            # Most likely an impossible destination
-            if count > self.max_tries:
-                return
-
+        for _ in range(self.max_tries):
             current_node = open_nodes[0]
 
             for node in open_nodes:
