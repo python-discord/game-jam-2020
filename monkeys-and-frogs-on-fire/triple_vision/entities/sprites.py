@@ -65,7 +65,19 @@ class MovingSprite(arcade.Sprite):
         self.change_x = math.cos(radians_angle) * self.speed
         self.change_y = math.sin(radians_angle) * self.speed
 
-    def update(self) -> None:
+    def force_moving_sprite_on_update(self, delta_time: float) -> None:
+        """
+        Another name for on_update
+        For easier calling in case of heavy polymorphism
+        """
+        self._reached_target_check()
+        self.update_(delta_time)
+
+    def on_update(self, delta_time: float = 1/60) -> None:
+        self._reached_target_check()
+        self.update_(delta_time)
+
+    def _reached_target_check(self):
         if self.target is not None:
             if (
                 self.target[0] - Tile.SCALED / 2 < self.center_x < self.target[0] + Tile.SCALED / 2 and
@@ -73,22 +85,32 @@ class MovingSprite(arcade.Sprite):
             ):
                 self.change_x = 0
                 self.change_y = 0
-
                 self.target = None
 
-        super().update()
+    def update_(self, delta_time):
+        """
+        Update method that works with slow-down.
+        """
+        relative_speed = delta_time * 60
+        self.position = [
+            self._position[0] + self.change_x * relative_speed,
+            self._position[1] + self.change_y * relative_speed
+        ]
+        self.angle += self.change_angle * relative_speed
 
 
 class TemporarySprite(arcade.Sprite):
     def __init__(self, lifetime: Optional[int], *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.lifetime = lifetime
+        self._passed_time = 0.0
         self.created_at = time.time()
 
-    def update(self):
-        if self.lifetime and time.time() - self.created_at > self.lifetime:
+    def on_update(self, delta_time: float):
+        self._passed_time += delta_time
+        if self.lifetime and self._passed_time > self.lifetime:
             self.kill()
-        super().update()
+        super().on_update(delta_time)
 
 
 class DamageIndicator(TemporarySprite, MovingSprite):

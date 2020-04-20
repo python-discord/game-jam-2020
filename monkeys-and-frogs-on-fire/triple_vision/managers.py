@@ -30,7 +30,7 @@ class GameManager:
         dmg_indicator = DamageIndicator(text, *position)
         self.damage_indicators.append(dmg_indicator)
 
-    def update(self, delta_time: float = 1/60) -> None:
+    def on_update(self, delta_time) -> None:
         for enemy in self.enemies:
             for projectile in self.player_projectiles:
                 if arcade.check_for_collision(projectile, enemy):
@@ -43,10 +43,10 @@ class GameManager:
                 self.view.player.hit(projectile)
                 projectile.kill()
 
-        self.enemies.update()
-        self.player_projectiles.update()
-        self.enemy_projectiles.update()
-        self.damage_indicators.update()
+        self.enemies.on_update(delta_time)
+        self.player_projectiles.on_update(delta_time)
+        self.enemy_projectiles.on_update(delta_time)
+        self.damage_indicators.on_update(delta_time)
 
 
 class CardManager:
@@ -98,11 +98,11 @@ class CardManager:
                     break
 
             self.show_cards = True
-            self.view.paused = True
+            self.view.slow_down = True
 
         else:
             self.show_cards = False
-            self.view.paused = False
+            self.view.slow_down = False
 
     def process_mouse_press(self, x, y, button) -> bool:
         if button == arcade.MOUSE_BUTTON_LEFT:
@@ -118,7 +118,7 @@ class CardManager:
                     ):
                         self.view.player.curr_color = self.colors[idx]
                         self.show_cards = False
-                        self.view.paused = False
+                        self.view.slow_down = False
 
                 return True
 

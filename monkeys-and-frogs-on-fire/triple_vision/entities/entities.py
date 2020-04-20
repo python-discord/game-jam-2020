@@ -116,18 +116,21 @@ class AnimatedEntity(arcade.Sprite):
 
             self._prev_anim_delta = 0
 
-    def update(self, delta_time: float = 1/60) -> None:
+    def on_update(self, delta_time: float = 1/60) -> None:
         self.update_animation(delta_time)
-        super().update()
 
 
 class LivingEntity(AnimatedEntity):
 
-    def __init__(self, hp: float = 0, *args, **kwargs) -> None:
+    def __init__(self, hp: float = 0, is_pushable: bool = True, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
         self.hp = hp
+        self.is_pushable = is_pushable
         self.being_pushed = False
+        self._is_hit = False
+        self._red_color_ticks = 0.0
+        self._red_color_duration = 0.5
 
         self.resistance = 0
 
@@ -141,6 +144,9 @@ class LivingEntity(AnimatedEntity):
                                      maybe this check should be done in manager?
                                      So if hits wall and being_pushed True then deduct hp
         """
+        self._is_hit = True
+        self.color = (255, 0, 0)
+
         weapon.play_hit_sound()
 
         self.hp -= weapon.dmg * (1 - self.resistance)
@@ -148,7 +154,7 @@ class LivingEntity(AnimatedEntity):
             self.kill()
             return
 
-        if self.being_pushed:
+        if self.being_pushed or not self.is_pushable:
             return
 
         change = get_change_vector(
@@ -158,20 +164,21 @@ class LivingEntity(AnimatedEntity):
         )
         self.change_x, self.change_y = change[0], change[1]
 
-        self.color = (255, 0, 0)
         self.being_pushed = True
 
-    def reduce_throwback(self) -> None:
+    def reduce_throwback(self, delta_time: float) -> None:
+        relative_time = delta_time * 60
+
         if self.being_pushed:
             if self.change_x > 0:
-                self.change_x -= 1
+                self.change_x -= 1 * relative_time
             elif self.change_x < 0:
-                self.change_x += 1
+                self.change_x += 1 * relative_time
 
             if self.change_y > 0:
-                self.change_y -= 1
+                self.change_y -= 1 * relative_time
             elif self.change_y < 0:
-                self.change_y += 1
+                self.change_y += 1 * relative_time
 
             # Change is float so we can't really check if it's exactly 0
             # because it can be 0.1 so we just round it from -1 to 1
@@ -179,9 +186,17 @@ class LivingEntity(AnimatedEntity):
                 self.being_pushed = False
                 self.change_x = 0
                 self.change_y = 0
-                self.color = (255, 255, 255)
 
-    def update(self, delta_time: float = 1/60) -> None:
-        if self.being_pushed:
-            self.reduce_throwback()
-        super().update(delta_time)
+    def on_update(self, delta_time: float = 1/60):
+        if self._is_hit:
+            if self._red_color_ticks >= self._red_color_duration:
+                self._is_hit = False
+                self.color = (255, 255, 255)
+                self._red_color_ticks = 0.0
+            else:
+                self._red_color_ticks += delta_time
+
+        if self.being_pushed and self.is_pushable:
+            self.reduce_throwback(delta_time)
+
+        super().on_update(delta_time)

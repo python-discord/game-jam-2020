@@ -1,5 +1,5 @@
-import random
 import time
+import random
 
 import arcade
 
@@ -90,6 +90,7 @@ class Player(LivingEntity, MovingSprite):
                     self.view.collision_list
                 )
             )
+            # self.move_to(x, y, rotate=False)
 
         elif button == arcade.MOUSE_BUTTON_RIGHT:
 
@@ -124,3 +125,6 @@ class Player(LivingEntity, MovingSprite):
                 self.move_to(*pos, rotate=False)
 
         super().update(delta_time)
+
+        # super().on_update(delta_time)
+        # super().force_moving_sprite_on_update(delta_time)

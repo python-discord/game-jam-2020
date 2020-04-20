@@ -1,5 +1,4 @@
 import enum
-import time
 from pathlib import Path
 
 import arcade
@@ -54,7 +53,7 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
 
-    def update(self, delta_time: float = 1/60):
+    def on_update(self, delta_time: float = 1/60) -> None:
         if not self.being_pushed:
             if is_in_radius(self, self.target_sprite, self.detection_radius):
                 self.move_to(self.target_sprite.center_x,
@@ -64,7 +63,10 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
                 self.change_x = 0
                 self.change_y = 0
 
-        super().update()
+        # Since both are defined in both parents it's gonna call only from BaseEnemy
+        # so we're forcing the call for MovingSprite
+        super().on_update(delta_time)
+        super().force_moving_sprite_on_update(delta_time)
 
 
 class StationaryEnemy(BaseEnemy):
@@ -75,21 +77,25 @@ class StationaryEnemy(BaseEnemy):
         enemy: Enemies,
         target_sprite: arcade.Sprite,
         detection_radius: int,
+        shoot_interval: float,
         **kwargs
     ) -> None:
-        super().__init__(enemy, **kwargs)
-        self.ctx = ctx
+        super().__init__(enemy, is_pushable=False, **kwargs)
 
+        self.ctx = ctx
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
+        self.shoot_interval = shoot_interval
+        self._passed_time = 0.0
 
-        self.last_shot = time.time()
+    def on_update(self, delta_time: float = 1/60):
+        super().on_update(delta_time)
+        self._passed_time += delta_time
 
-    def update(self, delta_time: float = 1/60) -> None:
         if not is_in_radius(self, self.target_sprite, self.detection_radius):
             return
 
-        if time.time() - self.last_shot < 0.75:  # TODO should be a constant
+        if self._passed_time < self.shoot_interval:
             return
 
         laser = LaserProjectile(
@@ -105,4 +111,4 @@ class StationaryEnemy(BaseEnemy):
         laser.play_activate_sound()
 
         self.ctx.enemy_projectiles.append(laser)
-        self.last_shot = time.time()
+        self._passed_time = 0.0

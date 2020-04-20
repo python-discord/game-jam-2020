@@ -17,7 +17,7 @@ class TripleVision(arcade.View):
     def __init__(self) -> None:
         super().__init__()
 
-        self.paused = False
+        self.slow_down = False
 
         self.map = None
 
@@ -64,6 +64,7 @@ class TripleVision(arcade.View):
                 Enemies.imp,
                 self.player,
                 Tile.SCALED * 10,
+                0.75,
                 center_x=50,
                 center_y=y * 200
             )
@@ -141,14 +142,19 @@ class TripleVision(arcade.View):
 
         self.card_manager.draw()
 
-    def on_update(self, delta_time: float = 1/60) -> None:
-        if not self.paused:
-            if self.player.is_alive:
-                self.player.update(delta_time)
-
-            self.game_manager.update(delta_time)
-            self.physics_engine.update()
-            self.map.update()
-            self.camera.update()
+    def on_update(self, delta_time: float) -> None:
+        if self.slow_down:
+            self.update_(delta_time / constants.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
+        else:
+            self.update_(delta_time)
 
         self.card_manager.update()
+
+    def update_(self, delta_time: float) -> None:
+        if self.player.is_alive:
+            self.player.on_update(delta_time)
+
+        self.game_manager.on_update(delta_time)
+        self.physics_engine.update()
+        self.map.update()
+        self.camera.update()
