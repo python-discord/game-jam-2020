@@ -19,12 +19,12 @@ SHIP_MOVEMENT_SPEED = 200
 
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
-LEFT_VIEWPORT_MARGIN = 100
-RIGHT_VIEWPORT_MARGIN = 100
+LEFT_VIEWPORT_MARGIN = 300
+RIGHT_VIEWPORT_MARGIN = 300
 BOTTOM_VIEWPORT_MARGIN = 50
 TOP_VIEWPORT_MARGIN = 100
 
-CHARACTER_SCALING = 1
+CHARACTER_SCALING = 0.5
 SHIP_SCALING = 1
 
 # Constants used to track if the player is facing left or right
@@ -100,6 +100,8 @@ class Pirate(arcade.Sprite):
         self.character_face_direction = RIGHT_FACING
 
         self.is_idle = False
+        self.is_attacking = False
+        self.follower = False
 
     def update_animation(self):
         # Figure out if we need to flip face left or right
@@ -127,26 +129,42 @@ class Pirate(arcade.Sprite):
             self.cur_idle_texture += 1
             return
 
-        # Idle animation
-        if self.change_x == 0 and self.change_y == 0:
+        # Attack animation
+        elif self.is_attacking:
+            frames = self.cur_attack_texture // UPDATES_PER_FRAME
+
+            if frames == len(self.texture_dict['attack'])-1:
+                self.cur_attack_texture = 0
+                self.is_attacking = False
+                return
+
+            self.texture = self.texture_dict['attack'][frames][
+                self.character_face_direction
+                ]
+
+            self.cur_attack_texture += 1
+
+        # Default animation
+        elif self.change_x == 0 and self.change_y == 0:
             self.texture = self.texture_dict['idle'][0][
                 self.character_face_direction
                 ]
-            self.cur_run_texture, self.cur_idle_texture = 0, 0
+            (self.cur_run_texture, self.cur_idle_texture,
+                self.cur_attack_texture) = (0, 0, 0)
             return
 
         # Walking animation
+        else:
+            frames = self.cur_run_texture // UPDATES_PER_FRAME
 
-        frames = self.cur_run_texture // UPDATES_PER_FRAME
+            if frames == len(self.texture_dict['run'])-1:
+                self.cur_run_texture = 0
 
-        if frames == len(self.texture_dict['run'])-1:
-            self.cur_run_texture = 0
+            self.texture = self.texture_dict['run'][frames][
+                self.character_face_direction
+                ]
 
-        self.texture = self.texture_dict['run'][frames][
-            self.character_face_direction
-            ]
-
-        self.cur_run_texture += 1
+            self.cur_run_texture += 1
 
     def on_update(self, delta_time):
         self.center_x += self.change_x * delta_time
@@ -182,6 +200,7 @@ class ShipView(arcade.View):
         self.ship_sprite.set_position(800, 800)
 
         self.layer_shift_count = 0
+        self.seafoam_shift_count = 64
         self.map = arcade.tilemap.read_tmx(path['maps'] / "test_map.tmx")
 
         self.map_layers = [arcade.process_layer(
@@ -201,74 +220,44 @@ class ShipView(arcade.View):
     def scroll(self):
         # --- Manage Scrolling ---
 
-        # Track if we need to change the viewport
+        self.viewport_scale = 1
 
-        # changed = False
-        #
-        # # Scroll left
-        # left_boundary = self.view_left + LEFT_VIEWPORT_MARGIN
-        # if self.ship_sprite.left < left_boundary:
-        #     self.view_left -= left_boundary - self.ship_sprite.left
-        #     changed = True
-        #
-        # # Scroll right
-        # right_boundary = self.view_left + SCREEN_WIDTH - RIGHT_VIEWPORT_MARGIN
-        # if self.ship_sprite.right > right_boundary:
-        #     self.view_left += self.ship_sprite.right - right_boundary
-        #     changed = True
-        #
-        # # Scroll up
-        # top_boundary = self.view_bottom + SCREEN_HEIGHT - TOP_VIEWPORT_MARGIN
-        # if self.ship_sprite.top > top_boundary:
-        #     self.view_bottom += self.ship_sprite.top - top_boundary
-        #     changed = True
-        #
-        # # Scroll down
-        # bottom_boundary = self.view_bottom + BOTTOM_VIEWPORT_MARGIN
-        # if self.ship_sprite.bottom < bottom_boundary:
-        #     self.view_bottom -= bottom_boundary - self.ship_sprite.bottom
-        #     changed = True
-        #
-        # if changed:
-        #     # Only scroll to integers. Otherwise we end up with pixels that
-        #     # don't line up on the screen
-        #     self.view_bottom = int(self.view_bottom)
-        #     self.view_left = int(self.view_left)
+        left = int(self.ship_sprite._get_position()[0]-SCREEN_WIDTH/2*self.viewport_scale)
+        right = int(self.ship_sprite._get_position()[0]+SCREEN_WIDTH/2*self.viewport_scale)
+        bottom = int(self.ship_sprite._get_position()[1]-SCREEN_HEIGHT/2*self.viewport_scale)
+        top = int(self.ship_sprite._get_position()[1]+SCREEN_HEIGHT/2*self.viewport_scale)
 
-            # Do the scrolling
-            # arcade.set_viewport(self.view_left,
-            #                     SCREEN_WIDTH + self.view_left,
-            #                     self.view_bottom,
-            #                     SCREEN_HEIGHT + self.view_bottom)
-            left = int(self.ship_sprite._get_position()[0]-SCREEN_WIDTH/2)
-            right = int(self.ship_sprite._get_position()[0]+SCREEN_WIDTH/2)
-            bottom = int(self.ship_sprite._get_position()[1]-SCREEN_HEIGHT/2)
-            top = int(self.ship_sprite._get_position()[1]+SCREEN_HEIGHT/2)
+        if left < 75:
+            left = 75
+            right = 75+SCREEN_WIDTH*self.viewport_scale
+        if right > 4000:
+            right = 4000
+            left = right-SCREEN_WIDTH*self.viewport_scale
+        if top > 2300:
+            top = 2300
+            bottom = 2300 - SCREEN_HEIGHT*self.viewport_scale
+        if bottom < 0:
+            bottom = 0
+            top = SCREEN_HEIGHT*self.viewport_scale
 
-            if left < 75:
-                left = 75
-                right = 75+SCREEN_WIDTH
-            if right > 4000:
-                right = 4000
-                left = right-SCREEN_WIDTH
-            if top > 2300:
-                top = 2300
-                bottom = 2300 - SCREEN_HEIGHT
-            if bottom < 0:
-                bottom = 0
-                top = SCREEN_HEIGHT
+        if True:
+            arcade.set_viewport(
+                left,
+                right,
+                bottom,
+                top
+            )
 
-            arcade.set_viewport(left, right, bottom, top)
 
     def on_show(self):
         print("Switched to ShipView")
-        print(self.window.get_viewport())
+        # print(self.window.get_viewport())
 
     def on_draw(self):
         arcade.start_render()
 
         for layer in self.map_layers:
-            layer.draw()
+            layer.draw(filter=gl.GL_NEAREST)
 
         self.ship_sprite.draw()
 
@@ -277,10 +266,22 @@ class ShipView(arcade.View):
         self.scroll()
 
         self.map_layers[0].move(1, 0)
+        if self.seafoam_shift_count > 0:
+            self.map_layers[1].move(0.25, 0.25)
+            self.seafoam_shift_count -= 0.25
+
         self.layer_shift_count += 1
         if self.layer_shift_count == 64:
             self.map_layers[0].move(-64, 0)
+            # self.map_layers[1].move(-16, 0)
             self.layer_shift_count = 0
+
+        if self.seafoam_shift_count <= 0:
+            self.map_layers[1].move(-0.25, -0.25)
+            self.seafoam_shift_count -= 0.25
+        if self.seafoam_shift_count == -64:
+            self.seafoam_shift_count = 64
+
 
         # Calculate speed based on the keys pressed
         self.ship_sprite.change_x = 0
@@ -378,78 +379,83 @@ class PlayerView(arcade.View):
 
         for i in ('brawn', 'bald'):
             self.player_sprites.append(Pirate(i))
+
         self.player_sprites[0].center_x = 400
         self.player_sprites[1].center_x = 600
-        self.player_sprite.center_x = 800
+        self.player_sprite.center_x = 200
+        self.player_sprite.center_y = 200
 
-        self.map = arcade.tilemap.read_tmx(path['maps'] / "test_map.tmx")
+        self.player_sprites.append(self.player_sprite)
+
+        self.map = arcade.tilemap.read_tmx(path['maps'] / "dungeon_test.tmx")
 
         self.map_layers = [arcade.process_layer(
             self.map, layer.name) for layer in self.map.layers]
 
-        self.physics_engine = arcade.PhysicsEngineSimple(
-            self.player_sprite, self.map_layers[2])
+        self.physics_engines = []
+
+        for sprite in self.player_sprites:
+            self.physics_engines.append(
+                arcade.PhysicsEngineSimple(
+                    sprite, self.map_layers[2]
+                )
+            )
 
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
 
     def scroll(self):
-        # --- Manage Scrolling ---
+        self.viewport_scale = 0.5
+        # position_changed = (
+        #     self.up_pressed or
+        #     self.down_pressed or
+        #     self.left_pressed or
+        #     self.right_pressed
+        # )
 
-        # Track if we need to change the viewport
+        left = int(self.player_sprite._get_position()[0]-SCREEN_WIDTH/2*self.viewport_scale)
+        right = int(self.player_sprite._get_position()[0]+SCREEN_WIDTH/2*self.viewport_scale)
+        bottom = int(self.player_sprite._get_position()[1]-SCREEN_HEIGHT/2*self.viewport_scale)
+        top = int(self.player_sprite._get_position()[1]+SCREEN_HEIGHT/2*self.viewport_scale)
 
-        changed = False
+        if left < 0:
+            left = 0
+            right = 0+SCREEN_WIDTH*self.viewport_scale
+        if right > 4000:
+            right = 4000
+            left = right-SCREEN_WIDTH*self.viewport_scale
+        if top > 2300:
+            top = 2300
+            bottom = 2300 - SCREEN_HEIGHT*self.viewport_scale
+        if bottom < 0:
+            bottom = 0
+            top = SCREEN_HEIGHT*self.viewport_scale
 
-        # Scroll left
-        left_boundary = self.view_left + LEFT_VIEWPORT_MARGIN
-        if self.player_sprite.left < left_boundary:
-            self.view_left -= left_boundary - self.player_sprite.left
-            changed = True
-
-        # Scroll right
-        right_boundary = self.view_left + SCREEN_WIDTH - RIGHT_VIEWPORT_MARGIN
-        if self.player_sprite.right > right_boundary:
-            self.view_left += self.player_sprite.right - right_boundary
-            changed = True
-
-        # Scroll up
-        top_boundary = self.view_bottom + SCREEN_HEIGHT - TOP_VIEWPORT_MARGIN
-        if self.player_sprite.top > top_boundary:
-            self.view_bottom += self.player_sprite.top - top_boundary
-            changed = True
-
-        # Scroll down
-        bottom_boundary = self.view_bottom + BOTTOM_VIEWPORT_MARGIN
-        if self.player_sprite.bottom < bottom_boundary:
-            self.view_bottom -= bottom_boundary - self.player_sprite.bottom
-            changed = True
-
-        if changed:
-            # Only scroll to integers. Otherwise we end up with pixels that
-            # don't line up on the screen
-            self.view_bottom = int(self.view_bottom)
-            self.view_left = int(self.view_left)
-
-            # Do the scrolling
-            arcade.set_viewport(self.view_left,
-                                SCREEN_WIDTH + self.view_left,
-                                self.view_bottom,
-                                SCREEN_HEIGHT + self.view_bottom)
+        if True:
+            arcade.set_viewport(
+                left,
+                right,
+                bottom,
+                top
+            )
 
     def on_show(self):
         print("Switched to PlayerView")
 
     def on_draw(self):
         arcade.start_render()
-        self.player_sprite.draw()
+        for layer in self.map_layers:
+            layer.draw(filter=gl.GL_NEAREST)
+        # self.player_sprite.draw()
         self.player_sprites.draw(filter=gl.GL_NEAREST)
 
     def on_update(self, delta_time):
 
         self.scroll()
 
-        self.player_sprite.update_animation()
+        for sprite in self.player_sprites:
+            sprite.update_animation()
 
         # Calculate speed based on the keys pressed
         self.player_sprite.change_x = 0
@@ -477,7 +483,27 @@ class PlayerView(arcade.View):
         elif self.player_sprite.top > height - 1:
             self.player_sprite.top = height - 1
 
-        self.physics_engine.update()
+        count = 0
+        for sprite in self.player_sprites:
+            count += 1
+            if sprite is not self.player_sprite:
+                if self.player_sprite.is_attacking:
+                    sprite.is_attacking = True
+                sprite.character_face_direction = self.player_sprite.character_face_direction
+                sprite.change_x, sprite.change_y = self.player_sprite.change_x, self.player_sprite.change_y
+                if sprite.collides_with_list(self.map_layers[2]):
+                    print(f"{self.player_sprites.index(sprite)}. YEP.")
+                if count == 1:
+                    sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y+30*count)
+                else:
+                    sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y-15*count)
+                # if self.player_sprite.character_face_direction == RIGHT_FACING:
+                #     sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y-30*count)
+                # else:
+                    # sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y+30*count)
+
+        for engine in self.physics_engines:
+            engine.update()
 
     def on_key_press(self, key, key_modifiers):
         """
@@ -494,6 +520,10 @@ class PlayerView(arcade.View):
             self.left_pressed = True
         elif key == arcade.key.D:
             self.right_pressed = True
+
+        if key == arcade.key.E:
+            self.player_sprite.is_attacking = True
+            print(self.player_sprite.is_attacking)
 
     def on_key_release(self, key, key_modifiers):
         """
@@ -609,6 +639,7 @@ def main():
     player_view = PlayerView()
 
     window.show_view(ship_view)
+    # window.show_view(player_view)
 
     arcade.run()
 
