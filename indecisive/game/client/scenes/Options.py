@@ -28,9 +28,10 @@ class Options:
         self.spritelist.extend(self.spritedict.values())
 
     def button_setup(self):
-        esc = Button("options", "exit", 560, 620, 400, 150, "Exit", self.theme)
+        esc = Button("options", "main_menu", 560, 620, 400, 150, "Exit", self.theme)
         music = Button("options", "option", 600, 400, "Music", self.theme)
-        button_items = [esc, music]
+        accept = Button("options", "main_menu", 500, 200, "Accept", self.theme)
+        button_items = [esc, music, accept]
         self.buttonlist += button_items
 
     def update(self, delta_time: float) -> None:
@@ -41,8 +42,8 @@ class Options:
 
 
 class Button(arcade.TextButton):
-    def __init__(self, start_scene, next_scene, x, y, width, height, text, theme = None):
-        super.__init__(x, y, width, height, text, theme = theme, font = "Roboto", font_color = 255)
+    def __init__(self, start_scene, next_scene, x, y, width, height, text, theme=None):
+        super.__init__(x, y, width, height, text, theme=theme, font="Roboto", font_color=255)
         self.start_scene = start_scene
         self.next_scene = next_scene
         self.clicked = False
@@ -55,4 +56,4 @@ class Button(arcade.TextButton):
             if self.next_scene == "Exit":
                 arcade.close_window()
             else:
-                pass
+                self.display.change_scenes(self.next_scene)
