@@ -2,7 +2,9 @@ import arcade
 from arcade.gui import Theme
 
 from ..gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT
+
 from .gameview import GameView
+from .loadgameview import LoadGameView
 
 
 class NewGameButton(arcade.TextButton):
@@ -50,7 +52,11 @@ class LoadGameButton(arcade.TextButton):
 
     def on_release(self) -> None:
         if self.pressed:
-            self.pressed = False
+            self.view_reference.clear_buttons()
+
+            load_game_view = LoadGameView()
+            load_game_view.setup()
+            self.view_reference.window.show_view(load_game_view)
 
 
 class SettingsButton(arcade.TextButton):
