@@ -2,6 +2,7 @@
 sprites.py
 A file dedicated to managing sprites and animations for characters.
 """
+from itertools import cycle
 
 import arcade
 import os
@@ -35,12 +36,13 @@ class AnimationSet(object):
         """
 
         # Finds all matching files
-        matches = [file for file in self.animations if re.match(pattern, file)]
+        matches = map(lambda file: re.match(pattern, file), self.animations)
+        matches = list(filter(lambda match: match is not None, matches))
         # Sort in ascending order based on the connected animation index. Zero-indexing or not does not affect order.
         matches.sort(key=lambda match: int(match.group(1)))
         # Grab the filename and load it to the file directory
         matches = list(map(lambda match: arcade.load_texture(os.path.join(self.directory, match.group(0))), matches))
-        return matches
+        return cycle(matches)
 
 
 class PlayerAnimations(AnimationSet):
@@ -65,4 +67,4 @@ class PlayerAnimations(AnimationSet):
         self.down = self.getAnimations(re.compile(r'run_down_(\d+).png'))
         self.right = self.getAnimations(re.compile(r'run_right_(\d+).png'))
         self.up = self.getAnimations(re.compile(r'run_up_(\d+).png'))
-        self.down = self.getAnimations(re.compile(r'run_left_(\d+).png'))
+        self.left = self.getAnimations(re.compile(r'run_left_(\d+).png'))
