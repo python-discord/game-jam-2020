@@ -15,7 +15,7 @@ class Display(arcade.Window):
         self.scenes["loading"] = LoadingScreen(self)
         self.scenes["lobby"] = Lobby(self)
         self.scenes["mainMenu"] = MainMenu(self)
-        self.scenes["options"] = Options()
+        # self.scenes["options"] = Options()
 
     def change_scenes(self, scene: str, *args, **kwargs):
         self.scenes[scene].reset(*args, **kwargs)
