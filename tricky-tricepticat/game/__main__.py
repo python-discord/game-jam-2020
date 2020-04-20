@@ -13,7 +13,8 @@ from pyglet import gl
 
 UPDATES_PER_FRAME = 3
 
-MOVEMENT_SPEED = 300
+PLAYER_MOVEMENT_SPEED = 300
+SHIP_MOVEMENT_SPEED = 200
 
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
@@ -167,62 +168,140 @@ class ShipView(arcade.View):
     def __init__(self):
         super().__init__()
 
-    def on_show():
+        self.ship_sprite = Ship(path['img']/'ship'/'ship.png')
+
+        self.ship_sprite.set_position(100, 100)
+
+        self.layer_shift_count = 0
+        self.map = arcade.tilemap.read_tmx(path['maps'] / "test_map.tmx")
+
+        self.map_layers = [arcade.process_layer(
+            self.map, layer.name) for layer in self.map.layers]
+
+        # self.physics_engine = arcade.PhysicsEngineSimple(
+        #     self.ship_sprite, self.map_layers[2])
+
+        # Used to keep track of our scrolling
+        self.view_bottom = 0
+        self.view_left = 0
+
+        # self.player_view = PlayerView()
+
+    def scroll(self):
+        # --- Manage Scrolling ---
+
+        # Track if we need to change the viewport
+
+        changed = False
+
+        # Scroll left
+        left_boundary = self.view_left + LEFT_VIEWPORT_MARGIN
+        if self.ship_sprite.left < left_boundary:
+            self.view_left -= left_boundary - self.ship_sprite.left
+            changed = True
+
+        # Scroll right
+        right_boundary = self.view_left + SCREEN_WIDTH - RIGHT_VIEWPORT_MARGIN
+        if self.ship_sprite.right > right_boundary:
+            self.view_left += self.ship_sprite.right - right_boundary
+            changed = True
+
+        # Scroll up
+        top_boundary = self.view_bottom + SCREEN_HEIGHT - TOP_VIEWPORT_MARGIN
+        if self.ship_sprite.top > top_boundary:
+            self.view_bottom += self.ship_sprite.top - top_boundary
+            changed = True
+
+        # Scroll down
+        bottom_boundary = self.view_bottom + BOTTOM_VIEWPORT_MARGIN
+        if self.ship_sprite.bottom < bottom_boundary:
+            self.view_bottom -= bottom_boundary - self.ship_sprite.bottom
+            changed = True
+
+        if changed:
+            # Only scroll to integers. Otherwise we end up with pixels that
+            # don't line up on the screen
+            self.view_bottom = int(self.view_bottom)
+            self.view_left = int(self.view_left)
+
+            # Do the scrolling
+            arcade.set_viewport(self.view_left,
+                                SCREEN_WIDTH + self.view_left,
+                                self.view_bottom,
+                                SCREEN_HEIGHT + self.view_bottom)
+
+    def on_show(self):
+        print("Switched to ShipView")
+        print(self.window.get_viewport())
+
+    def on_draw(self):
+        arcade.start_render()
+
+        for layer in self.map_layers:
+            layer.draw()
+
+        self.ship_sprite.draw()
+
+    def on_update(self, delta_time):
+        print("TEST")
+        self.scroll()
+
+        self.map_layers[0].move(1, 0)
+        self.layer_shift_count += 1
+        if self.layer_shift_count == 64:
+            self.map_layers[0].move(-64, 0)
+            self.layer_shift_count = 0
+
+        # Calculate speed based on the keys pressed
+        self.ship_sprite.change_x = 0
+        self.ship_sprite.change_y = 0
+
+        if self.window.up_pressed and not self.window.down_pressed:
+            self.ship_sprite.change_y = SHIP_MOVEMENT_SPEED * delta_time
+        elif self.window.down_pressed and not self.window.up_pressed:
+            self.ship_sprite.change_y = -SHIP_MOVEMENT_SPEED * delta_time
+        if self.window.left_pressed and not self.window.right_pressed:
+            self.ship_sprite.change_x = -SHIP_MOVEMENT_SPEED * delta_time
+        elif self.window.right_pressed and not self.window.left_pressed:
+            self.ship_sprite.change_x = SHIP_MOVEMENT_SPEED * delta_time
+
+        print(delta_time)
+
+        self.ship_sprite.update(delta_time)
+
+        # self.physics_engine.update()
+
+    def on_key_press(self, key, key_modifiers):
         pass
 
-    def on_draw():
-        pass
-
-    def on_key_press():
-        pass
-
-    def on_key_release():
+    def on_key_release(self, key, key_modifiers):
         pass
 
 
 class PlayerView(arcade.View):
     def __init__(self):
         super().__init__()
+        self.player_sprites = arcade.SpriteList()
 
-    def on_show():
-        pass
+        self.player_sprite = Pirate('captain')
 
-    def on_draw():
-        pass
+        for i in ('brawn', 'bald'):
+            self.player_sprites.append(Pirate(i))
+        self.player_sprites[0].center_x = 400
+        self.player_sprites[1].center_x = 600
+        self.player_sprite.center_x = 800
 
-    def on_key_press():
-        pass
+        self.map = arcade.tilemap.read_tmx(path['maps'] / "test_map.tmx")
 
-    def on_key_release():
-        pass
+        self.map_layers = [arcade.process_layer(
+            self.map, layer.name) for layer in self.map.layers]
 
-
-class MyGame(arcade.Window):
-    """
-    Main application class.
-    """
-
-    def __init__(self, width, height, title):
-        super().__init__(width, height, title)
-
-        # self.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
-
-        arcade.set_background_color(arcade.color.AMAZON)
-
-        self.player_sprites = None
-
-        # Track the current state of what key is pressed
-        self.left_pressed = False
-        self.right_pressed = False
-        self.up_pressed = False
-        self.down_pressed = False
+        self.physics_engine = arcade.PhysicsEngineSimple(
+            self.player_sprite, self.map_layers[2])
 
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
-
-        # If you have sprite lists, you should create them here,
-        # and set them to None
 
     def scroll(self):
         # --- Manage Scrolling ---
@@ -267,77 +346,32 @@ class MyGame(arcade.Window):
                                 self.view_bottom,
                                 SCREEN_HEIGHT + self.view_bottom)
 
-    def setup(self):
-        # Create your sprites and sprite lists here
-        self.player_sprites = arcade.SpriteList()
-
-        self.player_sprite = Pirate('captain')
-
-        for i in ('brawn', 'bald'):
-            self.player_sprites.append(Pirate(i))
-        self.player_sprites[0].center_x = 400
-        self.player_sprites[1].center_x = 600
-        self.player_sprite.center_x = 800
-
-        self.map = arcade.tilemap.read_tmx(path['maps'] / "test_map.tmx")
-
-        self.map_layers = [arcade.process_layer(
-            self.map, layer.name) for layer in self.map.layers]
-
-        self.layer_positions = [
-            layer._get_position() for layer in self.map_layers[0]
-        ]
-
-        self.layer_shift_count = 0
-
-        self.physics_engine = arcade.PhysicsEngineSimple(
-            self.player_sprite, self.map_layers[2])
+    def on_show(self):
+        print("Switched to PlayerView")
 
     def on_draw(self):
-        """
-        Render the screen.
-        """
-
-        # This command should happen before we start drawing. It will clear
-        # the screen to the background color, and erase what we drew last frame
         arcade.start_render()
-
-        for layer in self.map_layers:
-            layer.draw()
-
         self.player_sprite.draw()
         self.player_sprites.draw(filter=gl.GL_NEAREST)
 
-        # Call draw() on all your sprite lists below
-
     def on_update(self, delta_time):
-        """
-        All the logic to move, and the game logic goes here.
-        Normally, you'll call update() on the sprite lists that
-        need it.
-        """
+
         self.scroll()
 
         self.player_sprite.update_animation()
-
-        self.map_layers[0].move(1, 0)
-        self.layer_shift_count += 1
-        if self.layer_shift_count == 64:
-            self.map_layers[0].move(-64, 0)
-            self.layer_shift_count = 0
 
         # Calculate speed based on the keys pressed
         self.player_sprite.change_x = 0
         self.player_sprite.change_y = 0
 
         if self.up_pressed and not self.down_pressed:
-            self.player_sprite.change_y = MOVEMENT_SPEED * delta_time
+            self.player_sprite.change_y = PLAYER_MOVEMENT_SPEED * delta_time
         elif self.down_pressed and not self.up_pressed:
-            self.player_sprite.change_y = -MOVEMENT_SPEED * delta_time
+            self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED * delta_time
         if self.left_pressed and not self.right_pressed:
-            self.player_sprite.change_x = -MOVEMENT_SPEED * delta_time
+            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED * delta_time
         elif self.right_pressed and not self.left_pressed:
-            self.player_sprite.change_x = MOVEMENT_SPEED * delta_time
+            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED * delta_time
 
         # print(self.get_viewport())
         width, height = self.get_viewport()[1:4:2]
@@ -354,32 +388,59 @@ class MyGame(arcade.Window):
 
         self.physics_engine.update()
 
-        # for sprite in self.player_sprites:
-        #     # Calculate speed based on the keys pressed
-        #     sprite.change_x = 0
-        #     sprite.change_y = 0
-        #
-        #     if self.up_pressed and not self.down_pressed:
-        #         sprite.change_y = MOVEMENT_SPEED * delta_time
-        #     elif self.down_pressed and not self.up_pressed:
-        #         sprite.change_y = -MOVEMENT_SPEED * delta_time
-        #     if self.left_pressed and not self.right_pressed:
-        #         sprite.change_x = -MOVEMENT_SPEED * delta_time
-        #     elif self.right_pressed and not self.left_pressed:
-        #         sprite.change_x = MOVEMENT_SPEED * delta_time
-        #
-        #     # print(self.get_viewport())
-        #     width, height = self.get_viewport()[1:4:2]
-        #
-        #     if sprite.left < 0:
-        #         sprite.left = 0
-        #     elif sprite.right > width - 1:
-        #         sprite.right = width - 1
-        #
-        #     if sprite.bottom < 0:
-        #         sprite.bottom = 0
-        #     elif sprite.top > height - 1:
-        #         sprite.top = height - 1
+    def on_key_press(self, key, key_modifiers):
+        pass
+
+    def on_key_release(self, key, key_modifiers):
+        pass
+
+
+class MyGame(arcade.Window):
+    """
+    Main application class.
+    """
+
+    def __init__(self, width, height, title):
+        super().__init__(width, height, title)
+
+        # self.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+
+        arcade.set_background_color(arcade.color.AMAZON)
+
+        # Track the current state of what key is pressed
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
+
+
+        # If you have sprite lists, you should create them here,
+        # and set them to None
+
+
+    def setup(self):
+        # Create your sprites and sprite lists here
+        pass
+
+    def on_draw(self):
+        """
+        Render the screen.
+        """
+
+        # This command should happen before we start drawing. It will clear
+        # the screen to the background color, and erase what we drew last frame
+        arcade.start_render()
+
+        # Call draw() on all your sprite lists below
+
+    def on_update(self, delta_time):
+        """
+        All the logic to move, and the game logic goes here.
+        Normally, you'll call update() on the sprite lists that
+        need it.
+        """
+        pass
+        # self.scroll()
 
         # Call update to move the sprite
         # If using a physics engine, call update on it instead of the sprite
@@ -436,8 +497,12 @@ class MyGame(arcade.Window):
 
 def main():
     """ Main method """
-    game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    game.setup()
+    window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    ship_view = ShipView()
+    # player_view = PlayerView()
+
+    window.show_view(ship_view)
+
     arcade.run()
 
 
