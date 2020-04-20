@@ -1,8 +1,10 @@
 import arcade
+from .base import Base
 
 
-class MainMenu:
-    def __init__(self):
+class MainMenu(Base):
+    def __init__(self, display):
+        self.display = display
         self.spritelist = arcade.SpriteList()
         self.spritedict = dict()
         self.timeAlive = 0

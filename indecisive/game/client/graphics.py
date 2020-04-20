@@ -7,13 +7,14 @@ class Display(arcade.Window):
     def __init__(self):
         super().__init__(1280, 720, "Three of a king")
         self.title = arcade.sprite_list
-        arcade.set_background_color((255, 255, 255))
-        self.scene = "loading"
+        arcade.set_background_color((255, 100, 255))
+        self.scene = "lobby"
         self.scenes = dict()
 
     def setup(self):
         self.scenes["loading"] = LoadingScreen(self)
         self.scenes["lobby"] = Lobby(self)
+        self.scenes["mainMenu"] = MainMenu(self)
 
     def change_scenes(self, scene: str, *args, **kwargs):
         self.scenes[scene].reset(*args, **kwargs)

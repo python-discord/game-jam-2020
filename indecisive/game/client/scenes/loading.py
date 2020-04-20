@@ -61,10 +61,10 @@ class LoadingScreen(Base):
                 x.alpha = fade_in
 
         if self.sceneTime > 5 and self.startup is True:
-            self.display.change_scenes("lobby")
+            self.display.change_scenes("mainMenu")
 
     def draw(self):
         self.spritelist.draw()
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
-        self.display.change_scenes("lobby")
+        self.display.change_scenes("mainMenu")
