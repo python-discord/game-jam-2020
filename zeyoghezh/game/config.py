@@ -34,10 +34,10 @@ ATTACK_SOUND = {
     "yogh": ":resources:sounds/hurt2.wav",
     "ezh": ":resources:sounds/explosion1.wav"
 }
-BACKGROUND_IMAGE = ":resources:images/backgrounds/abstract_1.jpg"
+BACKGROUND_IMAGE = "./game/space.jpg"
 PUSH_SOUND = ":resources:sounds/upgrade1.wav"
 # Music made by missingfragment#1983
-BACKGROUND_MUSIC = "./zeyoghezh/game/music.ogg"
+BACKGROUND_MUSIC = "./game/music.ogg"
 ATTACK_PLAYS_SOUND_CHANCE = 0.9
 
 BACKGROUND_MUSIC_VOLUME = 0.5
