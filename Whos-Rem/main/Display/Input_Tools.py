@@ -85,8 +85,8 @@ class Slider:
                 self.__slide_dist = mouse_y - self.y
 
     def hit_box(self, mouse_x, mouse_y):
-        if 0 <= mouse_x - self.x <= self.width:
-            if 0 <= mouse_y - self.y <= self.height:
+        if -0.2 * self.width <= mouse_x - self.x <= 1.2 * self.width:
+            if 0.2 * self.height <= mouse_y - self.y <= 1.2 * self.height:
                 return True
 
         return False
@@ -97,9 +97,15 @@ class Slider:
                                           self.colour)
         if self.rotation == "hor":
             arcade.draw_circle_filled(self.x + self.slide_dist,
-                                      self.y + self.width // 2,
+                                      self.y + self.height // 2,
+                                      self.height * 3.2, [0, 0, 0])
+            arcade.draw_circle_filled(self.x + self.slide_dist,
+                                      self.y + self.height // 2,
                                       self.height * 3, self.colour)
         else:
+            arcade.draw_circle_filled(self.x + self.width // 2,
+                                      self.y + self.slide_dist,
+                                      self.width * 3.2, [0, 0, 0])
             arcade.draw_circle_filled(self.x + self.width // 2,
                                       self.y + self.slide_dist,
                                       self.width * 3, self.colour)
