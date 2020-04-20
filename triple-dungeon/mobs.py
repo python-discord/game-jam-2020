@@ -5,15 +5,7 @@ Organizes all classes related to Mobs, Entities, Enemies, Players and Items.
 
 import arcade
 
-from config import Config
-
-# Constants used to track if the player is facing left or right
-RIGHT_FACING = 0
-LEFT_FACING = 1
-FRONT_FACING = 2
-UP_FACING = 3
-DOWN_FACING = 4
-
+from config import Config, Enums
 
 class Mob(arcade.Sprite):
     """
@@ -51,7 +43,7 @@ class Player(Mob):
         main_path = "resources/images/character/knight/"
 
         # Default to face-front
-        self.character_face_direction = FRONT_FACING
+        self.character_face_direction = Enums.FRONT_FACING
 
         # Load textures for idle standing
         for i in range(4):
@@ -80,11 +72,11 @@ class Player(Mob):
 
         # Figure out if we need to flip face left, right, up, or down
         if self.change_x > 0:
-            self.character_face_direction = LEFT_FACING
+            self.character_face_direction = Enums.LEFT_FACING
         elif self.change_x < 0:
-            self.character_face_direction = RIGHT_FACING
+            self.character_face_direction = Enums.RIGHT_FACING
         elif self.change_x == 0 and self.change_y == 0:
-            self.character_face_direction = FRONT_FACING
+            self.character_face_direction = Enums.FRONT_FACING
 
         # idle animation
         if self.change_x == 0 and self.change_y == 0:

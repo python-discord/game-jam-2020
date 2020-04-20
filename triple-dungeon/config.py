@@ -3,7 +3,10 @@ config.py
 Holds all constants used for setting up the game.
 May later hold functions for loading/saving configuration files.
 """
+
 import os
+
+from enum import Enum
 
 BASE_PATH = os.path.dirname(os.path.abspath(__file__))
 RESOURCES = os.path.join(BASE_PATH, "resources")
@@ -36,6 +39,18 @@ class Config(object):
     BOTTOM_VIEWPORT_MARGIN = 50
     TOP_VIEWPORT_MARGIN = 100
 
+
+class Enums(Enum):
+    """
+    A simple class used for tracking different simple
+    """
+
+    # Play Direction Enums
+    RIGHT_FACING
+    LEFT_FACING
+    FRONT_FACING
+    UP_FACING
+    DOWN_FACING
 
 class Sprites(object):
     """
