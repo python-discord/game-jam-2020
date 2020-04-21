@@ -186,6 +186,10 @@ class Game(arcade.Window):
         """
         Called whenever the mouse is clicked.
         """
+
+        for mob in self.enemy_list:
+            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+
         # Create a bullet TEMP SPRITE, currently wielding frog slingshot
         bullet = Temp()
         # Position the bullet at the player's current location
@@ -258,6 +262,8 @@ class Game(arcade.Window):
                                 Config.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
+
+        self.enemy_list.update()
 
         # Projectile updates
         self.bullet_list.update()

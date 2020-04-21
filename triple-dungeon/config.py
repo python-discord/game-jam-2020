@@ -28,14 +28,14 @@ class Config(object):
 
     # Constants used to scale our sprites from their original size
     CHARACTER_SCALING = 1
-    TILE_SCALING = 1
+    TILE_SCALING = 2
     TILE_SIZE = TILE_WIDTH * TILE_SCALING
 
     # The number of pixels across the level
     LEVEL_SIZE = 10 * TILE_SCALING * TILE_WIDTH
 
     # Movement speed of player, in pixels per frame
-    PLAYER_MOVEMENT_SPEED = 7
+    PLAYER_MOVEMENT_SPEED = 14
 
     # How many pixels to keep as a minimum margin between the characters and the edge of the screen.
     LEFT_VIEWPORT_MARGIN = 250
