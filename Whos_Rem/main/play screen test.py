@@ -1,9 +1,9 @@
 import arcade
-from screeninfo import get_monitors
+from perspective_objects import ShapeManager
 import pyaudio
 import aubio
 
-song_filepath = r"F:\game-jam-2020\Whos-Rem\Audio-Managment\test-clips\Camellia_MEGALOVANIA_Remix.wav"
+song_filepath = r"F:\game-jam-2020\Whos_Rem\main\xi-akasha-youtubemp3free.org.wav"
 win_s = 1024                # fft size
 hop_s = win_s // 2          # hop size
 
@@ -30,7 +30,7 @@ class GameScreen(arcade.View):
     paused = started = False
     all_sprites_list = arcade.SpriteList()
     background_sprite = arcade.Sprite(
-        filename=r"F:\game-jam-2020\Whos-Rem\main\reasources\game_play\undertale.png",
+        filename=r"F:\game-jam-2020\Whos_Rem\main\reasources\game_play\undertale.png",
         scale=1,
         image_height=height,
         image_width=width,
@@ -49,29 +49,12 @@ class GameScreen(arcade.View):
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
+        pass
 
     def on_frame_draw(self, time_delta):
         arcade.start_render()
-        if not self.paused:
-            arcade.draw_rectangle_filled(
-                self.width / 2,
-                self.height / 2,
-                width=self.width / 2,
-                height=self.height,
-                color=arcade.color.WHITE)
-            self.background_sprite.center_x = self.width / 2
-            self.background_sprite.center_y = self.height / 2
-            self.background_sprite.scale = 1
-            self.background_sprite.width = self.width / 2
-            self.background_sprite.alpha = 160
-            self.background_sprite.draw()
-
-            arcade.draw_rectangle_filled(
-                self.width / 2,
-                self.height / 10,
-                width=self.width / 2,
-                height=self.height / 4,
-                color=arcade.color.WHITE)
+        shape = ShapeManager.create_shape(-1)
+        ShapeManager.manage_shapes([shape])
 
     def on_draw(self):
         """ In charge of rendering the notes at current time. """
@@ -127,7 +110,7 @@ class GameScreen(arcade.View):
         """ This is only for registering if keys are pressed and to change the relevant buttons """
 
         # Start key (normally space)
-        if symbol == 32:   # todo test this cuz idk what it is
+        if symbol == arcade.key.SPACE:   # todo test this cuz idk what it is
             self.paused = not self.paused   # this toggles the game paused / stopped or not
             if not self.started:
                 self.started = True
