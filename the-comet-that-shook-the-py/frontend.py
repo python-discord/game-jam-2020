@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional, List, Tuple
 
 import arcade
 
@@ -100,7 +100,17 @@ class MyGame(arcade.Window):
         """
         tile_sprite: TileSprite
         for tile_sprite in self.tile_sprites:
-            if tile_sprite.collides_with_point((x, y)):
-                print(tile_sprite.height, tile_sprite.width)
-                print(tile_sprite.position)
+            pass
+
+
         # TODO add code that locks a tile either into the boneyard, or into a slot on the board
+
+
+def check_bounds(point: Tuple[int, int], bounds: Tuple[int, int, int, int]) -> bool:
+    """
+    Check if a given point is within the bounds of 4 sides
+    :param point: x/y coords of a point to check
+    :param bounds: the left, top, right, and bottom bounds to check
+    :return: True/False
+    """
+    return False
