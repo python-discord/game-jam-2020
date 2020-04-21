@@ -74,11 +74,11 @@ class ShapeManager:
         return shapes
 
     @staticmethod
-    def create_shape(note, total_notes=3, colour=(255, 0, 0)) -> Shape:
-        final_spacing = int(get_monitors()[0].width * 0.6)
+    def create_shape(note, total_notes=3, colour=(255, 0, 0), screen_width=get_monitors()[0].width) -> Shape:
+        final_spacing = int(screen_width * 0.6)
         central_spacing = final_spacing // total_notes
         width = int(central_spacing * 0.45)
-        x_pos = int(central_spacing * (note / total_notes)) + get_monitors()[0].width // 2
+        x_pos = int(central_spacing * (note / total_notes)) + screen_width // 2
         y_pos = int(get_monitors()[0].height * 0.8)
         new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 64, colour, 2)
 
