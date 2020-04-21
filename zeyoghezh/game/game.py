@@ -191,7 +191,13 @@ class Game(arcade.Window):
         [planet.move(time_multiplier) for planet in self.planets]
         [planet.try_attack_others(time_multiplier) for planet in self.planets]
         [planet.try_push_others(time_multiplier) for planet in self.planets]
-        [planet.update_triangulating(time_multiplier, self.player_in_tutorial)
+        should_not_triangulate = (
+            self.player_in_tutorial
+            and self.lithium_count > 2
+            and not self.player_has_healed_planet)
+        [planet.update_triangulating(time_multiplier,
+                                     self.player_in_tutorial,
+                                     should_not_triangulate)
          for planet in self.planets]
         self.run_assertions()
 

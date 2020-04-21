@@ -25,3 +25,5 @@ Then go through the readme's story
 Make triangulation circles happen more frequently during tutorial
 
 Maybe when the banner text changes it has a random y coordinate?
+
+Stop triangulating when you're supposed to click a planet in the tutorial
