@@ -40,11 +40,25 @@ class Mob(arcade.Sprite):
         return (round(self.center_x / Config.TILE_SIZE),
                 round(self.center_y / Config.TILE_SIZE))
 
-    def tick(self) -> None:
+    def tick(self, path: Tuple[int, int] = None) -> None:
         """
         A on_update function, the Mob should decide it's next actions here.
         """
-        pass
+        pos, next = self.nearestPosition(), path[0]
+
+        if next[0] > pos[0]:
+            self.change_x = Config.PLAYER_MOVEMENT_SPEED
+        elif next[0] < pos[0]:
+            self.change_x = -Config.PLAYER_MOVEMENT_SPEED
+        else:
+            self.change_x = 0
+
+        if next[1] > pos[1]:
+            self.change_y = Config.PLAYER_MOVEMENT_SPEED
+        elif next[1] < pos[1]:
+            self.change_y = Config.PLAYER_MOVEMENT_SPEED
+        else:
+            self.change_y = 0
 
     def get_path(self, end: Tuple[int, int] = None) -> List[Tuple[int, int]]:
         """

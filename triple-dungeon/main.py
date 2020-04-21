@@ -126,6 +126,7 @@ class Game(arcade.Window):
                         t2 = time.time()
                         print(f'Path acquired in {round(t2 - t1, 4)}s')
                         self.draw_path(path)
+                        mob.tick(path)
 
                 self.fps.tick()
         except Exception:
