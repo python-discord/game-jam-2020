@@ -18,7 +18,7 @@ class Mob(arcade.Sprite):
 
     def __init__(self, dungeon: Dungeon, max_health=100, max_armor=0, *args, **kwargs) -> None:
         # Set up parent class
-        super().__init__()
+        super(Mob, self).__init__(*args, **kwargs)
 
         self.max_health, self.max_armor = max_health, max_armor
         self.health, self.armor = max_health, max_armor
@@ -37,8 +37,8 @@ class Mob(arcade.Sprite):
 
         :return: A tuple containing the Mob's dungeon tile position.
         """
-        return (round(self.center_x / Config.TILE_SIZE) * Config.TILE_SIZE,
-                round(self.center_y / Config.TILE_SIZE) * Config.TILE_SIZE)
+        return (round(self.center_x / Config.TILE_SIZE),
+                round(self.center_y / Config.TILE_SIZE))
 
     def tick(self) -> None:
         """
@@ -54,8 +54,13 @@ class Mob(arcade.Sprite):
         :return:
         """
         if end is None:
-            x, y = self.target.position
-            x, y = (round(x / Config.TILE_SIZE) * Config.TILE_SIZE, round(y / Config.TILE_SIZE) * Config.TILE_SIZE)
+            end = self.target.position
+            start, end = self.nearestPosition(), (round(end[0] / Config.TILE_SIZE), round(end[1] / Config.TILE_SIZE))
+            print(start, end)
+            start, end = self.dungeon.grid.node(*start), self.dungeon.grid.node(*end)
+            paths, runs = self.dungeon.finder.find_path(start, end, self.dungeon.grid)
+            print(paths, runs)
+            return paths
 
 
 class Player(Mob):

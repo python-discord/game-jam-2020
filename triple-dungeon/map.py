@@ -14,6 +14,9 @@ import numpy as np
 
 from itertools import chain
 from config import Config
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
 
 
 class Dungeon(object):
@@ -49,6 +52,8 @@ class Dungeon(object):
                     for yy in range(10):
                         if level.structure[xx][yy] == 'w':
                             self.matrix[(level.x * 10) + xx][(level.y * 10) + yy] = 1
+        self.grid = Grid(matrix=self.matrix)
+        self.finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
         # pprint(self.matrix, width=1000)
 
     def getWalls(self) -> arcade.SpriteList:

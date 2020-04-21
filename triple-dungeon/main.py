@@ -13,7 +13,7 @@ from typing import Tuple, List
 import arcade
 from config import Config
 from map import Dungeon
-from mobs import Player
+from mobs import Player, Mob
 from projectiles import Temp
 
 
@@ -76,6 +76,11 @@ class Game(arcade.Window):
         self.player.center_x, self.player.center_y = level.center()
         # x, y = level.center()
 
+        mob = Mob(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
+        mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+        mob.target = self.player
+        self.enemy_list.append(mob)
+
         # Setup viewport
         self.view_bottom = self.player.center_x - (0.5 * Config.SCREEN_WIDTH) + 300
         self.view_left = self.player.center_x - (0.5 * Config.SCREEN_WIDTH)
@@ -116,7 +121,7 @@ class Game(arcade.Window):
                 # Draw paths for all mobs
                 for mob in self.enemy_list:
                     if mob.target is not None:
-                        self.draw_path(mob.mob.get_path())
+                        self.draw_path(mob.get_path())
 
                 self.fps.tick()
         except Exception:
