@@ -4,6 +4,8 @@ A file dedicated to testing our game and ensuring it can run.
 Integrate this into your IDE's workflow to ensure the game runs from top to bottom.
 The tests used here should test all of our game's features as best they can.
 """
+from itertools import chain
+from typing import Pattern, List
 
 import pytest
 
@@ -35,7 +37,7 @@ class TestSprites:
     """
 
     @pytest.fixture
-    def sprites(self) -> list:
+    def sprites(self) -> List[str]:
         """
         Returns a list of absolute paths to sprites found in the images folder.
 
@@ -46,27 +48,38 @@ class TestSprites:
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         IMAGE_DIR = os.path.join(BASE_DIR, 'resources', 'images')
 
-        return [[
-            os.path.join(IMAGE_DIR, file) for file in os.listdir(os.path.join(IMAGE_DIR, folder))
-        ] for folder in os.listdir(IMAGE_DIR)]
+        primary_folders = os.listdir(IMAGE_DIR)
+        secondary_folders = \
+        chain.from_iterable([os.listdir(os.path.join(IMAGE_DIR, pfolder)) for pfolder in primary_folders])[os.listdir()]
+        return list(
+            chain.from_iterable([[os.path.join(IMAGE_DIR, file) for file in os.listdir(os.path.join(IMAGE_DIR, folder))
+                                  ] for folder in os.listdir(IMAGE_DIR)]))
 
     @pytest.fixture
-    def patterns(self) -> list:
+    def patterns(self) -> List[Pattern]:
+        """
+        Returns a list of RegEx
+        :return: A list of Pattern objects
+        """
         import re
-        return list(map(re.compile,
-                            [r'\w+_(?:\w+_)?\d+\.(?:jp(?:eg|e|g)|png)'
-                             r'\w+\d+\.(?:jp(?:eg|e|g)|png)',
-                             r'\w+_tile\.(?:jp(?:eg|e|g)|png)']
-                            ))
+        _patterns = [
+            r'\w+_(?:\w+_)?\d+\.(?:jp(?:eg|e|g)|png)'
+            r'\w+\d+\.(?:jp(?:eg|e|g)|png)',
+            r'\w+_tile\.(?:jp(?:eg|e|g)|png)'
+        ]
+        return list(map(re.compile, _patterns))
 
-    def test_sprite_schema(self, sprites, patterns) -> None:
+    def test_sprite_schema(self, sprites: List[str], patterns: List[Pattern]) -> None:
         """
         Tests that all sprites follow the naming conventions.
         """
         import os
 
-        for sprite in map(os.path.basename, sprites):
-            assert any(pattern.match(pattern, sprite) for pattern in patterns)
+        for sprite in sprites:
+            for pattern in patterns:
+                if pattern.match(os.path.basename(sprite)):
+                    continue
+            pytest.fail(f"Sprite '{sprite}' did not match the schema.")
 
     def test_sprite_loads(self, sprites) -> None:
         """
