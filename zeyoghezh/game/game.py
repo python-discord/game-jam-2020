@@ -43,6 +43,7 @@ class Game(arcade.Window):
         self.player_in_tutorial = True
         self.game_is_over = False
         self.player_has_clicked_lithium = False
+        self.player_has_healed_planet = False
         self.banner_text = None
         self.banner_location = (SCREEN_SIZE[0]/10, SCREEN_SIZE[1]/2)
         self.last_banner_change = None
@@ -52,6 +53,7 @@ class Game(arcade.Window):
         self.player_in_tutorial = True
         self.game_is_over = False
         self.player_has_clicked_lithium = False
+        self.player_has_healed_planet = False
         self.banner_text = ""
         self.last_banner_change = None
         self.story_iter = (line for line in STORY_LINES)
@@ -152,6 +154,7 @@ class Game(arcade.Window):
                 logger.info(f"Healing {planet.name}")
                 self.lithium_count -= 1
                 planet.get_healed(0.1)
+                self.player_has_healed_planet = True
         self.abscond_button.check_mouse_press(x, y)
 
     def clicked_lithium(self):
@@ -159,8 +162,6 @@ class Game(arcade.Window):
         self.lithium_count += planet_avg_health * 1.5
         self.lithium_location = get_new_lithium_location()
         self.player_has_clicked_lithium = True
-        if self.lithium_count > 2:
-            self.player_in_tutorial = False
 
     def avg_planet_health(self):
         return (
@@ -194,9 +195,23 @@ class Game(arcade.Window):
         if not self.player_has_clicked_lithium and delta_time > 3:
             self.banner_text = "See the circles? Click on their intersection."
             self.last_banner_change = now
-        if self.player_has_clicked_lithium and delta_time > 0.5:
+        if (self.player_has_clicked_lithium
+                and not self.player_has_healed_planet
+                and not self.lithium_count > 2
+                and delta_time > 0.5):
             self.banner_text = "Good. Keep doing it."
             self.last_banner_change = now
+        if self.lithium_count > 2 and not self.player_has_healed_planet:
+            self.banner_text = (
+                "Good. Now heal one of the planets by clicking on them."
+            )
+            self.last_banner_change = now
+        if self.player_has_healed_planet and delta_time < 1:
+            self.banner_text = (
+                "You've healed them with lithium. Keep them alive."
+            )
+        if self.player_has_healed_planet and delta_time > 1:
+            self.player_in_tutorial = False
 
     def update_banner_story(self):
         now = time.time()
