@@ -1,9 +1,8 @@
 import arcade
-from Input_Tools import ColourBlend as cb
+from .Utility import ColourBlend as cb
 
 
 class Button:
-
     def __init__(self, x, y, width, height, colour=(255, 255, 255), draw_func=None, activation=None, name="button"):
         self.x = x
         self.y = y
