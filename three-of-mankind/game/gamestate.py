@@ -2,7 +2,7 @@ from .player import Player
 import arcade
 
 FLOOR_LENGTH = 60
-FLOOR_TEXTURE_LENGTH = 100
+FLOOR_TEXTURE_LENGTH = 64
 GRAVITY = 1
 PLAYER_JUMP_SPEED = 20
 PLAYER_MOVEMENT_SPEED = 5
@@ -16,12 +16,12 @@ class GameState:
     def __init__(self):
         self.level_geometry = arcade.SpriteList()
 
-        self.player = Player('assets/placeholders/player.png')
+        self.player = Player('assets/simple_cube.png')
         self.player.center_x = 200
         self.player.center_y = 200
 
         for left in range(0, FLOOR_LENGTH * FLOOR_TEXTURE_LENGTH, FLOOR_TEXTURE_LENGTH):
-            floor = arcade.Sprite('assets/placeholders/floor.png')
+            floor = arcade.Sprite('assets/simple_block.png')
             floor.left = left
             floor.bottom = 0
             self.level_geometry.append(floor)
