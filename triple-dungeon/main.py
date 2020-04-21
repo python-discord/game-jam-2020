@@ -74,7 +74,7 @@ class Game(arcade.Window):
         self.bullet_list = arcade.SpriteList()
 
         # Create the dungeon
-        self.dungeon = Dungeon(0, 8)
+        self.dungeon = Dungeon(0, 3)
 
         # Set up the player, specifically placing it at these coordinates.
         self.player = Player()
@@ -110,12 +110,13 @@ class Game(arcade.Window):
             self.enemy_list.draw()
             self.bullet_list.draw()
 
-            self.player.draw_hit_box()
-            x, y = self.player.center_x, self.player.center_y
-            arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
-            arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
-                             arcade.color.WHITE, 16, font_name='Arial')
-            self.fps.tick()
+            if Config.DEBUG:
+                self.player.draw_hit_box()
+                x, y = self.player.center_x, self.player.center_y
+                arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
+                arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
+                                 arcade.color.WHITE, 16, font_name='Arial')
+                self.fps.tick()
         except Exception:
             import traceback
             traceback.print_exc()
