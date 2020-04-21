@@ -48,7 +48,7 @@ class TileSprite(arcade.Sprite):
 
 class SubmissionGrid(arcade.Sprite):
     def __init__(self):
-        super().__init__('sprites/grid.png')
+        super().__init__('frontend/sprites/grid.png')
         self.width = WINDOW_HEIGHT * (2 / 3)
         self.height = WINDOW_HEIGHT * (2 / 3)
         self.center_y = WINDOW_HEIGHT * (2 / 3) - (1 / 27 * WINDOW_HEIGHT)
@@ -84,8 +84,7 @@ class MyGame(arcade.Window):
         self.main_sprites.append(SubmissionGrid())
         self.tile_sprites = arcade.SpriteList()
         for x, y in self.boneyard_starting_positions:
-            self.tile_sprites.append(TileSprite('sprites/plum.png', x, y))
-            self.tile_sprites.append(TileSprite('sprites/plum.png', x, y))
+            self.tile_sprites.append(TileSprite('frontend/sprites/plum.png', int(x), int(y)))
 
     def on_draw(self):
         """

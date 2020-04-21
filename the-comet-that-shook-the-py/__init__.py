@@ -1,6 +1,6 @@
 import arcade
 
-from main import MyGame
+from frontend.main import MyGame
 
 
 def main():
