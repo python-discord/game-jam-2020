@@ -48,9 +48,7 @@ class Settings(arcade.View):
                          width=int(self.width * 0.6))
 
         self.left_key_button.draw(self.brightness)
-
         self.center_key_button.draw(self.brightness)
-
         self.right_key_button.draw(self.brightness)
 
     def on_mouse_motion(self, x, y, dx, dy):
