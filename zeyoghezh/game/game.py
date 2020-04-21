@@ -215,12 +215,13 @@ class Game(arcade.Window):
             self.set_banner_text(
                 "Good. Now heal one of the planets by clicking on them."
             )
-        if self.player_has_healed_planet and delta_time < 1:
+        if self.player_has_healed_planet:
             self.set_banner_text(
                 "You've healed them with lithium. Keep them alive."
             )
-        if self.player_has_healed_planet and delta_time > 1:
-            self.player_in_tutorial = False
+            delta_time = now - self.last_banner_change
+            if delta_time > 2:
+                self.player_in_tutorial = False
 
     def update_banner_story(self):
         now = time.time()
