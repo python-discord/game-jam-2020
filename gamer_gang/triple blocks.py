@@ -1,11 +1,9 @@
-import random
 import math
-import arcade
 import os
-import pymunk
 import pymunk.pygame_util
 import itertools
 from gamer_gang.mobs import *
+from gamer_gang.terrainStuff import *
 
 SCALE = 1
 OFFSCREEN_SPACE = 0
@@ -14,7 +12,8 @@ SCREEN_HEIGHT = 600
 SCREEN_TITLE = "Triple Blocks"
 SCREEN_MARGIN = 200
 
-class MyGame(arcade.Window):
+
+class ActualGame(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         file_path = os.path.dirname(os.path.abspath(__file__))
@@ -30,46 +29,45 @@ class MyGame(arcade.Window):
         self.space.gravity = (0.0, -900.0)
         self.view_left = self.view_bottom = 0
         self.timeAfterSplit = 0
-
+        self.controlled = 0
         self.key_pressed = [0, 0, 0]  # the user input
 
-        self.floor_list = arcade.SpriteList()
+        self.normalGrounds = arcade.SpriteList()
+        self.spikes = arcade.SpriteList()
         self.players = []
         self.shapes = []
 
-        self.controlled = 0
-
-        self.ground_texture_list = [arcade.load_texture("images/ground/debug.png")]
-        self.playerTextures = [[arcade.load_texture("images/Player/1.png")],
-                               [arcade.load_texture("images/Player/2.png")],
-                               [arcade.load_texture("images/Player/3.png")]]
+        self.normalGroundTextures = [arcade.load_texture("images/ground/placeholderGround.png")]
+        self.playerTextures = [[arcade.load_texture("images/mobs/player/1.png")],
+                               [arcade.load_texture("images/mobs/player/2.png")],
+                               [arcade.load_texture("images/mobs/player/3.png")]]
 
         self.bodies = []
         for i in range(1, 4):
-            p, body, shape = makePlayer(1, self.space, self.playerTextures[i - 1], 1, 32 * (i + 3), 32, str(i))
-
-            p.set_hit_box([[p.width / -2, p.height / -2 - 1], [p.width / 2, p.height / -2 - 1],
-                           [p.width / 2, p.height / 2], [p.width / -2, p.height / 2]])
+            p, body, shape = makeMob(1, self.space, Player, self.playerTextures[i - 1], 1, 32 * (i + 3), 32, str(i))
             self.bodies.append(body)
             self.shapes.append(shape)
             self.players.append(p)
-        self.singleHeight = p.height
+            self.playerHeight = p.height
 
         for i in range(20):
-            g = makeGround(self.space, self.ground_texture_list, 10, i * 32, 0)
-            self.floor_list.append(g)
+            g = makeTerrain(self.space, NormalGround, self.normalGroundTextures, 10, i * 32, 0)
+            self.normalGrounds.append(g)
+
+        for i in range(1):
+            pass
 
     def on_draw(self):
         arcade.start_render()
 
-        self.floor_list.draw()
+        self.normalGrounds.draw()
         for p in self.players:
             p.draw()
 
         if self.debugging:
             for i in self.players:
                 i.draw_hit_box((100, 100, 100), 3)
-            for i in self.floor_list:
+            for i in self.normalGrounds:
                 i.draw_hit_box((100, 100, 100))
 
     def on_key_press(self, key, modifiers):
@@ -97,27 +95,26 @@ class MyGame(arcade.Window):
             self.key_pressed[2] = 0
 
     def cameraShift(self):
-        changed = False
+        needChange = False
         left_boundary = self.view_left + SCREEN_MARGIN
         if self.players[self.controlled].left < left_boundary:
             self.view_left -= left_boundary - self.players[self.controlled].left
-            changed = True
+            needChange = True
 
         right_boundary = self.view_left + SCREEN_WIDTH - SCREEN_MARGIN
         if self.players[self.controlled].right > right_boundary:
             self.view_left += self.players[self.controlled].right - right_boundary
-            changed = True
+            needChange = True
 
         top_boundary = self.view_bottom + SCREEN_HEIGHT - SCREEN_MARGIN
         if self.players[self.controlled].top > top_boundary:
             self.view_bottom += self.players[self.controlled].top - top_boundary
-            changed = True
+            needChange = True
 
         self.view_left = int(self.view_left)
         self.view_bottom = int(self.view_bottom)
 
-        # If we changed the boundary values, update the view port to match
-        if changed:
+        if needChange:
             arcade.set_viewport(self.view_left, SCREEN_WIDTH + self.view_left - 1,
                                 self.view_bottom, SCREEN_HEIGHT + self.view_bottom - 1)
 
@@ -134,10 +131,9 @@ class MyGame(arcade.Window):
                         if p.name in [up.name, down.name]:
                             stackList.append(v)
 
-                    p, body, shape = makePlayer(1, self.space, [arcade.load_texture(f'images/player/{stackName}.png')],
-                                                1, down.center_x, (down.bottom + up.top)/2, stackName)
-                    p.set_hit_box([[p.width / -2, p.height / -2 - 1], [p.width / 2, p.height / -2 - 1],
-                                   [p.width / 2, p.height / 2], [p.width / -2, p.height / 2]])
+                    p, body, shape = makeMob(1, self.space, Player,
+                                             [arcade.load_texture(f'images/mobs/player/{stackName}.png')],
+                                             1, down.center_x, (down.bottom + up.top) / 2, stackName)
 
                     for i in stackList:
                         self.players[i].kill()  # remove ALL TRACES of the prev sprites
@@ -150,7 +146,7 @@ class MyGame(arcade.Window):
                     break  # break bc we can only have 2 things join at a time, right?
 
     def splitStack(self):
-        if len(self.players) == len(set(self.players)):
+        if len(self.players) == len(set(self.players)):  # nothing's joined, so wut you talking about
             return
 
         for p in self.players:
@@ -158,15 +154,15 @@ class MyGame(arcade.Window):
                 presentIndexes = [int(i) - 1 for i in p.name.split(sep='on')]
                 topList = presentIndexes[:presentIndexes.index(self.controlled) + 1]
                 bottomList = presentIndexes[presentIndexes.index(self.controlled) + 1:]
-                bottom = p.bottom
+                bottom = p.bottom  # it's a constant, so the top and the bottom don't affect each other
                 if not bottomList:
                     return
                 # configure top part of the stack (p, b, s stand for player, body, and shape respectively)
-                topListString = "on".join([str(s + 1) for s in topList])
-                p, b, s = makePlayer(1, self.space,
-                                     [arcade.load_texture(f'images/player/{topListString}.png')],
-                                     1, p.center_x, bottom + self.singleHeight * (len(bottomList) + len(topList) / 2),
-                                     "on".join([str(s + 1) for s in topList]))
+                topListName = "on".join([str(s + 1) for s in topList])
+                p, b, s = makeMob(1, self.space, Player,
+                                  [arcade.load_texture(f'images/mobs/player/{topListName}.png')],
+                                  1, p.center_x, bottom + self.playerHeight * (len(bottomList) + len(topList) / 2),
+                                  topListName)
 
                 for i in topList:  # actually put the newly split sprites in the game
                     self.players[i].kill()
@@ -177,11 +173,10 @@ class MyGame(arcade.Window):
                     self.players[i], self.bodies[i], self.shapes[i] = p, b, s
 
                 # do the same for the bottom part
-                bottomListString = "on".join([str(s + 1) for s in bottomList])
-                p, b, s = makePlayer(1, self.space,
-                                     [arcade.load_texture(f'images/player/{bottomListString}.png')],
-                                     1, p.center_x, bottom + self.singleHeight * (len(bottomList) / 2),
-                                     "on".join([str(s + 1) for s in bottomList]))
+                bottomListName = "on".join([str(s + 1) for s in bottomList])
+                p, b, s = makeMob(1, self.space, Player,
+                                  [arcade.load_texture(f'images/mobs/player/{bottomListName}.png')],
+                                  1, p.center_x, bottom + self.playerHeight * (len(bottomList) / 2), bottomListName)
 
                 for i in bottomList:
                     self.players[i].kill()
@@ -208,6 +203,10 @@ class MyGame(arcade.Window):
                 if p.pymunk_shape.body.velocity.x < -300:
                     p.pymunk_shape.body.velocity = pymunk.Vec2d((-150, p.pymunk_shape.body.velocity.y))
 
+    def entityInteractionCheck(self):
+        for p in self.players:
+            pass
+
     def on_update(self, dt):
         self.frames += 1
         self.timeAfterSplit += dt
@@ -216,20 +215,19 @@ class MyGame(arcade.Window):
         self.movement()  # move all the players (well, the characters)
         self.cameraShift()  # shift camera
         self.stackCheck()  # join into stacks if detected
+        self.entityInteractionCheck()  # check for interaction with any enemies, bad stuff, etc.
 
         for p in self.players:
             if p.top < -100:
                 self.game_over = True
 
         if not self.game_over:
-            for i in self.floor_list:
+            for i in self.normalGrounds:
                 i.update()
             for p in self.players:
-                print(p.bottom)
                 p.update()
-                boxes = arcade.check_for_collision_with_list(p, self.floor_list)
+                boxes = arcade.check_for_collision_with_list(p, self.normalGrounds)
                 if_collide = [True for pl in self.players if arcade.check_for_collision(p, pl) and pl != p]
-
                 if (boxes != [] or True in if_collide) and abs(p.pymunk_shape.body.velocity.y) < 3:
                     p.can_jump = True
 
@@ -243,7 +241,7 @@ class MyGame(arcade.Window):
 
 
 def main():
-    window = MyGame()
+    window = ActualGame()
     window.setup()
     arcade.run()
 
