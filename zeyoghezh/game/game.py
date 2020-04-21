@@ -1,7 +1,7 @@
 import random
 import arcade
 import logging
-from datetime import datetime
+import time
 from arcade.gui import Theme, TextButton
 from .util import get_distance, log_exceptions
 from .planet import Planet
@@ -52,6 +52,7 @@ class Game(arcade.Window):
         self.game_is_over = False
         self.player_has_clicked_lithium = False
         self.banner_text = ""
+        self.last_banner_change = None
         self.background = arcade.load_texture(
             BACKGROUND_IMAGE)
         self.background_music = arcade.Sound(BACKGROUND_MUSIC, streaming=True)
@@ -130,11 +131,13 @@ class Game(arcade.Window):
 
         self.abscond_button.draw()
 
-        # if self.game_is_over:
         arcade.draw_text(
             self.banner_text,
             *self.banner_location,
             color=arcade.color.WHITE, font_size=24)
+
+        if self.game_is_over:
+            pass  # TODO restart game or whatever
 
     @log_exceptions
     def on_mouse_press(self, x, y, button, modifiers):
@@ -153,6 +156,9 @@ class Game(arcade.Window):
         planet_avg_health = self.avg_planet_health()
         self.lithium_count += planet_avg_health * 1.5
         self.lithium_location = get_new_lithium_location()
+        self.player_has_clicked_lithium = True
+        if self.lithium_count > 2:
+            self.player_in_tutorial = False
 
     def avg_planet_health(self):
         return (
@@ -163,7 +169,6 @@ class Game(arcade.Window):
         time_multiplier = delta_time / 0.0168
         if self.player_in_tutorial:
             time_multiplier /= 6
-        print(time_multiplier)
         logger.debug("\nNew Round\n")
         self.run_assertions()
         self.update_banner()
@@ -176,10 +181,23 @@ class Game(arcade.Window):
         self.run_assertions()
 
     def update_banner(self):
+        if not self.player_in_tutorial:
+            self.update_banner_story()
+            return
+        now = time.time()
         if self.last_banner_change is None:
-            self.last_banner_change = datetime.now()
             self.banner_text = "This is the story of Ze, Yogh, and Ezh."
-        # TODO add more here
+            self.last_banner_change = now
+        delta_time = now - self.last_banner_change
+        if not self.player_has_clicked_lithium and delta_time > 3:
+            self.banner_text = "See the circles? Click on their intersection."
+            self.last_banner_change = now
+        if self.player_has_clicked_lithium and delta_time > 0.5:
+            self.banner_text = "Good. Keep doing it."
+            self.last_banner_change = now
+
+    def update_banner_story(self):
+        pass  # TODO add story
 
     def run_assertions(self):
         assert len(self.planets) in (1, 2, 3)

@@ -21,3 +21,5 @@ Have the attack line be the min of the previous logic and the size of the planet
 "Do it again." (Until player has at least 1 unit of lithium)
 "Click on a planet to strengthen it."
 Then go through the readme's story
+
+Make triangulation circles happen more frequently during tutorial
