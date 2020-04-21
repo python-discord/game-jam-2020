@@ -16,7 +16,13 @@ class Server:
         while True:
             for connection in self.connections:
                 pass
-            await asyncio.sleep(1)
+            await asyncio.sleep(0.1)
+
+    async def _recv(self):
+        while True:
+            data = await self.connection.recv()
+            for connection in self.connections:
+                await connection.send(data)
 
     def _websocket(self, ip: str, port: int):
         # noinspection PyTypeChecker
@@ -26,9 +32,7 @@ class Server:
         print(f"Connection from {path}")
         self.connections.append(websocket)
         async for message in websocket:
-            print(message)
-            for connection in self.connections:
-                await connection.send(message)
+            pass
 
     def start(self, ip: str, port: int = 10000):
         self.loop = asyncio.new_event_loop()
