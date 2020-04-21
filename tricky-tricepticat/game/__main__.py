@@ -222,6 +222,8 @@ class ShipView(arcade.View):
 
         self.ship_sprite.target_angle = 0
 
+        self.SAIL_SPEED_FACTOR = 0
+
         self.audio_list = []
         self.music = arcade.Sound(
             str(path['sound'] / "shanty1.mp3"), streaming=True
@@ -335,35 +337,35 @@ class ShipView(arcade.View):
 
 
         # Calculate speed based on the keys pressed
-        self.ship_sprite.change_x = 0
-        self.ship_sprite.change_y = 0
+        # self.ship_sprite.change_x = 0
+        # self.ship_sprite.change_y = 0
+
+        if self.SAIL_SPEED_FACTOR < 0:
+            self.SAIL_SPEED_FACTOR = 0
+
+        if self.SAIL_SPEED_FACTOR > 1:
+            self.SAIL_SPEED_FACTOR = 1
+
+        self.ship_sprite.change_y = self.SAIL_SPEED_FACTOR * SHIP_MOVEMENT_SPEED * sin(radians(self.ship_sprite.angle % 360 - 90)) * delta_time
+        self.ship_sprite.change_x = self.SAIL_SPEED_FACTOR * SHIP_MOVEMENT_SPEED * cos(radians(self.ship_sprite.angle % 360 - 90)) * delta_time
+
+        print(self.SAIL_SPEED_FACTOR)
 
         self.ship_sprite.change_angle = 0
 
+
+
         if self.up_pressed and not self.down_pressed:
-            self.ship_sprite.change_y = SHIP_MOVEMENT_SPEED * delta_time
-            if int(self.ship_sprite.angle)%360 != 180:
-                self.ship_sprite.change_angle = 1
-                if int(self.ship_sprite.angle)%360 not in range(0, 180):
-                    self.ship_sprite.change_angle = -1
+            self.SAIL_SPEED_FACTOR += 0.01
+
         elif self.down_pressed and not self.up_pressed:
-            self.ship_sprite.change_y = -SHIP_MOVEMENT_SPEED * delta_time
-            if int(self.ship_sprite.angle)%360 != 0:
-                self.ship_sprite.change_angle = 1
-                if int(self.ship_sprite.angle)%360 in range(0, 180):
-                    self.ship_sprite.change_angle = -1
+            self.SAIL_SPEED_FACTOR -= 0.01
+
         if self.left_pressed and not self.right_pressed:
-            self.ship_sprite.change_x = -SHIP_MOVEMENT_SPEED * delta_time
-            if int(self.ship_sprite.angle)%360 != 270:
-                self.ship_sprite.change_angle = 1
-                if int(self.ship_sprite.angle)%360 not in range(90, 270):
-                    self.ship_sprite.change_angle = -1
+            self.ship_sprite.change_angle = 1
+
         elif self.right_pressed and not self.left_pressed:
-            self.ship_sprite.change_x = SHIP_MOVEMENT_SPEED * delta_time
-            if int(self.ship_sprite.angle)%360 != 90:
-                self.ship_sprite.change_angle = 1
-                if int(self.ship_sprite.angle)%360 in range(90, 270):
-                    self.ship_sprite.change_angle = -1
+            self.ship_sprite.change_angle = -1
 
         # self.ship_sprite.on_update(delta_time)
 
