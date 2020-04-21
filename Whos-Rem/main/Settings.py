@@ -1,7 +1,7 @@
 import arcade
 from screeninfo import get_monitors
-from Display.Input_Tools import Button, Slider
-from Display.Utility import ColourBlend as cb
+from .Display.Input_Tools import Button, Slider
+from .Display.Utility import ColourBlend as cb
 
 
 class Settings(arcade.View):
@@ -17,11 +17,11 @@ class Settings(arcade.View):
     volume_slide = Slider(int(width * 0.1), int(height * 0.7), int(width * 0.3), int(height * 0.01), name="Volume")
 
     left_key_button = Button(width * 0.2, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
-                             activation=lambda self: self.binding_key("left"))
+                             activation=lambda self: self.binding_key("left"), name="left_button")
     center_key_button = Button(width * 0.45, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
-                             activation=lambda self: self.binding_key("center"))
+                             activation=lambda self: self.binding_key("center"), name="center_button")
     right_key_button = Button(width * 0.7, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
-                             activation=lambda self: self.binding_key("right"))
+                             activation=lambda self: self.binding_key("right"), name="right_button")
 
     await_key_press = False
     key_binds = {"left": arcade.key.A, "center": arcade.key.S, "right": arcade.key.D}

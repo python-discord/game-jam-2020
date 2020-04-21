@@ -1,5 +1,5 @@
 import arcade
-from Input_Tools import ColourBlend as cb
+from .Utility import ColourBlend as cb
 
 
 class Button:
