@@ -12,7 +12,7 @@ class Settings(arcade.View):
     mouse_y = 0
     mouse_pressing = False
 
-    brightness_slide = Slider(int(width * 0.1), int(height * 0.5), int(width * 0.3), int(height * 0.01),
+    brightness_slide = Slider(int(width * 0.1), int(height * 0.53), int(width * 0.3), int(height * 0.01),
                               name="Brightness")
     volume_slide = Slider(int(width * 0.1), int(height * 0.7), int(width * 0.3), int(height * 0.01),
                           name="Volume")
@@ -36,7 +36,7 @@ class Settings(arcade.View):
                          width=int(self.width * 0.6))
 
         self.brightness_slide.draw(self.brightness)
-        arcade.draw_text("BRIGHTNESS", self.width * 0.5, self.height * 0.45,
+        arcade.draw_text("BRIGHTNESS", self.width * 0.5, self.height * 0.48,
                          cb.brightness([255, 255, 255], self.brightness),
                          min(self.width, self.height) / 12, align="center",
                          width=int(self.width * 0.6))
@@ -48,8 +48,25 @@ class Settings(arcade.View):
                          width=int(self.width * 0.6))
 
         self.left_key_button.draw(self.brightness)
+        arcade.draw_text(chr(self.key_binds["left"]).upper(),
+                         self.width * 0.178, self.height * 0.105,
+                         cb.brightness([0, 0, 0], self.brightness),
+                         min(self.width, self.height) / 16, align="center",
+                         width=int(self.width * 0.1))
+
         self.center_key_button.draw(self.brightness)
+        arcade.draw_text(chr(self.key_binds["center"]).upper(),
+                         self.width * 0.428, self.height * 0.105,
+                         cb.brightness([0, 0, 0], self.brightness),
+                         min(self.width, self.height) / 16, align="center",
+                         width=int(self.width * 0.1))
+
         self.right_key_button.draw(self.brightness)
+        arcade.draw_text(chr(self.key_binds["right"]).upper(),
+                         self.width * 0.678, self.height * 0.105,
+                         cb.brightness([0, 0, 0], self.brightness),
+                         min(self.width, self.height) / 16, align="center",
+                         width=int(self.width * 0.1))
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_x = x
