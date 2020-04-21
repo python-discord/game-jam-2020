@@ -27,8 +27,9 @@ class TestGame:
         # instantiate and setup
         game = Game()
         game.setup()
+        game.minimize()  # Minimizes window, should reduce annoyance a little bit.
         # test for 100 frames
-        game.test(50)
+        game.test(20)
 
 
 class TestSprites:
