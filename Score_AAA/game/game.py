@@ -1,7 +1,8 @@
 import arcade
 import random
-from characters import Character
+from entities import Character
 from lane import Lane
+from patterns import PatternGenerator
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -30,12 +31,15 @@ class MyGame(arcade.Window):
         self.lane_up = None
         self.lane_middle = None
         self.lane_down = None
-
+        self.pattern = None
         # Set up other settings
         self.score = 0
         self.time = 0
         self.frame = 0
         self.fps = 0
+        self.combo = 0
+        self.obstacle_stack = [[], [], [], [], []]
+
 
     def setup(self):
 
@@ -43,7 +47,7 @@ class MyGame(arcade.Window):
         self.sky_list = arcade.SpriteList()
         self.floor_list = arcade.SpriteList(use_spatial_hash=True)
         self.obstacle_list = arcade.SpriteList()
-        self.char_list = arcade.SpriteList(use_spatial_hash=True)
+        self.char_list = arcade.SpriteList()
 
         # Set up lane 1
         q_run_textures = []
@@ -72,6 +76,8 @@ class MyGame(arcade.Window):
         self.floor_list.append(self.lane_middle.floor)
         for background in self.lane_up.generate_background("../ressources/W_Background.png", 2,  -93):
             self.background.append(background)
+        for sky in self.lane_up.generate_background("../ressources/W_Sky.png", 1, -93):
+            self.sky_list.append(sky)
 
         # Set up lane 3
         self.lane_down = Lane(3,
@@ -81,6 +87,10 @@ class MyGame(arcade.Window):
                               [])
         self.char_list.append(self.lane_down.char)
         self.floor_list.append(self.lane_down.floor)
+        for background in self.lane_up.generate_background("../ressources/E_Sky_1.png", 3,  -300):
+            self.background.append(background)
+        for sky in self.lane_up.generate_background("../ressources/E_Sky_2.png", 8, -300):
+            self.sky_list.append(sky)
 
         # Visual cue for when an input is valid
         ok_zone = arcade.Sprite("../ressources/Valid Zone.png")
@@ -89,8 +99,9 @@ class MyGame(arcade.Window):
         self.floor_list.append(ok_zone)
 
         # Set up the rest
+        self.pattern = PatternGenerator([self.lane_up, self.lane_middle, self.lane_down])
         self.score = 0
-        arcade.set_background_color(arcade.color.WHITE_SMOKE)
+        arcade.set_background_color(arcade.color.SMOKY_BLACK)
         self.time = 0
         self.fps = 0
 
@@ -114,24 +125,32 @@ class MyGame(arcade.Window):
         arcade.draw_text(output, 700, 550, arcade.color.BLACK, 14)
         fps = f"FPS: {self.fps}"
         arcade.draw_text(fps, 700, 565, arcade.color.BLACK, 14)
+        combo = f"COMBO: {self.combo}"
+        arcade.draw_text(combo, 700, 535, arcade.color.BLACK, 14)
 
     def on_key_press(self, key, modifiers):
         """
         Called whenever a key is pressed.
         """
+        result = 0
         if key == arcade.key.A:
-            if self.lane_up.action(self.obstacle_list):
-                self.score += 10
+            result = self.lane_up.action(self.obstacle_list)
 
         elif key == arcade.key.Z:
-            if self.lane_middle.action(self.obstacle_list):
-                self.score += 10
+            result = self.lane_middle.action(self.obstacle_list)
 
         elif key == arcade.key.E:
-            if self.lane_down.action(self.obstacle_list):
-                self.score += 10
-        elif key == arcade.key.U:
-            self.lane_down.char.scale = 15
+            result = self.lane_down.action(self.obstacle_list)
+
+        if result == 0:
+            pass
+        elif result.name == "miss":
+            self.combo = 0
+        else:
+            self.combo += 1
+            self.score += result.value * self.combo
+
+
 
     def on_key_release(self, key, modifiers):
         """
@@ -152,17 +171,13 @@ class MyGame(arcade.Window):
         if self.time >= 1:
             self.fps = self.frame
             self.frame = 0
-            rand = random.randint(0, 10)
-
-            if rand == 0:
-                self.obstacle_list.append(self.lane_up.generate_obstacle())
-            elif rand == 1:
-                self.obstacle_list.append(self.lane_middle.generate_obstacle())
-            elif rand == 2:
-                self.obstacle_list.append(self.lane_down.generate_obstacle())
-
             self.time = 0
 
+
+            if self.obstacle_stack == []:
+                    self.obstacle_stack.append(self.pattern.generate_pattern())
+            for obstacle in self.obstacle_stack.pop():
+                self.obstacle_list.append(obstacle)
         # Update Physic Engine
         self.lane_up.physics_engine.update()
         self.lane_middle.physics_engine.update()
@@ -178,7 +193,9 @@ class MyGame(arcade.Window):
         # Score points and remove obstacles
         for obstacle in self.obstacle_list:
             if obstacle.center_x < 0:
-                self.score -= 50
+                if obstacle.hit == False:
+                    self.score -= 50
+                    self.combo = 0
                 obstacle.remove_from_sprite_lists()
 
     # Remove backgrounds item
@@ -188,6 +205,8 @@ class MyGame(arcade.Window):
                     item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
                 elif "W_Background.png" in item.texture.name:
                     item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
+                elif "E_Sky_1.png" in item.texture.name:
+                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
                 else:
                     item.remove_from_sprite_lists()
 
@@ -196,6 +215,10 @@ class MyGame(arcade.Window):
         for item in self.sky_list:
             if item.right < 0:
                 if "Q_Sky.png" in item.texture.name:
+                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
+                if "W_Sky.png" in item.texture.name:
+                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
+                if "E_Sky_2.png" in item.texture.name:
                     item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
 
 def main():

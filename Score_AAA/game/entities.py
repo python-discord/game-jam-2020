@@ -19,3 +19,14 @@ class Character(arcade.Sprite):
                 self.cur_texture = 0
             self.texture = self.run_textures[self.dico_texture[self.cur_texture // self.refresh_animation]]
 
+class Obstacle(arcade.Sprite):
+
+    def __init__(self, image_path: str):
+        super().__init__(image_path)
+        self.hit = False
+
+    def update(self):
+        self.position = [self._position[0] + self.change_x, self._position[1] + self.change_y]
+        self.angle += self.change_angle
+        if self.hit is True:
+            self.color = (169, 169, 169)

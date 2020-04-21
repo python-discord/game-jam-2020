@@ -1,5 +1,12 @@
 import arcade
-from characters import Character
+from entities import Character, Obstacle
+from enum import Enum
+
+class EnumAction(Enum):
+    miss = 0
+    ok = 1
+    super = 5
+    perfect = 10
 
 class Lane():
     """
@@ -9,19 +16,16 @@ class Lane():
 
     # init a lane with char/floor/physics engine/
     def __init__(self, tier: int, SCREEN_HEIGHT: int,
-                 SCREEN_WIDTH: int, sprite_char: str, run_textures: list):
+                 SCREEN_WIDTH: int, sprite_path: str, run_textures: list):
         """
 
         :param tier: What tier of the screen the lane should be.
-        :param SCREEN_HEIGHT: The Screen Height in pixel
-        :param SCREEN_WIDTH: The Screen Width in pixel
-        :param sprite_char: The Path to the sprite char
         :param run_textures: A list of textures for running animation (only Q atm)
         """
         self.SCREEN_HEIGHT = SCREEN_HEIGHT
         self.SCREEN_WIDTH = SCREEN_WIDTH
         self.tier = tier
-        self.char = Character(sprite_char,
+        self.char = Character(sprite_path,
                               SCREEN_HEIGHT - (SCREEN_HEIGHT // 3)*tier + 20,
                               run_textures)
         self.char.center_x = SCREEN_WIDTH // 10
@@ -38,9 +42,8 @@ class Lane():
     def generate_obstacle(self)-> arcade.Sprite:
         """
         Used to generate an obstacle on the lane.
-        :return: A Sprite object moving towards the char in the lane.
         """
-        obstacle = arcade.Sprite("../ressources/Tempo_Obstacle.png")
+        obstacle = Obstacle("../ressources/Tempo_Obstacle.png")
         obstacle.center_x = self.SCREEN_WIDTH
         obstacle.center_y = self.SCREEN_HEIGHT - \
                             ( self.SCREEN_HEIGHT // 3) * self.tier + 20
@@ -50,7 +53,6 @@ class Lane():
     def generate_tree(self)->arcade.Sprite:
         """
         Unused. Generate a tree that move towards the char
-        :return: A Sprite object
         """
         tree = arcade.Sprite("../ressources/Tree_Tempo.png")
         tree.scale = 0.5
@@ -64,7 +66,6 @@ class Lane():
         """
         Generate a sprite in front of the character,
         to detect correct input when an obstacle arrive.
-        :return: A Sprite Object
         """
         valid_zone = arcade.Sprite("../ressources/Lane_Valid_Zone.png")
         valid_zone.center_x = (self.SCREEN_WIDTH // 10) * 2
@@ -72,29 +73,31 @@ class Lane():
         valid_zone.color = (0, 0, 0) # To visualise if drawn
         return valid_zone
 
-    def action(self, obstacle_list: arcade.SpriteList)->bool:
+    def action(self, obstacle_list: arcade.SpriteList)-> EnumAction:
         """
         Called when a button is pressed, Jump and check if an obstacle is in the valid zone.
-        If so return True.
-        :param obstacle_list: A SpriteList containing
-        :return:
         """
-        score = False
+
+        result = EnumAction.miss
         if self.physics_engine.can_jump(5):
             for collision in arcade.check_for_collision_with_list(self.valid_zone,
                                                                   obstacle_list):
-                obstacle_list.remove(collision)
-                score = True
+                collision.hit = True
+                if collision.collides_with_point((self.valid_zone.center_x, collision.center_y)):
+                    result = EnumAction.perfect
+                elif collision.right < self.valid_zone.right and collision.left > self.valid_zone.left:
+                    result = EnumAction.super
+                else:
+                    result = EnumAction.ok
             self.physics_engine.jump(6)
-        return score
+        return result
 
-    def generate_background(self, sprite_path: str, speed: int, offset: int)->arcade.Sprite:
+    def generate_background(self, sprite_path: str, speed: int, offset: int)->list:
         """
         Generate background sprite on the lane.
         :param sprite_path: The path to the sprite. Sprite must be the size of the Screen.
         :param speed: The scrolling speed.
         :param offset: Magic Number :c to place them 'right'. 107 for Q, -93 for W.
-        :return: a list of two Sprites.
         """
         # offset 107 for Q
         result = []
