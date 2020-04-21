@@ -61,7 +61,7 @@ class Lobby(Base):
         else:
             buffer = ""
         arcade.draw_text(buffer + self.name[-25:], 15, 600, color=(255, 255, 255), font_size=35, width=560)
-        arcade.draw_text(self.other, 335, 600, color=(255, 255, 255), font_size=35)
+        arcade.draw_text(self.other, 335, 600, color=(0, 0, 100), font_size=35)
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
         if self.spritedict["back"].collides_with_point((x, y)) is True:
