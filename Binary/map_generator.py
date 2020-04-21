@@ -6,23 +6,24 @@ MAX_ROOM_NUM = 20
 MAX_ROOM_NEIGH = 4
 ROOM_W = SCREEN_WIDTH
 ROOM_H = SCREEN_HEIGHT
-RECT_WIDTH = SCREEN_WIDTH // 4
-RECT_HEIGHT = SCREEN_HEIGHT // 4
+RECT_WIDTH = SCREEN_WIDTH // 8
+RECT_HEIGHT = SCREEN_HEIGHT // 8
+CELL_SIZE = 20
 
 def generate_polygon_points(coord):
     #(x, y)
     x,y = coord
-    left_points = sorted([ (x * ROOM_W + random.random() * RECT_HEIGHT,
-                            y * ROOM_H + random.random() * ROOM_H) for i in range(2)], 
+    left_points = sorted([ (x * ROOM_W + random.random() * RECT_HEIGHT // CELL_SIZE * CELL_SIZE,
+                            (y * ROOM_H + RECT_WIDTH + random.random() * (ROOM_H - 2 * RECT_WIDTH) // CELL_SIZE * CELL_SIZE)) for i in range(3)], 
                             key=lambda x: x[1])
-    right_points = sorted([(x * ROOM_W + ROOM_W - RECT_HEIGHT + random.random() * RECT_HEIGHT, 
-                            y * ROOM_H + random.random() * ROOM_H) for i in range(2)], 
+    right_points = sorted([(x * ROOM_W + ROOM_W - RECT_HEIGHT + random.random() * RECT_HEIGHT // CELL_SIZE * CELL_SIZE, 
+                            (y * ROOM_H + RECT_WIDTH + random.random() * (ROOM_H - 2 *  RECT_WIDTH) // CELL_SIZE * CELL_SIZE)) for i in range(3)], 
                             key=lambda x: x[1], reverse = True)
-    down_points = sorted([( x * ROOM_W + RECT_HEIGHT + random.random() * (ROOM_W - RECT_HEIGHT), 
-                            y * ROOM_H + random.random() * RECT_WIDTH) for i in range(2)], 
+    down_points = sorted([( x * ROOM_W + RECT_HEIGHT + random.random() * (ROOM_W - 2 * RECT_HEIGHT) // CELL_SIZE * CELL_SIZE, 
+                            y * ROOM_H + random.random() * RECT_WIDTH // CELL_SIZE * CELL_SIZE) for i in range(3)], 
                             key=lambda x: x[0], reverse = True)
-    up_points = sorted([( x * ROOM_W + RECT_HEIGHT + random.random() * (ROOM_W - 2 * RECT_HEIGHT), 
-                          y * ROOM_H + ROOM_H - RECT_WIDTH + random.random() * RECT_WIDTH) for i in range(2)], 
+    up_points = sorted([( x * ROOM_W + RECT_HEIGHT + random.random() * (ROOM_W - 2 * RECT_HEIGHT) // CELL_SIZE * CELL_SIZE, 
+                          y * ROOM_H + ROOM_H - RECT_WIDTH + random.random() * RECT_WIDTH // CELL_SIZE * CELL_SIZE) for i in range(3)], 
                           key=lambda x: x[0])
     return up_points + right_points + down_points + left_points
     
