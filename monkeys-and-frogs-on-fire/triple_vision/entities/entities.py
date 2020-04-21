@@ -5,7 +5,6 @@ from typing import Any, Optional, Tuple
 import arcade
 
 from triple_vision import Direction
-from triple_vision.entities.weapons import Weapon
 from triple_vision.utils import get_change_vector, load_texture_pair
 
 
@@ -137,7 +136,7 @@ class LivingEntity(AnimatedEntity):
 
         self.resistance = 0
 
-    def hit(self, weapon: Weapon, wall_reference: arcade.SpriteList = tuple()) -> None:
+    def hit(self, weapon, wall_reference: arcade.SpriteList = tuple()) -> None:
         """
         :param weapon: Weapon the entity is being hit. Used for getting dmg, throwback force
                        and position for knock-back direction.

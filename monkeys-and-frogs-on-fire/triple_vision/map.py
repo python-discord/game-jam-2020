@@ -81,6 +81,7 @@ class Map:
         return map_
 
     def spritify(self, map_) -> arcade.SpriteList:
+        spikes = arcade.SpriteList(use_spatial_hash=True)
         sprites = arcade.SpriteList(use_spatial_hash=True)
         collision_list = arcade.SpriteList(use_spatial_hash=True)
 
@@ -100,6 +101,7 @@ class Map:
                         center_x=center_x,
                         center_y=center_y
                     )
+                    spikes.append(sprite)
 
                 else:
                     filename = 'wall_mid' \
@@ -117,7 +119,7 @@ class Map:
 
                 sprites.append(sprite)
 
-        return sprites, collision_list
+        return sprites, collision_list, spikes
 
     def setup(self) -> None:
         floor_count = 0
@@ -128,7 +130,7 @@ class Map:
             flat_map = map_.flatten()
             floor_count = len(np.where((flat_map == self.FLOOR) | (flat_map == self.SPIKE))[0])
 
-        self.sprites, self.view.collision_list = self.spritify(map_)
+        self.sprites, self.view.collision_list, self.view.game_manager.spikes = self.spritify(map_)
 
     def draw(self) -> None:
         self.sprites.draw()

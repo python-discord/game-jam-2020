@@ -16,6 +16,8 @@ class GameManager:
         self.enemy_projectiles = arcade.SpriteList()
         self.damage_indicators = arcade.SpriteList()
 
+        self.spikes = arcade.SpriteList(use_spatial_hash=True)
+
     def draw(self) -> None:
         self.enemies.draw()
         self.player_projectiles.draw()
@@ -32,16 +34,22 @@ class GameManager:
 
     def on_update(self, delta_time) -> None:
         for enemy in self.enemies:
-            for projectile in self.player_projectiles:
-                if arcade.check_for_collision(projectile, enemy):
-                    self.create_dmg_indicator(str(projectile.dmg), enemy.position)
-                    enemy.hit(projectile)
-                    projectile.kill()
 
-        for projectile in self.enemy_projectiles:
-            if arcade.check_for_collision(projectile, self.view.player):
-                self.view.player.hit(projectile)
+            projectile_hit_enemy = arcade.check_for_collision_with_list(enemy, self.player_projectiles)
+            for projectile in projectile_hit_enemy:
+                self.create_dmg_indicator(str(projectile.dmg), enemy.position)
+                enemy.hit(projectile)
                 projectile.kill()
+
+        projectiles_hit_player = arcade.check_for_collision_with_list(self.view.player, self.enemy_projectiles)
+        for projectile in projectiles_hit_player:
+            self.view.player.hit(projectile)
+            projectile.kill()
+
+        spikes_hit = arcade.check_for_collision_with_list(self.view.player, self.spikes)
+        for spike in spikes_hit:
+            if 0 < spike.ticks < 7:
+                self.view.player.hit(spike)
 
         self.enemies.on_update(delta_time)
         self.player_projectiles.on_update(delta_time)

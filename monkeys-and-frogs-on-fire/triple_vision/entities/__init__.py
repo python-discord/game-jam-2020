@@ -2,13 +2,12 @@ from triple_vision.entities.enemies import (
     BaseEnemy,
     ChasingEnemy,
     Enemies,
-    Spike,
     StationaryEnemy
 )
 from triple_vision.entities.entities import AnimatedEntity, LivingEntity
 from triple_vision.entities.player import Player
 from triple_vision.entities.sprites import DamageIndicator, MovingSprite
-from triple_vision.entities.weapons import LaserProjectile
+from triple_vision.entities.weapons import LaserProjectile, Spike
 
 __all__ = (
     'AnimatedEntity',

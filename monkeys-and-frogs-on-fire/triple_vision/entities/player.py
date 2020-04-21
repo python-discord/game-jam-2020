@@ -88,16 +88,20 @@ class Player(LivingEntity, MovingSprite):
             # to force the player to be centered in tile before transversing
             closest_grid_x, closest_grid_y = pixels_to_tile(self.center_x, self.center_y)
 
-            self.path = chain(
-                    ((closest_grid_x, closest_grid_y),),
-                    iter(
-                        self.path_finder.find(
-                            pixels_to_tile(self.center_x, self.center_y),
-                            pixels_to_tile(x, y),
-                            self.view.collision_list
+            try:
+                path = iter(
+                    self.path_finder.find(
+                        pixels_to_tile(self.center_x, self.center_y),
+                        pixels_to_tile(x, y),
+                        self.view.collision_list
                     )
                 )
-            )
+
+            except TypeError:
+                print('Path is either impossible or too far away!')
+
+            else:
+                self.path = chain(((closest_grid_x, closest_grid_y),), path)
 
         elif button == arcade.MOUSE_BUTTON_RIGHT:
 
@@ -125,6 +129,7 @@ class Player(LivingEntity, MovingSprite):
             try:
                 pos = tile_to_pixels(*next(self.path))
                 self.move_to(pos[0], pos[1] + s.PLAYER_CENTER_Y_COMPENSATION, rotate=False)
+
             except StopIteration:
                 self.path = None
 
