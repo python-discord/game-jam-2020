@@ -48,6 +48,28 @@ SCREEN_TITLE = "Zeyoghezh"
 ALL_PLANETS = ("ze", "yogh", "ezh")
 
 STORY_LINES = (
-    "Hi",
-    "Bye",
+    "This is the story of three planets: Ze, Yogh, and Ezh.",
+    "Each are made of one of the three elements of alchemy.",
+    "Each are made of one of the three classes of combat.",
+    "Each wishes to be the strongest, to destroy all others.",
+    "And they each could do it.",
+    "Ze, the silver one, could destroy Ezh, the bronze one.",
+    "Yogh, the golden one, could destroy Ze, the silver one.",
+    "Ezh, the bronze one, could destroy Yogh, the golden one.",
+    "Yet if one is destroyed, the three elements would be incomplete.",
+    "We would be unable to fabricate the third periodic element: Lithium.",
+    "Lithium is a valuable material, and each planet knows it.",
+    "Each planet is working to detect how far the nearest source is.",
+    "But they cannot find it. For they cannot work together.",
+    "Over time, ages to them but only seconds to you...",
+    "...they will determine how far each source is.",
+    "You can use all three. You can triangulate the location.",
+    "You can bring this lithium home if you wish.",
+    "But if the planets thrive, they will guide you towards more.",
+    "They, too, need lithium to survive.",
+    "How much you reserve for home and how much you use on them is up to you.",
+    "You must balance three tasks: ",
+    "Collect lithium, heal wounded planets, and abscond when all is lost.",
+    "Do not wait too long to abscond.",
+    "You will need all three planets alive to escape."
 )

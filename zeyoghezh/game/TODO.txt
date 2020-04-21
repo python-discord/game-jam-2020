@@ -23,3 +23,5 @@ Have the attack line be the min of the previous logic and the size of the planet
 Then go through the readme's story
 
 Make triangulation circles happen more frequently during tutorial
+
+Maybe when the banner text changes it has a random y coordinate?
