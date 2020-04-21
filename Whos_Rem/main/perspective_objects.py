@@ -61,14 +61,16 @@ class Shape:
 
 
 class ShapeManager:
-    @staticmethod
-    def manage_shapes(shapes: "list of shape objects") -> "list of updated shapes":
+
+    @classmethod
+    def manage_shapes(cls, shapes: "list of shape objects") -> "list of updated shapes":
         for shape in shapes:
             if shape.removable:
                 shapes.remove(shape)
             else:
                 shape.update()
 
+        cls.draw_all_shapes(shapes)
         return shapes
 
     @staticmethod
