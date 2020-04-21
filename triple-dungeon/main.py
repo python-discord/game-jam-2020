@@ -3,13 +3,34 @@ main.py
 The main class used to load the game.
 Holds the main game window, as well as manages basic functions for organizing the game.
 """
+import collections
 import random
+import time
 
 import arcade
 
 from config import Config
 from map import Dungeon
 from mobs import Player
+
+
+class FPSCounter:
+    def __init__(self):
+        self.time = time.perf_counter()
+        self.frame_times = collections.deque(maxlen=60)
+
+    def tick(self):
+        t1 = time.perf_counter()
+        dt = t1 - self.time
+        self.time = t1
+        self.frame_times.append(dt)
+
+    def get_fps(self):
+        total_time = sum(self.frame_times)
+        if total_time == 0:
+            return 0
+        else:
+            return len(self.frame_times) / sum(self.frame_times)
 
 
 class Game(arcade.Window):
@@ -45,9 +66,10 @@ class Game(arcade.Window):
         # Create the Sprite lists
 
         self.enemy_list = arcade.SpriteList()
+        self.fps = FPSCounter()
 
         # Create the dungeon
-        self.dungeon = Dungeon(0, 3)
+        self.dungeon = Dungeon(0, 5)
 
         # Set up the player, specifically placing it at these coordinates.
         self.player = Player()
@@ -74,7 +96,6 @@ class Game(arcade.Window):
     def on_draw(self):
         """ Render the screen. """
         try:
-
             # Clear the screen to the background color
             arcade.start_render()
 
@@ -86,6 +107,9 @@ class Game(arcade.Window):
             self.player.draw_hit_box()
             x, y = self.player.center_x, self.player.center_y
             arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15)
+            arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
+                             arcade.color.WHITE, 16)
+            self.fps.tick()
         except Exception:
             import traceback
             traceback.print_exc()
