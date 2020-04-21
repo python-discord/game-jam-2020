@@ -16,6 +16,17 @@ class MovingSprite(arcade.Sprite):
         self.target = None
         self.rotate = rotate
 
+    def calc_change_vector(self, x: float, y: float) -> None:
+        self.change_x, self.change_y, angle = get_change_vector(
+            start_position=self.position,
+            destination_position=(x, y),
+            speed_multiplier=self.speed * self.speed_multiplier
+        )
+
+        if self.rotate:
+            # Angle the sprite
+            self.angle = math.degrees(angle)
+
     def move_to(self, x: float, y: float, *, set_target: bool = True) -> None:
         """
         Move the MovingSprite into a given point on the screen.
@@ -26,16 +37,7 @@ class MovingSprite(arcade.Sprite):
         :param y: y coordinate for the sprite to move into
         :param rotate: represents if we need to rotate the sprite or not
         """
-
-        self.change_x, self.change_y, angle = get_change_vector(
-            start_position=self.position,
-            destination_position=(x, y),
-            speed_multiplier=self.speed * self.speed_multiplier
-        )
-
-        if self.rotate:
-            # Angle the sprite
-            self.angle = math.degrees(angle)
+        self.calc_change_vector(x, y)
 
         if set_target:
             self.target = (x, y)
@@ -77,10 +79,9 @@ class MovingSprite(arcade.Sprite):
         self.update_(delta_time)
 
     def _reached_target_check(self):
-        if self.target:
-            self.move_to(*self.target, set_target=True)
-
         if self.target is not None:
+            self.calc_change_vector(*self.target)
+
             if (
                 is_in_radius_positions(self.position, self.target, 4)
             ):
