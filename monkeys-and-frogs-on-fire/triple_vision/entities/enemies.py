@@ -49,7 +49,7 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
         detection_radius: int,
         **kwargs
     ) -> None:
-        super().__init__(enemy, **kwargs)
+        super().__init__(enemy, rotate=False, **kwargs)
 
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
@@ -57,9 +57,10 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
     def on_update(self, delta_time: float = 1/60) -> None:
         if not self.being_pushed:
             if is_in_radius(self, self.target_sprite, self.detection_radius):
-                self.move_to(self.target_sprite.center_x,
-                             self.target_sprite.center_y,
-                             rotate=False)
+                self.move_to(
+                    self.target_sprite.center_x,
+                    self.target_sprite.center_y,
+                )
             else:
                 self.change_x = 0
                 self.change_y = 0
@@ -101,12 +102,12 @@ class StationaryEnemy(BaseEnemy):
 
         laser = LaserProjectile(
             center_x=self.center_x,
-            center_y=self.center_y
+            center_y=self.center_y,
+            rotate=True
         )
         laser.move_to(
             self.target_sprite.center_x,
             self.target_sprite.center_y,
-            rotate=True,
             set_target=False
         )
         laser.play_activate_sound()

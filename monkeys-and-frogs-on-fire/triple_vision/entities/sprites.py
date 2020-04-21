@@ -8,14 +8,15 @@ from triple_vision.utils import get_change_vector, is_in_radius_positions
 
 
 class MovingSprite(arcade.Sprite):
-    def __init__(self, moving_speed, *args, **kwargs):
+    def __init__(self, moving_speed, rotate=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.speed = moving_speed
         self.speed_multiplier = 1
         self.target = None
+        self.rotate = rotate
 
-    def move_to(self, x: float, y: float, *, rotate: bool = True, set_target: bool = True) -> None:
+    def move_to(self, x: float, y: float, *, set_target: bool = True) -> None:
         """
         Move the MovingSprite into a given point on the screen.
 
@@ -32,7 +33,7 @@ class MovingSprite(arcade.Sprite):
             speed_multiplier=self.speed * self.speed_multiplier
         )
 
-        if rotate:
+        if self.rotate:
             # Angle the sprite
             self.angle = math.degrees(angle)
 
@@ -43,10 +44,9 @@ class MovingSprite(arcade.Sprite):
             self,
             sprite: arcade.Sprite,
             *,
-            rotate: bool = True,
             set_target: bool = True
     ) -> None:
-        self.move_to(sprite.center_x, sprite.center_y, rotate=rotate, set_target=set_target)
+        self.move_to(sprite.center_x, sprite.center_y, set_target=set_target)
 
     def move_to_angle(self, angle: int, *, rotate: bool = False) -> None:
         """
@@ -77,6 +77,9 @@ class MovingSprite(arcade.Sprite):
         self.update_(delta_time)
 
     def _reached_target_check(self):
+        if self.target:
+            self.move_to(*self.target, set_target=True)
+
         if self.target is not None:
             if (
                 is_in_radius_positions(self.position, self.target, 4)

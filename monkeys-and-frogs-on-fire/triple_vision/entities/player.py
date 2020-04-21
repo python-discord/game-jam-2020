@@ -25,7 +25,8 @@ class Player(LivingEntity, MovingSprite):
             scale=s.SCALING,
             center_x=500,
             center_y=500,
-            hp=1000
+            hp=1000,
+            rotate=False
         )
 
         self.view = view
@@ -113,9 +114,10 @@ class Player(LivingEntity, MovingSprite):
                 center_x=self.center_x,
                 center_y=self.center_y,
                 dmg=round(random.randrange(60, 70) * self.attack_multiplier, 2),
-                moving_speed=5
+                moving_speed=5,
+                rotate=True
             )
-            bullet.move_to(x, y, rotate=True, set_target=False)
+            bullet.move_to(x, y, set_target=False)
             bullet.play_activate_sound()
             self.view.game_manager.player_projectiles.append(bullet)
             self.last_shot = time.time()
@@ -128,7 +130,7 @@ class Player(LivingEntity, MovingSprite):
         if self.path is not None and self.target is None:
             try:
                 pos = tile_to_pixels(*next(self.path))
-                self.move_to(pos[0], pos[1] + s.PLAYER_CENTER_Y_COMPENSATION, rotate=False)
+                self.move_to(pos[0], pos[1] + s.PLAYER_CENTER_Y_COMPENSATION)
 
             except StopIteration:
                 self.path = None
