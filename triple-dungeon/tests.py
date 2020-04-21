@@ -38,9 +38,7 @@ class TestSprites:
     @pytest.fixture
     def sprites(self) -> List[str]:
         """
-        Returns a list of absolute paths to sprites found in the images folder.
-
-        :return: List of absolute paths to sprites
+        :return: List of absolute paths to Sprite images
         """
 
         import os
@@ -62,8 +60,7 @@ class TestSprites:
     @pytest.fixture
     def patterns(self) -> List[Pattern]:
         """
-        Returns a list of RegEx
-        :return: A list of Pattern objects
+        :return: A list of Pattern objects to test.
         """
         import re
         _patterns = [
@@ -100,17 +97,25 @@ class TestLevels:
     Tests the Level class.
     """
 
-    def test_levels_are_loadable(self):
+    @pytest.fixture
+    def levels(self) -> List[str]:
         """
-        Tests whether or not a level can be loaded.
+        :return: List of paths to Level files
         """
         import os
-        from map import Level
 
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         LEVEL_DIR = os.path.join(BASE_DIR, 'resources', 'levels')
-
         levels = [os.path.join(LEVEL_DIR, file) for file in os.listdir(LEVEL_DIR)]
+
+        return levels
+
+    def test_levels_are_loadable(self, levels) -> None:
+        """
+        Tests whether or not a level can be loaded.
+        """
+        from map import Level
+
         for level in levels:
             Level.load_file(2, 3, level)
 
