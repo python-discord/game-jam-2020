@@ -114,7 +114,7 @@ class MyGame(arcade.Window):
                                [arcade.load_texture("images/Player/3.png")]]
 
         self.bodies = []
-        for i in range(1, 3):
+        for i in range(1, 4):
             p, body, shape = makePlayer(1, self.space, self.playerTextures[i - 1], 1, 32 * (i + 3), 32, str(i))
 
             p.set_hit_box([[p.width / -2, p.height / -2 - 1], [p.width / 2, p.height / -2 - 1],
@@ -235,6 +235,8 @@ class MyGame(arcade.Window):
                                             [arcade.load_texture(f'images/player/{topListString}.png')],
                                             1, p.center_x, self.singleHeight * (len(bottomList) + len(topList)/2),
                                             "on".join([str(s + 1) for s in topList]))
+                p.set_hit_box([[p.width / -2, p.height / -2 - 1], [p.width / 2, p.height / -2 - 1],
+                               [p.width / 2, p.height / 2], [p.width / -2, p.height / 2]])
 
                 for i in topList:
                     self.players[i].kill()
@@ -250,6 +252,8 @@ class MyGame(arcade.Window):
                                             [arcade.load_texture(f'images/player/{bottomListString}.png')],
                                             1, p.center_x, self.singleHeight * (len(bottomList)/2),
                                             "on".join([str(s + 1) for s in bottomList]))
+                p.set_hit_box([[p.width / -2, p.height / -2 - 1], [p.width / 2, p.height / -2 - 1],
+                               [p.width / 2, p.height / 2], [p.width / -2, p.height / 2]])
 
                 for i in bottomList:
                     self.players[i].kill()
@@ -294,10 +298,10 @@ class MyGame(arcade.Window):
                 i.update()
             for p in self.players:
                 p.update()
-                boxes = arcade.check_for_collision_with_list(p, self.floor_list)
-                if_collide = [True for pl in self.players if arcade.check_for_collision(p, pl) and pl != p]
+                touchedBoxes = arcade.check_for_collision_with_list(p, self.floor_list)
+                collideWithOthers = [True for pl in self.players if arcade.check_for_collision(p, pl) and pl != p]
 
-                if (boxes != [] or True in if_collide) and abs(p.pymunk_shape.body.velocity.y) < 3:
+                if (touchedBoxes or collideWithOthers) and abs(p.pymunk_shape.body.velocity.y) < 3:
                     p.can_jump = True
 
             for p in self.players:
