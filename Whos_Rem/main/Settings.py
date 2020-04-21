@@ -14,7 +14,8 @@ class Settings(arcade.View):
 
     brightness_slide = Slider(int(width * 0.1), int(height * 0.5), int(width * 0.3), int(height * 0.01),
                               name="Brightness")
-    volume_slide = Slider(int(width * 0.1), int(height * 0.7), int(width * 0.3), int(height * 0.01), name="Volume")
+    volume_slide = Slider(int(width * 0.1), int(height * 0.7), int(width * 0.3), int(height * 0.01),
+                          name="Volume")
 
     left_key_button = Button(width * 0.2, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
                              activation=lambda self: self.binding_key("left"), name="left_button")
@@ -62,9 +63,13 @@ class Settings(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):  # Click options / volume & brightness slider
         self.mouse_pressing = True
+        self.brightness_slide.pressing = self.brightness_slide.hit_box(x, y)
+        self.volume_slide.pressing = self.volume_slide.hit_box(x, y)
 
     def on_mouse_release(self, x, y, button, modifiers):  # Release for sliders
         self.mouse_pressing = False
+        self.brightness_slide.pressing = False
+        self.volume_slide.pressing = False
 
     def on_key_press(self, symbol, modifiers):  # Setting key binds
         if self.await_key_press:

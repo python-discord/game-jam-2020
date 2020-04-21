@@ -49,7 +49,9 @@ class Slider:
         self.height = height
         self.rotation = rotation
         self.colour = colour
+        self.pressing = True
         self.slide_dist = int(width * start_value)
+        self.pressing = False
         self.name = name
 
     def __call__(self):
@@ -70,19 +72,19 @@ class Slider:
 
     @slide_dist.setter
     def slide_dist(self, value):
-        if value < 0:
-            self.__slide_dist = 0
-        elif value > self.width:
-            self.__slide_dist = self.width
-        else:
-            self.__slide_dist = value
+        if self.pressing:
+            if value < 0:
+                self.__slide_dist = 0
+            elif value > self.width:
+                self.__slide_dist = self.width
+            else:
+                self.__slide_dist = value
 
     def update_slide(self, mouse_x, mouse_y):
-        if self.hit_box(mouse_x, mouse_y):
-            if self.rotation == "hor":
-                self.slide_dist = mouse_x - self.x
-            else:
-                self.__slide_dist = mouse_y - self.y
+        if self.rotation == "hor":
+            self.slide_dist = mouse_x - self.x
+        else:
+            self.__slide_dist = mouse_y - self.y
 
     def hit_box(self, mouse_x, mouse_y):
         if -0.2 * self.width <= mouse_x - self.x <= 1.2 * self.width:
@@ -111,3 +113,4 @@ class Slider:
                                       self.y + self.slide_dist,
                                       self.width * 3,
                                       cb.brightness(self.colour, brightness))
+
