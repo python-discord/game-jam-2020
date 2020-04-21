@@ -1,9 +1,3 @@
-"""
-2048 Clone
-Paul Vincent Craven
-"""
-
-
 import arcade
 
 from main import MyGame
