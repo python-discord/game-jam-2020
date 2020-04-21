@@ -5,32 +5,53 @@ Integrate this into your IDE's workflow to ensure the game runs from top to bott
 The tests used here should test all of our game's features as best they can.
 """
 
+import pytest
 
-class GameTests:
+
+class TestGame:
     """
     Tests that the Arcade framework runs the game correctly.
     Only tests that it launches and runs for a little bit, not that it is functioning properly.
     """
 
+    def test_game_runs(self):
+        """
+        Simply test that the Game runs.
+        """
 
-class SpriteTests:
+        # imports
+        from main import Game
+
+        # instantiate and setup
+        game = Game()
+        game.setup()
+        # test for 100 frames
+        game.test(100)
+
+
+class TestSprites:
     """
     Tests the Sprite classes as well as the available sprites.
     """
+    pass
 
 
-class LevelTests:
+class TestLevels:
     """
     Tests the Level class.
     """
 
+    def loadble_level():
+        pass
 
-class DungeonTests:
+
+class TestDungeon:
     """
     Tests the Dungeon class.
     """
 
-class MiscTests:
+
+class TestMisc:
     """
     Tests things that don't fit anywhere else.
     """
