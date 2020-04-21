@@ -7,6 +7,7 @@ from submission.tileMapLoader import *
 from submission.spell import pickUp
 from submission.sounds import loadSounds
 from submission.motion import *
+from submission.waveManager import getSpawnList, manageEnemySpawn, EnemyGroup
 from random import randint
 import math
 
@@ -59,7 +60,9 @@ class MyGame(arcade.Window):
         self.currentOrder = None
         self.orderCount = None
 
-        self.nameList = None
+        self.betweenRounds = True  # mettre à false
+        self.roundNumber = 0
+        self.spawnList = None
 
         arcade.set_background_color((94, 132, 63))
 
@@ -127,6 +130,10 @@ class MyGame(arcade.Window):
         updateActualPos(self.player_sprite)
         movePlayer(self.player_sprite, delta_time)
 
+        if self.betweenRounds:
+            self.spawnList = getSpawnList(self.roundNumber)
+            self.betweenRounds = False
+
         self.player_list.update_animation()
         self.entity_list.update_animation()
         self.turret_list.update_animation()
@@ -143,6 +150,10 @@ class MyGame(arcade.Window):
             self.turret_list.append(AnimatedEntity(T_SPRAY, 2, [4, 0]))
             self.turret_list.append(AnimatedEntity(T_LAMP, 2, [5, 0]))
             self.turret_list.append(AnimatedEntity(T_VACUUM, 2, [6, 0]))
+
+        if symbol == arcade.key.F:
+            self.betweenRounds = True
+            self.roundNumber += 1
 
     def on_key_release(self, symbol: int, modifiers: int):
         """ Get keyboard's releases. """

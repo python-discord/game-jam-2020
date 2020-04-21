@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 FULLSCREEN = False
 
@@ -7,7 +8,7 @@ TILE_SIZE = 32  # x32 = 256px
 PLAYER_SCALING = 1
 TILE_SCALING = 1
 
-WINDOW_WIDTH = 512*2
+WINDOW_WIDTH = 512 * 2
 WINDOW_HEIGHT = 512
 WINDOW_TITLE = 'Insane Irradiated Insects'
 
@@ -18,7 +19,7 @@ UP_FACING = 3
 
 # SPEED
 MOVE_SPEED = 150
-MOVE_SPEED_CHARGED = 0.6 * MOVE_SPEED
+MOVE_SPEED_CHARGED = 0.65 * MOVE_SPEED
 
 ENTITY_MS = 1
 
@@ -32,6 +33,12 @@ T_SPRAY = 10
 T_LAMP = 11
 T_VACUUM = 12
 
+# ROWS
+TOP_ROW = 0
+MID_ROW = 1
+BOT_ROW = 2
+
+# VOLUME
 VOLUME = 0.5
 
 # UPDATE RATES FOR ENTITIES
@@ -46,7 +53,8 @@ UR_SPRAY = 30
 UR_LAMP = 30
 UR_VACUUM = 30
 
-from pathlib import Path
+# WAVES MANAGER
+PREMADE_WAVES = 5
 
 PATH = {}
 PATH['project'] = Path(os.path.dirname(__file__))
