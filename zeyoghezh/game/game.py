@@ -88,7 +88,7 @@ class Game(arcade.Window):
         self.banner_text = new_text
         x_coord = SCREEN_SIZE[0]/100
         y_coord = (
-            (random.random() * (SCREEN_SIZE[1] / 8))
+            (random.random() * (6 * SCREEN_SIZE[1] / 8))
             + (SCREEN_SIZE[1] / 5)
         )
         self.banner_location = (x_coord, y_coord)
