@@ -3,6 +3,7 @@ import websockets
 import queue
 import threading
 import socket
+import json
 
 
 class Client:
@@ -20,7 +21,8 @@ class Client:
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.create_task(self._send(), name="send")
-        loop.run_until_complete(self._start())
+        loop.create_task(self._start())
+        loop.run_forever()
 
     async def _start(self):
         try:
@@ -40,6 +42,7 @@ class Client:
             while True:
                 # receive data
                 self.receive.put(await self.connection.recv())
+                print(":O")
 
     async def _send(self):
         # send data
@@ -49,7 +52,7 @@ class Client:
             except queue.Empty:
                 pass
             else:
-                await self.connection.send(data)
+                await self.connection.send(json.dumps(data))
             await asyncio.sleep(0.05)  # TODO why does removing this break everything...
 
 

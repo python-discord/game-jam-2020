@@ -1,3 +1,5 @@
+import json
+
 import arcade
 from .base import Base
 from .util import arcade_int_to_string
@@ -47,12 +49,17 @@ class Lobby(Base):
     def update(self, delta_time: float) -> None:
         self.sceneTime += delta_time
         try:
-            data = self.send_queue.get(block=False)
+            data = self.receive_queue.get(block=False)
         except queue.Empty:
             pass
         else:
-            if data["type"] == "nameChange":
-                self.other = data["data"]["newName"]
+            try:
+                print("sadkjgf: ", data)
+                data = json.loads(data)
+                if data["type"] == "nameChange":
+                    self.other = data["data"]["newName"]
+            except TypeError:
+                pass
 
     def draw(self):
         self.spritelist.draw()

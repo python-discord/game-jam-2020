@@ -21,8 +21,9 @@ class PlayAsServer(Base):
 
     def update(self, delta_time: float) -> None:
         self.sceneTime += delta_time
-        network_thread, receive, send = server_run("192.168.0.22")
-        run("192.168.0.22")
+        network_thread, receive, send = run("192.168.0.22")
+        server_run("192.168.0.22")
+
         self.display.change_scenes("lobby", network_thread, receive, send)
 
     def draw(self):
