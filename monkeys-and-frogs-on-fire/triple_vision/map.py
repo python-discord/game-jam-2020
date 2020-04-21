@@ -95,6 +95,7 @@ class Map:
 
                 if val == self.SPIKE:
                     sprite = Spike(
+                        view=self.view,
                         scale=s.SCALING,
                         center_x=center_x,
                         center_y=center_y
