@@ -2,13 +2,13 @@
 sprites.py
 A file dedicated to managing sprites and animations for characters.
 """
-from itertools import cycle
 
 import arcade
 import os
 import re
 
-from typing import Pattern
+from typing import Pattern, Iterable
+from itertools import cycle
 
 
 class AnimationSet(object):
@@ -16,7 +16,7 @@ class AnimationSet(object):
     A class that helps assist with grabbing new animations from a set.
     """
 
-    def __init__(self, directory: str):
+    def __init__(self, directory: str) -> None:
         """
         Initializes the AnimationSet class by loading files and
 
@@ -26,7 +26,7 @@ class AnimationSet(object):
         self.directory = directory
         self.animations = os.listdir(directory)
 
-    def getAnimations(self, pattern: Pattern) -> iter:
+    def getAnimations(self, pattern: Pattern) -> Iterable[arcade.Texture]:
         """
         Loads all animations from the AnimationSet's directory that match the pattern.
         The pattern must have 1 group that specifies the animation's index.
@@ -56,7 +56,7 @@ class PlayerAnimations(AnimationSet):
     index: [0,) - The index of the animation. Index should be enumerated in ascending order.
     """
 
-    def __init__(self, directory: str):
+    def __init__(self, directory: str) -> None:
         """
         Initializes the PlayerAnimations class.
         """
