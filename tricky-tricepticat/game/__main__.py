@@ -6,10 +6,11 @@ Python Discord | Game Jam 2020
 # Standard Library
 import os
 from pathlib import Path
+import time
 
 # Third Party
 import arcade
-from math import atan2, degrees, radians, sin, cos
+from math import atan2, degrees, radians, sin, cos, sqrt
 from pyglet import gl
 
 UPDATES_PER_FRAME = 3
@@ -65,7 +66,11 @@ class Ship(arcade.Sprite):
         super().__init__(filename)
         self.name = 'Ship'
 
+        self.health = 100
+
         self.scale = SHIP_SCALING
+
+
 
 
 class Pirate(arcade.Sprite):
@@ -200,6 +205,10 @@ class ShipView(arcade.View):
 
         self.ship_sprite = Ship(path['img']/'ship'/'ship.png')
 
+        for i in (50, 25, 0):
+            self.ship_sprite.append_texture(
+                arcade.load_texture(path['img'] / 'ship' / f'ship_{i}.png'))
+
         self.cannonballs = arcade.SpriteList()
 
         self.ship_sprite.set_position(800, 800)
@@ -245,6 +254,9 @@ class ShipView(arcade.View):
         self.ambient_track.set_volume(MUSIC_VOLUME*0.2)
 
         self.viewport_scale = 1
+
+        self.collision_time = 0
+        self.time_diff = 20
 
     def scroll(self):
         # --- Manage Scrolling ---
@@ -296,11 +308,16 @@ class ShipView(arcade.View):
     def play_audio(self):
         for audio in self.audio_list:
             if audio.get_stream_position() >= audio.get_length():
-                audio = arcade.Sound(
-                    audio.file_name, streaming=True
+                file_name = audio.file_name
+                volume = audio.get_volume()
+                self.audio_list.remove(audio)
+                newAudio = arcade.Sound(
+                    file_name, streaming=True
                 )
 
-                audio.play(audio.get_volume())
+                self.audio_list.append(newAudio)
+
+                audio.play(newAudio.get_volume())
 
     def on_draw(self):
         arcade.start_render()
@@ -346,20 +363,26 @@ class ShipView(arcade.View):
         if self.SAIL_SPEED_FACTOR > 1:
             self.SAIL_SPEED_FACTOR = 1
 
-        self.ship_sprite.change_y = self.SAIL_SPEED_FACTOR * SHIP_MOVEMENT_SPEED * sin(radians(self.ship_sprite.angle % 360 - 90)) * delta_time
-        self.ship_sprite.change_x = self.SAIL_SPEED_FACTOR * SHIP_MOVEMENT_SPEED * cos(radians(self.ship_sprite.angle % 360 - 90)) * delta_time
+        self.ship_sprite.change_y = (
+            self.SAIL_SPEED_FACTOR * SHIP_MOVEMENT_SPEED * sin(radians(
+                self.ship_sprite.angle % 360 - 90)
+            ) * delta_time
+        )
 
-        print(self.SAIL_SPEED_FACTOR)
+        self.ship_sprite.change_x = (
+            self.SAIL_SPEED_FACTOR * SHIP_MOVEMENT_SPEED * cos(radians(
+                self.ship_sprite.angle % 360 - 90)
+            ) * delta_time
+        )
+
 
         self.ship_sprite.change_angle = 0
-
-
 
         if self.up_pressed and not self.down_pressed:
             self.SAIL_SPEED_FACTOR += 0.01
 
         elif self.down_pressed and not self.up_pressed:
-            self.SAIL_SPEED_FACTOR -= 0.01
+            self.SAIL_SPEED_FACTOR -= 0.005
 
         if self.left_pressed and not self.right_pressed:
             self.ship_sprite.change_angle = 1
@@ -382,9 +405,42 @@ class ShipView(arcade.View):
         elif self.ship_sprite.top > height - 1:
             self.ship_sprite.top = height - 1
 
-        self.physics_engine.update()
+        collided_walls = self.physics_engine.update()
+        wall_collision = len(collided_walls) > 0
+
+        # print(f"{self.ship_sprite.health, collided_walls}")
+        speed = sqrt(self.ship_sprite.change_x**2 + self.ship_sprite.change_y**2)
+
+        if wall_collision:
+            self.collision_time = time.time()
+        else:
+            self.time_diff = time.time() - self.collision_time
+
+        print((time.time(), self.collision_time, self.time_diff))
+
+        if wall_collision and speed > 0.1 and self.time_diff > 2:
+            self.ship_sprite.health -= 20
+
+        if int(self.ship_sprite.health) in range(25, 51):
+            self.ship_sprite.set_texture(1)
+            self.ship_sprite.change_y *= 0.5
+            self.ship_sprite.change_x *= 0.5
+
+        elif int(self.ship_sprite.health) in range(1, 25):
+            self.ship_sprite.set_texture(2)
+            self.ship_sprite.change_y *= 0.25
+            self.ship_sprite.change_x *= 0.25
+
+        self.time_diff = time.time() - self.collision_time
+
+        # Death condition
+        if int(self.ship_sprite.health) <= 0:
+            self.ship_sprite.set_texture(3)
+            self.SAIL_SPEED_FACTOR = 0
 
         self.play_audio()
+
+        # print((self.time_diff, speed, wall_collision, wall_collision and speed > 1 and self.time_diff > 2))
 
     def on_key_press(self, key, key_modifiers):
         """
