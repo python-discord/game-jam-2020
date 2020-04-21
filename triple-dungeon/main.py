@@ -74,7 +74,7 @@ class Game(arcade.Window):
         self.bullet_list = arcade.SpriteList()
 
         # Create the dungeon
-        self.dungeon = Dungeon(0, 12)
+        self.dungeon = Dungeon(0, 8)
 
         # Set up the player, specifically placing it at these coordinates.
         self.player = Player()
