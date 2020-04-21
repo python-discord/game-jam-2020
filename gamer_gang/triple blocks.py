@@ -56,7 +56,7 @@ class PlayerSprite(arcade.Sprite):
         self.og_y = self.center_y
 
 
-def make_player_sprite(mass, space, textures, scale, x, y, name):
+def makePlayer(mass, space, textures, scale, x, y, name):
     pos_x, pos_y = x, y
 
     width, height = textures[0].width, textures[0].height
@@ -67,16 +67,16 @@ def make_player_sprite(mass, space, textures, scale, x, y, name):
     shape.friction = 0.5
     space.add(body, shape)
     sprite = PlayerSprite(shape, textures, scale, pos_x, pos_y, name)
-    return sprite, body
+    return sprite, body, shape
 
 
-def make_ground_sprite(space, textures, scale, x, y):
+def makeGround(space, textures, scale, x, y):
     pos_x, pos_y = x, y
     width, height = textures[0].width, textures[0].height
     body = pymunk.Body(body_type=pymunk.Body.STATIC)
     body.position = pymunk.Vec2d((pos_x, pos_y))
     shape = pymunk.Poly.create_box(body, (width, height))
-    shape.friction = 0.5
+    shape.friction = 1
     space.add(body, shape)
     sprite = GroundSprite(shape, textures, scale, pos_x, pos_y)
     return sprite
@@ -94,7 +94,6 @@ class MyGame(arcade.Window):
         self.total_time = 0
         self.game_over = False
         self.debugging = False
-        self.set_location(0, 0)
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
         self.view_left = self.view_bottom = 0
@@ -103,26 +102,28 @@ class MyGame(arcade.Window):
 
         self.floor_list = arcade.SpriteList()
         self.players = []
+        self.shapes = []
 
         self.controlled = 0
 
         self.ground_texture_list = [arcade.load_texture("images/ground/debug.png")]
-        self.player_texture_list = [[arcade.load_texture("images/player/player1.png")],
-                                    [arcade.load_texture("images/player/player2.png")],
-                                    [arcade.load_texture("images/player/player3.png")]]
+        self.playerTextures = [[arcade.load_texture("images/player/player1.png")],
+                               [arcade.load_texture("images/player/player2.png")],
+                               [arcade.load_texture("images/player/player3.png")]]
 
         self.bodies = []
-        self.joints = [None, None, None]
         for i in range(1, 4):
-            object, body = make_player_sprite(1, self.space, self.player_texture_list[i-1], 1, 32 * (i + 3), 32, str(i))
+            p, body, shape = makePlayer(1, self.space, self.playerTextures[i - 1], 1, 32 * (i + 3), 32, str(i))
+
+            p.set_hit_box([[p.width / -2, p.height / -2 - 1], [p.width / 2, p.height / -2 - 1],
+                           [p.width / 2, p.height / 2], [p.width / -2, p.height / 2]])
             self.bodies.append(body)
-            object.set_hit_box([[object.width / -2, object.height / -2 - 1], [object.width / 2, object.height / -2 - 1],
-                                [object.width / 2, object.height / 2], [object.width / -2, object.height / 2]])
-            self.players.append(object)
+            self.shapes.append(shape)
+            self.players.append(p)
 
         for i in range(20):
-            object = make_ground_sprite(self.space, self.ground_texture_list, 10, i * 32, 0)
-            self.floor_list.append(object)
+            g = makeGround(self.space, self.ground_texture_list, 10, i * 32, 0)
+            self.floor_list.append(g)
 
     def on_draw(self):
         arcade.start_render()
@@ -139,17 +140,19 @@ class MyGame(arcade.Window):
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
-            self.key_pressed[1] = -30
+            self.key_pressed[1] = -20
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.key_pressed[0] = 30
+            self.key_pressed[0] = 20
         elif key == arcade.key.UP or key == arcade.key.W:
-            self.key_pressed[2] = 450
+            self.key_pressed[2] = 500
         elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
             self.controlled = 0
         elif key == arcade.key.NUM_2 or key == arcade.key.KEY_2:
             self.controlled = 1
         elif key == arcade.key.NUM_3 or key == arcade.key.KEY_3:
             self.controlled = 2
+        elif key == arcade.key.DOWN:
+            self.splitStack()
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
@@ -159,7 +162,7 @@ class MyGame(arcade.Window):
         elif key == arcade.key.UP or key == arcade.key.W:
             self.key_pressed[2] = 0
 
-    def camera_shift(self):
+    def cameraShift(self):
         changed = False
         left_boundary = self.view_left + SCREEN_MARGIN
         if self.players[self.controlled].left < left_boundary:
@@ -184,7 +187,7 @@ class MyGame(arcade.Window):
             arcade.set_viewport(self.view_left, SCREEN_WIDTH + self.view_left - 1,
                                 self.view_bottom, SCREEN_HEIGHT + self.view_bottom - 1)
 
-    def stack_check(self):
+    def stackCheck(self):
         for up, down in itertools.permutations(self.players, 2):
             if up.name != down.name:
                 if abs(up.bottom - down.top) < 5 and abs(up.center_x - down.center_x) < 10:
@@ -197,17 +200,25 @@ class MyGame(arcade.Window):
                         elif p.name == down.name:
                             bottomList.append(v)
 
-                    object, body = make_player_sprite(1, self.space,
-                                                      [arcade.load_texture(f'images/player/{stackName}.png')],
-                                                      1, down.center_x, down.top, stackName)
-                    object.set_hit_box(
-                        [[object.width / -2, object.height / -2 - 1], [object.width / 2, object.height / -2 - 1],
-                         [object.width / 2, object.height / 2], [object.width / -2, object.height / 2]])
+                    p, body, shape = makePlayer(1, self.space, [arcade.load_texture(f'images/player/{stackName}.png')],
+                                                1, down.center_x, down.top, stackName)
+                    p.set_hit_box([[p.width / -2, p.height / -2 - 1], [p.width / 2, p.height / -2 - 1],
+                                   [p.width / 2, p.height / 2], [p.width / -2, p.height / 2]])
+
                     for i in topList + bottomList:
-                        self.players[i] = object
+                        self.players[i].kill()
+                        try:
+                            self.space.remove(self.bodies[i], self.shapes[i])
+                        except KeyError:  # no idea why this crap happens
+                            pass
+                        self.players[i] = p
                         self.bodies[i] = body
+                        self.shapes[i] = shape
 
                     break  # break bc we can only have 2 things join at a time, right?
+
+    def splitStack(self):
+        pass
 
     def movement(self):
         for p in self.players:
@@ -218,24 +229,19 @@ class MyGame(arcade.Window):
                     p.can_jump = False
 
                 if p.pymunk_shape.body.velocity.x > 300:  # these two if statements are acceleration
-                    p.pymunk_shape.body.velocity = pymunk.Vec2d(
-                        (150, p.pymunk_shape.body.velocity.y))
+                    p.pymunk_shape.body.velocity = pymunk.Vec2d((150, p.pymunk_shape.body.velocity.y))
 
                 if p.pymunk_shape.body.velocity.x < -300:
-                    p.pymunk_shape.body.velocity = pymunk.Vec2d(
-                        (-150, p.pymunk_shape.body.velocity.y))
+                    p.pymunk_shape.body.velocity = pymunk.Vec2d((-150, p.pymunk_shape.body.velocity.y))
 
     def on_update(self, x):
-        for p in self.players: print(p, end=' ')
-        print('')
-        print(self.bodies)
-        print('------------')
         self.frame_count += 1
         self.space.step(1 / 60.0)
 
         self.movement()  # move all the players (well, the characters)
-        self.camera_shift()  # shift camera
-        self.stack_check()  # join into stacks if detected
+        self.cameraShift()  # shift camera
+        self.stackCheck()  # join into stacks if detected
+
         for p in self.players:
             if p.top < -100:
                 self.game_over = True
