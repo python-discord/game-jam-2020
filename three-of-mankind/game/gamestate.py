@@ -48,20 +48,25 @@ class GameState:
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
-        if self.engine.can_jump():
-            self.player.jump_count = 0
+        # Dashing
         if key == arcade.key.LSHIFT and not self.engine.can_jump():
             if self.player.dash_count > 0 and not sweep_trace(self.player, DASH_DISTANCE, 0, self.level_geometry):
                 self.player.left += DASH_DISTANCE * self.player.direction
                 self.player.dash_count -= 1
         else:
             self.player.dash_count = DASH_COUNT
+
+        # Jumping
+        if self.engine.can_jump():
+            self.player.jump_count = 0
         if key == arcade.key.SPACE:
             self.player.jump_count += 1
             if self.player.jump_count <= JUMP_COUNT:
                 self.player.change_y = 0
                 self.player.is_jumping = True
                 self.player.jump_force = JUMP_FORCE
+
+        # Moving
         if key == arcade.key.LEFT or key == arcade.key.A:
             self.player.movement_x = -PLAYER_MOVEMENT_SPEED
             self.player.direction = LEFT
@@ -71,8 +76,11 @@ class GameState:
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key."""
+        # Jumping
         if key == arcade.key.SPACE:
             self.player.is_jumping = False
+
+        # Moving
         if key == arcade.key.LEFT or key == arcade.key.A:
             if self.player.movement_x < 0:
                 self.player.movement_x = 0
