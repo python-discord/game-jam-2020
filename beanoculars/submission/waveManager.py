@@ -71,7 +71,7 @@ def getSpawnList(waveNumber: int):
             spawnList.append(EnemyGroup(4.5, E_ANT, MID_ROW, 5, 1))
             spawnList.append(EnemyGroup(0.5, E_MOSQUITO, MID_ROW, 5, 1))
             spawnList.append(EnemyGroup(4.5, E_MOSQUITO, TOP_ROW, 5, 1))
-            spawnList.append(EnemyGroup(0.5, E_SPIDER, MID_ROW, 5, 1))
+            spawnList.append(EnemyGroup(0.5, E_SPIDER, TOP_ROW, 5, 1))
 
         print('Manually made wave for round: ' + str(waveNumber))
 
@@ -126,6 +126,8 @@ def manageEnemySpawn(entity_list: arcade.sprite_list, spawnList: list, time: flo
 
     for i in range(len(poppedItems)):
         doSpawn(entity_list, spawnList[i], top_coor, mid_coor, bot_coor)
+        print(len(spawnList))
+        print(i)
         print(spawnList.pop(i).e_type, ' spawned')
 
     return time
