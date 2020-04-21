@@ -5,15 +5,15 @@ Holds the main game window, as well as manages basic functions for organizing th
 """
 
 import collections
+import math
 import random
 import time
+
 import arcade
-import math
 
 from config import Config
 from map import Dungeon
-from mobs import Player, Enemy
-from config import Config
+from mobs import Player
 from projectiles import Temp
 
 
@@ -106,7 +106,8 @@ class Game(arcade.Window):
             if Config.DEBUG:
                 x, y = self.player.position
                 tile = Config.TILE_WIDTH * Config.TILE_SCALING
-                arcade.draw_rectangle_outline(round(x / tile) * tile, round(y / tile) * tile, tile, tile, arcade.color.RED)
+                arcade.draw_rectangle_outline(round(x / tile) * tile, round(y / tile) * tile, tile, tile,
+                                              arcade.color.RED)
                 self.player.draw_hit_box()
                 arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
                 arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
@@ -165,8 +166,8 @@ class Game(arcade.Window):
         bullet.center_y = start_y
 
         # Get from the mouse the destination location for the bullet
-        dest_x = x+self.view_left
-        dest_y = y+self.view_bottom
+        dest_x = x + self.view_left
+        dest_y = y + self.view_bottom
 
         # Do math to calculate how to get the bullet to the destination.
         # Calculation the angle in radians between the start points
@@ -241,10 +242,10 @@ class Game(arcade.Window):
 
             # If the bullet flies off-screen, remove it. TEMP change to range calc
             if (
-                bullet.bottom < self.view_bottom or
-                bullet.top > self.view_bottom+Config.SCREEN_HEIGHT or
-                bullet.right > self.view_left+Config.SCREEN_WIDTH or
-                bullet.left < self.view_left
+                    bullet.bottom < self.view_bottom or
+                    bullet.top > self.view_bottom + Config.SCREEN_HEIGHT or
+                    bullet.right > self.view_left + Config.SCREEN_WIDTH or
+                    bullet.left < self.view_left
             ):
                 bullet.remove_from_sprite_lists()
 
