@@ -154,10 +154,12 @@ class Planet(arcade.Sprite):
         self.scale = self.health
         assert self.health > 0
 
-    def update_triangulating(self, time_multiplier):
+    def update_triangulating(self, time_multiplier, in_tutorial):
         # TODO improve chance logic here
         start_chance = TRIANGULATION_START_LIKELIHOOD * time_multiplier
         end_chance = TRIANGULATION_END_LIKELIHOOD * time_multiplier
+        if in_tutorial:
+            start_chance = (start_chance*99 + 1) / 100
         if random.random() < start_chance:
             self.is_triangulating = True
         if random.random() < end_chance:

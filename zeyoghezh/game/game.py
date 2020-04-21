@@ -178,7 +178,7 @@ class Game(arcade.Window):
         [planet.move(time_multiplier) for planet in self.planets]
         [planet.try_attack_others(time_multiplier) for planet in self.planets]
         [planet.try_push_others(time_multiplier) for planet in self.planets]
-        [planet.update_triangulating(time_multiplier)
+        [planet.update_triangulating(time_multiplier, self.player_in_tutorial)
          for planet in self.planets]
         self.run_assertions()
 
