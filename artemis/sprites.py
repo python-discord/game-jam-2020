@@ -73,6 +73,7 @@ class Block(arcade.Sprite):
         return True
 
     def reposition(self):
+        if isinstance(self, RandomBlock):print('NOOOOOOOOOOOOOooo')
         self.center_x += WIDTH + SIDE*2
 
     def update(self):
@@ -95,17 +96,37 @@ class RandomBlock(Block):
         range_pixels = HEIGHT - TOP
         range_widths = range_pixels // self.width
         position_widths = random.randrange(range_widths+1)
-        self.center_x = position_widths * self.width
+        self.center_y = position_widths * self.width
 
     def reposition(self):
         self.center_x += WIDTH + random.randrange(SIDE, SIDE*2)
+
+    def reposition_y(self):
         self.find_y()
-        while True:
+        attempts = 5
+        overlapping = False
+        while attempts and not overlapping:
             overlapping = False
+            attempts -= 1
             for others in (
                     self.game.blocks, self.game.gems, self.game.spikes
                     ):
                 if arcade.check_for_collision_with_list(self, others):
+                    overlapping = True
+                    self.find_y()
+                    break
+            # minimum distance between blocks that aren't touching
+            min_dist = self.game.player.width
+            left_bound = self.left - min_dist
+            right_bound = self.right = min_dist
+            for block in self.game.blocks:
+                if (
+                            left_bound < block.left < right_bound
+                            or left_bound < block.right < right_bound
+                        ) and (
+                            0 < self.bottom - block.top < min_dist
+                            or 0 < block.bottom - self.top < min_dist
+                        ):
                     overlapping = True
                     self.find_y()
                     break
@@ -118,10 +139,10 @@ class RandomBlock(Block):
         self.center_y = random.randrange(HEIGHT-TOP)
 
     def update(self):
+        super().update()
         for others in (self.game.blocks, self.game.gems):
             if arcade.check_for_collision_with_list(self, others):
-                self.total_reposition()
-        super().update()
+                self.reposition_y()
 
 
 class Spike(arcade.Sprite):

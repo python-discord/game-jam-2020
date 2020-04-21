@@ -1,4 +1,5 @@
 import arcade
+from PIL import Image
 
 from constants import BACKGROUND, WIDTH, HEIGHT, ASSETS, INSTRUCTIONS
 from game import Game
@@ -50,13 +51,56 @@ class Instructions(View):
         )
 
 
+class Tutorial(View):
+    def get_textures(self, file):
+        gif = Image.open(file)
+        n = 0
+        while True:
+            image = gif.resize((WIDTH, HEIGHT))
+            texture = arcade.Texture(f'tutorial-{n}', image)
+            yield texture, getattr(gif, 'duration', 100) / 1000
+            n += 1
+            try:
+                gif.seek(n)
+            except EOFError:
+                break
+
+    def on_show(self):
+        self.textures = self.get_textures(ASSETS + 'tutorial.gif')
+        self.texture = None
+        self.time_till_change = 0
+        self.done = False
+
+    def on_update(self, timedelta):
+        self.time_till_change -= timedelta
+        if self.time_till_change <= 0:
+            try:
+                self.texture, self.time_till_change = next(self.textures)
+            except StopIteration:
+                self.done = True
+                self.button_list.append(
+                    Button(self, WIDTH/2-75, HEIGHT/2, 'Back', Menu)
+                )
+                self.button_list.append(
+                    Button(self, WIDTH/2+75, HEIGHT/2, 'Play', Game)
+                )
+
+    def on_draw(self):
+        if not self.texture:
+            return
+        if self.done:
+            super().on_draw()
+        else:
+            self.texture.draw_scaled(WIDTH/2, HEIGHT/2)
+
+
 class Menu(View):
     def on_show(self):
         self.button_list.append(
             Button(self, WIDTH/2, HEIGHT/2-50, 'Play', Game)
         )
         self.button_list.append(Button(
-            self, WIDTH/2, HEIGHT/2-100, 'Help', Instructions
+            self, WIDTH/2, HEIGHT/2-100, 'Help', Tutorial
         ))
 
     def on_draw(self):
