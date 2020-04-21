@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
 import arcade
 
@@ -16,7 +16,7 @@ class GameManager:
         self.enemy_projectiles = arcade.SpriteList()
         self.damage_indicators = arcade.SpriteList()
 
-        self.spikes = arcade.SpriteList(use_spatial_hash=True)
+        self.spikes: Optional[arcade.SpriteList] = None
 
     def draw(self) -> None:
         self.enemies.draw()

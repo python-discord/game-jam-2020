@@ -1,6 +1,6 @@
 import random
 import traceback
-from typing import Tuple
+from typing import Optional, Tuple
 
 import arcade
 import numpy as np
@@ -25,7 +25,7 @@ class Map:
         self.FILL_PROBABILITY = 0.2
         self.SPIKE_PROBABILITY = 0.01
 
-        self.sprites = None
+        self.sprites: Optional[arcade.SpriteList] = None
 
     def generate(self) -> np.array:
         map_ = np.ones(self.shape)
