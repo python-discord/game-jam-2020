@@ -1,6 +1,6 @@
 # setup
 import arcade
-# from arcade.gui import *
+from arcade.gui import TextButton  # don't use textbox
 from submission.gameConstants import *
 from submission.loadAnimatedChars import *
 from submission.tileMapLoader import *
@@ -60,10 +60,12 @@ class MyGame(arcade.Window):
         self.currentOrder = None
         self.orderCount = None
 
-        self.betweenRounds = True
+        self.betweenRounds = False
         self.roundNumber = 0
         self.spawnList = None
         self.roundTime = 0
+
+        self.game_over = False
 
         arcade.set_background_color((94, 132, 63))
 
@@ -134,14 +136,16 @@ class MyGame(arcade.Window):
         """ On Update method"""
         updateActualPos(self.player_sprite)
         movePlayer(self.player_sprite, delta_time)
+        self.game_over = moveEntities(self.entity_list, self.path_list, delta_time)
 
         if self.betweenRounds:
             self.spawnList = decomposeSpawnList(getSpawnList(self.roundNumber))
             self.betweenRounds = False
 
         if not self.betweenRounds:
-            self.roundTime = manageEnemySpawn(self.entity_list, self.spawnList, self.roundTime, delta_time, [0, 13],
-                                              [0, 8], [0, 3])
+            if self.spawnList:
+                self.roundTime = manageEnemySpawn(self.entity_list, self.spawnList, self.roundTime, delta_time, [0, 13],
+                                                  [0, 8], [0, 3])
 
         self.player_list.update_animation()
         self.entity_list.update_animation()
@@ -161,7 +165,12 @@ class MyGame(arcade.Window):
             for i in range(len(self.entity_list)):
                 self.entity_list[0].kill()
             self.betweenRounds = True
-            self.roundNumber += 1
+            if self.spawnList:
+                self.roundNumber += 1
+
+        if symbol == arcade.key.A:
+            if self.entity_list:
+                self.entity_list[0].center_y += 10
 
     def on_key_release(self, symbol: int, modifiers: int):
         """ Get keyboard's releases. """
