@@ -87,18 +87,19 @@ class MyGame(arcade.Window):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
+        arcade.set_background_color(arcade.color.BLUE)
 
     def setup(self):
         self.frame_count = 0
         self.total_time = 0
         self.game_over = False
-        self.debugging = False
+        self.debugging = True
         self.set_location(0, 0)
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
         self.view_left = self.view_bottom = 0
 
-        self.key_pressed = [0, 0, 0]  # controllable
+        self.key_pressed = [0, 0, 0]  # the user input
 
         self.floor_list = arcade.SpriteList()
         self.players = []
@@ -133,13 +134,15 @@ class MyGame(arcade.Window):
         if self.debugging:
             for i in self.players:
                 i.draw_hit_box((100, 100, 100), 3)
+            for i in self.floor_list:
+                i.draw_hit_box((100, 100, 100))
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
             self.key_pressed[1] = -30
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.key_pressed[0] = 30
-        elif (key == arcade.key.UP or key == arcade.key.W):
+        elif key == arcade.key.UP or key == arcade.key.W:
             self.key_pressed[2] = 450
         elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
             self.controlled = 0
@@ -214,7 +217,7 @@ class MyGame(arcade.Window):
                     p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.key_pressed[2]))
                     p.can_jump = False
 
-                if p.pymunk_shape.body.velocity.x > 300:
+                if p.pymunk_shape.body.velocity.x > 300:  # these two if statements are acceleration
                     p.pymunk_shape.body.velocity = pymunk.Vec2d(
                         (150, p.pymunk_shape.body.velocity.y))
 
@@ -224,12 +227,11 @@ class MyGame(arcade.Window):
 
     def on_update(self, x):
         self.frame_count += 1
-        for i in range(10):
-            self.space.step(1 / 600.0)
+        self.space.step(1 / 60.0)
 
-        self.movement()
-        self.camera_shift()
-        self.stack_check()
+        self.movement()  # move all the players (well, the characters)
+        self.camera_shift()  # shift camera
+        self.stack_check()  # join into stacks if detected
         for p in self.players:
             if p.top < -100:
                 self.game_over = True
@@ -249,6 +251,7 @@ class MyGame(arcade.Window):
                 p.center_x = p.pymunk_shape.body.position.x
                 p.center_y = p.pymunk_shape.body.position.y
                 p.angle = math.degrees(p.pymunk_shape.body.angle)
+
         else:  # TODO: implement a game over/restart screen
             self.close()
 
