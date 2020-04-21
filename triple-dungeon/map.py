@@ -7,12 +7,10 @@ Pathfinding will also depend on objects here, and is thus integral to it's funct
 from __future__ import annotations
 
 import json
-
 import arcade
 import numpy as np
 
 from itertools import chain
-
 from config import Config
 
 

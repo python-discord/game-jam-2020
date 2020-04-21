@@ -3,10 +3,10 @@ main.py
 The main class used to load the game.
 Holds the main game window, as well as manages basic functions for organizing the game.
 """
+
 import collections
 import random
 import time
-
 import arcade
 import math
 
