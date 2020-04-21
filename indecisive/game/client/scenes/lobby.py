@@ -56,7 +56,7 @@ class Lobby(Base):
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
         if self.spritedict["back"].collides_with_point((x, y)) is True:
-            self.display.change_scenes("loading", startup=False)
+            self.display.change_scenes("mainMenu", startup=False)
         elif self.spritedict["name"].collides_with_point((x, y)) is True:
             self.focus = "name"
         else:

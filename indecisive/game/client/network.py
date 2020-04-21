@@ -35,6 +35,9 @@ class Client:
             self.receive.put(3)
         except socket.gaierror:
             self.receive.put(4)
+        except OSError:
+            self.receive.put(5)
+
 
 def run(ip: str, port: int = None) -> (threading.Thread, queue.Queue, queue.Queue):
     receive, send = queue.Queue(), queue.Queue()

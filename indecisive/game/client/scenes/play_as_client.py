@@ -60,7 +60,7 @@ class PlayAsClient(Base):
             # goto lobby
             print("tou")
             self.display.change_scenes("lobby", network_thread, receive, send)
-        elif status == 1:
+        elif status == 1 or status == 5:
             self.status = "Invalid address"
         elif status == 2 or status == 3:
             self.status = "Connection failed"

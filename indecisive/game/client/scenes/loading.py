@@ -54,6 +54,9 @@ class LoadingScreen(Base):
 
             for x in self.spritelist:
                 x.alpha = fade
+        else:
+            for x in self.spritelist:
+                x.alpha = 255
 
         if self.sceneTime < 2:
             fade_in = make_colour_valid((self.sceneTime - 0.5) * 200)

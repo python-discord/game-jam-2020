@@ -9,6 +9,9 @@ class Base:
 
     sceneTime: float = 0
 
+    def sprite_setup(self) -> None:
+        pass
+
     def update(self, delta_time: float) -> None:
         self.sceneTime += delta_time
 

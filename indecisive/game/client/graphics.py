@@ -16,7 +16,8 @@ class Display(arcade.Window):
         self.scenes["lobby"] = Lobby(self)
         self.scenes["mainMenu"] = MainMenu(self)
         # self.scenes["options"] = Options()
-        self.scenes["playAsClient"] = PlayAsClient(self)
+        self.scenes["playClient"] = PlayAsClient(self)
+        self.scenes["playServer"] = PlayAsServer(self)
 
     def change_scenes(self, scene: str, *args, **kwargs):
         print(self.scene)
