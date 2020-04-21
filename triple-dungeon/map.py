@@ -32,8 +32,8 @@ class Dungeon(object):
         self.level_count = level_count
         self.size = size
 
-        self.floor_list = arcade.SpriteList()
-        self.wall_list = arcade.SpriteList()
+        self.floor_list = arcade.SpriteList(is_static=True)
+        self.wall_list = arcade.SpriteList(is_static=True)
 
         # center = Level.load_file(1, 1, 'resources/levels/map1/center.json')
         # side = Level.load_file(2, 1, 'resources/levels/map1/room.json')
@@ -48,10 +48,10 @@ class Dungeon(object):
         Simple one time function for getting all Wall sprites from all Levels.
         Used by the physics engine during game startup.
 
-        :return: A SpriteList containing all Sprites.
+        :return: A SpriteList containing all Wall (Collidable) Sprites.
         """
 
-        walls = arcade.SpriteList()
+        walls = arcade.SpriteList(is_static=True)
         walls.extend(
             list(chain.from_iterable(
                 chain.from_iterable([level.wallSprites for level in column if level is not None]) for column in
@@ -102,8 +102,8 @@ class Level:
         self.sprites = []
         self.structure = []
 
-        self.floorSprites = arcade.SpriteList()
-        self.wallSprites = arcade.SpriteList()
+        self.floorSprites = arcade.SpriteList(is_static=True)
+        self.wallSprites = arcade.SpriteList(is_static=True)
 
         # Tuples containing the Node positions of where walls, floor and entrances are.
         # All positions are generated based on the level's X and Y position, so that all points within

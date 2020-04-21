@@ -42,6 +42,9 @@ class Config(object):
     BOTTOM_VIEWPORT_MARGIN = 50
     TOP_VIEWPORT_MARGIN = 100
 
+    # All debug statements and renderings should use this
+    DEBUG = True
+
 
 class Enums(Enum):
     """
