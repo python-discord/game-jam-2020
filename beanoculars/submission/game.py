@@ -7,7 +7,7 @@ from submission.tileMapLoader import *
 from submission.spell import pickUp
 from submission.sounds import loadSounds
 from submission.motion import *
-from submission.waveManager import getSpawnList, manageEnemySpawn, EnemyGroup
+from submission.waveManager import getSpawnList, manageEnemySpawn, decomposeSpawnList, EnemyGroup, SpawnOrder
 from random import randint
 import math
 
@@ -60,9 +60,10 @@ class MyGame(arcade.Window):
         self.currentOrder = None
         self.orderCount = None
 
-        self.betweenRounds = True  # mettre à false
+        self.betweenRounds = True
         self.roundNumber = 0
         self.spawnList = None
+        self.roundTime = 0
 
         arcade.set_background_color((94, 132, 63))
 
@@ -84,9 +85,9 @@ class MyGame(arcade.Window):
         self.player_sprite.center_y = BP_PLAYER[1] * 32 + 16
         self.player_list.append(self.player_sprite)
 
-        self.turret_list.append(AnimatedEntity(T_SPRAY, 2, BP_SPRAY))
-        self.turret_list.append(AnimatedEntity(T_LAMP, 2, BP_LAMP))
-        self.turret_list.append(AnimatedEntity(T_VACUUM, 2, BP_VACUUM))
+        self.turret_list.append(AnimatedEntity(T_SPRAY, BP_SPRAY))
+        self.turret_list.append(AnimatedEntity(T_LAMP, BP_LAMP))
+        self.turret_list.append(AnimatedEntity(T_VACUUM, BP_VACUUM))
 
         self.path_list = loadPathTilemap()
 
@@ -135,8 +136,12 @@ class MyGame(arcade.Window):
         movePlayer(self.player_sprite, delta_time)
 
         if self.betweenRounds:
-            self.spawnList = getSpawnList(self.roundNumber)
+            self.spawnList = decomposeSpawnList(getSpawnList(self.roundNumber))
             self.betweenRounds = False
+
+        if not self.betweenRounds:
+            self.roundTime = manageEnemySpawn(self.entity_list, self.spawnList, self.roundTime, delta_time, [0, 13],
+                                              [0, 8], [0, 3])
 
         self.player_list.update_animation()
         self.entity_list.update_animation()
@@ -148,11 +153,13 @@ class MyGame(arcade.Window):
             pickUp(self.player_sprite, self.player_list, self.path_list, self.turret_list)
 
         if symbol == arcade.key.D:
-            self.entity_list.append(AnimatedEntity(E_ANT, 2, [0, 0]))
-            self.entity_list.append(AnimatedEntity(E_MOSQUITO, 4, [1, 0]))
-            self.entity_list.append(AnimatedEntity(E_SPIDER, 2, [2, 0]))
+            self.entity_list.append(AnimatedEntity(E_ANT, [0, 13]))
+            self.entity_list.append(AnimatedEntity(E_MOSQUITO, [0, 8]))
+            self.entity_list.append(AnimatedEntity(E_SPIDER, [0, 3]))
 
         if symbol == arcade.key.F:
+            for i in range(len(self.entity_list)):
+                self.entity_list[0].kill()
             self.betweenRounds = True
             self.roundNumber += 1
 
@@ -171,11 +178,13 @@ class MyGame(arcade.Window):
 
                 else:
                     self.mouse_click = [self.mouse_x, self.mouse_y]
-                    self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
+                    self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x,
+                                                                 self.window_offset_y)
 
             else:
                 self.mouse_click = [self.mouse_x, self.mouse_y]
-                self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
+                self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x,
+                                                             self.window_offset_y)
 
     def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
         """ Get mouse's releases. """
