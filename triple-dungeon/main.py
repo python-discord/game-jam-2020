@@ -104,8 +104,10 @@ class Game(arcade.Window):
             self.bullet_list.draw()
 
             if Config.DEBUG:
+                x, y = self.player.position
+                tile = Config.TILE_WIDTH * Config.TILE_SCALING
+                arcade.draw_rectangle_outline(round(x / tile) * tile, round(y / tile) * tile, tile, tile, arcade.color.RED)
                 self.player.draw_hit_box()
-                x, y = self.player.center_x, self.player.center_y
                 arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
                 arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
                                  arcade.color.WHITE, 16, font_name='Arial')
