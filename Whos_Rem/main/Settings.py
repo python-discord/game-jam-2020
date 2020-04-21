@@ -30,43 +30,15 @@ class Settings(arcade.View):
     def on_draw(self):
         arcade.start_render()
         arcade.set_background_color([0, 0, 0])
-        arcade.draw_text("SETTINGS", self.width * 0.2, self.height * 0.8,
-                         cb.brightness([255, 255, 255], self.brightness),
-                         min(self.width, self.height) / 8, align="center",
-                         width=int(self.width * 0.6))
 
         self.brightness_slide.draw(self.brightness)
-        arcade.draw_text("BRIGHTNESS", self.width * 0.5, self.height * 0.48,
-                         cb.brightness([255, 255, 255], self.brightness),
-                         min(self.width, self.height) / 12, align="center",
-                         width=int(self.width * 0.6))
-
         self.volume_slide.draw(self.brightness)
-        arcade.draw_text("VOLUME", self.width * 0.5, self.height * 0.65,
-                         cb.brightness([255, 255, 255], self.brightness),
-                         min(self.width, self.height) / 12, align="center",
-                         width=int(self.width * 0.6))
 
         self.left_key_button.draw(self.brightness)
-        arcade.draw_text(chr(self.key_binds["left"]).upper(),
-                         self.width * 0.178, self.height * 0.105,
-                         cb.brightness([0, 0, 0], self.brightness),
-                         min(self.width, self.height) / 16, align="center",
-                         width=int(self.width * 0.1))
-
         self.center_key_button.draw(self.brightness)
-        arcade.draw_text(chr(self.key_binds["center"]).upper(),
-                         self.width * 0.428, self.height * 0.105,
-                         cb.brightness([0, 0, 0], self.brightness),
-                         min(self.width, self.height) / 16, align="center",
-                         width=int(self.width * 0.1))
-
         self.right_key_button.draw(self.brightness)
-        arcade.draw_text(chr(self.key_binds["right"]).upper(),
-                         self.width * 0.678, self.height * 0.105,
-                         cb.brightness([0, 0, 0], self.brightness),
-                         min(self.width, self.height) / 16, align="center",
-                         width=int(self.width * 0.1))
+
+        self.draw_text()
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_x = x
@@ -94,11 +66,46 @@ class Settings(arcade.View):
 
     def on_key_press(self, symbol, modifiers):  # Setting key binds
         if self.binding_key in self.key_binds and (97 <= symbol <= 122 or 48 <= symbol <= 57):
-            self.key_binds[self.binding_key] = symbol
-            self.binding_key = None
+            if symbol not in self.key_binds.values():
+                self.key_binds[self.binding_key] = symbol
+                self.binding_key = None
 
     def set_binding_key(self, binding_key):
         self.binding_key = binding_key
+
+    def draw_text(self):
+        arcade.draw_text("SETTINGS", self.width * 0.2, self.height * 0.8,
+                         cb.brightness([255, 255, 255], self.brightness),
+                         min(self.width, self.height) / 8, align="center",
+                         width=int(self.width * 0.6))
+
+        arcade.draw_text("BRIGHTNESS", self.width * 0.5, self.height * 0.48,
+                         cb.brightness([255, 255, 255], self.brightness),
+                         min(self.width, self.height) / 12, align="center",
+                         width=int(self.width * 0.6))
+
+        arcade.draw_text("VOLUME", self.width * 0.5, self.height * 0.65,
+                         cb.brightness([255, 255, 255], self.brightness),
+                         min(self.width, self.height) / 12, align="center",
+                         width=int(self.width * 0.6))
+
+        arcade.draw_text(chr(self.key_binds["left"]).upper(),
+                         self.width * 0.178, self.height * 0.105,
+                         cb.brightness([0, 0, 0], self.brightness),
+                         min(self.width, self.height) / 16, align="center",
+                         width=int(self.width * 0.1))
+
+        arcade.draw_text(chr(self.key_binds["center"]).upper(),
+                         self.width * 0.428, self.height * 0.105,
+                         cb.brightness([0, 0, 0], self.brightness),
+                         min(self.width, self.height) / 16, align="center",
+                         width=int(self.width * 0.1))
+
+        arcade.draw_text(chr(self.key_binds["right"]).upper(),
+                         self.width * 0.678, self.height * 0.105,
+                         cb.brightness([0, 0, 0], self.brightness),
+                         min(self.width, self.height) / 16, align="center",
+                         width=int(self.width * 0.1))
 
     @property
     def volume(self):
