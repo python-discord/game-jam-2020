@@ -4,6 +4,7 @@ from .util import arcade_int_to_string
 import queue
 import threading
 
+
 class Lobby(Base):
     def __init__(self, display):
         self.display = display
@@ -17,7 +18,7 @@ class Lobby(Base):
         self.network_thread = None
         self.receive_queue = None
         self.send_queue = None
-
+        self.other = ""
         self.sprite_setup()
 
     def reset(self, network_thread: threading.Thread, receive: queue.Queue, send: queue.Queue) -> None:
@@ -45,6 +46,13 @@ class Lobby(Base):
 
     def update(self, delta_time: float) -> None:
         self.sceneTime += delta_time
+        try:
+            data = self.send_queue.get(block=False)
+        except queue.Empty:
+            pass
+        else:
+            if data["type"] == "nameChange":
+                self.other = data["data"]["newName"]
 
     def draw(self):
         self.spritelist.draw()
@@ -53,6 +61,7 @@ class Lobby(Base):
         else:
             buffer = ""
         arcade.draw_text(buffer + self.name[-25:], 15, 600, color=(255, 255, 255), font_size=35, width=560)
+        arcade.draw_text(self.other, 335, 600, color=(255, 255, 255), font_size=35)
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
         if self.spritedict["back"].collides_with_point((x, y)) is True:
@@ -89,3 +98,4 @@ class Lobby(Base):
                         self.name = self.name + key
                     else:
                         self.name = self.name[:self.cursor_index + 1] + key + self.name[self.cursor_index + 1:]
+            self.send_queue.put({"type": "nameChange", "data": {"newName": self.name}})

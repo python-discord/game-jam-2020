@@ -15,7 +15,7 @@ class Server:
     async def _start(self):
         while True:
             for connection in self.connections:
-                await connection.send(json.dumps({"test": 7, "test2": 6}))
+                pass
             await asyncio.sleep(1)
 
     def _websocket(self, ip: str, port: int):
@@ -26,7 +26,9 @@ class Server:
         print(f"Connection from {path}")
         self.connections.append(websocket)
         async for message in websocket:
-            await asyncio.sleep(0)
+            print(message)
+            for connection in self.connections:
+                await connection.send(message)
 
     def start(self, ip: str, port: int = 10000):
         self.loop = asyncio.new_event_loop()
