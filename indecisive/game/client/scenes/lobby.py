@@ -11,7 +11,7 @@ class Lobby(Base):
         self.spritelist = arcade.SpriteList()
         self.spritedict = dict()
         self.sceneTime = 0
-        self.name = ""
+        self.name = " " * 20
         self.focus = None
 
         self.sprite_setup()
@@ -31,14 +31,14 @@ class Lobby(Base):
                 center_y=622.5
             )
         }
-        self.spritelist.extend(self.spritedict.values())
+        self.spritelist.extend(list(self.spritedict.values()))
 
     def update(self, delta_time: float) -> None:
         self.sceneTime += delta_time
 
     def draw(self):
         self.spritelist.draw()
-        arcade.draw_text(self.name, 15, 600, color=(255, 255, 255), font_size=35)
+        arcade.draw_text(self.name, 15, 600, color=(255, 255, 255), font_size=35, width=560)
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
         print((x, y))
@@ -46,9 +46,14 @@ class Lobby(Base):
             self.display.change_scenes("loading", startup=False)
         elif self.spritedict["name"].collides_with_point((x, y)) is True:
             self.focus = "name"
+        else:
+            self.focus = None
 
     def key_press(self, key, modifiers):
-        if len(self.name) < 8:
-            self.name += arcade_int_to_string(key, modifiers)
-        else:
-            self.name = self.name[1:] + arcade_int_to_string(key, modifiers)
+        if self.focus == "name":
+            if key == 65288:
+                self.name = " " + self.name[:-1]
+            else:
+                key = arcade_int_to_string(key, modifiers)
+                if key != "":
+                    self.name = self.name[1:] + key
