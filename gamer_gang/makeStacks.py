@@ -13,12 +13,12 @@ def get_concat_v(im1, im2):
 for part in permutations(players, 2):
     top = players.index(part[0]) + 1
     bottom = players.index(part[1]) + 1
-    get_concat_v(part[0], part[1]).save(f'images/player/{top}on{bottom}.png')
+    get_concat_v(part[0], part[1]).save(f'images/mobs/player/{top}on{bottom}.png')
 
 for part in permutations(players):
     top = players.index(part[0]) + 1
     middle = players.index(part[1]) + 1
     bottom = players.index(part[2]) + 1
-    get_concat_v(part[0], part[1]).save(f'images/player/{top}on{middle}.png')
-    second = Image.open(f'images/mobs/{top}on{middle}.jpg')
-    get_concat_v(second, part[2]).save(f'images/player/{top}on{middle}on{bottom}.png')
+    get_concat_v(part[0], part[1]).save(f'images/mobs/player/{top}on{middle}.png')
+    second = Image.open(f'images/mobs/player/{top}on{middle}.png')
+    get_concat_v(second, part[2]).save(f'images/mobs/player/{top}on{middle}on{bottom}.png')
