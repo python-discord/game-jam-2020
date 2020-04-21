@@ -80,9 +80,13 @@ class MyGame(arcade.Window):
         self.turret_list = arcade.SpriteList()
 
         self.player_sprite = AnimatedPlayer('player', 4)
-        self.player_sprite.center_x = 16
-        self.player_sprite.center_y = 16
+        self.player_sprite.center_x = BP_PLAYER[0] * 32 + 16
+        self.player_sprite.center_y = BP_PLAYER[1] * 32 + 16
         self.player_list.append(self.player_sprite)
+
+        self.turret_list.append(AnimatedEntity(T_SPRAY, 2, BP_SPRAY))
+        self.turret_list.append(AnimatedEntity(T_LAMP, 2, BP_LAMP))
+        self.turret_list.append(AnimatedEntity(T_VACUUM, 2, BP_VACUUM))
 
         self.path_list = loadPathTilemap()
 
@@ -147,9 +151,6 @@ class MyGame(arcade.Window):
             self.entity_list.append(AnimatedEntity(E_ANT, 2, [0, 0]))
             self.entity_list.append(AnimatedEntity(E_MOSQUITO, 4, [1, 0]))
             self.entity_list.append(AnimatedEntity(E_SPIDER, 2, [2, 0]))
-            self.turret_list.append(AnimatedEntity(T_SPRAY, 2, [4, 0]))
-            self.turret_list.append(AnimatedEntity(T_LAMP, 2, [5, 0]))
-            self.turret_list.append(AnimatedEntity(T_VACUUM, 2, [6, 0]))
 
         if symbol == arcade.key.F:
             self.betweenRounds = True
