@@ -3,13 +3,14 @@ import arcade
 
 
 class Player(arcade.Sprite):
-    def __init__(self, *args):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args)
         self.movement_x = 0
         self.previous_movement_x = 0
         self.movement_control = 0.5
         self.is_jumping = False
         self.jump_force = JUMP_FORCE
+        self.jump_count = 0
 
     def update(self):
         if self.is_jumping:

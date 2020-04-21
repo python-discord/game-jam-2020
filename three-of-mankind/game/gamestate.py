@@ -1,5 +1,6 @@
 from .constants import (
-  FLOOR_LENGTH, FLOOR_TEXTURE_LENGTH, GRAVITY, GROUND_CONTROL, AIR_CONTROL, PLAYER_MOVEMENT_SPEED, JUMP_FORCE
+  FLOOR_LENGTH, FLOOR_TEXTURE_LENGTH, GRAVITY, GROUND_CONTROL, AIR_CONTROL, PLAYER_MOVEMENT_SPEED, JUMP_FORCE,
+    JUMP_COUNT
 )
 from .player import Player
 import arcade
@@ -40,8 +41,12 @@ class GameState:
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
+        if self.engine.can_jump():
+            self.player.jump_count = 0
         if key == arcade.key.SPACE:
-            if self.engine.can_jump():
+            self.player.jump_count += 1
+            if self.player.jump_count <= JUMP_COUNT:
+                self.player.change_y = 0
                 self.player.is_jumping = True
                 self.player.jump_force = JUMP_FORCE
         elif key == arcade.key.LEFT or key == arcade.key.A:
