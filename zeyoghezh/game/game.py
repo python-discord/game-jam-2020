@@ -7,7 +7,7 @@ from .util import get_distance, log_exceptions
 from .planet import Planet
 from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
-    BACKGROUND_MUSIC_VOLUME
+    BACKGROUND_MUSIC_VOLUME, STORY_LINES
 )
 import sys
 
@@ -46,6 +46,7 @@ class Game(arcade.Window):
         self.banner_text = None
         self.banner_location = (SCREEN_SIZE[0]/10, SCREEN_SIZE[1]/2)
         self.last_banner_change = None
+        self.story_iter = None
 
     def setup(self):
         self.player_in_tutorial = True
@@ -53,6 +54,7 @@ class Game(arcade.Window):
         self.player_has_clicked_lithium = False
         self.banner_text = ""
         self.last_banner_change = None
+        self.story_iter = (line for line in STORY_LINES)
         self.background = arcade.load_texture(
             BACKGROUND_IMAGE)
         self.background_music = arcade.Sound(BACKGROUND_MUSIC, streaming=True)
@@ -197,7 +199,13 @@ class Game(arcade.Window):
             self.last_banner_change = now
 
     def update_banner_story(self):
-        pass  # TODO add story
+        now = time.time()
+        delta_time = now - self.last_banner_change
+        if delta_time < 3:
+            return
+        next_story_part = next(self.story_iter, self.banner_text)
+        self.banner_text = next_story_part
+        self.last_banner_change = now
 
     def run_assertions(self):
         assert len(self.planets) in (1, 2, 3)

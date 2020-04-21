@@ -46,3 +46,8 @@ SOUND_VOLUME = 1  # TODO use
 
 SCREEN_TITLE = "Zeyoghezh"
 ALL_PLANETS = ("ze", "yogh", "ezh")
+
+STORY_LINES = (
+    "Hi",
+    "Bye",
+)
