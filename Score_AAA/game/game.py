@@ -135,10 +135,8 @@ class MyGame(arcade.Window):
         result = 0
         if key == arcade.key.A:
             result = self.lane_up.action(self.obstacle_list)
-
         elif key == arcade.key.Z:
             result = self.lane_middle.action(self.obstacle_list)
-
         elif key == arcade.key.E:
             result = self.lane_down.action(self.obstacle_list)
 
@@ -165,7 +163,6 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time):
         """ Movement and game logic """
-        # Temporary level generation
         self.time += delta_time
         self.frame += 1
         if self.time >= 1:
@@ -173,11 +170,12 @@ class MyGame(arcade.Window):
             self.frame = 0
             self.time = 0
 
-
-            if self.obstacle_stack == []:
+            # Generation of obstacles
+            if not self.obstacle_stack:
                     self.obstacle_stack.append(self.pattern.generate_pattern())
             for obstacle in self.obstacle_stack.pop():
                 self.obstacle_list.append(obstacle)
+
         # Update Physic Engine
         self.lane_up.physics_engine.update()
         self.lane_middle.physics_engine.update()
@@ -201,24 +199,19 @@ class MyGame(arcade.Window):
     # Remove backgrounds item
         for item in self.background:
             if item.right < 0:
-                if "Q_Background.png" in item.texture.name:
-                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
-                elif "W_Background.png" in item.texture.name:
-                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
-                elif "E_Sky_1.png" in item.texture.name:
+                if "Q_Background.png" in item.texture.name or\
+                        "W_Background.png" in item.texture.name or\
+                        "E_Sky_1.png" in item.texture.name:
                     item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
                 else:
                     item.remove_from_sprite_lists()
 
         # Handle sky
-
         for item in self.sky_list:
             if item.right < 0:
-                if "Q_Sky.png" in item.texture.name:
-                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
-                if "W_Sky.png" in item.texture.name:
-                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
-                if "E_Sky_2.png" in item.texture.name:
+                if "Q_Sky.png" in item.texture.name or\
+                        "W_Sky.png" in item.texture.name or\
+                        "E_Sky_2.png" in item.texture.name:
                     item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
 
 def main():
