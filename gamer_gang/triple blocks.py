@@ -114,7 +114,7 @@ class MyGame(arcade.Window):
                                [arcade.load_texture("images/Player/3.png")]]
 
         self.bodies = []
-        for i in range(1, 3):
+        for i in range(1, 4):
             p, body, shape = makePlayer(1, self.space, self.playerTextures[i - 1], 1, 32 * (i + 3), 32, str(i))
 
             p.set_hit_box([[p.width / -2, p.height / -2 - 1], [p.width / 2, p.height / -2 - 1],
@@ -224,17 +224,18 @@ class MyGame(arcade.Window):
 
         for p in self.players:
             if str(self.controlled + 1) in p.name:
+                print(p.center_x, p.center_y)
                 presentIndexes = [int(i) - 1 for i in p.name.split(sep='on')]
                 topList = presentIndexes[:presentIndexes.index(self.controlled) + 1]
                 bottomList = presentIndexes[presentIndexes.index(self.controlled) + 1:]
                 if not bottomList:
                     return
-                # configure top part of the stack
+                # configure top part of the stack (p, b, s stand for player, body, and shape respectively)
                 topListString = "on".join([str(s + 1) for s in topList])
-                p, body, shape = makePlayer(1, self.space,
-                                            [arcade.load_texture(f'images/player/{topListString}.png')],
-                                            1, p.center_x, self.singleHeight * (len(bottomList) + len(topList)/2),
-                                            "on".join([str(s + 1) for s in topList]))
+                p, b, s = makePlayer(1, self.space,
+                                     [arcade.load_texture(f'images/player/{topListString}.png')],
+                                     1, p.center_x, p.bottom + self.singleHeight * (len(bottomList) + len(topList) / 2),
+                                     "on".join([str(s + 1) for s in topList]))
 
                 for i in topList:
                     self.players[i].kill()
@@ -242,14 +243,14 @@ class MyGame(arcade.Window):
                         self.space.remove(self.bodies[i], self.shapes[i])
                     except KeyError:
                         pass
-                    self.players[i], self.bodies[i], self.shapes[i] = p, body, shape
+                    self.players[i], self.bodies[i], self.shapes[i] = p, b, s
 
                 # do the same for the bottom part
                 bottomListString = "on".join([str(s + 1) for s in bottomList])
-                p, body, shape = makePlayer(1, self.space,
-                                            [arcade.load_texture(f'images/player/{bottomListString}.png')],
-                                            1, p.center_x, self.singleHeight * (len(bottomList)/2),
-                                            "on".join([str(s + 1) for s in bottomList]))
+                p, b, s = makePlayer(1, self.space,
+                                     [arcade.load_texture(f'images/player/{bottomListString}.png')],
+                                     1, p.center_x, p.bottom + self.singleHeight * (len(bottomList) / 2),
+                                     "on".join([str(s + 1) for s in bottomList]))
 
                 for i in bottomList:
                     self.players[i].kill()
@@ -257,7 +258,7 @@ class MyGame(arcade.Window):
                         self.space.remove(self.bodies[i], self.shapes[i])
                     except KeyError:
                         pass
-                    self.players[i], self.bodies[i], self.shapes[i] = p, body, shape
+                    self.players[i], self.bodies[i], self.shapes[i] = p, b, s
                 self.key_pressed[2] = 500
                 self.timeAfterSplit = 0
                 break
@@ -294,6 +295,8 @@ class MyGame(arcade.Window):
                 i.update()
             for p in self.players:
                 p.update()
+                if p.name == '2':
+                    print(p.center_y, self.singleHeight)
                 boxes = arcade.check_for_collision_with_list(p, self.floor_list)
                 if_collide = [True for pl in self.players if arcade.check_for_collision(p, pl) and pl != p]
 
@@ -313,5 +316,6 @@ def main():
     window = MyGame()
     window.setup()
     arcade.run()
+
 
 main()
