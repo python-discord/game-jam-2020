@@ -93,7 +93,7 @@ class MyGame(arcade.Window):
         self.frame_count = 0
         self.total_time = 0
         self.game_over = False
-        self.debugging = True
+        self.debugging = False
         self.set_location(0, 0)
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
@@ -187,7 +187,7 @@ class MyGame(arcade.Window):
     def stack_check(self):
         for up, down in itertools.permutations(self.players, 2):
             if up.name != down.name:
-                if abs(up.bottom - down.top) < 5 and abs((up.left + up.right)/2 - (down.left + down.right)/2) < 10:
+                if abs(up.bottom - down.top) < 5 and abs(up.center_x - down.center_x) < 10:
                     stackName = f'{up.name}on{down.name}'
                     topList = []
                     bottomList = []
@@ -199,7 +199,7 @@ class MyGame(arcade.Window):
 
                     object, body = make_player_sprite(1, self.space,
                                                       [arcade.load_texture(f'images/player/{stackName}.png')],
-                                                      1, (down.left + down.right)/2, down.top, stackName)
+                                                      1, down.center_x, down.top, stackName)
                     object.set_hit_box(
                         [[object.width / -2, object.height / -2 - 1], [object.width / 2, object.height / -2 - 1],
                          [object.width / 2, object.height / 2], [object.width / -2, object.height / 2]])
@@ -226,6 +226,10 @@ class MyGame(arcade.Window):
                         (-150, p.pymunk_shape.body.velocity.y))
 
     def on_update(self, x):
+        for p in self.players: print(p, end=' ')
+        print('')
+        print(self.bodies)
+        print('------------')
         self.frame_count += 1
         self.space.step(1 / 60.0)
 
@@ -257,7 +261,6 @@ class MyGame(arcade.Window):
 
 
 def main():
-    """ Start the game """
     window = MyGame()
     window.setup()
     arcade.run()
