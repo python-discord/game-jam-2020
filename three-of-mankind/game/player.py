@@ -1,3 +1,4 @@
+from .constants import JUMP_FORCE, JUMP_FORCE_REDUCTION
 import arcade
 
 
@@ -7,7 +8,12 @@ class Player(arcade.Sprite):
         self.movement_x = 0
         self.previous_movement_x = 0
         self.movement_control = 0.5
+        self.is_jumping = False
+        self.jump_force = JUMP_FORCE
 
     def update(self):
+        if self.is_jumping:
+            self.change_y += self.jump_force
+            self.jump_force *= JUMP_FORCE_REDUCTION
         self.change_x = (self.movement_x * self.movement_control + self.previous_movement_x) / (1 + self.movement_control)
         self.previous_movement_x = self.change_x
