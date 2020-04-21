@@ -1,4 +1,4 @@
-from .constants import JUMP_FORCE, JUMP_FORCE_REDUCTION
+from .constants import JUMP_FORCE, JUMP_FORCE_REDUCTION, DASH_COUNT, RIGHT
 import arcade
 
 
@@ -11,6 +11,8 @@ class Player(arcade.Sprite):
         self.is_jumping = False
         self.jump_force = JUMP_FORCE
         self.jump_count = 0
+        self.direction = RIGHT
+        self.dash_count = DASH_COUNT
 
     def update(self):
         if self.is_jumping:
