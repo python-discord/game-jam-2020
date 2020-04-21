@@ -14,9 +14,17 @@ def load_texture_pair(filename: str) -> Tuple[arcade.Texture, arcade.Texture]:
 
 
 def is_in_radius(center_object: arcade.Sprite, target_object: arcade.Sprite, radius: int) -> bool:
+    return is_in_radius_positions(center_object.position, target_object.position, radius)
+
+
+def is_in_radius_positions(
+        center_position: Tuple[float, float],
+        target_position: Tuple[float, float],
+        radius: int
+        ):
     return (
-        abs(center_object.center_x - target_object.center_x) <= radius and
-        abs(center_object.center_y - target_object.center_y) <= radius
+            abs(center_position[0] - target_position[0]) <= radius and
+            abs(center_position[1] - target_position[1]) <= radius
     )
 
 

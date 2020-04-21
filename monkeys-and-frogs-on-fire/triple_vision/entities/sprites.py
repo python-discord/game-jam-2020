@@ -4,8 +4,7 @@ from typing import Optional
 
 import arcade
 
-from triple_vision import Tile
-from triple_vision.utils import get_change_vector
+from triple_vision.utils import get_change_vector, is_in_radius_positions
 
 
 class MovingSprite(arcade.Sprite):
@@ -80,8 +79,7 @@ class MovingSprite(arcade.Sprite):
     def _reached_target_check(self):
         if self.target is not None:
             if (
-                self.target[0] - Tile.SCALED / 2 < self.center_x < self.target[0] + Tile.SCALED / 2 and
-                self.target[1] - Tile.SCALED / 2 < self.center_y < self.target[1] + Tile.SCALED / 2
+                is_in_radius_positions(self.position, self.target, 4)
             ):
                 self.change_x = 0
                 self.change_y = 0
