@@ -1,6 +1,7 @@
 import random
 import arcade
 import logging
+from datetime import datetime
 from arcade.gui import Theme, TextButton
 from .util import get_distance, log_exceptions
 from .planet import Planet
@@ -39,11 +40,18 @@ class Game(arcade.Window):
 
         self.abscond_button = None
 
+        self.player_in_tutorial = True
         self.game_is_over = False
-        self.game_over_reason = None
-        self.game_over_location = (SCREEN_SIZE[0]/10, SCREEN_SIZE[1]/2)
+        self.player_has_clicked_lithium = False
+        self.banner_text = None
+        self.banner_location = (SCREEN_SIZE[0]/10, SCREEN_SIZE[1]/2)
+        self.last_banner_change = None
 
     def setup(self):
+        self.player_in_tutorial = True
+        self.game_is_over = False
+        self.player_has_clicked_lithium = False
+        self.banner_text = ""
         self.background = arcade.load_texture(
             BACKGROUND_IMAGE)
         self.background_music = arcade.Sound(BACKGROUND_MUSIC, streaming=True)
@@ -122,11 +130,11 @@ class Game(arcade.Window):
 
         self.abscond_button.draw()
 
-        if self.game_is_over:
-            arcade.draw_text(
-                f"Game over! {self.game_over_reason}",
-                *self.game_over_location,
-                color=arcade.color.WHITE, font_size=24)
+        # if self.game_is_over:
+        arcade.draw_text(
+            self.banner_text,
+            *self.banner_location,
+            color=arcade.color.WHITE, font_size=24)
 
     @log_exceptions
     def on_mouse_press(self, x, y, button, modifiers):
@@ -152,13 +160,26 @@ class Game(arcade.Window):
         )
 
     def on_update(self, delta_time):
+        time_multiplier = delta_time / 0.0168
+        if self.player_in_tutorial:
+            time_multiplier /= 6
+        print(time_multiplier)
         logger.debug("\nNew Round\n")
         self.run_assertions()
+        self.update_banner()
         self.planets.update()
-        [planet.move() for planet in self.planets]
-        [planet.try_attack_others() for planet in self.planets]
-        [planet.try_push_others() for planet in self.planets]
-        [planet.update_triangulating() for planet in self.planets]
+        [planet.move(time_multiplier) for planet in self.planets]
+        [planet.try_attack_others(time_multiplier) for planet in self.planets]
+        [planet.try_push_others(time_multiplier) for planet in self.planets]
+        [planet.update_triangulating(time_multiplier)
+         for planet in self.planets]
+        self.run_assertions()
+
+    def update_banner(self):
+        if self.last_banner_change is None:
+            self.last_banner_change = datetime.now()
+            self.banner_text = "This is the story of Ze, Yogh, and Ezh."
+        # TODO add more here
 
     def run_assertions(self):
         assert len(self.planets) in (1, 2, 3)
@@ -178,7 +199,7 @@ class Game(arcade.Window):
     def game_over(self, reason):
         if self.game_is_over:
             return
-        self.game_over_reason = reason
+        self.banner_text = reason
         logger.info(f"Game over! {reason}")
         for planet in self.planets:
             logger.info(planet.get_stats_str())
