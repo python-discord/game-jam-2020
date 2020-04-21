@@ -4,7 +4,7 @@ from pathlib import Path
 import arcade
 
 from triple_vision import Settings as s
-from triple_vision.entities.entities import LivingEntity
+from triple_vision.entities.entities import AnimatedEntity, LivingEntity
 from triple_vision.entities.sprites import MovingSprite
 from triple_vision.entities.weapons import LaserProjectile
 from triple_vision.utils import is_in_radius
@@ -17,6 +17,17 @@ class Enemies(enum.Enum):
     """
     big_demon = 1024
     imp = 512
+
+
+class Spike(AnimatedEntity):
+
+    def __init__(self, **kwargs) -> None:
+        super().__init__(
+            sprite_name='floor_spikes',
+            assets_path='assets/dungeon/frames',
+            states=('',),
+            **kwargs
+        )
 
 
 class BaseEnemy(LivingEntity):
@@ -88,7 +99,7 @@ class StationaryEnemy(BaseEnemy):
         self.shoot_interval = shoot_interval
         self._passed_time = 0.0
 
-    def on_update(self, delta_time: float = 1/60):
+    def on_update(self, delta_time: float = 1/60) -> None:
         super().on_update(delta_time)
         self._passed_time += delta_time
 

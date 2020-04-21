@@ -2,6 +2,7 @@ from triple_vision.entities.enemies import (
     BaseEnemy,
     ChasingEnemy,
     Enemies,
+    Spike,
     StationaryEnemy
 )
 from triple_vision.entities.entities import AnimatedEntity, LivingEntity
@@ -19,5 +20,6 @@ __all__ = (
     'LivingEntity',
     'MovingSprite',
     'Player',
+    'Spike',
     'StationaryEnemy'
 )

@@ -27,6 +27,7 @@ class AnimatedEntity(arcade.Sprite):
         self.assets_path = Path(assets_path)
         self.has_hit_frame = has_hit_frame
         self.is_colored = is_colored
+        self.states = states
 
         self.entity_face_direction = Direction.RIGHT
         self._prev_anim_delta = 0
@@ -46,10 +47,11 @@ class AnimatedEntity(arcade.Sprite):
                     self._textures[color][state] = {
                         'cycle': itertools.cycle(frame_range)
                     }
+                    s = f'{state}_' if state else ''
 
                     self._textures[color][state]['texture'] = [
                         load_texture_pair(
-                            self.assets_path / color / f'{sprite_name}_{gender}{state}_anim_f{i}.png'
+                            self.assets_path / color / f'{sprite_name}_{gender}{s}anim_f{i}.png'
                         ) for i in range(4)
                     ]
 
@@ -64,17 +66,18 @@ class AnimatedEntity(arcade.Sprite):
                         )
                     ]
 
-            self.texture = self._textures[self.curr_color]['idle']['texture'][0][self.entity_face_direction]
+            self.texture = self._textures[self.curr_color][states[0]]['texture'][0][self.entity_face_direction]
 
         else:
             for state in states:
                 self._textures[state] = {
                     'cycle': itertools.cycle(frame_range)
                 }
+                s = f'{state}_' if state else ''
 
                 self._textures[state]['texture'] = [
                     load_texture_pair(
-                        self.assets_path / f'{sprite_name}_{gender}{state}_anim_f{i}.png'
+                        self.assets_path / f'{sprite_name}_{gender}{s}anim_f{i}.png'
                     ) for i in frame_range
                 ]
 
@@ -89,7 +92,7 @@ class AnimatedEntity(arcade.Sprite):
                     )
                 ]
 
-            self.texture = self._textures['idle']['texture'][0][self.entity_face_direction]
+            self.texture = self._textures[states[0]]['texture'][0][self.entity_face_direction]
 
         self.set_hit_box(self.texture.hit_box_points)
 
@@ -102,7 +105,7 @@ class AnimatedEntity(arcade.Sprite):
             self.entity_face_direction = Direction.RIGHT
 
         if self._prev_anim_delta > 0.15:
-            state = 'idle' if self.change_x == 0 else 'run'
+            state = '' if not self.states[0] else 'idle' if self.change_x == 0 else 'run'
 
             if self.is_colored:
                 self.texture = self._textures[self.curr_color][state]['texture'][
