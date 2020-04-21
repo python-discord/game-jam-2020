@@ -48,7 +48,7 @@ class Enums(Enum):
     A simple class used for tracking different simple
     """
 
-    # Play Direction Enums
+    # Player Direction Enums
     RIGHT = 0
     LEFT = 1
     UP = 2
