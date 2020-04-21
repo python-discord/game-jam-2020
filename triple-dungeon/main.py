@@ -45,23 +45,16 @@ class Game(arcade.Window):
         # Call the parent class and set up the window
         super().__init__(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT, Config.SCREEN_TITLE)
 
-        # These are 'lists' that keep track of our sprites. Each sprite should
-        # go into a list.
+        # Sprite Lists
         self.enemy_list = None
         self.bullet_list = None
         self.player = None
-
+        # Game Objects
         self.dungeon = None
-
-        # list to keep track of keypresses
-        self.prev_keypress = []
-
-        # Our physics engine
-        self.physics_engine = None
-
+        self.prev_keypress = []  # A list that assists with tracking keypress events
+        self.physics_engine = None  # Our physics engine
         # Used to keep track of our scrolling
-        self.view_bottom = 0
-        self.view_left = 0
+        self.view_bottom = self.view_left = 0
 
         arcade.set_background_color(arcade.color.BLACK)
 
