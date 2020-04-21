@@ -1,4 +1,5 @@
 import arcade
+from random import randint
 
 from submission.gameConstants import *
 
