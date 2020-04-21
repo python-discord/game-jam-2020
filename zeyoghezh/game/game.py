@@ -166,9 +166,7 @@ class Game(arcade.Window):
             assert len(self.planets) == 3
         assert self.lithium_count >= 0
         for planet in self.planets:
-            if self.game_is_over:
-                assert len(planet.others) in (0, 1)
-            else:
+            if not self.game_is_over:
                 assert len(planet.others) == 2
             assert planet.center_x > -SCREEN_SIZE[0]
             assert planet.center_x < SCREEN_SIZE[0] * 2
