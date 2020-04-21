@@ -116,12 +116,9 @@ class Player(LivingEntity, MovingSprite):
         if self.path is not None and self.target is None:
             try:
                 pos = tile_to_pixels(*next(self.path))
-
+                self.move_to(pos[0], pos[1] + s.PLAYER_CENTER_Y_COMPENSATION, rotate=False)
             except StopIteration:
                 self.path = None
-
-            else:
-                self.move_to(*pos, rotate=False)
 
         super().on_update(delta_time)
         super().force_moving_sprite_on_update(delta_time)
