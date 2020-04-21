@@ -13,9 +13,9 @@ class MenuButton(TextButton):
 
     def on_release(self):
         if self.pressed:
-            self.next_view.setup()
             self.next_view.theme = self.theme
             self.current_view.window.show_view(self.next_view)
+            self.next_view.setup()
 
 
 class QuitButton(TextButton):

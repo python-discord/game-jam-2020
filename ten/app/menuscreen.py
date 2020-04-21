@@ -3,10 +3,6 @@ from instructionsscreen import InstructionView
 from arcade.gui import *
 from buttons import QuitButton, MenuButton
 
-WINDOW_WIDTH = 1200
-WINDOW_HEIGHT = 800
-
-
 class MenuView(arcade.View):
     def __init__(self):
         super().__init__()
@@ -27,8 +23,8 @@ class MenuView(arcade.View):
         play_button = MenuButton(
             self,
             GameView(),
-            int(WINDOW_WIDTH / 2),
-            int(WINDOW_HEIGHT / 2),
+            int(self.window.WINDOW_WIDTH / 2),
+            int(self.window.WINDOW_HEIGHT / 2),
             200,
             100,
             "Play",
@@ -37,16 +33,16 @@ class MenuView(arcade.View):
         instructions_button = MenuButton(
             self,
             InstructionView(),
-            int(WINDOW_WIDTH / 2),
-            int(WINDOW_HEIGHT / 3),
+            int(self.window.WINDOW_WIDTH / 2),
+            int(self.window.WINDOW_HEIGHT / 3),
             200,
             100,
             "Instructions",
             theme=self.theme,
         )
         quit_button = QuitButton(
-            int(WINDOW_WIDTH / 2),
-            int(WINDOW_HEIGHT / 6),
+            int(self.window.WINDOW_WIDTH / 2),
+            int(self.window.WINDOW_HEIGHT / 6),
             200,
             100,
             "Quit",
@@ -60,8 +56,8 @@ class MenuView(arcade.View):
         super().on_draw()
         arcade.draw_text(
             "Menu Screen",
-            WINDOW_WIDTH / 2,
-            (WINDOW_HEIGHT / 3) * 2,
+            self.window.WINDOW_WIDTH / 2,
+            (self.window.WINDOW_HEIGHT / 3) * 2,
             arcade.color.BLACK,
             font_size=30,
             anchor_x="center",

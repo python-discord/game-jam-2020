@@ -2,7 +2,7 @@ from menuscreen import MenuView
 from arcade.gui import *
 
 WINDOW_WIDTH = 1200
-WINDOW_HEIGHT = 800
+WINDOW_HEIGHT = 750
 
 
 def main():
@@ -12,8 +12,8 @@ def main():
     window.WINDOW_HEIGHT = WINDOW_HEIGHT
 
     menu_view = MenuView()
-    menu_view.setup()
     window.show_view(menu_view)
+    menu_view.setup()
     arcade.run()
 
 
