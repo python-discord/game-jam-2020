@@ -2,36 +2,15 @@ from typing import Optional
 
 import arcade
 
-# Colors
-BACKGROUND_COLOR = 119, 110, 101
-EMPTY_CELL = 205, 193, 180
-TEXT_COLOR_DARK = 119, 110, 101
-TEXT_COLOR_LIGHT = 249, 246, 242
-SQUARE_COLORS = (200, 0, 0), \
-                (238, 228, 218), \
-                (237, 224, 200), \
-                (242, 177, 121), \
-                (245, 149, 99), \
-                (246, 124, 95), \
-                (246, 94, 59), \
-                (237, 207, 114), \
-                (237, 204, 97), \
-                (237, 200, 80), \
-                (237, 197, 63), \
-                (237, 194, 46), \
-                (62, 57, 51)
-
-# Sizes
+# TODO fix this bad way of using constants for everything
 BOARD_SIZE = 3
 SQUARE_SIZE = 200
 MARGIN = 10
 TEXT_SIZE = 50
-WINDOW_WIDTH = 1920  # BOARD_SIZE * (SQUARE_SIZE + MARGIN) + MARGIN
-WINDOW_HEIGHT = 1080  # BOARD_SIZE * (SQUARE_SIZE + MARGIN) + MARGIN
-TILE_WIDTH, TILE_HEIGHT = (WINDOW_WIDTH / 12, WINDOW_HEIGHT / 12)
+WINDOW_WIDTH = 1600
+WINDOW_HEIGHT = 900
+TILE_WIDTH, TILE_HEIGHT = (WINDOW_WIDTH / 12, WINDOW_HEIGHT / 9)
 TILE_PADDING = 0  # (WINDOW_WIDTH/16)*0.01
-# Font
-FONT = "arial.ttf"
 
 
 class TileSprite(arcade.Sprite):
@@ -42,8 +21,10 @@ class TileSprite(arcade.Sprite):
 
         self.center_x = starting_x
         self.center_y = starting_y
-        self.width = 100
-        self.height = 100
+
+        # TODO figure out the right scaling setup for these values
+        self.width = TILE_WIDTH
+        self.height = TILE_HEIGHT
 
 
 class SubmissionGrid(arcade.Sprite):
@@ -60,6 +41,7 @@ class MyGame(arcade.Window):
     Main Game Class
     """
 
+    # TODO figure out how to render clues as text
     def __init__(self):
         """
         Initializer for MyGame
@@ -70,27 +52,41 @@ class MyGame(arcade.Window):
 
         arcade.set_background_color((100, 100, 100))
 
-        self.boneyard_starting_positions = (
-            (1 / 27 * WINDOW_WIDTH + (TILE_WIDTH * i + TILE_PADDING * i) // 2,
-             TILE_HEIGHT + TILE_HEIGHT * (i % 2))
-            for i in range(9))
-
     def setup(self):
         """
         Set the game up for play. Call this to reset the game.
         :return:
         """
+        boneyard_starting_positions = (
+            (1 / 27 * WINDOW_WIDTH + (TILE_WIDTH * i + TILE_PADDING * i) // 2,
+             TILE_HEIGHT + TILE_HEIGHT * (i % 2))
+            for i in range(9))
         self.main_sprites = arcade.SpriteList()
         self.main_sprites.append(SubmissionGrid())
         self.tile_sprites = arcade.SpriteList()
-        for x, y in self.boneyard_starting_positions:
+        for x, y in boneyard_starting_positions:
             self.tile_sprites.append(TileSprite('frontend/sprites/plum.png', int(x), int(y)))
 
     def on_draw(self):
         """
-        Draw the grid
-        :return:
+        Main draw function. Draws the boneyard, and the submission grid
         """
         arcade.start_render()
         self.main_sprites.draw()
         self.tile_sprites.draw()
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        """ Called to update our objects. Happens approximately 60 times per second."""
+        # TODO add code that makes a tile track the mouse here
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        """
+        Called when the user presses a mouse button.
+        """
+        # TODO add code that detects whether a mouseclick is within the bounds of a sprite
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        """
+        Called when a user releases a mouse button.
+        """
+        # TODO add code that locks a tile either into the boneyard, or into a slot on the board
