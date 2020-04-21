@@ -44,9 +44,7 @@ class Mob(arcade.Sprite):
         """
         A on_update function, the Mob should decide it's next actions here.
         """
-
-        if Config.DEBUG:
-            if self.target is not None:
+        pass
 
     def get_path(self, end: Tuple[int, int] = None) -> List[Tuple[int, int]]:
         """

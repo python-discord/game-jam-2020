@@ -123,13 +123,17 @@ class Game(arcade.Window):
             import traceback
             traceback.print_exc()
 
-    def draw_path(self, path: List[Tuple[int, int]]) -> None:
+    @staticmethod
+    def draw_path(path: List[Tuple[int, int]]) -> None:
         """
         Draws a line between positions in a list of tuple, also known as the path.
         :param path: A list of tuple positions defining a path that can be traversed.
         """
-        print(path)
-        pass
+
+        if len(path) > 2:
+            path = map(lambda point: ((0.5 + point[0]) * Config.TILE_SIZE, (0.5 + point[1]) * Config.TILE_SIZE), path)
+            arcade.draw_lines(list(path))
+            # for pos1, pos2 in zip(path, path[1:])
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
