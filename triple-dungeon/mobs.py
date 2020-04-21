@@ -56,10 +56,9 @@ class Mob(arcade.Sprite):
         if end is None:
             end = self.target.position
             start, end = self.nearestPosition(), (round(end[0] / Config.TILE_SIZE), round(end[1] / Config.TILE_SIZE))
-            print(start, end)
             start, end = self.dungeon.grid.node(*start), self.dungeon.grid.node(*end)
             paths, runs = self.dungeon.finder.find_path(start, end, self.dungeon.grid)
-            print(paths, runs)
+            self.dungeon.grid.cleanup()
             return paths
 
 

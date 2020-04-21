@@ -45,16 +45,16 @@ class Dungeon(object):
         self.levels = [
             [Level.load_file(x, y, center) for y in range(size)] for x in range(size)
         ]
-        self.matrix = [[0 for yy in range(size * 10)] for xx in range(10 * size)]
+        self.matrix = [[1 for yy in range(size * 10)] for xx in range(10 * size)]
         for column in self.levels:
             for level in column:
                 for xx in range(10):
                     for yy in range(10):
                         if level.structure[xx][yy] == 'w':
-                            self.matrix[(level.x * 10) + xx][(level.y * 10) + yy] = 1
+                            self.matrix[(level.x * 10) + xx][(level.y * 10) + yy] = 0
         self.grid = Grid(matrix=self.matrix)
         self.finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-        # pprint(self.matrix, width=1000)
+        pprint(self.matrix, width=1000)
 
     def getWalls(self) -> arcade.SpriteList:
         """

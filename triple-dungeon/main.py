@@ -121,7 +121,11 @@ class Game(arcade.Window):
                 # Draw paths for all mobs
                 for mob in self.enemy_list:
                     if mob.target is not None:
-                        self.draw_path(mob.get_path())
+                        t1 = time.time()
+                        path = mob.get_path()
+                        t2 = time.time()
+                        print(f'Path acquired in {round(t2 - t1, 4)}s')
+                        self.draw_path(path)
 
                 self.fps.tick()
         except Exception:
@@ -136,9 +140,10 @@ class Game(arcade.Window):
         """
 
         if len(path) > 2:
-            path = map(lambda point: ((0.5 + point[0]) * Config.TILE_SIZE, (0.5 + point[1]) * Config.TILE_SIZE), path)
-            arcade.draw_lines(list(path))
-            # for pos1, pos2 in zip(path, path[1:])
+            path = map(lambda point: ((point[0]) * Config.TILE_SIZE, (point[1]) * Config.TILE_SIZE), path)
+            path = list(path)
+            for pos1, pos2 in zip(path, path[1:]):
+                arcade.draw_line(*pos1, *pos2, color=arcade.color.RED)
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
