@@ -29,4 +29,21 @@ class Obstacle(arcade.Sprite):
         self.position = [self._position[0] + self.change_x, self._position[1] + self.change_y]
         self.angle += self.change_angle
         if self.hit is True:
-            self.color = (169, 169, 169)
+            self.color = (85, 85, 85)
+
+class Splash(arcade.Sprite):
+
+    def __init__(self, type, position):
+        if type == "super":
+            path = "../ressources/splash_super.png"
+        else:
+            path = "../ressources/splash_super.png"
+        super().__init__(path)
+        self.center_x = position[0]
+        self.center_y = position[1]
+        self.age = 1.5
+
+    def update_age(self, delta_time):
+        self.age -= delta_time
+        if self.age < 0:
+            self.remove_from_sprite_lists()

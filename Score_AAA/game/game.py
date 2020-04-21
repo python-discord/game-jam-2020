@@ -1,6 +1,6 @@
 import arcade
 import random
-from entities import Character
+from entities import Character, Splash
 from lane import Lane
 from patterns import PatternGenerator
 
@@ -26,6 +26,7 @@ class MyGame(arcade.Window):
         self.floor_list = None
         self.background = None
         self.sky_list = None
+        self.splash_list = None
 
         # Set up the Lanes
         self.lane_up = None
@@ -48,6 +49,7 @@ class MyGame(arcade.Window):
         self.floor_list = arcade.SpriteList(use_spatial_hash=True)
         self.obstacle_list = arcade.SpriteList()
         self.char_list = arcade.SpriteList()
+        self.splash_list = arcade.SpriteList()
 
         # Set up lane 1
         q_run_textures = []
@@ -119,6 +121,7 @@ class MyGame(arcade.Window):
         self.floor_list.draw()
         self.obstacle_list.draw()
         self.char_list.draw()
+        self.splash_list.draw()
 
         # Put the text on the screen.
         output = f"Score: {self.score}"
@@ -135,6 +138,8 @@ class MyGame(arcade.Window):
         result = 0
         if key == arcade.key.A:
             result = self.lane_up.action(self.obstacle_list)
+            splash = Splash("../ressources/splash_super.png", [75, 50])
+            self.splash_list.append(splash)
         elif key == arcade.key.Z:
             result = self.lane_middle.action(self.obstacle_list)
         elif key == arcade.key.E:
@@ -187,6 +192,9 @@ class MyGame(arcade.Window):
         self.background.update()
         self.obstacle_list.update()
         self.char_list.update()
+        self.splash_list.update()
+        for item in self.splash_list:
+            item.update_age(delta_time)
 
         # Score points and remove obstacles
         for obstacle in self.obstacle_list:
@@ -199,19 +207,11 @@ class MyGame(arcade.Window):
     # Remove backgrounds item
         for item in self.background:
             if item.right < 0:
-                if "Q_Background.png" in item.texture.name or\
-                        "W_Background.png" in item.texture.name or\
-                        "E_Sky_1.png" in item.texture.name:
-                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
-                else:
-                    item.remove_from_sprite_lists()
+                item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
 
         # Handle sky
         for item in self.sky_list:
             if item.right < 0:
-                if "Q_Sky.png" in item.texture.name or\
-                        "W_Sky.png" in item.texture.name or\
-                        "E_Sky_2.png" in item.texture.name:
                     item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
 
 def main():

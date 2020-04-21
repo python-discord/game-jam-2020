@@ -39,14 +39,16 @@ class Lane():
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.char, floor_list)
         self.valid_zone = self.generate_valid_zone()
 
-    def generate_obstacle(self)-> arcade.Sprite:
+    def generate_obstacle(self, sprite_path: str)-> arcade.Sprite:
         """
         Used to generate an obstacle on the lane.
         """
-        obstacle = Obstacle("../ressources/Tempo_Obstacle.png")
+
+        obstacle = Obstacle(sprite_path)
         obstacle.center_x = self.SCREEN_WIDTH
         obstacle.center_y = self.SCREEN_HEIGHT - \
-                            ( self.SCREEN_HEIGHT // 3) * self.tier + 20
+                            (self.SCREEN_HEIGHT // 3) * self.tier + 40
+        obstacle.scale = 0.8
         obstacle.change_x = -6
         return obstacle
 
