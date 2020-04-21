@@ -4,7 +4,6 @@ A file dedicated to testing our game and ensuring it can run.
 Integrate this into your IDE's workflow to ensure the game runs from top to bottom.
 The tests used here should test all of our game's features as best they can.
 """
-from itertools import chain
 from typing import Pattern, List
 
 import pytest
@@ -48,12 +47,11 @@ class TestSprites:
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         IMAGE_DIR = os.path.join(BASE_DIR, 'resources', 'images')
 
-        primary_folders = os.listdir(IMAGE_DIR)
-        secondary_folders = \
-        chain.from_iterable([os.listdir(os.path.join(IMAGE_DIR, pfolder)) for pfolder in primary_folders])[os.listdir()]
-        return list(
-            chain.from_iterable([[os.path.join(IMAGE_DIR, file) for file in os.listdir(os.path.join(IMAGE_DIR, folder))
-                                  ] for folder in os.listdir(IMAGE_DIR)]))
+        _sprites = []
+        for primary in os.listdir(IMAGE_DIR):
+            for secondary in os.listdir(os.path.join(IMAGE_DIR, primary)):
+                _sprites.extend(os.listdir(os.path.join(IMAGE_DIR, primary, secondary)))
+        return _sprites
 
     @pytest.fixture
     def patterns(self) -> List[Pattern]:
