@@ -50,7 +50,13 @@ class TestSprites:
         _sprites = []
         for primary in os.listdir(IMAGE_DIR):
             for secondary in os.listdir(os.path.join(IMAGE_DIR, primary)):
-                _sprites.extend(os.listdir(os.path.join(IMAGE_DIR, primary, secondary)))
+                secondary = os.path.join(IMAGE_DIR, primary, secondary)
+                if os.path.isfile(secondary):
+                    _sprites.append(primary)
+                else:
+                    _sprites.extend(
+                        os.path.join(secondary, file) for file in
+                        os.listdir(os.path.join(IMAGE_DIR, primary, secondary)))
         return _sprites
 
     @pytest.fixture
@@ -94,7 +100,17 @@ class TestLevels:
     Tests the Level class.
     """
 
-    def loadble_level():
+    def test_levels_are_loadable(self):
+        """
+        Tests whether or not a level can be loaded.
+        """
+        import os
+
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        LEVEL_DIR = os.path.join(BASE_DIR, 'resources', 'levels')
+
+        levels = os.listdir(LEVEL_DIR)
+
         pass
 
 
