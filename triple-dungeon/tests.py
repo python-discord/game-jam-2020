@@ -15,17 +15,22 @@ class GameTests:
 
 class SpriteTests:
     """
-    Tests the Sprite classes as well as the sprites, checking that names are correct.
+    Tests the Sprite classes as well as the available sprites.
     """
 
 
 class LevelTests:
     """
-    Tests the Level class for proper integration.
+    Tests the Level class.
     """
 
 
 class DungeonTests:
     """
-    Tests the Dungeon class for
+    Tests the Dungeon class.
+    """
+
+class MiscTests:
+    """
+    Tests things that don't fit anywhere else.
     """
