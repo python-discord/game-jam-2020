@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 import arcade
 
@@ -9,8 +9,9 @@ MARGIN = 10
 TEXT_SIZE = 50
 WINDOW_WIDTH = 1600
 WINDOW_HEIGHT = 900
-TILE_WIDTH, TILE_HEIGHT = (WINDOW_WIDTH / 12, WINDOW_HEIGHT / 9)
-TILE_PADDING = 0  # (WINDOW_WIDTH/16)*0.01
+TILE_WIDTH, TILE_HEIGHT = 90, 90  # WINDOW_WIDTH/32, WINDOW_WIDTH/32
+TILE_PADDING_H = TILE_WIDTH//2
+TILE_PADDING_V = 10
 
 
 class TileSprite(arcade.Sprite):
@@ -57,15 +58,23 @@ class MyGame(arcade.Window):
         Set the game up for play. Call this to reset the game.
         :return:
         """
-        boneyard_starting_positions = (
-            (1 / 27 * WINDOW_WIDTH + (TILE_WIDTH * i + TILE_PADDING * i) // 2,
-             TILE_HEIGHT + TILE_HEIGHT * (i % 2))
-            for i in range(9))
         self.main_sprites = arcade.SpriteList()
         self.main_sprites.append(SubmissionGrid())
         self.tile_sprites = arcade.SpriteList()
-        for x, y in boneyard_starting_positions:
-            self.tile_sprites.append(TileSprite('assets/plum.png', int(x), int(y)))
+        for x, y in self.get_boneyard_starting_positions():
+            print(x, y)
+            tile_sprite = TileSprite('assets/plum.png', int(x), int(y))
+            self.tile_sprites.append(tile_sprite)
+
+    def get_boneyard_starting_positions(self):
+        for i in range(9):
+            left_edge_padding = 1 / 27 * WINDOW_WIDTH
+            tile_and_padding = ((TILE_WIDTH * i) + TILE_PADDING_H*i)//2
+            if i % 2 == 0:
+                tile_height = TILE_HEIGHT * 2 + TILE_PADDING_V
+            else:
+                tile_height = TILE_HEIGHT
+            yield left_edge_padding + tile_and_padding, tile_height
 
     def on_draw(self):
         """
@@ -89,4 +98,9 @@ class MyGame(arcade.Window):
         """
         Called when a user releases a mouse button.
         """
+        tile_sprite: TileSprite
+        for tile_sprite in self.tile_sprites:
+            if tile_sprite.collides_with_point((x, y)):
+                print(tile_sprite.height, tile_sprite.width)
+                print(tile_sprite.position)
         # TODO add code that locks a tile either into the boneyard, or into a slot on the board
