@@ -15,11 +15,15 @@ class Display(arcade.Window):
         self.scenes["loading"] = LoadingScreen(self)
         self.scenes["lobby"] = Lobby(self)
         self.scenes["mainMenu"] = MainMenu(self)
-        self.scenes["Options"] = Options(self)
+        self.scenes["options"] = Options(self)
+        self.scenes["playClient"] = PlayAsClient(self)
+        self.scenes["playServer"] = PlayAsServer(self)
 
     def change_scenes(self, scene: str, *args, **kwargs):
+        print(self.scene)
         self.scenes[scene].reset(*args, **kwargs)
         self.scene = scene
+        print(self.scene)
 
     def on_draw(self):
 

@@ -1,8 +1,8 @@
 import arcade
 from .base import Base
-import string
 from .util import arcade_int_to_string
-
+import queue
+import threading
 
 class Lobby(Base):
     def __init__(self, display):
@@ -11,10 +11,20 @@ class Lobby(Base):
         self.spritelist = arcade.SpriteList()
         self.spritedict = dict()
         self.sceneTime = 0
-        self.name = " " * 20
+        self.name = ""
+        self.cursor_index = -1
         self.focus = None
+        self.network_thread = None
+        self.receive_queue = None
+        self.send_queue = None
 
         self.sprite_setup()
+
+    def reset(self, network_thread: threading.Thread, receive: queue.Queue, send: queue.Queue) -> None:
+        self.sceneTime = 0
+        self.network_thread = network_thread
+        self.receive_queue = receive
+        self.send_queue = send
 
     def sprite_setup(self):
         self.spritedict = {
@@ -38,12 +48,15 @@ class Lobby(Base):
 
     def draw(self):
         self.spritelist.draw()
-        arcade.draw_text(self.name, 15, 600, color=(255, 255, 255), font_size=35, width=560)
+        if len(self.name) < 25:
+            buffer = " " * (25 - len(self.name))
+        else:
+            buffer = ""
+        arcade.draw_text(buffer + self.name[-25:], 15, 600, color=(255, 255, 255), font_size=35, width=560)
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
-        print((x, y))
         if self.spritedict["back"].collides_with_point((x, y)) is True:
-            self.display.change_scenes("loading", startup=False)
+            self.display.change_scenes("mainMenu", startup=False)
         elif self.spritedict["name"].collides_with_point((x, y)) is True:
             self.focus = "name"
         else:
@@ -51,9 +64,28 @@ class Lobby(Base):
 
     def key_press(self, key, modifiers):
         if self.focus == "name":
-            if key == 65288:
-                self.name = " " + self.name[:-1]
+            if key == arcade.key.BACKSPACE:
+                if self.cursor_index == -1:
+                    self.name = self.name[:-1]
+                else:
+                    self.name = self.name[:self.cursor_index] + self.name[self.cursor_index + 1:]
+            elif key == arcade.key.DELETE:
+                if self.cursor_index == -1:
+                    self.name = self.name[:-1]
+                else:
+                    self.name = self.name[:self.cursor_index + 1] + self.name[self.cursor_index:]
+            elif key == arcade.key.LEFT:
+                self.cursor_index -= 1
+                if self.cursor_index <= - (len(self.name) + 2):
+                    self.cursor_index = -1
+            elif key == arcade.key.RIGHT:
+                self.cursor_index += 1
+                if self.cursor_index >= 0:
+                    self.cursor_index = - (len(self.name) + 1)
             else:
                 key = arcade_int_to_string(key, modifiers)
                 if key != "":
-                    self.name = self.name[1:] + key
+                    if self.cursor_index == -1:
+                        self.name = self.name + key
+                    else:
+                        self.name = self.name[:self.cursor_index + 1] + key + self.name[self.cursor_index + 1:]
