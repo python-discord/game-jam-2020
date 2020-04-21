@@ -1,16 +1,18 @@
 import arcade
 from .base import Base
-from .util import arcade_int_to_string, SimpleButton
+from .util import arcade_int_to_string
+from ..network import run
 
 
 class PlayAsClient(Base):
-    def __init__(self, display):
+    def __init__(self, display: arcade.Window):
         self.display = display
 
         self.spritelist = arcade.SpriteList()
         self.spritedict = dict()
         self.sceneTime = 0
         self.ip = ""
+        self.status = ""
         self.cursor_index = -1
         self.focus = None
 
@@ -49,6 +51,23 @@ class PlayAsClient(Base):
         else:
             buffer = ""
         arcade.draw_text(buffer + self.ip[-25:], 15, 600, color=(255, 255, 255), font_size=35, width=560)
+        arcade.draw_text(self.status, 15, 470, color=(150, 100, 100), font_size=35)  # connection status message
+
+    def connect(self):
+        network_thread, receive, send = run(self.ip)
+        status = receive.get()
+        if status == 0:
+            # goto lobby
+            print("tou")
+            self.display.change_scenes("lobby", network_thread, receive, send)
+        elif status == 1:
+            self.status = "Invalid address"
+        elif status == 2 or status == 3:
+            self.status = "Connection failed"
+        elif status == 4:
+            self.status = "Invalid Hostname"
+        else:
+            print(status)
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
         if self.spritedict["back"].collides_with_point((x, y)) is True:
@@ -87,6 +106,3 @@ class PlayAsClient(Base):
                         self.ip = self.ip + key
                     else:
                         self.ip = self.ip[:self.cursor_index + 1] + key + self.ip[self.cursor_index + 1:]
-
-    def connect(self):
-        print("WoW")

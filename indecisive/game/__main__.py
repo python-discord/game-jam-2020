@@ -1,19 +1,15 @@
-from server import run as srun
+from server.network import run as srun
 from client.network import run as crun
 import threading
+import queue
+import json
+from client.graphics import main
 
 
 what = int(input("0-server: \n$"))
 
 if what == 0:
-    network_thread = threading.Thread(target=srun, name="network")
-    network_thread.start()
-    print("server started!")
-    network_thread.join()
-    print("server Closed!")
+    network_thread, receive, send = srun("localhost")
 else:
-    network_thread = threading.Thread(target=crun, name="network")
-    network_thread.start()
-    print("server started!")
-    network_thread.join()
-    print("server Closed!")
+    main()
+

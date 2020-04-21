@@ -19,8 +19,10 @@ class Display(arcade.Window):
         self.scenes["playAsClient"] = PlayAsClient(self)
 
     def change_scenes(self, scene: str, *args, **kwargs):
+        print(self.scene)
         self.scenes[scene].reset(*args, **kwargs)
         self.scene = scene
+        print(self.scene)
 
     def on_draw(self):
 

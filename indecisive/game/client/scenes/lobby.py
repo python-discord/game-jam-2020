@@ -1,7 +1,8 @@
 import arcade
 from .base import Base
 from .util import arcade_int_to_string
-
+import queue
+import threading
 
 class Lobby(Base):
     def __init__(self, display):
@@ -13,8 +14,17 @@ class Lobby(Base):
         self.name = ""
         self.cursor_index = -1
         self.focus = None
+        self.network_thread = None
+        self.receive_queue = None
+        self.send_queue = None
 
         self.sprite_setup()
+
+    def reset(self, network_thread: threading.Thread, receive: queue.Queue, send: queue.Queue) -> None:
+        self.sceneTime = 0
+        self.network_thread = network_thread
+        self.receive_queue = receive
+        self.send_queue = send
 
     def sprite_setup(self):
         self.spritedict = {
