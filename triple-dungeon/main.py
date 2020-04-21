@@ -8,6 +8,7 @@ import collections
 import math
 import random
 import time
+from typing import Tuple, List
 
 import arcade
 from config import Config
@@ -111,10 +112,24 @@ class Game(arcade.Window):
                 arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
                 arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
                                  arcade.color.WHITE, 16, font_name='Arial')
+
+                # Draw paths for all mobs
+                for mob in self.enemy_list:
+                    if mob.target is not None:
+                        self.draw_path(mob.mob.get_path())
+
                 self.fps.tick()
         except Exception:
             import traceback
             traceback.print_exc()
+
+    def draw_path(self, path: List[Tuple[int, int]]) -> None:
+        """
+        Draws a line between positions in a list of tuple, also known as the path.
+        :param path: A list of tuple positions defining a path that can be traversed.
+        """
+        print(path)
+        pass
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """

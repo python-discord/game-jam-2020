@@ -31,6 +31,15 @@ class Mob(arcade.Sprite):
         self.dungeon = dungeon
         self.target = None
 
+    def nearestPosition(self) -> Tuple[int, int]:
+        """
+        Returns the nearest absolute dungeon tile the Mob is placed on.
+
+        :return: A tuple containing the Mob's dungeon tile position.
+        """
+        return (round(self.center_x / Config.TILE_SIZE) * Config.TILE_SIZE,
+                round(self.center_y / Config.TILE_SIZE) * Config.TILE_SIZE)
+
     def tick(self) -> None:
         """
         A on_update function, the Mob should decide it's next actions here.
@@ -38,22 +47,17 @@ class Mob(arcade.Sprite):
 
         if Config.DEBUG:
             if self.target is not None:
-                x, y = self.target.position
-                self.draw_path(self.get_path(
-                    (round(x / Config.TILE_SIZE) * Config.TILE_SIZE, round(y / Config.TILE_SIZE) * Config.TILE_SIZE)
-                ))
 
-    def draw_path(self, path: List[Tuple[int, int]]) -> None:
-        pass
-
-    def get_path(self, end: Tuple[int, int]) -> List[Tuple[int, int]]:
+    def get_path(self, end: Tuple[int, int] = None) -> List[Tuple[int, int]]:
         """
         Returns the path to get to the Mob's target in absolute integer positions.
 
-        :param matrix:
-        :param end:
+        :param end: A the endpoint tuple. Must be a valid position within the matrix.
         :return:
         """
+        if end is None:
+            x, y = self.target.position
+            x, y = (round(x / Config.TILE_SIZE) * Config.TILE_SIZE, round(y / Config.TILE_SIZE) * Config.TILE_SIZE)
 
 
 class Player(Mob):
