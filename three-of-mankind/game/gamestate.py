@@ -1,6 +1,6 @@
 from .constants import (
     FLOOR_LENGTH, FLOOR_TEXTURE_LENGTH, GRAVITY, GROUND_CONTROL, AIR_CONTROL, PLAYER_MOVEMENT_SPEED, JUMP_FORCE,
-    JUMP_COUNT, DASH_DISTANCE, RIGHT, LEFT, DASH_COUNT
+    JUMP_COUNT, DASH_DISTANCE, RIGHT, LEFT, DASH_COUNT, JUMP_VELOCITY_BONUS
 )
 from .player import Player
 import arcade
@@ -64,7 +64,7 @@ class GameState:
             if self.player.jump_count <= JUMP_COUNT:
                 self.player.change_y = 0
                 self.player.is_jumping = True
-                self.player.jump_force = JUMP_FORCE
+                self.player.jump_force = JUMP_FORCE + abs(self.player.velocity[0]) * JUMP_VELOCITY_BONUS
 
         # Moving
         if key == arcade.key.LEFT or key == arcade.key.A:
