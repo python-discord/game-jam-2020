@@ -4,9 +4,10 @@ A file dedicated to testing our game and ensuring it can run.
 Integrate this into your IDE's workflow to ensure the game runs from top to bottom.
 The tests used here should test all of our game's features as best they can.
 """
-from typing import Pattern, List
 
 import pytest
+
+from typing import Pattern, List
 
 
 class TestGame:
@@ -15,7 +16,7 @@ class TestGame:
     Only tests that it launches and runs for a little bit, not that it is functioning properly.
     """
 
-    def test_game_runs(self):
+    def test_game_runs(self) -> None:
         """
         Simply test that the Game runs.
         """
@@ -50,7 +51,7 @@ class TestSprites:
             for secondary in os.listdir(os.path.join(IMAGE_DIR, primary)):
                 secondary = os.path.join(IMAGE_DIR, primary, secondary)
                 if os.path.isfile(secondary):
-                    _sprites.append(primary)
+                    _sprites.append(secondary)
                 else:
                     _sprites.extend(
                         os.path.join(secondary, file) for file in
@@ -64,7 +65,7 @@ class TestSprites:
         """
         import re
         _patterns = [
-            r'\w+_(?:\w+_)?\d+\.(?:jp(?:eg|e|g)|png)'
+            r'\w+_(?:\w+_)?\d+\.(?:jp(?:eg|e|g)|png)',
             r'\w+\d+\.(?:jp(?:eg|e|g)|png)',
             r'\w+_tile\.(?:jp(?:eg|e|g)|png)'
         ]
@@ -77,10 +78,10 @@ class TestSprites:
         import os
 
         for sprite in sprites:
-            for pattern in patterns:
-                if pattern.match(os.path.basename(sprite)):
-                    continue
-            pytest.fail(f"Sprite '{sprite}' did not match the schema.")
+            head, tail = os.path.split(sprite)
+            if any(pattern.match(tail) is not None for pattern in patterns):
+                continue
+            pytest.fail(f"Sprite '{tail}' in '{head}' did not match the schema.")
 
     def test_sprite_loads(self, sprites) -> None:
         """
