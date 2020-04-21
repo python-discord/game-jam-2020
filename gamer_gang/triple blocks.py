@@ -18,7 +18,7 @@ class ActualGame(arcade.Window):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
-        arcade.set_background_color(arcade.color.BLUE)
+        arcade.set_background_color(arcade.color.LIGHT_BLUE)
 
     def setup(self):
         self.frames = 0
@@ -27,10 +27,11 @@ class ActualGame(arcade.Window):
         self.debugging = False
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
-        self.view_left = self.view_bottom = 0
+        self.leftView = self.bottomView = 0
         self.timeAfterSplit = 0
         self.controlled = 0
-        self.key_pressed = [0, 0, 0]  # the user input
+        self.userInputs = [0, 0, 0]  # the user input
+        self.deathCause = None
 
         self.normalGrounds = arcade.SpriteList()
         self.spikes = arcade.SpriteList()
@@ -38,6 +39,7 @@ class ActualGame(arcade.Window):
         self.shapes = []
 
         self.normalGroundTextures = [arcade.load_texture("images/ground/placeholderGround.png")]
+        self.spikeTextures = [arcade.load_texture('images/ground/spike.png')]
         self.playerTextures = [[arcade.load_texture("images/mobs/player/1.png")],
                                [arcade.load_texture("images/mobs/player/2.png")],
                                [arcade.load_texture("images/mobs/player/3.png")]]
@@ -51,15 +53,15 @@ class ActualGame(arcade.Window):
             self.playerHeight = p.height
 
         for i in range(20):
-            g = makeTerrain(self.space, NormalGround, self.normalGroundTextures, 10, i * 32, 0)
-            self.normalGrounds.append(g)
+            self.normalGrounds.append(makeTerrain(self.space, NormalGround, self.normalGroundTextures, 10, i * 32, 0))
 
         for i in range(1):
-            pass
+            self.spikes.append(makeTerrain(self.space, BadSpike, self.spikeTextures, 10, 50, 20))
 
     def on_draw(self):
         arcade.start_render()
 
+        self.spikes.draw()
         self.normalGrounds.draw()
         for p in self.players:
             p.draw()
@@ -67,16 +69,14 @@ class ActualGame(arcade.Window):
         if self.debugging:
             for i in self.players:
                 i.draw_hit_box((100, 100, 100), 3)
-            for i in self.normalGrounds:
-                i.draw_hit_box((100, 100, 100))
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
-            self.key_pressed[1] = -20
+            self.userInputs[1] = -20
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.key_pressed[0] = 20
+            self.userInputs[0] = 20
         elif key == arcade.key.UP or key == arcade.key.W:
-            self.key_pressed[2] = 500
+            self.userInputs[2] = 500
         elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
             self.controlled = 0
         elif key == arcade.key.NUM_2 or key == arcade.key.KEY_2:
@@ -88,35 +88,35 @@ class ActualGame(arcade.Window):
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
-            self.key_pressed[1] = 0
+            self.userInputs[1] = 0
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.key_pressed[0] = 0
+            self.userInputs[0] = 0
         elif key == arcade.key.UP or key == arcade.key.W or key == arcade.key.DOWN:
-            self.key_pressed[2] = 0
+            self.userInputs[2] = 0
 
     def cameraShift(self):
         needChange = False
-        left_boundary = self.view_left + SCREEN_MARGIN
+        left_boundary = self.leftView + SCREEN_MARGIN
         if self.players[self.controlled].left < left_boundary:
-            self.view_left -= left_boundary - self.players[self.controlled].left
+            self.leftView -= left_boundary - self.players[self.controlled].left
             needChange = True
 
-        right_boundary = self.view_left + SCREEN_WIDTH - SCREEN_MARGIN
+        right_boundary = self.leftView + SCREEN_WIDTH - SCREEN_MARGIN
         if self.players[self.controlled].right > right_boundary:
-            self.view_left += self.players[self.controlled].right - right_boundary
+            self.leftView += self.players[self.controlled].right - right_boundary
             needChange = True
 
-        top_boundary = self.view_bottom + SCREEN_HEIGHT - SCREEN_MARGIN
+        top_boundary = self.bottomView + SCREEN_HEIGHT - SCREEN_MARGIN
         if self.players[self.controlled].top > top_boundary:
-            self.view_bottom += self.players[self.controlled].top - top_boundary
+            self.bottomView += self.players[self.controlled].top - top_boundary
             needChange = True
 
-        self.view_left = int(self.view_left)
-        self.view_bottom = int(self.view_bottom)
+        self.leftView = int(self.leftView)
+        self.bottomView = int(self.bottomView)
 
         if needChange:
-            arcade.set_viewport(self.view_left, SCREEN_WIDTH + self.view_left - 1,
-                                self.view_bottom, SCREEN_HEIGHT + self.view_bottom - 1)
+            arcade.set_viewport(self.leftView, SCREEN_WIDTH + self.leftView - 1,
+                                self.bottomView, SCREEN_HEIGHT + self.bottomView - 1)
 
     def stackCheck(self):
         if self.timeAfterSplit < 0.5:  # don't join right after the user tells the blocks to split
@@ -185,16 +185,16 @@ class ActualGame(arcade.Window):
                     except KeyError:
                         pass
                     self.players[i], self.bodies[i], self.shapes[i] = p, b, s
-                self.key_pressed[2] = 500
+                self.userInputs[2] = 500
                 self.timeAfterSplit = 0
                 break
 
     def movement(self):
         for p in self.players:
             if p.name == self.players[self.controlled].name:
-                p.pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.key_pressed[:2]), 0))  # hor. movement
+                p.pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.userInputs[:2]), 0))  # hor. movement
                 if p.can_jump:
-                    p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.key_pressed[2]))
+                    p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.userInputs[2]))
                     p.can_jump = False
 
                 if p.pymunk_shape.body.velocity.x > 300:  # prevent from accelerating too fast
@@ -205,7 +205,9 @@ class ActualGame(arcade.Window):
 
     def entityInteractionCheck(self):
         for p in self.players:
-            pass
+            if arcade.check_for_collision_with_list(p, self.spikes):  # if you touch a spike, you DIE
+                self.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
+                self.deathCause = 'spike that looks awfully like a GD spike'
 
     def on_update(self, dt):
         self.frames += 1
@@ -220,6 +222,7 @@ class ActualGame(arcade.Window):
         for p in self.players:
             if p.top < -100:
                 self.game_over = True
+                self.deathCause = 'no pit is more bottomless than the bottomless pit! (which you fell into)'
 
         if not self.game_over:
             for i in self.normalGrounds:
