@@ -32,6 +32,8 @@ SHIP_SCALING = 1
 RIGHT_FACING = 0
 LEFT_FACING = 1
 
+MUSIC_VOLUME = 0.2
+
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Game Jam 2020"
@@ -220,15 +222,49 @@ class ShipView(arcade.View):
 
         self.ship_sprite.target_angle = 0
 
-    def scroll(self):
-        # --- Manage Scrolling ---
+        self.audio_list = []
+        self.music = arcade.Sound(
+            str(path['sound'] / "shanty1.mp3"), streaming=True
+        )
+
+        self.ambient_track = arcade.Sound(
+            str(path['sound'] / "ship_ambient.mp3"), streaming=True
+        )
+
+
+
+        self.audio_list.append(self.music)
+        self.audio_list.append(self.ambient_track)
+
+        for audio in self.audio_list:
+            audio.play()
+
+        self.music.set_volume(MUSIC_VOLUME*0.2)
+        self.ambient_track.set_volume(MUSIC_VOLUME*0.2)
 
         self.viewport_scale = 1
 
-        left = int(self.ship_sprite._get_position()[0]-SCREEN_WIDTH/2*self.viewport_scale)
-        right = int(self.ship_sprite._get_position()[0]+SCREEN_WIDTH/2*self.viewport_scale)
-        bottom = int(self.ship_sprite._get_position()[1]-SCREEN_HEIGHT/2*self.viewport_scale)
-        top = int(self.ship_sprite._get_position()[1]+SCREEN_HEIGHT/2*self.viewport_scale)
+    def scroll(self):
+        # --- Manage Scrolling ---
+
+        if self.viewport_scale < 0.5:
+            self.viewport_scale = 0.5
+
+        if self.viewport_scale > 3.0:
+            self.viewport_scale = 3.0
+
+        left = int(
+            self.ship_sprite._get_position()[0] -
+            SCREEN_WIDTH / 2 * self.viewport_scale)
+        right = int(
+            self.ship_sprite._get_position()[0] +
+            SCREEN_WIDTH / 2 * self.viewport_scale)
+        bottom = int(
+            self.ship_sprite._get_position()[1] -
+            SCREEN_HEIGHT / 2 * self.viewport_scale)
+        top = int(
+            self.ship_sprite._get_position()[1] +
+            SCREEN_HEIGHT / 2 * self.viewport_scale)
 
         if left < 75:
             left = 75
@@ -245,16 +281,24 @@ class ShipView(arcade.View):
 
         if True:
             arcade.set_viewport(
-                left,
-                right,
-                bottom,
-                top
+                int(left),
+                int(right),
+                int(bottom),
+                int(top)
             )
-
 
     def on_show(self):
         print("Switched to ShipView")
         # print(self.window.get_viewport())
+
+    def play_audio(self):
+        for audio in self.audio_list:
+            if audio.get_stream_position() >= audio.get_length():
+                audio = arcade.Sound(
+                    audio.file_name, streaming=True
+                )
+
+                audio.play(audio.get_volume())
 
     def on_draw(self):
         arcade.start_render()
@@ -338,6 +382,8 @@ class ShipView(arcade.View):
 
         self.physics_engine.update()
 
+        self.play_audio()
+
     def on_key_press(self, key, key_modifiers):
         """
         Called whenever a key on the keyboard is pressed.
@@ -380,6 +426,11 @@ class ShipView(arcade.View):
             print(self.ship_sprite.angle%360)
 
             self.cannonballs.append(cannonball)
+
+        if key == arcade.key.EQUAL:
+            self.viewport_scale -= 0.5
+        if key == arcade.key.MINUS:
+            self.viewport_scale += 0.5
 
     def on_key_release(self, key, key_modifiers):
         """
