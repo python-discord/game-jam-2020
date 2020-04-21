@@ -41,6 +41,12 @@ class MainMenu(Base):
                 center_x=640,
                 center_y=420
             ),
+            "credits": arcade.Sprite(
+                "./assets/Credits.png",
+                scale=0.2,
+                center_x=80,
+                center_y=30
+            ),
 
         }
         self.spritelist.extend(self.spritedict.values())
@@ -52,4 +58,10 @@ class MainMenu(Base):
         self.spritelist.draw()
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
-        pass
+        print((x, y))
+        if self.spritedict["exit"].collides_with_point((x, y)) is True:
+            arcade.close_window()
+        elif self.spritedict["credits"].collides_with_point((x, y)) is True:
+            self.display.change_scenes("loading", startup=False)
+#        elif self.spritedict["options"].collides_with_point((x, y)) is True:
+#            self.display.change_scenes("options")
