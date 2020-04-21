@@ -5,8 +5,8 @@ from Display.Utility import ColourBlend as cb
 
 
 class Settings(arcade.View):
-    width = get_monitors()[0].width
-    height = get_monitors()[0].height
+    width = 1920  # get_monitors()[0].width
+    height = 1080  # get_monitors()[0].height
 
     mouse_x = 0
     mouse_y = 0
@@ -14,18 +14,18 @@ class Settings(arcade.View):
 
     brightness_slide = Slider(int(width * 0.1), int(height * 0.5), int(width * 0.3), int(height * 0.01),
                               name="Brightness")
-    volume_slide = Slider(int(width * 0.1), int(height * 0.7), int(width * 0.3), int(height * 0.01), name="Volume")
+    volume_slide = Slider(int(width * 0.1), int(height * 0.7), int(width * 0.3), int(height * 0.01),
+                          name="Volume")
 
     left_key_button = Button(width * 0.2, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
-                             activation=lambda self: self.binding_key("left"))
+                             activation=lambda self: setattr(self, "binding_key", "left"), name="left_button")
     center_key_button = Button(width * 0.45, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
-                               activation=lambda self: self.binding_key("center"))
+                             activation=lambda self: setattr(self, "binding_key", "center"), name="center_button")
     right_key_button = Button(width * 0.7, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
-                              activation=lambda self: self.binding_key("right"))
+                             activation=lambda self: setattr(self, "binding_key", "right"), name="right_button")
 
-    await_key_press = False
-    key_binds = {"left": arcade.key.A, "center": arcade.key.S, "right": arcade.key.D}
     binding_key = None
+    key_binds = {"left": arcade.key.A, "center": arcade.key.S, "right": arcade.key.D}
 
     def on_draw(self):
         arcade.start_render()
@@ -48,9 +48,7 @@ class Settings(arcade.View):
                          width=int(self.width * 0.6))
 
         self.left_key_button.draw(self.brightness)
-
         self.center_key_button.draw(self.brightness)
-
         self.right_key_button.draw(self.brightness)
 
     def on_mouse_motion(self, x, y, dx, dy):
@@ -62,19 +60,27 @@ class Settings(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):  # Click options / volume & brightness slider
         self.mouse_pressing = True
+        self.brightness_slide.pressing = self.brightness_slide.hit_box(x, y)
+        self.volume_slide.pressing = self.volume_slide.hit_box(x, y)
+
+        if self.left_key_button.pressed(x, y):
+            self.left_key_button(self)
+        elif self.center_key_button.pressed(x, y):
+            self.center_key_button(self)
+        elif self.right_key_button.pressed(x, y):
+            self.right_key_button(self)
 
     def on_mouse_release(self, x, y, button, modifiers):  # Release for sliders
         self.mouse_pressing = False
+        self.brightness_slide.pressing = False
+        self.volume_slide.pressing = False
 
     def on_key_press(self, symbol, modifiers):  # Setting key binds
-        if self.await_key_press:
-            if self.binding_key in self.key_binds and (97 <= symbol <= 122 or 48 <= symbol <= 57):
-                self.key_binds[self.binding_key] = symbol
-                self.await_key_press = False
-                self.binding_key = None
+        if self.binding_key in self.key_binds and (97 <= symbol <= 122 or 48 <= symbol <= 57):
+            self.key_binds[self.binding_key] = symbol
+            self.binding_key = None
 
     def set_binding_key(self, binding_key):
-        self.await_key_press = True
         self.binding_key = binding_key
 
     @property
