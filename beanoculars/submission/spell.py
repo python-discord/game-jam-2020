@@ -22,8 +22,8 @@ def pickUp(sprite: arcade.sprite, player_list: arcade.sprite_list, path_list: ar
                     if not arcade.sprite_list.get_sprites_at_point([sprite.center_x, sprite.center_y],
                                                                    turret_list):
                         t_type = sprite.inventory
-                        newTurret = AnimatedEntity(t_type, 2, [math.floor(sprite.center_x-16)/32,
-                                                               math.floor(sprite.center_y-16)/32])
+                        newTurret = AnimatedEntity(t_type, [math.floor(sprite.center_x - 16) / 32,
+                                                            math.floor(sprite.center_y - 16) / 32])
                         turret_list.append(newTurret)
                         sprite.cur_speed = MOVE_SPEED  # reset speed
                         sprite.inventory = 0  # reset inventory

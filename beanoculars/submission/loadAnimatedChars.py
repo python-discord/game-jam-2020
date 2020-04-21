@@ -41,7 +41,7 @@ class AnimatedEntity(arcade.Sprite):
     Creates animated entity (except player) with init and update_animation
     """
 
-    def __init__(self, e_type: int, num_of_frames: int, coor: [int, int]):
+    def __init__(self, e_type: int, coor: [int, int]):
         super().__init__()
 
         main_path = ''
@@ -49,47 +49,52 @@ class AnimatedEntity(arcade.Sprite):
         if e_type == E_ANT:
             self.e_type = E_ANT
             self.update_rate = UR_ANT
+            self.numberFrames = F_ANT
             main_path = PATH['img'] / 'sprite' / 'ant'
 
         elif e_type == E_MOSQUITO:
             self.e_type = E_MOSQUITO
             self.update_rate = UR_MOSQUITO
+            self.numberFrames = F_MOSQUITO
             main_path = PATH['img'] / 'sprite' / 'mosquito'
 
         elif e_type == E_SPIDER:
             self.e_type = E_SPIDER
             self.update_rate = UR_SPIDER
+            self.numberFrames = F_SPIDER
             main_path = PATH['img'] / 'sprite' / 'spider'
 
         elif e_type == E_DUNG_BEETLE:
             self.e_type = E_DUNG_BEETLE
             self.update_rate = UR_DUNG_BEETLE
+            self.numberFrames = F_DUNG_BEETLE
             main_path = PATH['img'] / 'sprite' / 'dung_beetle'
 
         elif e_type == T_SPRAY:
             self.e_type = T_SPRAY
             self.update_rate = UR_SPRAY
+            self.numberFrames = F_SPRAY
             main_path = PATH['img'] / 'sprite' / 'spray'
 
         elif e_type == T_LAMP:
             self.e_type = T_LAMP
             self.update_rate = UR_LAMP
+            self.numberFrames = F_LAMP
             main_path = PATH['img'] / 'sprite' / 'lamp'
 
         elif e_type == T_VACUUM:
             self.e_type = T_VACUUM
             self.update_rate = UR_VACUUM
+            self.numberFrames = F_VACUUM
             main_path = PATH['img'] / 'sprite' / 'vacuum'
 
         self.character_face_direction = LEFT_FACING
-
-        self.numberFrames = num_of_frames
 
         self.cur_texture_index = 0
 
         self.basic_textures = []
 
-        for i in range(num_of_frames):  # nb of frames of the animation
+        for i in range(self.numberFrames):  # nb of frames of the animation
             texture_pack = load_texture_pack(f"{main_path}_f{i + 1}.png", e_type)
             self.basic_textures.append(texture_pack)
 
