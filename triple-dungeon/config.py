@@ -29,6 +29,7 @@ class Config(object):
     # Constants used to scale our sprites from their original size
     CHARACTER_SCALING = 1
     TILE_SCALING = 2
+    TILE_SIZE = TILE_WIDTH * TILE_SCALING
 
     # The number of pixels across the level
     LEVEL_SIZE = 10 * TILE_SCALING * TILE_WIDTH

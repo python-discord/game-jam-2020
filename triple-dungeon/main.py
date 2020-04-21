@@ -10,7 +10,6 @@ import random
 import time
 
 import arcade
-
 from config import Config
 from map import Dungeon
 from mobs import Player
@@ -70,7 +69,7 @@ class Game(arcade.Window):
         self.dungeon = Dungeon(0, 3)
 
         # Set up the player, specifically placing it at these coordinates.
-        self.player = Player()
+        self.player = Player(self.dungeon)
         self.player.scale = 1
         level = random.choice(self.dungeon.levelList)
         self.player.center_x, self.player.center_y = level.center()
@@ -105,9 +104,9 @@ class Game(arcade.Window):
 
             if Config.DEBUG:
                 x, y = self.player.position
-                tile = Config.TILE_WIDTH * Config.TILE_SCALING
-                arcade.draw_rectangle_outline(round(x / tile) * tile, round(y / tile) * tile, tile, tile,
-                                              arcade.color.RED)
+                arcade.draw_rectangle_outline(round(x / Config.TILE_SIZE) * Config.TILE_SIZE,
+                                              round(y / Config.TILE_SIZE) * Config.TILE_SIZE,
+                                              Config.TILE_SIZE, Config.TILE_SIZE, arcade.color.RED)
                 self.player.draw_hit_box()
                 arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
                 arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,

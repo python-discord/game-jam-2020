@@ -3,9 +3,11 @@ mobs.py
 Organizes all classes related to Mobs, Entities, Enemies, Players and Items.
 """
 
-import arcade
+from typing import List, Tuple
 
+import arcade
 from config import Config, Enums, SpritePaths
+from map import Dungeon
 from sprites import PlayerAnimations
 
 
@@ -14,7 +16,7 @@ class Mob(arcade.Sprite):
     Represents a Mob. No defined behaviour, it has no intelligence.
     """
 
-    def __init__(self, max_health=100, max_armor=0, *args, **kwargs) -> None:
+    def __init__(self, dungeon: Dungeon, max_health=100, max_armor=0, *args, **kwargs) -> None:
         # Set up parent class
         super().__init__()
 
@@ -26,11 +28,32 @@ class Mob(arcade.Sprite):
         self.down_textures = []
         self.cur_texture = 0
 
+        self.dungeon = dungeon
+        self.target = None
+
     def tick(self) -> None:
         """
         A on_update function, the Mob should decide it's next actions here.
         """
+
+        if Config.DEBUG:
+            if self.target is not None:
+                x, y = self.target.position
+                self.draw_path(self.get_path(
+                    (round(x / Config.TILE_SIZE) * Config.TILE_SIZE, round(y / Config.TILE_SIZE) * Config.TILE_SIZE)
+                ))
+
+    def draw_path(self, path: List[Tuple[int, int]]) -> None:
         pass
+
+    def get_path(self, end: Tuple[int, int]) -> List[Tuple[int, int]]:
+        """
+        Returns the path to get to the Mob's target in absolute integer positions.
+
+        :param matrix:
+        :param end:
+        :return:
+        """
 
 
 class Player(Mob):
