@@ -1,5 +1,6 @@
 import time
 import random
+from itertools import chain
 
 import arcade
 
@@ -83,16 +84,18 @@ class Player(LivingEntity, MovingSprite):
 
     def process_mouse_press(self, x, y, button) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:
-            # Force center the player inside the tile
-            self.center_x, self.center_y = tile_to_pixels(
-                *pixels_to_tile(self.center_x, self.center_y)
-            )
-            self.center_y += s.PLAYER_CENTER_Y_COMPENSATION
-            self.path = iter(
-                self.path_finder.find(
-                    pixels_to_tile(self.center_x, self.center_y),
-                    pixels_to_tile(x, y),
-                    self.view.collision_list
+            # First path position is the closest grid center from player center,
+            # to force the player to be centered in tile before transversing
+            closest_grid_x, closest_grid_y = pixels_to_tile(self.center_x, self.center_y)
+
+            self.path = chain(
+                    ((closest_grid_x, closest_grid_y),),
+                    iter(
+                        self.path_finder.find(
+                            pixels_to_tile(self.center_x, self.center_y),
+                            pixels_to_tile(x, y),
+                            self.view.collision_list
+                    )
                 )
             )
 
