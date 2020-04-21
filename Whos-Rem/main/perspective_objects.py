@@ -1,5 +1,7 @@
 import arcade
 from screeninfo import get_monitors
+from Display.Utility import ColourBlend as cb
+from Settings import Settings
 
 
 class Shape:
@@ -55,7 +57,7 @@ class Shape:
         arcade.draw_rectangle_filled(self.x, self.y,
                                      int(self.dims[0] * self.scale_size),
                                      int(self.dims[1] * self.scale_size),
-                                     self.colour)
+                                     cb.brightness(self.colour, Settings.brightness))
 
 
 class ShapeManager:
