@@ -105,13 +105,14 @@ class TestLevels:
         Tests whether or not a level can be loaded.
         """
         import os
+        from map import Level
 
         BASE_DIR = os.path.dirname(os.path.abspath(__file__))
         LEVEL_DIR = os.path.join(BASE_DIR, 'resources', 'levels')
 
-        levels = os.listdir(LEVEL_DIR)
-
-        pass
+        levels = [os.path.join(LEVEL_DIR, file) for file in os.listdir(LEVEL_DIR)]
+        for level in levels:
+            Level.load_file(2, 3, level)
 
 
 class TestDungeon:
