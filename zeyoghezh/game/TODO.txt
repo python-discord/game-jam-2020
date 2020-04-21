@@ -16,6 +16,3 @@ Have the game over screen also show on the tutorial screen, have it start with "
 Make sure music repeats.
 
 Have the attack line be the min of the previous logic and the size of the planet (so a strong attack will make the planet look like the base of a cone when we add the thing about making it a cone)
-
-
-Add information on what each planet has.

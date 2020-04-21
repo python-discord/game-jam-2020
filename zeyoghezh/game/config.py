@@ -113,7 +113,9 @@ STORY_LINES = (
     "...",
     "You are not one of us.",
     "Who are you?",
-    "We are of three, but you are of four.",
+    "We are of three, but you are of...",
+    "...something else.",
+    "It comes after three.",
     "You were not born here.",
     "You do not belong here.",
     # TODO add more
