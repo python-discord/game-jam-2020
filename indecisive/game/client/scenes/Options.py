@@ -1,20 +1,32 @@
 import arcade
+from .base import Base
+import arcade.gui
 
 
-class Options:
-    def __init__(self):
+class Options(Base):
+    def __init__(self, display):
+        self.display = display
         self.spritelist = arcade.SpriteList()
-        self.buttonlist = arcade.View.button_list()
+        self.buttonlist = []
         self.spritedict = dict()
         self.timeAlive = 0
-        self.sprite_setup()
-        self.button_setup()
-        arcade.set_background_color(arcade.color.BEAU_BLUE)
-        self.background = arcade.load_textures()
+        self.theme = None
+        self.setup()
+
+    def setup_textures(self):
         normal = "./assets/normal_Button.png"
         hover = "./assets/Hovered_Button.png"
         clicked = "./assets/Hovered_Button.png"
         self.theme.add_button_textures(normal, hover, clicked)
+
+    def setup_theme(self):
+        self.theme = arcade.gui.Theme()
+        self.theme.set_font(24, arcade.color.WHITE)
+        self.setup_textures()
+
+    def setup(self):
+        self.setup_theme()
+        self.button_setup()
 
     def sprite_setup(self):
         self.spritedict = {
@@ -28,11 +40,9 @@ class Options:
         self.spritelist.extend(self.spritedict.values())
 
     def button_setup(self):
-        esc = Button("options", "main_menu", 560, 620, 400, 150, "Exit", self.theme)
-        music = Button("options", "option", 600, 400, "Music", self.theme)
-        accept = Button("options", "main_menu", 500, 200, "Accept", self.theme)
-        button_items = [esc, music, accept]
-        self.buttonlist += button_items
+        self.buttonlist.append(Button("options", "main_menu", 560, 620, 400, 150, "Exit", self.theme))
+        self.buttonlist.append(Button("options", "option", 600, 400, 400, 150, "Music", self.theme))
+        self.buttonlist.append(Button("options", "main_menu", 500, 200, 400, 150, "Accept", self.theme))
 
     def update(self, delta_time: float) -> None:
         self.timeAlive += delta_time
@@ -43,7 +53,7 @@ class Options:
 
 class Button(arcade.TextButton):
     def __init__(self, start_scene, next_scene, x, y, width, height, text, theme=None):
-        super.__init__(x, y, width, height, text, theme=theme, font="Roboto", font_color=255)
+        super(Button, self).__init__(x, y, width, height, text, theme=theme)
         self.start_scene = start_scene
         self.next_scene = next_scene
         self.clicked = False
