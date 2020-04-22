@@ -38,10 +38,10 @@ class Config(object):
     PLAYER_MOVEMENT_SPEED = 14
 
     # How many pixels to keep as a minimum margin between the characters and the edge of the screen.
-    LEFT_VIEWPORT_MARGIN = 250
-    RIGHT_VIEWPORT_MARGIN = 250
-    BOTTOM_VIEWPORT_MARGIN = 50
-    TOP_VIEWPORT_MARGIN = 100
+    LEFT_VIEWPORT_MARGIN = 500
+    RIGHT_VIEWPORT_MARGIN = 500
+    BOTTOM_VIEWPORT_MARGIN = 250
+    TOP_VIEWPORT_MARGIN = 200
 
     # All debug statements and renderings should use this
     DEBUG = True

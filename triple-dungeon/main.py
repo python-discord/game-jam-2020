@@ -79,6 +79,22 @@ class Game(arcade.Window):
         mob = Mob(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
         mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
         mob.target = self.player
+        mob.scale = 4
+        self.enemy_list.append(mob)
+        mob = Mob(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
+        mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+        mob.target = self.player
+        mob.scale = 4
+        self.enemy_list.append(mob)
+        mob = Mob(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
+        mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+        mob.target = self.player
+        mob.scale = 4
+        self.enemy_list.append(mob)
+        mob = Mob(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
+        mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+        mob.target = self.player
+        mob.scale = 4
         self.enemy_list.append(mob)
 
         # Setup viewport
@@ -114,9 +130,9 @@ class Game(arcade.Window):
                                               round(y / Config.TILE_SIZE) * Config.TILE_SIZE,
                                               Config.TILE_SIZE, Config.TILE_SIZE, arcade.color.RED)
                 self.player.draw_hit_box()
-                arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
-                arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
-                                 arcade.color.WHITE, 16, font_name='Arial')
+                #arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
+                #arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
+                #                 arcade.color.WHITE, 16, font_name='Arial')
 
                 # Draw paths for all mobs
                 for mob in self.enemy_list:
@@ -124,7 +140,7 @@ class Game(arcade.Window):
                         t1 = time.time()
                         path = mob.get_path()
                         t2 = time.time()
-                        print(f'Path acquired in {round(t2 - t1, 4)}s')
+                        #print(f'Path acquired in {round(t2 - t1, 4)}s')
                         self.draw_path(path)
                         mob.tick(path)
 
@@ -187,8 +203,7 @@ class Game(arcade.Window):
         Called whenever the mouse is clicked.
         """
 
-        for mob in self.enemy_list:
-            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+        
 
         # Create a bullet TEMP SPRITE, currently wielding frog slingshot
         bullet = Temp()
@@ -263,17 +278,22 @@ class Game(arcade.Window):
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
 
+
         self.enemy_list.update()
 
         # Projectile updates
         self.bullet_list.update()
         for bullet in self.bullet_list:
+            
             # Collision Checks
             hit_list = arcade.check_for_collision_with_list(bullet, self.dungeon.getWalls())
-
+            enemy_hit_list = arcade.check_for_collision_with_list(bullet, self.enemy_list)
             # If it did, get rid of the bullet
             if len(hit_list) > 0:
                 bullet.remove_from_sprite_lists()
+            if len(enemy_hit_list):
+                enemy_hit_list[0].remove_from_sprite_lists()
+
 
             # If the bullet flies off-screen, remove it. TEMP change to range calc
             if (

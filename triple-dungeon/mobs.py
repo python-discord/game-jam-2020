@@ -45,7 +45,7 @@ class Mob(arcade.Sprite):
         A on_update function, the Mob should decide it's next actions here.
         """
         curpos, nextpos = self.nearestPosition(), path[1]
-        print(curpos, nextpos)
+        # print(curpos, nextpos)
 
         if nextpos[0] > curpos[0]:
             self.change_x = Config.PLAYER_MOVEMENT_SPEED - 3
@@ -61,7 +61,7 @@ class Mob(arcade.Sprite):
         else:
             self.change_y = 0
 
-        print(self.change_x, self.change_y)
+        # print(self.change_x, self.change_y)
 
     def get_path(self, end: Tuple[int, int] = None) -> List[Tuple[int, int]]:
         """
