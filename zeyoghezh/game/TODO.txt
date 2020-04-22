@@ -5,13 +5,9 @@ Improve aesthetic
 Could the damage lines be cones, big on source and point on target? (Won't matter if George finishes)
 Make game over screen look better; maybe just put a background behind the text? Same with lithium count text.
 
-Make an intro video explaining how it works
-
 Auto fade out and restart at game over
 
 Maybe during the tutorial the abscond button is locked, so you have to AT LEAST finish the tutorial, and then you decide whether to continue or abscond?
-
-Have the game over screen also show on the tutorial screen, have it start with "All is lost;" or "You've escaped" or whatever
 
 Make sure music repeats.
 

@@ -30,7 +30,7 @@ def get_new_lithium_location():
 class Game(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_SIZE[0], SCREEN_SIZE[1], SCREEN_TITLE)
-        self.planets = arcade.SpriteList()
+        self.planets = None
         self.lithium_location = get_new_lithium_location()
         self.lithium_count = 0
         self.lithium_score_location = (SCREEN_SIZE[0]/3, SCREEN_SIZE[1]/20)
@@ -41,7 +41,7 @@ class Game(arcade.Window):
         self.abscond_button = None
 
         self.player_in_tutorial = True
-        self.game_is_over = False
+        self.game_over_time = None
         self.player_has_clicked_lithium = False
         self.player_has_healed_planet = False
         self.banner_text = None
@@ -53,8 +53,9 @@ class Game(arcade.Window):
             arcade.color.BLUE, 100)
 
     def setup(self):
-        self.player_in_tutorial = True
-        self.game_is_over = False
+        self.planets = arcade.SpriteList()
+        self.game_over_time = None
+        self.lithium_count = 0
         self.player_has_clicked_lithium = False
         self.player_has_healed_planet = False
         self.banner_text = ""
@@ -162,12 +163,12 @@ class Game(arcade.Window):
             *self.banner_location,
             color=arcade.color.GREEN, font_size=24)
 
-        if self.game_is_over:
+        if self.game_over_time:
             pass  # TODO restart game or whatever
 
     @log_exceptions
     def on_mouse_press(self, x, y, button, modifiers):
-        if self.game_is_over:
+        if self.game_over_time:
             return
         if get_distance(x, y, *self.lithium_location) < 10:
             self.clicked_lithium()
@@ -191,6 +192,10 @@ class Game(arcade.Window):
         )
 
     def on_update(self, delta_time):
+        if self.game_over_time:
+            if time.time() - self.game_over_time > 3:
+                self.setup()
+                return
         time_multiplier = delta_time / 0.0168
         if self.player_in_tutorial:
             time_multiplier /= 6
@@ -212,7 +217,7 @@ class Game(arcade.Window):
         self.run_assertions()
 
     def update_banner(self):
-        if self.game_is_over:
+        if self.game_over_time:
             return
         if not self.player_in_tutorial:
             self.update_banner_story()
@@ -242,9 +247,10 @@ class Game(arcade.Window):
                 self.player_in_tutorial = False
 
     def update_banner_story(self):
-        if self.game_is_over:
+        if self.game_over_time:
             return
         now = time.time()
+        self.last_banner_change = self.last_banner_change or now-5
         delta_time = now - self.last_banner_change
         if delta_time < 3:
             return
@@ -253,11 +259,11 @@ class Game(arcade.Window):
 
     def run_assertions(self):
         assert len(self.planets) in (1, 2, 3)
-        if not self.game_is_over:
+        if not self.game_over_time:
             assert len(self.planets) == 3
         assert self.lithium_count >= 0
         for planet in self.planets:
-            if not self.game_is_over:
+            if not self.game_over_time:
                 assert len(planet.others) == 2
             assert planet.center_x > -SCREEN_SIZE[0]
             assert planet.center_x < SCREEN_SIZE[0] * 2
@@ -267,13 +273,13 @@ class Game(arcade.Window):
             assert planet.speed_y != 0
 
     def game_over(self, reason):
-        if self.game_is_over:
+        if self.game_over_time:
             return
         self.banner_text = reason
         logger.info(f"Game over! {reason}")
         for planet in self.planets:
             logger.info(planet.get_stats_str())
-        self.game_is_over = True
+        self.game_over_time = time.time()
 
 
 def main():

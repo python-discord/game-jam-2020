@@ -124,7 +124,7 @@ class Planet(arcade.Sprite):
             planet.others.remove(self)
         self.parent.planets.remove(self)
         self.parent.game_over(
-            f"You cannot leave now; {self.proper_name} has died.")
+            f"All is lost. {self.proper_name} has died.")
 
     def get_stats_str(self):
         total_damage_on_others = round(sum(self.damage_on_others.values()), 4)
