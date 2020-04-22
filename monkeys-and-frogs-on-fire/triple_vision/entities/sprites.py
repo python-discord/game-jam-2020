@@ -143,6 +143,7 @@ class HealthBar(arcade.Sprite):
             fill_part_width,
             *args,
             life_count: int = 10,
+            is_filled: bool = True,
             **kwargs
     ) -> None:
 
@@ -152,6 +153,9 @@ class HealthBar(arcade.Sprite):
         self.fill_part_width = fill_part_width
         self.life_count = life_count
         self.fill_part_list = arcade.SpriteList()
+        if not is_filled:
+            return
+
         self.fill_part_list.extend(
             [
                 arcade.Sprite(
