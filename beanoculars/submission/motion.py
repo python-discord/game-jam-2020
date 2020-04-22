@@ -1,67 +1,59 @@
 import arcade
 import math
 from submission.gameConstants import *
-import PIL
 
 
-def movePlayer(sprite: arcade.sprite, dt):
-    if sprite.destination != [-1, -1]:
-
-        vector = [sprite.destination[0] - math.floor(sprite.center_x - 16) / 32,
-                  sprite.destination[1] - math.floor(sprite.center_y - 16) / 32]
+def movePlayer(sprite: arcade.sprite, delta_time: float):
+    # check si destination n'est pas set
+    if sprite.destination == [-1, -1]:
 
         if sprite.is_moving:
-            if sprite.direction == 0:
-                if vector[0] > 0:
-                    sprite.center_x += sprite.cur_speed * dt
-                    sprite.character_face_direction = LEFT_FACING
-                elif vector[0] < 0:
-                    if not sprite.corr_x:
-                        vector[0] -= 1
-                        sprite.corr_x = True
-                    sprite.center_x -= sprite.cur_speed * dt
-                    sprite.character_face_direction = RIGHT_FACING
+            sprite.is_moving = False
+            print('Not moving')
 
-            elif sprite.direction == 1:
-                if vector[1] > 0:
-                    sprite.center_y += sprite.cur_speed * dt
-                elif vector[1] < 0:
-                    if not sprite.corr_y:
-                        vector[1] -= 1
-                        sprite.corr_y = True
-                    sprite.center_y -= sprite.cur_speed * dt
-
-            if sprite.direction == 0:
-
-                if abs(vector[0]) < 0.05:
-                    sprite.center_x = sprite.destination[0] * 32 + 16
-                    sprite.is_moving = False
-
-            elif sprite.direction == 1:
-
-                if abs(vector[1]) < 0.05:
-                    sprite.center_y = sprite.destination[1] * 32 + 16
-                    sprite.is_moving = False
-
-            if sprite.center_x == sprite.destination[0] * 32 + 16 and sprite.center_y == sprite.destination[
-                1] * 32 + 16:
-                sprite.destination = [-1, -1]
-
-        else:
-            sprite.cur_pos = [math.floor((sprite.center_x - 16) / 32),
-                              math.floor((sprite.center_y - 16) / 32)]
-
-            if abs(vector[0]) > abs(vector[1]):
-                sprite.direction = 0
-            elif abs(vector[0]) < abs(vector[1]):
-                sprite.direction = 1
-            elif vector != [0, 0]:
-                sprite.direction = 0
-
-            sprite.is_moving = True
-
+    # sinon
     else:
-        sprite.face_character_direction = RIGHT_FACING
+        # moving est true
+        sprite.is_moving = True
+
+        # créer un vecteur (EN PX)
+        vectorPX = [sprite.destination[0] * 32 + 16 - sprite.center_x,
+                    sprite.destination[1] * 32 + 16 - sprite.center_y]
+
+        v_sign = [0, 0]
+
+        # (ajuster vecteur)
+        for i in range(len(vectorPX)):
+            if vectorPX[i] < 0:
+                vectorPX[i] -= 32
+
+        # trouver le signe du vecteur
+        for i in range(len(vectorPX)):
+            if vectorPX[i] < 0:
+                v_sign[i] = -1
+                if i == 0:
+                    sprite.character_face_direction = LEFT_FACING
+            elif vectorPX[i] > 0:
+                v_sign[i] = 1
+                if i == 0:
+                    sprite.character_face_direction = RIGHT_FACING
+            elif vectorPX[i] == 0:
+                v_sign[i] = 0
+
+        # bouger le sprite selon le vecteur
+        if sprite.destination[0] != -1:
+            sprite.center_x += (vectorPX[0] * LERP + .5 * v_sign[0]) * sprite.cur_speed * delta_time * abs(v_sign[0])
+        if sprite.destination[1] != -1:
+            sprite.center_y += (vectorPX[1] * LERP + .5 * v_sign[1]) * sprite.cur_speed * delta_time * abs(v_sign[1])
+
+        # si l'on est arrivé à destination (pour chaque coor)
+        if sprite.destination[0] * 32 + 16 - 2 < sprite.center_x < sprite.destination[0] * 32 + 16 + 2:
+            sprite.center_x = sprite.destination[0] * 32 + 16
+            sprite.destination[0] = -1
+
+        if sprite.destination[1] * 32 + 16 - 2 < sprite.center_y < sprite.destination[1] * 32 + 16 + 2:
+            sprite.center_y = sprite.destination[1] * 32 + 16
+            sprite.destination[1] = -1
 
 
 def moveEntities(entity_list: arcade.sprite_list, path_list: arcade.sprite_list, delta_time: float):

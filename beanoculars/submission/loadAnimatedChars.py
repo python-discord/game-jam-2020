@@ -20,7 +20,7 @@ def load_texture_pack(filename: str, upFilename: str, e_type: int):  # à revoir
 
     if e_type > 7:  # si tourelle (load 4 directions)
         return [
-            arcade.load_texture(PATH['img'] / filename, mirrored=True),  # UP
+            arcade.load_texture(PATH['img'] / filename, flipped=True),  # UP
             arcade.load_texture(PATH['img'] / filename),  # DOWN
             #arcade.load_texture(PATH['img'] / upFilename),  # RIGHT
             #arcade.load_texture(PATH['img'] / upFilename, mirrored=True)  # LEFT
@@ -146,7 +146,11 @@ class AnimatedPlayer(arcade.Sprite):
         self.corr_x = False
         self.corr_y = False
         self.destination = [-1, -1]
+        self.initial_vector = None
         self.cur_speed = MOVE_SPEED
+        self.dir_changed = False
+        self.xdone = False
+        self.ydone = False
 
         self.inventory = 0
         self.actual_cur_pos = []
@@ -156,6 +160,6 @@ class AnimatedPlayer(arcade.Sprite):
         if self.cur_texture_index >= self.numberFrames * UR_PLAYER:
             self.cur_texture_index = 0
         if self.character_face_direction == RIGHT_FACING:
-            self.texture = self.basic_textures[self.cur_texture_index // UR_PLAYER][0]
-        elif self.character_face_direction == LEFT_FACING:
             self.texture = self.basic_textures[self.cur_texture_index // UR_PLAYER][1]
+        elif self.character_face_direction == LEFT_FACING:
+            self.texture = self.basic_textures[self.cur_texture_index // UR_PLAYER][0]
