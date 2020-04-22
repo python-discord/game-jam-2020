@@ -6,9 +6,13 @@ import pyglet.gl as gl
 import Level
 import Keyboard
 import Camera
+import Maths
+
+# For viewing memory usage
+import psutil
+import os
 
 from Constants import WIDTH, HEIGHT, TITLE
-
 
 class PyGameJam2020(arcade.Window):
 
@@ -27,33 +31,35 @@ class PyGameJam2020(arcade.Window):
         self.camera = Camera.Camera(WIDTH, HEIGHT)
         self.keyboard = Keyboard.Keyboard()
 
+        self.debug_test = ""
+
+        self.set_icon(pyglet.image.load("Salami/icon.png"))
+
         self.set_location((self.camera.screen_width - WIDTH) // 2, (self.camera.screen_height - HEIGHT) // 2)
 
     def setup(self):
-
+        arcade.set_background_color((19, 14, 30))
         self.level = Level.Level(self.camera, self.keyboard)
 
     def on_update(self, delta):
 
         self.level.update(delta)
 
-        self.camera.x = self.level.player.center_x
-        self.camera.y = self.level.player.center_y
-        # self.camera.x = self.mouse_x
-        # self.camera.y = self.mouse_y
+        self.camera.scroll_to(self.level.player.center_x, self.level.player.center_y)
 
         if self.keyboard.is_pressed("zoom_in"):
             self.camera.zoom(0.95)
         elif self.keyboard.is_pressed("zoom_out"):
             self.camera.zoom(1/0.95)
 
-        # print(f"{self.camera.zoom_width} | {self.camera.zoom_height}")
-
         self.frames += 1
         self.time += delta
 
         if self.time >= 1:
-            print(f"FPS: {self.frames} | Time: {self.time}")
+            process = psutil.Process(os.getpid())
+            
+            self.debug_test = f"FPS: {self.frames}\nUsing: {process.memory_info().rss / 1000000} MB"
+
             self.time -= 1
             self.frames = 0
 
@@ -65,8 +71,11 @@ class PyGameJam2020(arcade.Window):
 
         self.level.draw()
 
+        self.camera.reset_viewport()
+
+        arcade.draw_text(self.debug_test, 12, 12, arcade.color.WHITE)
+
     def on_key_press(self, key, modifiers):
-        
         self.keyboard.on_key_press(key, modifiers)
     
     def on_key_release(self, key, modifiers):
@@ -75,6 +84,9 @@ class PyGameJam2020(arcade.Window):
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_x = x
         self.mouse_y = y
+
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        pass
 
 def main():
     window = PyGameJam2020()
