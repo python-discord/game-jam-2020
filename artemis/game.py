@@ -1,6 +1,4 @@
 import arcade
-import random
-import math
 
 from constants import WIDTH, HEIGHT, SCALING, SIDE, TOP, BACKGROUND, FONT
 from engine import BiDirectionalPhysicsEnginePlatformer
@@ -48,7 +46,7 @@ class Game(View):
 
         self.pauseplay = PausePlay(0, HEIGHT - 40, self)
         self.buttons.append(self.pauseplay)
-        
+
         self.engine = BiDirectionalPhysicsEnginePlatformer(
             self.player, self.blocks, 1
         )

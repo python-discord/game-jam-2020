@@ -1,12 +1,11 @@
 import arcade
 from PIL import Image
 
-from constants import ASSETS, WIDTH, HEIGHT, FONT
+from constants import ASSETS, WIDTH, HEIGHT
 
 
 class IconButton():
     def __init__(self, view, x, y, image, fun, size=64):
-        print(id(self))
         self.view = view
         self.state = 'normal'
         self.icon_texture = self.load_texture(image, size//2)

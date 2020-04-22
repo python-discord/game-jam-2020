@@ -1,5 +1,4 @@
 import arcade
-from PIL import Image
 
 from constants import ASSETS, SCALING, HEIGHT, TOP
 from ui import IconButton

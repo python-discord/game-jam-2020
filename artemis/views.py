@@ -1,9 +1,7 @@
 import arcade
 from PIL import Image
 
-from constants import (
-    BACKGROUND, WIDTH, HEIGHT, ASSETS, INSTRUCTIONS, ABOUT, FONT
-)
+from constants import WIDTH, HEIGHT, ASSETS, INSTRUCTIONS, ABOUT, FONT
 from game import Game
 from ui import ViewButton, IconButton, View
 
@@ -45,12 +43,10 @@ class Paused(View):
         super().on_draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
-        print('!?')
         for view in (super(), self.game):
             view.on_mouse_press(x, y, button, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        print('?!')
         for view in (super(), self.game):
             view.on_mouse_release(x, y, button, modifiers)
 

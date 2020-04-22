@@ -1,9 +1,7 @@
 import arcade
 import random
 
-from constants import (
-    ASSETS, WIDTH, SIDE, HEIGHT, TOP, SCALING, BLOCKS_TOP, BLOCKS_Y
-)
+from constants import ASSETS, WIDTH, SIDE, HEIGHT, SCALING, TOP
 
 
 class Gem(arcade.Sprite):
@@ -161,7 +159,9 @@ class Spike(arcade.Sprite):
 
     def update(self):
         self.center_x = self.block.center_x
-        blocks = arcade.check_for_collision_with_list(self, self.block.game.blocks)
+        blocks = arcade.check_for_collision_with_list(
+            self, self.block.game.blocks
+        )
         for block in blocks:
             if block != self.block:
                 self.remove_from_sprite_lists()

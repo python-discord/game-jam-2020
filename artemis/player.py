@@ -16,7 +16,7 @@ class Player(arcade.Sprite):
             image=ASSETS+'player_{}.png'
             ):
         super().__init__(
-            image.format('jump_0'), center_x=x, center_y=y, 
+            image.format('jump_0'), center_x=x, center_y=y,
             scale=SCALING*0.25
         )
         self.image = image
