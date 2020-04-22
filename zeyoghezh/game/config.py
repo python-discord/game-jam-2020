@@ -6,7 +6,7 @@ TRIANGULATION_START_LIKELIHOOD = 0.02
 TRIANGULATION_END_LIKELIHOOD = 0.05
 LITHIUM_MULTIPLIER = 1.8
 
-BASE_SPEED = 1e-1  # TODO change to 1e-1 when this is over
+BASE_SPEED = 1e+1  # TODO change to 1e-1 when this is over
 PLANET_BASE_SPEED = 5 * BASE_SPEED
 PUSH_BASE_SPEED = 3 * BASE_SPEED
 PUSH_MAX_DISTANCE = 80  # The most a planet can be away from Yogh to be pushed

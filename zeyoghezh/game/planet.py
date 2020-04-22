@@ -111,6 +111,11 @@ class Planet(arcade.Sprite):
             time_multiplier,
             delta_x=unit_push_distance[0]*PUSH_BASE_SPEED,
             delta_y=unit_push_distance[1]*PUSH_BASE_SPEED)
+        self.move(
+            time_multiplier,
+            delta_x=-unit_push_distance[0]*PUSH_BASE_SPEED/3,
+            delta_y=-unit_push_distance[1]*PUSH_BASE_SPEED/3
+        )
 
     def try_attack_others(self, time_multiplier):
         for other in self.others:
