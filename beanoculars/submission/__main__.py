@@ -9,16 +9,19 @@ Author: sachapomme (or Sacha#8175)
 """
 import arcade
 
-from submission.game import MyGame
+from submission.game import GameView
+from submission.menu import MenuView
 from submission.gameConstants import WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE, GM_MENU, GM_GAME
+
 
 def main() -> None:
     """ Main method """
     gameMode = GM_GAME
-    window = MyGame(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
+    window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
     print('Window created')
-    window.setup()
-    print('Game set up')
+    menu_view = MenuView()
+    window.show_view(menu_view)
+    print('Game view on screen')
     arcade.run()
 
 

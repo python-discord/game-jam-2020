@@ -7,7 +7,7 @@ from submission.tileMapLoader import *
 from submission.spell import pickUp
 from submission.sounds import loadSounds
 from submission.motion import moveEntities, updateActualPos, movePlayer
-from submission.waveManager import getSpawnList, manageEnemySpawn, decomposeSpawnList, generateASpawn,\
+from submission.waveManager import getSpawnList, manageEnemySpawn, decomposeSpawnList, generateASpawn, \
     EnemyGroup, SpawnOrder
 from random import randint
 import math
@@ -19,16 +19,13 @@ def getGridCase(position, offset_x, offset_y):
 
 
 # Class defining
-class MyGame(arcade.Window):
+class GameView(arcade.View):
     """
-    Main application class.
+    Game View
     """
 
-    def __init__(self, width, height, windowTitle):
-        if FULLSCREEN:
-            super(MyGame, self).__init__(width, height, windowTitle, fullscreen=True)
-        else:
-            super(MyGame, self).__init__(width, height, windowTitle, fullscreen=False)
+    def __init__(self):
+        super().__init__()
 
         self.ground_list = None
         self.path_list = None
@@ -76,10 +73,6 @@ class MyGame(arcade.Window):
 
     def setup(self):
         """ Set up the test here. Call this function to restart the test. """
-        if FULLSCREEN:
-            self.screen_x, self.screen_y = self.get_size()
-            self.window_offset_x = (self.screen_x / 2) - WINDOW_WIDTH / 2
-            self.window_offset_y = (self.screen_y / 2) - WINDOW_HEIGHT / 2
 
         self.player_list = arcade.SpriteList()
         self.ground_list = arcade.SpriteList(is_static=True)
@@ -186,7 +179,7 @@ class MyGame(arcade.Window):
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """ Get mouse's presses. """
-        #if not self.player_sprite.is_moving:
+        # if not self.player_sprite.is_moving:
         if FULLSCREEN:
             if self.mouse_x > self.screen_x / 2 + WINDOW_WIDTH / 2 or self.mouse_x < self.screen_x / 2 - WINDOW_WIDTH / 2:
                 print('Cannot move')
