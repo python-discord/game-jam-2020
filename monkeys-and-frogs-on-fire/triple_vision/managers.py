@@ -26,15 +26,15 @@ class GameManager:
         enemy = enemy_class(self, *args, **kwargs)
         self.enemies.append(enemy)
 
-    def create_dmg_indicator(self, text: str, position: Tuple[float, float]) -> None:
-        dmg_indicator = DamageIndicator(text, *position)
+    def create_dmg_indicator(self, dmg: float, position: Tuple[float, float]) -> None:
+        dmg_indicator = DamageIndicator(f"{int(dmg)}", *position)
         self.damage_indicators.append(dmg_indicator)
 
     def on_update(self, delta_time) -> None:
         for enemy in self.enemies:
             for projectile in self.player_projectiles:
                 if arcade.check_for_collision(projectile, enemy):
-                    self.create_dmg_indicator(str(projectile.dmg), enemy.position)
+                    self.create_dmg_indicator(projectile.dmg, enemy.position)
                     enemy.hit(projectile)
                     projectile.kill()
 

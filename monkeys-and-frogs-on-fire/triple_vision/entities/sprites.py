@@ -112,7 +112,7 @@ class TemporarySprite(arcade.Sprite):
 
 
 class DamageIndicator(TemporarySprite, MovingSprite):
-    def __init__(self, text, start_x: int, start_y: int):
+    def __init__(self, text: str, start_x: int, start_y: int):
         super().__init__(lifetime=1,
                          moving_speed=1,
                          center_x=start_x,
