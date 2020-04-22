@@ -26,7 +26,7 @@ class Trap(AnimatedEntity, SoundEntity):
         self.working_radius = working_radius
         self.activation_rectangle = activation_rectangle
 
-    def is_working(self):
+    def is_activated(self):
         # Should the trap work aka should it be animated and play sounds,
         # Good for saving resources if trap is off screen or far for player.
         return is_in_radius(self, self.target_player, self.working_radius)
@@ -67,7 +67,7 @@ class Spike(Trap):
     def on_update(self, delta_time: float = 1/60) -> None:
         if self.ticks == 7:
 
-            if self.is_working():
+            if self.is_activated():
                 self.waited_time += delta_time
 
                 if self.waited_time >= self.wait_time:
