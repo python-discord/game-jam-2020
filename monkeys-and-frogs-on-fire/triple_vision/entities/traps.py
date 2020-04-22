@@ -1,10 +1,13 @@
 import random
 
 from triple_vision import Settings as s
-from triple_vision.entities import AnimatedEntity
+from triple_vision.entities import AnimatedEntity, SoundEntity
 
 
-class Spike(AnimatedEntity):
+class Spike(AnimatedEntity, SoundEntity):
+    # TODO change these assets
+    activate_sounds = ("fireball.wav",)
+    hit_sounds = ("fireball.wav",)
 
     def __init__(self, view, **kwargs) -> None:
         super().__init__(
@@ -12,6 +15,8 @@ class Spike(AnimatedEntity):
             assets_path='assets/dungeon/frames',
             states=('',),
             frame_range=(0, 1, 2, 3, 2, 1, 0),
+            activate_sounds=self.activate_sounds,
+            hit_sounds=self.hit_sounds,
             **kwargs
         )
         self.camera = view.camera
@@ -43,9 +48,4 @@ class Spike(AnimatedEntity):
                 self.ticks += 1
 
             super().on_update(delta_time)
-
-    def play_activate_sound(self) -> None:
-        pass
-
-    def play_hit_sound(self) -> None:
-        pass
+            self.play_activate_sound()
