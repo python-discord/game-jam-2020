@@ -6,8 +6,17 @@ class Engine:
         self.entities = entities
         self.tiles = tiles
 
+        self.gravity = gravity
+
     def update(self, delta):
-        pass
+        
+        for entity in self.entities:
+            if not entity.flying:
+                entity.change_y -= self.gravity
+
+            entity.update()
 
     def check_for_collision(self):
         pass
+
+    
