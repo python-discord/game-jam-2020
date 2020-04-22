@@ -138,6 +138,7 @@ class DamageIndicator(TemporarySprite, MovingSprite):
 class HealthBar(arcade.Sprite):
     def __init__(
             self,
+            view,
             fill_part_filename: str,
             fill_part_width: int,
             *args,
@@ -148,6 +149,7 @@ class HealthBar(arcade.Sprite):
     ) -> None:
 
         super().__init__(*args, scale=scale, **kwargs)
+        self.view = view
         self.fill_part_filename = fill_part_filename
         self.fill_part_width = fill_part_width * scale
         self.life_count = life_count
@@ -166,6 +168,7 @@ class HealthBar(arcade.Sprite):
                 for i in range(life_count)
             ]
         )
+        self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
 
     def remove_filling_part(self):
         if len(self.fill_part_list) == 0:
@@ -181,6 +184,21 @@ class HealthBar(arcade.Sprite):
                     center_y=self.center_y
                 )
             )
+
+    def update(self, delta_time: float = 1/60):
+        viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
+        if self.prev_viewport != viewport:
+            self.center_x += viewport[0] - self.prev_viewport[0]
+            self.center_y += viewport[1] - self.prev_viewport[1]
+            for fill_part in self.fill_part_list:
+                fill_part.center_x += viewport[0] - self.prev_viewport[0]
+                fill_part.center_y += viewport[1] - self.prev_viewport[1]
+
+
+            self.prev_viewport = viewport
+
+        super().update()
+        self.fill_part_list.update()
 
     def draw(self):
         super().draw()
