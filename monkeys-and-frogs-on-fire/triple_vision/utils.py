@@ -41,6 +41,14 @@ def pixels_to_tile(x: float, y: float) -> Tuple[int, int]:
         int((y - (y % Tile.SCALED)) / Tile.SCALED)
     )
 
+
+def closest_grid_position(x: float, y: float) -> Tuple[float, float]:
+    """
+    Get the closest grid position for passed position.
+    """
+    return tile_to_pixels(*pixels_to_tile(x, y))
+
+
 def distance_between(center_object: arcade.Sprite, target_object: arcade.Sprite) -> float:
     x_diff = target_object.center_x - center_object.center_x
     y_diff = target_object.center_y - center_object.center_y

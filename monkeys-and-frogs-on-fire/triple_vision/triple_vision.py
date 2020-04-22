@@ -11,6 +11,7 @@ from triple_vision.entities import (
 )
 from triple_vision.managers import CardManager, GameManager
 from triple_vision.map import Map
+from triple_vision.entities.engine import SlowModeSupportEngine
 
 
 class TripleVision(arcade.View):
@@ -68,7 +69,7 @@ class TripleVision(arcade.View):
                 center_y=y * 200
             )
 
-        self.physics_engine = arcade.PhysicsEngineSimple(self.player, self.collision_list)
+        self.physics_engine = SlowModeSupportEngine(self.player, self.collision_list)
 
     def on_mouse_motion(self, x, y, dx, dy) -> None:
         self.card_manager.check_mouse_motion(
@@ -150,10 +151,11 @@ class TripleVision(arcade.View):
         self.card_manager.update()
 
     def update_(self, delta_time: float) -> None:
+        self.physics_engine.update()
+
         if self.player.is_alive:
             self.player.on_update(delta_time)
 
         self.game_manager.on_update(delta_time)
-        self.physics_engine.update()
         self.map.on_update()
         self.camera.update()
