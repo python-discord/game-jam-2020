@@ -3,6 +3,7 @@ import os
 import itertools
 from gamer_gang.mobs import *
 from gamer_gang.terrainStuff import *
+from pyglet import gl
 
 SCALE = 1
 OFFSCREEN_SPACE = 0
@@ -45,14 +46,14 @@ class ActualGame(arcade.Window):
 
         self.bodies = []
         for i in range(1, 4):
-            p, body, shape = makeMob(1, self.space, Player, self.playerTextures[i - 1], 1, 32 * (i + 3), 32, str(i))
+            p, body, shape = makeMob(1, self.space, Player, self.playerTextures[i - 1], 1, 17, 32 * i, str(i))
             self.bodies.append(body)
             self.shapes.append(shape)
             self.players.append(p)
             self.playerHeight = p.height
 
         for i in range(20):
-            self.normalGrounds.append(makeTerrain(self.space, NormalGround, self.normalGroundTextures, 12, i * 32, 0))
+            self.normalGrounds.append(makeTerrain(self.space, NormalGround, self.normalGroundTextures, 1, i * 32, 0))
 
         for i in range(1):
             self.spikes.append(makeTerrain(self.space, BadSpike, self.spikeTextures, 1, 50, 20))
@@ -61,7 +62,7 @@ class ActualGame(arcade.Window):
         arcade.start_render()
 
         self.spikes.draw()
-        self.normalGrounds.draw()
+        self.normalGrounds.draw(filter=gl.GL_NEAREST)
         for p in self.players:
             p.draw()
 
@@ -112,8 +113,8 @@ class ActualGame(arcade.Window):
             self.bottomView += self.players[self.controlled].top - top_boundary
             needChange = True
 
-        self.leftView = int(self.leftView)
-        self.bottomView = int(self.bottomView)
+        self.leftView = round(self.leftView)
+        self.bottomView = round(self.bottomView)
 
         if needChange:
             arcade.set_viewport(self.leftView, SCREEN_WIDTH + self.leftView - 1,
