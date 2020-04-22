@@ -138,9 +138,8 @@ class DamageIndicator(TemporarySprite, MovingSprite):
 class HealthBar(arcade.Sprite):
     def __init__(
             self,
-            bar_sprite: arcade.Sprite,
-            fill_part_filename,
-            fill_part_width,
+            fill_part_filename: str,
+            fill_part_width: int,
             *args,
             life_count: int = 10,
             is_filled: bool = True,
@@ -148,7 +147,6 @@ class HealthBar(arcade.Sprite):
     ) -> None:
 
         super().__init__(*args, **kwargs)
-        self.bar_sprite = bar_sprite
         self.fill_part_filename = fill_part_filename
         self.fill_part_width = fill_part_width
         self.life_count = life_count
@@ -160,8 +158,8 @@ class HealthBar(arcade.Sprite):
             [
                 arcade.Sprite(
                     fill_part_filename,
-                    center_x=self.bar_sprite.center_x + self.fill_part_width * i,
-                    center_y=self.bar_sprite.center_y
+                    center_x=self.center_x + self.fill_part_width * i,
+                    center_y=self.center_y
                 )
                 for i in range(life_count)
             ]
@@ -177,7 +175,8 @@ class HealthBar(arcade.Sprite):
             self.fill_part_list.append(
                 arcade.Sprite(
                     self.fill_part_filename,
-                    center_x=self.bar_sprite.center_x + self.fill_part_width * len(self.fill_part_list),
-                    center_y=self.bar_sprite.center_y
+                    center_x=self.center_x + self.fill_part_width * len(self.fill_part_list),
+                    center_y=self.center_y
                 )
             )
+
