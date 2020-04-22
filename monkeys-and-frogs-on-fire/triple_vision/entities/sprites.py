@@ -194,7 +194,6 @@ class HealthBar(arcade.Sprite):
                 fill_part.center_x += viewport[0] - self.prev_viewport[0]
                 fill_part.center_y += viewport[1] - self.prev_viewport[1]
 
-
             self.prev_viewport = viewport
 
         super().update()
