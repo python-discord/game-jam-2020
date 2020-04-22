@@ -35,28 +35,10 @@ def get_new_game():
 
 
 def get_puzzle_clues(solution_list, fact_templates):
-    # example_fact_template =
-    #     ["{0} live next to the person who likes {4}",
-    #      "The person in the {8} house likes {5}",
-    #      "The person who likes {4} lives in the {7} house",
-    #      "The person who likes {3} doesn't live next to the person who likes {5}",
-    #      "{2}'s house is {8}",
-    #      "{0} lives to the left of the {8} house."]
-    # example_solution =
-    #     ['Tom','Dick','Harry','Grapes','Cherries','Blueberries','Red',
-    #      'White','Blue']
-    # should result in
-    #
-    # ["Tom live next to the person who likes cherries",
-    #  "The person in the blue house likes blueberries",
-    #  "The person who likes cherries lives in the white house",
-    #  "The person who likes grapes doesn't live next to the person who likes bluberries",
-    #  "Harry's house is blue"]
-    #
-    #
-    # apply solution_list elements to fact_templates
-    # clue_list = applied solution_list to fact_templates
-    return clue_list
+    if not solution_list or not fact_templates:
+        raise TypeError("Missing input for function get_puzzle_clues!")
+
+    return [fact.format(*solution_list) for fact in fact_templates]
 
 
 def get_fact_template():
@@ -75,18 +57,8 @@ def start_new_game():
     shuffled_list = solution_list[:]
     random.shuffle(shuffled_list)
     fact_templates = get_fact_template()
-    clue_list = get_puzzle_clues(solution_list, fact_templates)
     # real return value
     # return solution_list, shuffled_list, clue_list
-
-    # bogus test code follows:
-    solution_list = ['Tom', 'Dick', 'Harry', 'Grapes', 'Cherries', 'Blueberries', 'Red', 'White', 'Blue']
-    clue_list = ["Tom live next to the person who likes cherries",
-                 "The person in the blue house likes blueberries",
-                 "The person who likes cherries lives in the white house",
-                 "The person who likes grapes doesn't live next to the person who likes bluberries",
-                 "Harry's house is blue"]
-    shuffled_list = solution_list[:]
-    random.shuffle(shuffled_list)
+    clue_list = get_puzzle_clues(solution_list, fact_templates)
 
     return solution_list, shuffled_list, clue_list
