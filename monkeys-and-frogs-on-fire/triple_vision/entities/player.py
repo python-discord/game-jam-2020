@@ -87,11 +87,11 @@ class Player(LivingEntity, MovingSprite):
         self.health_bar = HealthBar(
             self.view,
             fill_part_filename="assets/healthbar/health_fill_part.png",
-            fill_part_width=11.0,
+            fill_part_width=44.0,
             filename="assets/healthbar/health_bar_border.png",
             center_x=600,
             center_y=300,
-            scale=4,
+            scale=1,
         )
         self.curr_color = 'red'
 
