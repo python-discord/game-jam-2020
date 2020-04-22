@@ -4,10 +4,11 @@ import arcade
 
 from triple_vision import Settings as s
 from triple_vision.utils import pixels_to_tile, tile_to_pixels, closest_grid_position
+from triple_vision.entities.sprites import MovingSprite
 
 
 class SlowModeSupportEngine:
-    def __init__(self, player: arcade.Sprite, collision_list: arcade.SpriteList):
+    def __init__(self, player: MovingSprite, collision_list: arcade.SpriteList):
         self.player = player
         self.collision_list = collision_list
 
