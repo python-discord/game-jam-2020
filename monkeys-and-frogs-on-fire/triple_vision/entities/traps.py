@@ -37,6 +37,10 @@ class Trap(AnimatedEntity, SoundEntity):
         # where the trap will activate if the player is in that area
         pass
 
+    def activate(self):
+        # To be overwritten
+        pass
+
 
 class Spike(Trap):
     # TODO change these assets
@@ -72,7 +76,11 @@ class Spike(Trap):
                     self.waited_time = 0
         else:
             if self._prev_anim_delta + delta_time > 0.15:
+                self.play_activate_sound()
                 self.ticks += 1
 
             super().on_update(delta_time)
-            self.play_activate_sound()
+
+    def activate(self):
+        # TODO
+        pass
