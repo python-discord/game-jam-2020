@@ -1,36 +1,36 @@
 import random
-from collections import namedtuple
 from pathlib import Path
-from typing import List, NamedTuple
+from typing import List
 
 
-class RowItem(NamedTuple):
+def _get_all_row_filepaths(row_num: int) -> List[str]:
     """
-    A simple object to hold the filepath of an object, and the identifier for that object.
-    For example, the title of an object might be Dracula or Plum, which can be used in clue creation,
-    and the filepath will be the complete filepath.
-
-    Attributes can be accessed with row_item_instance.title/row_item_instance.file_path
+    :param row_num: the row for which assets should be retrieved
+    :return: a list of the relative filenames
     """
-    title: str
-    file_path: str
+    asset_path = Path(f'assets\\')
+    all_files = asset_path.rglob(f'R{row_num}_*.png')
+    all_row_items = [str(file.name) for file in all_files]
+    return all_row_items
 
 
-def get_row_attrs(row_num: int, count: int = 3) -> List[RowItem]:
-    """
-    :param row_num: the row to be retrieved, either 1, 2, or 3
-    :param count: the amount of items to be returned
-    :return: a named tuple object with a title and a full file path
-    """
-    asset_path = Path(f'assets\\row_{row_num}')
-    all_files = asset_path.rglob('*.png')
-    all_row_items = [RowItem(file.name[:-4], str(file)) for file in all_files]
-    row_items = random.sample(all_row_items, count)
-    return row_items
+def get_r1_attrs(count=3) -> List[str]:
+    attrs = _get_all_row_filepaths(1)
+    return random.sample(attrs, count)
+
+
+def get_r2_attrs(count=3) -> List[str]:
+    attrs = _get_all_row_filepaths(2)
+    return random.sample(attrs, count)
+
+
+def get_r3_attrs(count=3) -> List[str]:
+    attrs = _get_all_row_filepaths(2)
+    return random.sample(attrs, count)
 
 
 def get_new_game():
-    solution_list = get_row_attrs(1) + get_row_attrs(2) + get_row_attrs(3)
+    solution_list = get_r1_attrs() + get_r2_attrs() + get_r3_attrs()
     return solution_list
 
 
