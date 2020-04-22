@@ -1,11 +1,14 @@
 import arcade
 from perspective_objects import ShapeManager
-import pyaudio
-import aubio
+import itertools
+import json
+import time
+import os
 
-song_filepath = r"F:\game-jam-2020\Whos_Rem\main\xi-akasha-youtubemp3free.org.wav"
-win_s = 1024                # fft size
-hop_s = win_s // 2          # hop size
+BASE_DIR = os.getcwd()
+print(BASE_DIR)
+song_filepath = r"TRACK_2.mp3"
+notes_filepath = r"track_2.json"
 
 SPRITE_SCALING = 0.5
 TEXTURE_LEFT = 0
@@ -26,40 +29,61 @@ class GameScreen(arcade.View):
     left_button_active = False
     middle_button_active = False
     right_button_active = False
-    frame_counter = 0
+
     paused = started = False
+
+    left = center = right = False
+    with open(f"{BASE_DIR}/tracks/{notes_filepath}", 'r') as file:
+        notes = json.load(file)
+    frame_count = itertools.count(0, 1)
     all_sprites_list = arcade.SpriteList()
     background_sprite = arcade.Sprite(
-        filename=r"F:\game-jam-2020\Whos_Rem\main\reasources\game_play\undertale.png",
+        filename=f"{BASE_DIR}/reasources/game_play/undertale.png",
         scale=1,
         image_height=height,
-        image_width=width,
-    )
+        image_width=width)
 
-    # Audio side of stuff
+    song = arcade.Sound(f"{BASE_DIR}/tracks/{song_filepath}",
+                        streaming=True)
 
     # settings
     no_fail = True  # no matter how many times u miss you're not gonna loose
-    fps = 32    # used for calculations
-    song = arcade.Sound(song_filepath, streaming=True)
+    fps = 16  # used for calculations
+    active = False
 
     def setup(self):
-        arcade.schedule(self.on_frame_draw, 1 / 32)
+        arcade.schedule(self.on_draw, 1 / self.fps)
         self.song.play(0.05)
+        self.active = True
+        time.sleep(0.03)
+
+    @staticmethod
+    def draw_note_key(x, y, height, width):
+        arcade.draw_rectangle_filled(x, y, width=width, height=height, color=arcade.color.CRIMSON)
+
+    def get_notes(self, frame):
+        section, frame = divmod(frame, self.fps)
+        return self.notes[section][frame]
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
-        pass
 
-    def on_frame_draw(self, time_delta):
-        arcade.start_render()
-        shape = ShapeManager.create_shape(-1)
-        ShapeManager.manage_shapes([shape])
+        total_secs = self.song.get_stream_position()
+        if total_secs <= 0:
+            self.active = False
 
-    def on_draw(self):
+        if (total_secs < self.song.get_length()) and self.active:
+            self.left, self.center, self.right = self.get_notes(next(self.frame_count))
+
+            # for testing only:
+            self.left_button_active = self.left
+            self.middle_button_active = self.center
+            self.right_button_active = self.right
+
+    def on_draw(self, time_delta=None):
         """ In charge of rendering the notes at current time. """
-
         arcade.start_render()
+
         if not self.paused:
             arcade.draw_rectangle_filled(
                 self.width / 2,
@@ -83,58 +107,38 @@ class GameScreen(arcade.View):
             self.started = True
 
         if self.left_button_active:
-            arcade.draw_rectangle_filled(
-                self.width / 2 - 105,
-                self.height / 10,
-                width=self.width / 10,
-                height=self.height / 4,
-                color=arcade.color.CRIMSON)
+            self.draw_note_key(self.width / 2 - 105, self.height / 10, self.height / 4, self.width / 10)
 
         if self.middle_button_active:
-            arcade.draw_rectangle_filled(
-                self.width / 2,
-                self.height / 10,
-                width=self.width / 10,
-                height=self.height / 4,
-                color=arcade.color.CRIMSON)
+            self.draw_note_key(self.width / 2, self.height / 10, self.height / 4, self.width / 10)
 
         if self.right_button_active:
-            arcade.draw_rectangle_filled(
-                self.width / 2 + 105,
-                self.height / 10,
-                width=self.width / 10,
-                height=self.height / 4,
-                color=arcade.color.CRIMSON)
+            self.draw_note_key(self.width / 2 + 105, self.height / 10, self.height / 4, self.width / 10)
 
     def on_key_press(self, symbol: int, modifiers: int):
         """ This is only for registering if keys are pressed and to change the relevant buttons """
 
-        # Start key (normally space)
-        if symbol == arcade.key.SPACE:   # todo test this cuz idk what it is
-            self.paused = not self.paused   # this toggles the game paused / stopped or not
-            if not self.started:
-                self.started = True
-
         # Actual game keys
-        elif symbol == key_binds['left']:   # todo test this cuz idk what it is
+        if symbol == key_binds['left']:
             self.left_button_active = True
 
-        elif symbol == key_binds['center']:   # todo test this cuz idk what it is
+        elif symbol == key_binds['center']:
             self.middle_button_active = True
 
-        elif symbol == key_binds['right']:   # todo test this cuz idk what it is
+        elif symbol == key_binds['right']:
             self.right_button_active = True
 
     def on_key_release(self, symbol: int, modifiers: int):
         """ This is only for registering if keys are released and to change the relevant buttons """
+
         # Actual game keys
-        if symbol == key_binds['left']:  # todo test this cuz idk what it is
+        if symbol == key_binds['left']:
             self.left_button_active = False
 
-        elif symbol == key_binds['center']:  # todo test this cuz idk what it is
+        elif symbol == key_binds['center']:
             self.middle_button_active = False
 
-        elif symbol == key_binds['right']:  # todo test this cuz idk what it is
+        elif symbol == key_binds['right']:
             self.right_button_active = False
 
 
