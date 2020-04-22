@@ -47,6 +47,7 @@ class Game(arcade.Window):
 
         # Sprite Lists
         self.enemy_list = None
+        self.active_enemies = []
         self.bullet_list = None
         self.player = None
         # Game Objects
@@ -63,6 +64,7 @@ class Game(arcade.Window):
         # Create the Sprite lists
 
         self.enemy_list = arcade.SpriteList()
+        self.active_enemies = arcade.SpriteList()
         self.fps = FPSCounter()
         self.bullet_list = arcade.SpriteList()
 
@@ -76,6 +78,14 @@ class Game(arcade.Window):
         self.player.center_x, self.player.center_y = level.center()
         # x, y = level.center()
 
+        #Set up monsters
+        for count in range(Config.MONSTER_COUNT):
+            mob = Mob(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
+            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+            mob.target = self.player
+            mob.scale = 4
+            self.enemy_list.append(mob)
+        '''
         mob = Mob(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
         mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
         mob.target = self.player
@@ -96,7 +106,7 @@ class Game(arcade.Window):
         mob.target = self.player
         mob.scale = 4
         self.enemy_list.append(mob)
-
+        '''
         # Setup viewport
         self.view_bottom = self.player.center_x - (0.5 * Config.SCREEN_WIDTH) + 300
         self.view_left = self.player.center_x - (0.5 * Config.SCREEN_WIDTH)
@@ -122,6 +132,7 @@ class Game(arcade.Window):
             self.dungeon.render()
             self.player.draw()
             self.enemy_list.draw()
+            self.active_enemies.draw()
             self.bullet_list.draw()
 
             if Config.DEBUG:
@@ -130,12 +141,12 @@ class Game(arcade.Window):
                                               round(y / Config.TILE_SIZE) * Config.TILE_SIZE,
                                               Config.TILE_SIZE, Config.TILE_SIZE, arcade.color.RED)
                 self.player.draw_hit_box()
-                #arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
-                #arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
-                #                 arcade.color.WHITE, 16, font_name='Arial')
+                arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
+                arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
+                                arcade.color.WHITE, 16, font_name='Arial')
 
                 # Draw paths for all mobs
-                for mob in self.enemy_list:
+                for mob in self.active_enemies:
                     if mob.target is not None:
                         t1 = time.time()
                         path = mob.get_path()
@@ -277,9 +288,20 @@ class Game(arcade.Window):
                                 Config.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
-
-
-        self.enemy_list.update()
+        
+        #Enemy activation and update
+        for enemy in reversed(self.enemy_list):
+            if (
+                enemy.bottom > self.view_bottom and
+                enemy.top < self.view_bottom + Config.SCREEN_HEIGHT and
+                enemy.right < self.view_left + Config.SCREEN_WIDTH and
+                enemy.left > self.view_left
+                ):
+                if Config.DEBUG: print("Activate Enemy")
+                self.active_enemies.append(enemy)
+                self.enemy_list.remove(enemy)
+        for enemy in self.active_enemies:
+            enemy.update()
 
         # Projectile updates
         self.bullet_list.update()
@@ -287,7 +309,7 @@ class Game(arcade.Window):
             
             # Collision Checks
             hit_list = arcade.check_for_collision_with_list(bullet, self.dungeon.getWalls())
-            enemy_hit_list = arcade.check_for_collision_with_list(bullet, self.enemy_list)
+            enemy_hit_list = arcade.check_for_collision_with_list(bullet, self.active_enemies)
             # If it did, get rid of the bullet
             if len(hit_list) > 0:
                 bullet.remove_from_sprite_lists()

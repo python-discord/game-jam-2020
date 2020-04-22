@@ -45,6 +45,9 @@ class Config(object):
 
     # All debug statements and renderings should use this
     DEBUG = True
+    
+    #Monster Count to be spawned
+    MONSTER_COUNT = 4
 
 
 class Enums(Enum):
