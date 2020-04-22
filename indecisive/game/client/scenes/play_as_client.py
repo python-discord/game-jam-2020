@@ -58,7 +58,8 @@ class PlayAsClient(Base):
         status = receive.get()["status"]
         if status == 0:
             # goto lobby
-            self.display.change_scenes("lobby", network_thread, receive, send)
+            connection_number = receive.get()["data"]
+            self.display.change_scenes("lobby", network_thread, receive, send, connection_number)
         elif status == 1 or status == 5:
             self.status = "Invalid address"
         elif status == 2 or status == 3:
