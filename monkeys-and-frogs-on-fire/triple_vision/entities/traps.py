@@ -14,7 +14,7 @@ class Trap(AnimatedEntity, SoundEntity):
             target_player: Player,
             target_enemies: BaseEnemy,
             activation_rectangle: Tuple[int, int, int, int],
-            working_radius: int = s.WINDOW_SIZE,
+            working_radius: int = s.WINDOW_SIZE[0],
             **kwargs
     ):
         super().__init__(assets_path='assets/dungeon/frames',
