@@ -78,7 +78,7 @@ class CardManager:
                 arcade.Sprite(
                     filename=f'assets/wizard/{color}_card.png',
                     scale=card_scale,
-                    center_x=s.WINDOW_SIZE[0] / 2 + (idx - 1) * 400 * card_scale,
+                    center_x=s.WINDOW_SIZE[0] / 1.4 + (idx - 1) * 400 * card_scale,
                     center_y=self.MIN_CARD_HEIGHT
                 )
             )

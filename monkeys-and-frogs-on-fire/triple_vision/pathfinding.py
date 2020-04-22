@@ -56,6 +56,9 @@ class PathFinder:
         collision_list: arcade.SpriteList
     ) -> List[Tuple[int, int]]:
 
+        if self._tile_is_blocked(*end_pos, collision_list):
+            return
+
         open_nodes = list()
         closed_nodes = list()
 
@@ -114,7 +117,7 @@ class PathFinder:
 
                 open_nodes.append(child)
 
-    def _tile_is_blocked(self, x: float, y: float, sprite_list: arcade.SpriteList) -> bool:
+    def _tile_is_blocked(self, x: int, y: int, sprite_list: arcade.SpriteList) -> bool:
         if x < 0 or x > s.MAP_SIZE[0] or y < 0 or y > s.MAP_SIZE[1]:
             return True
 
