@@ -53,7 +53,7 @@ class Planet(arcade.Sprite):
         self.speed_x = start_speed_x
         self.speed_y = start_speed_y
 
-    def move(self, delta_x=None, delta_y=None):
+    def move(self, time_multiplier, delta_x=None, delta_y=None):
         # I have no idea why this needs to be 4 and not 2
         planet_radius = self.width / 4
         if self.center_y > SCREEN_SIZE[1] - planet_radius:
@@ -70,19 +70,22 @@ class Planet(arcade.Sprite):
         if delta_y is None:
             delta_y = self.speed_y * PLANET_BASE_SPEED
 
+        delta_x *= time_multiplier
+        delta_y *= time_multiplier
+
         logger.debug(f"Moving {self.name}. {delta_x=}, {delta_y=}.")
         self.center_y += delta_y
         self.center_x += delta_x
 
-    def try_push_others(self):
+    def try_push_others(self, time_multiplier):
         if not self.can_push_planets:
             return
         for other in self.others:
             distance = closest_distance_between_planets(self, other)
             if distance < PUSH_MAX_DISTANCE:
-                self.push_other(other)
+                self.push_other(other, time_multiplier)
 
-    def push_other(self, other):
+    def push_other(self, other, time_multiplier):
         self_coords = (self.center_x, self.center_y)
         other_coords = (other.center_x, other.center_y)
         unit_push_distance = get_unit_push_distance(self_coords, other_coords)
@@ -90,25 +93,27 @@ class Planet(arcade.Sprite):
             f"{self.name} ({self_coords}) pushing {other.name} "
             f"({other_coords}) by {unit_push_distance}")
         other.move(
+            time_multiplier,
             delta_x=unit_push_distance[0]*PUSH_BASE_SPEED,
             delta_y=unit_push_distance[1]*PUSH_BASE_SPEED)
 
-    def try_attack_others(self):
+    def try_attack_others(self, time_multiplier):
         for other in self.others:
             distance = closest_distance_between_planets(self, other)
             if distance < self.max_attack_distance:
-                self.attack_other(other)
+                self.attack_other(other, time_multiplier)
 
-    def attack_other(self, other):
-        if random.random() > ATTACK_PLAYS_SOUND_CHANCE:
+    def attack_other(self, other, time_multiplier):
+        if random.random() > ATTACK_PLAYS_SOUND_CHANCE * time_multiplier:
             self.attack_sound.play(SOUND_VOLUME)
         self.attacked_last_round.append(other)
         distance_between = closest_distance_between_planets(self, other)
+        damage = self.base_damage * time_multiplier
         logger.debug(
             f"{self.name} attacking {other.name} "
-            f"({distance_between=} for {self.base_damage}")
-        other.health -= self.base_damage
-        self.damage_on_others[other.name] += self.base_damage
+            f"({distance_between=} for {damage}")
+        other.health -= damage
+        self.damage_on_others[other.name] += damage
         other.scale = other.health
         if other.health < 0:
             other.die()
@@ -119,7 +124,7 @@ class Planet(arcade.Sprite):
             planet.others.remove(self)
         self.parent.planets.remove(self)
         self.parent.game_over(
-            f"You cannot leave now; {self.proper_name} has died.")
+            f"All is lost. {self.proper_name} has died.")
 
     def get_stats_str(self):
         total_damage_on_others = round(sum(self.damage_on_others.values()), 4)
@@ -149,8 +154,17 @@ class Planet(arcade.Sprite):
         self.scale = self.health
         assert self.health > 0
 
-    def update_triangulating(self):
-        if random.random() < TRIANGULATION_START_LIKELIHOOD:
+    def update_triangulating(
+            self, time_multiplier, in_tutorial, should_not_triangulate):
+        # TODO improve chance logic here
+        if should_not_triangulate:
+            self.is_triangulating = False
+            return
+        start_chance = TRIANGULATION_START_LIKELIHOOD * time_multiplier
+        end_chance = TRIANGULATION_END_LIKELIHOOD * time_multiplier
+        if in_tutorial:
+            start_chance = (start_chance*99 + 1) / 100
+        if random.random() < start_chance:
             self.is_triangulating = True
-        if random.random() < TRIANGULATION_END_LIKELIHOOD:
+        if random.random() < end_chance:
             self.is_triangulating = False

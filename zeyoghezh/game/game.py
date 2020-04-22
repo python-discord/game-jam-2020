@@ -1,12 +1,16 @@
 import random
 import arcade
 import logging
+import time
 from arcade.gui import Theme, TextButton
-from .util import get_distance, log_exceptions
+from .util import (
+    get_distance, log_exceptions, get_attack_triangle_points,
+    random_location_in_planet
+)
 from .planet import Planet
 from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
-    BACKGROUND_MUSIC_VOLUME
+    BACKGROUND_MUSIC_VOLUME, STORY_LINES
 )
 import sys
 
@@ -29,7 +33,7 @@ def get_new_lithium_location():
 class Game(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_SIZE[0], SCREEN_SIZE[1], SCREEN_TITLE)
-        self.planets = arcade.SpriteList()
+        self.planets = None
         self.lithium_location = get_new_lithium_location()
         self.lithium_count = 0
         self.lithium_score_location = (SCREEN_SIZE[0]/3, SCREEN_SIZE[1]/20)
@@ -39,11 +43,27 @@ class Game(arcade.Window):
 
         self.abscond_button = None
 
-        self.game_is_over = False
-        self.game_over_reason = None
-        self.game_over_location = (SCREEN_SIZE[0]/10, SCREEN_SIZE[1]/2)
+        self.player_in_tutorial = True
+        self.game_over_time = None
+        self.player_has_clicked_lithium = False
+        self.player_has_healed_planet = False
+        self.banner_text = None
+        self.banner_location = (SCREEN_SIZE[0]/100, SCREEN_SIZE[1]/2)
+        self.last_banner_change = None
+        self.story_iter = None
+
+        self.banner_background_color = arcade.make_transparent_color(
+            arcade.color.BLUE, 100)
 
     def setup(self):
+        self.planets = arcade.SpriteList()
+        self.game_over_time = None
+        self.lithium_count = 0
+        self.player_has_clicked_lithium = False
+        self.player_has_healed_planet = False
+        self.banner_text = ""
+        self.last_banner_change = None
+        self.story_iter = (line for line in STORY_LINES)
         self.background = arcade.load_texture(
             BACKGROUND_IMAGE)
         self.background_music = arcade.Sound(BACKGROUND_MUSIC, streaming=True)
@@ -67,6 +87,18 @@ class Game(arcade.Window):
                 start_speed_x=random.random(),
                 start_speed_y=random.random()
             )
+
+    def set_banner_text(self, new_text):
+        if new_text == self.banner_text:
+            return
+        self.last_banner_change = time.time()
+        self.banner_text = new_text
+        x_coord = SCREEN_SIZE[0]/100
+        y_coord = (
+            (random.random() * (6 * SCREEN_SIZE[1] / 8))
+            + (SCREEN_SIZE[1] / 5)
+        )
+        self.banner_location = (x_coord, y_coord)
 
     def abscond_press(self):
         self.abscond_button.pressed = True
@@ -97,18 +129,23 @@ class Game(arcade.Window):
         super().on_draw()
         for planet in self.planets:
             for other in planet.attacked_last_round:
-                arcade.draw_line(
-                    start_x=planet.center_x, start_y=planet.center_y,
-                    end_x=(
-                        other.center_x+(
-                            random.random()*other.width/4)
-                        - (other.width/4)),
-                    end_y=(
-                        other.center_y+(
-                            random.random()*other.height/4)
-                        - (other.height/4)),
-                    color=planet.color,
-                    line_width=planet.base_damage * 1e4)
+                attack_point = random_location_in_planet(
+                    (other.center_x, other.center_y),
+                    other.width / 4
+                )
+                attack_start_radius = min(
+                    planet.base_damage * 1e4, planet.width / 4)
+                start_point_1, start_point_2 = get_attack_triangle_points(
+                    (planet.center_x, planet.center_y),
+                    attack_point,
+                    attack_start_radius
+                )
+                arcade.draw_triangle_filled(
+                    *start_point_1,
+                    *start_point_2,
+                    *attack_point,
+                    color=planet.color
+                )
             planet.attacked_last_round = []
             planet.pushed_last_round = []
 
@@ -122,15 +159,24 @@ class Game(arcade.Window):
 
         self.abscond_button.draw()
 
-        if self.game_is_over:
-            arcade.draw_text(
-                f"Game over! {self.game_over_reason}",
-                *self.game_over_location,
-                color=arcade.color.WHITE, font_size=24)
+        arcade.draw_rectangle_filled(
+            center_x=SCREEN_SIZE[0]/2,
+            center_y=20+self.banner_location[1],
+            width=SCREEN_SIZE[0],
+            height=40,
+            color=self.banner_background_color)
+
+        arcade.draw_text(
+            self.banner_text,
+            *self.banner_location,
+            color=arcade.color.GREEN, font_size=24)
+
+        if self.game_over_time:
+            pass  # TODO restart game or whatever
 
     @log_exceptions
     def on_mouse_press(self, x, y, button, modifiers):
-        if self.game_is_over:
+        if self.game_over_time:
             return
         if get_distance(x, y, *self.lithium_location) < 10:
             self.clicked_lithium()
@@ -139,12 +185,14 @@ class Game(arcade.Window):
                 logger.info(f"Healing {planet.name}")
                 self.lithium_count -= 1
                 planet.get_healed(0.1)
+                self.player_has_healed_planet = True
         self.abscond_button.check_mouse_press(x, y)
 
     def clicked_lithium(self):
         planet_avg_health = self.avg_planet_health()
         self.lithium_count += planet_avg_health * 1.5
         self.lithium_location = get_new_lithium_location()
+        self.player_has_clicked_lithium = True
 
     def avg_planet_health(self):
         return (
@@ -152,21 +200,78 @@ class Game(arcade.Window):
         )
 
     def on_update(self, delta_time):
+        if self.game_over_time:
+            if time.time() - self.game_over_time > 3:
+                self.setup()
+                return
+        time_multiplier = delta_time / 0.0168
+        if self.player_in_tutorial:
+            time_multiplier /= 6
         logger.debug("\nNew Round\n")
         self.run_assertions()
+        self.update_banner()
         self.planets.update()
-        [planet.move() for planet in self.planets]
-        [planet.try_attack_others() for planet in self.planets]
-        [planet.try_push_others() for planet in self.planets]
-        [planet.update_triangulating() for planet in self.planets]
+        [planet.move(time_multiplier) for planet in self.planets]
+        [planet.try_attack_others(time_multiplier) for planet in self.planets]
+        [planet.try_push_others(time_multiplier) for planet in self.planets]
+        should_not_triangulate = (
+            self.player_in_tutorial
+            and self.lithium_count > 2
+            and not self.player_has_healed_planet)
+        [planet.update_triangulating(time_multiplier,
+                                     self.player_in_tutorial,
+                                     should_not_triangulate)
+         for planet in self.planets]
+        self.run_assertions()
+
+    def update_banner(self):
+        if self.game_over_time:
+            return
+        if not self.player_in_tutorial:
+            self.update_banner_story()
+            return
+        now = time.time()
+        if self.last_banner_change is None:
+            self.set_banner_text("This is the story of Ze, Yogh, and Ezh.")
+        delta_time = now - self.last_banner_change
+        if not self.player_has_clicked_lithium and delta_time > 3:
+            self.set_banner_text(
+                "See the circles? Click on their intersection.")
+        if (self.player_has_clicked_lithium
+                and not self.player_has_healed_planet
+                and not self.lithium_count > 2
+                and delta_time > 0.5):
+            self.set_banner_text("Good. Keep doing it.")
+        if self.lithium_count > 2 and not self.player_has_healed_planet:
+            self.set_banner_text(
+                "Good. Now heal one of the planets by clicking on them."
+            )
+        if self.player_has_healed_planet:
+            self.set_banner_text(
+                "You've healed them with lithium. Keep them alive."
+            )
+            delta_time = now - self.last_banner_change
+            if delta_time > 2:
+                self.player_in_tutorial = False
+
+    def update_banner_story(self):
+        if self.game_over_time:
+            return
+        now = time.time()
+        self.last_banner_change = self.last_banner_change or now-5
+        delta_time = now - self.last_banner_change
+        if delta_time < 3:
+            return
+        next_story_part = next(self.story_iter, self.banner_text)
+        self.set_banner_text(next_story_part)
 
     def run_assertions(self):
         assert len(self.planets) in (1, 2, 3)
-        if not self.game_is_over:
+        if not self.game_over_time:
             assert len(self.planets) == 3
         assert self.lithium_count >= 0
         for planet in self.planets:
-            if not self.game_is_over:
+            if not self.game_over_time:
                 assert len(planet.others) == 2
             assert planet.center_x > -SCREEN_SIZE[0]
             assert planet.center_x < SCREEN_SIZE[0] * 2
@@ -176,13 +281,13 @@ class Game(arcade.Window):
             assert planet.speed_y != 0
 
     def game_over(self, reason):
-        if self.game_is_over:
+        if self.game_over_time:
             return
-        self.game_over_reason = reason
+        self.banner_text = reason
         logger.info(f"Game over! {reason}")
         for planet in self.planets:
             logger.info(planet.get_stats_str())
-        self.game_is_over = True
+        self.game_over_time = time.time()
 
 
 def main():

@@ -1,6 +1,7 @@
 import arcade
 import math
 import logging
+import random
 
 logger = logging.getLogger()
 
@@ -20,6 +21,26 @@ def log_exceptions(func):
             raise
 
     return inner
+
+
+def get_attack_triangle_points(planet_coords, other_coords, planet_radius):
+    rise = other_coords[1] - planet_coords[1]
+    run = other_coords[0] - planet_coords[0]
+    normalization = abs(run) + abs(rise)
+    new_rise = planet_radius * run / normalization
+    new_run = planet_radius * rise / normalization
+    point1 = (planet_coords[0] + new_run, planet_coords[1] - new_rise)
+    point2 = (planet_coords[0] - new_run, planet_coords[1] + new_rise)
+    return (point1, point2)
+
+
+def random_location_in_planet(coords, radius):
+    dist_from_center = random.random() * radius
+    rise = int(random.random() * dist_from_center) * random.choice([1, -1])
+    run = int(dist_from_center - abs(rise)) * random.choice([1, -1])
+    assert rise < radius
+    assert run < radius
+    return (coords[0] + run, coords[1] + rise)
 
 
 def get_unit_push_distance(planet_coords, other_coords):

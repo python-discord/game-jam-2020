@@ -1,6 +1,2 @@
-Test attack sounds
-Add combat effects (not just lines)
-Improve aesthetic
-
-Could the damage lines be cones, big on source and point on target? (Won't matter if George finishes)
-Make game over screen look better; maybe just put a background behind the text? Same with lithium count text.
+Make sure music repeats.
+Test attack sounds.
