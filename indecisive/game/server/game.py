@@ -14,5 +14,5 @@ class Game:
             if data["type"] == "newConnection":
                 self.players[data["connection"]] = {"connected": True, "name": ""}
             elif data["type"] == "nameChange":
-                self.players[data["connection"]]["name"] = data["newName"]
+                self.players[data["connection"]]["name"] = data["newName"][:12]
                 self.send.put({"type": "playersUpdate", "data": self.players})

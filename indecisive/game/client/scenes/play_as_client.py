@@ -33,7 +33,7 @@ class PlayAsClient(Base):
                 center_y=622.5
             ),
             "connect": arcade.Sprite(
-                "./assets/simple_button.png",
+                "./assets/connect_button.png",
                 scale=0.25,
                 center_x=160,
                 center_y=557.5
@@ -58,7 +58,6 @@ class PlayAsClient(Base):
         status = receive.get()["status"]
         if status == 0:
             # goto lobby
-            print("tou")
             self.display.change_scenes("lobby", network_thread, receive, send)
         elif status == 1 or status == 5:
             self.status = "Invalid address"
