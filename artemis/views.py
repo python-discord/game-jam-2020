@@ -3,39 +3,51 @@ from PIL import Image
 
 from constants import BACKGROUND, WIDTH, HEIGHT, ASSETS, INSTRUCTIONS
 from game import Game
+from ui import ViewButton, IconButton, View
 
 
-class Button(arcade.gui.TextButton):
-    def __init__(self, view, x, y, text, switch_to, width=100, height=40):
-        super().__init__(x, y, width, height, text, theme=view.theme)
-        self.window = view.window
-        self.switch_to = switch_to
-
-    def on_press(self):
-        self.pressed = True
-
-    def on_release(self):
-        self.window.show_view(self.switch_to())
-
-
-class View(arcade.View):
-    def __init__(self):
+class Paused(View):
+    def __init__(self, game):
+        self.game = game
         super().__init__()
-        self.theme = arcade.gui.Theme()
-        image = ASSETS + 'button_{}.png'
-        self.theme.add_button_textures(
-            image.format('normal'), image.format('hover'),
-            image.format('active'), image.format('locked')
-        )
+        self.buttons = arcade.SpriteList()
+        y = HEIGHT/2 - 50
+        x = self.game.left + WIDTH/2
+        self.buttons.append(IconButton(x-70, y, self, 'home', self.home))
+        self.buttons.append(IconButton(x, y, self, 'play', self.play))
+        self.buttons.append(IconButton(x+70, y, self, 'restart', self.restart))
+
+    def home(self):
+        self.window.show_view(Menu())
+
+    def play(self):
+        self.game.pauseplay.pressed()
+
+    def restart(self):
+        self.window.show_view(Game())
 
     def on_show(self):
-        arcade.set_viewport(0, WIDTH, 0, HEIGHT)
+        pass    # overwrite default of resetting viewport
+
+    def on_draw(self):
+        arcade.start_render()
+        self.game.on_draw()
+        arcade.draw_text(
+            'Paused', self.game.left + WIDTH/2, HEIGHT/2 + 50,
+            arcade.color.BLACK, font_size=50, anchor_x='center',
+        )
+        self.buttons.draw()
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        for button in self.buttons:
+            button.on_mouse(x, y)
+        self.game.pauseplay.on_mouse_release(x, y, button, modifiers)
 
 
 class Instructions(View):
     def on_show(self):
-        self.button_list.append(Button(self, WIDTH/2-75, 50, 'Back', Menu))
-        self.button_list.append(Button(self, WIDTH/2+75, 50, 'Play', Game))
+        self.button_list.append(ViewButton(self, WIDTH/2-75, 50, 'Back', Menu))
+        self.button_list.append(ViewButton(self, WIDTH/2+75, 50, 'Play', Game))
 
     def on_draw(self):
         arcade.start_render()
@@ -79,10 +91,10 @@ class Tutorial(View):
             except StopIteration:
                 self.done = True
                 self.button_list.append(
-                    Button(self, WIDTH/2-75, HEIGHT/2, 'Back', Menu)
+                    ViewButton(self, WIDTH/2-75, HEIGHT/2, 'Back', Menu)
                 )
                 self.button_list.append(
-                    Button(self, WIDTH/2+75, HEIGHT/2, 'Play', Game)
+                    ViewButton(self, WIDTH/2+75, HEIGHT/2, 'Play', Game)
                 )
 
     def on_draw(self):
@@ -96,10 +108,11 @@ class Tutorial(View):
 
 class Menu(View):
     def on_show(self):
+        super().on_show()
         self.button_list.append(
-            Button(self, WIDTH/2, HEIGHT/2-50, 'Play', Game)
+            ViewButton(self, WIDTH/2, HEIGHT/2-50, 'Play', Game)
         )
-        self.button_list.append(Button(
+        self.button_list.append(ViewButton(
             self, WIDTH/2, HEIGHT/2-100, 'Help', Tutorial
         ))
 
@@ -109,6 +122,11 @@ class Menu(View):
         arcade.draw_text(
             'Menu', WIDTH/2, HEIGHT/2,
             arcade.color.WHITE, font_size=50, anchor_x='center'
+        )
+        arcade.draw_text(
+            'Artemis: Gem Matcher', WIDTH/2, HEIGHT/2 + 100,
+            arcade.color.WHITE, font_size=50, anchor_x='center',
+            anchor_y='bottom', font_name=ASSETS+'font.ttf'
         )
 
 

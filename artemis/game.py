@@ -6,14 +6,16 @@ from constants import WIDTH, HEIGHT, SCALING, SIDE, TOP, BACKGROUND
 from engine import BiDirectionalPhysicsEnginePlatformer
 from player import Player
 from sprites import Block, Gem, RandomBlock
-from displays import Box
+from displays import Box, PausePlay
 from scores import get_hiscore, add_score
+from ui import View
 import views
 
 
-class Game(arcade.View):
+class Game(View):
     def __init__(self):
         super().__init__()
+        super().on_show()
         arcade.set_background_color(BACKGROUND)
 
         # sprites
@@ -35,8 +37,16 @@ class Game(arcade.View):
         for n in range(5):
             Box(self, n)
 
+        self.pauseplay = PausePlay(
+            0,
+            HEIGHT - (TOP - self.blocks[0].height//2)//2 - 40,
+            self
+        )
+
         self.others = arcade.SpriteList()
         self.spikes = arcade.SpriteList()
+
+        self.others.append(self.pauseplay)
         
         self.engine = BiDirectionalPhysicsEnginePlatformer(
             self.player, self.blocks, 1
@@ -49,32 +59,46 @@ class Game(arcade.View):
         self.left = 0
         self.score = 0
         self.hiscore = get_hiscore()
+        self.paused = False
+
+    def on_show(self):
+        pass    # overwrite default of resetting viewport
 
     def on_draw(self):
         arcade.start_render()
+        self.pauseplay.center_x = self.left + WIDTH - 125
         arcade.draw_text(
             text=f'Hiscore: {self.hiscore:03d}',
             start_x=self.left + WIDTH - 50,
-            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2 - 15,
+            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2,
             color=arcade.color.WHITE, font_size=20, anchor_x='right',
             anchor_y='center'
         )
         arcade.draw_text(
-            text=f'Score: {self.score:03d}', start_x=self.left + WIDTH - 50,
-            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2  + 15,
+            text=f'Score: {self.score:03d}',
+            start_x=self.left + WIDTH - 50,
+            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2 + 30,
             color=arcade.color.WHITE, font_size=20, anchor_x='right',
             anchor_y='center'
         )
         for sprite_list in self.sprite_lists:
             sprite_list.draw()
         self.player.draw()
+        if self.paused:
+            arcade.draw_lrtb_rectangle_filled(
+                left=self.left, right=WIDTH+self.left, top=HEIGHT, bottom=0,
+                color=(255, 255, 255, 100)
+            )
+            self.pauseplay.draw()
+            self.window.show_view(views.Paused(self))
 
     def on_update(self, timedelta):
-        for sprite_list in self.sprite_lists:
-            sprite_list.update()
-        self.player.update(timedelta)
-        self.engine.update()
-        self.scroll()
+        if not self.paused:
+            for sprite_list in self.sprite_lists:
+                sprite_list.update()
+            self.player.update(timedelta)
+            self.engine.update()
+            self.scroll()
 
     def gem_added(self):
         colours = [box.colour for box in self.boxes if box.colour]
@@ -92,7 +116,17 @@ class Game(arcade.View):
         if all_three:
             self.score += 1
             self.remove_three(all_three)
-        elif len(colours) >= 5 - colours.count('p'):
+            return
+        over = False
+        size = 5 - colours.count('p')
+        unique = sum(1 for i in 'rby' if (i in colours))
+        if len(colours) == 5:
+            over = True
+        elif size < 3:
+            over = True
+        elif size - unique < 2:
+            over = True
+        if over:
             self.game_over('Inventory Full')
 
     def remove_three(self, colour):
@@ -121,8 +155,6 @@ class Game(arcade.View):
         if self.left > self.player.right:
             self.game_over('Got Stuck')
 
-    def on_mouse_release(self, x, y, button, modifiers):
-        self.player.switch()
-
     def on_key_press(self, key, modifiers):
-        self.player.switch()
+        if not self.paused:
+            self.player.switch()

@@ -100,38 +100,39 @@ class RandomBlock(Block):
 
     def reposition(self):
         self.center_x += WIDTH + random.randrange(SIDE, SIDE*2)
+        self.reposition_y()
 
     def reposition_y(self):
-        self.find_y()
         attempts = 5
-        overlapping = False
-        while attempts and not overlapping:
+        overlapping = True
+        while attempts and overlapping:
             overlapping = False
             attempts -= 1
+            self.find_y()
             for others in (
                     self.game.blocks, self.game.gems, self.game.spikes
                     ):
                 if arcade.check_for_collision_with_list(self, others):
                     overlapping = True
-                    self.find_y()
                     break
             # minimum distance between blocks that aren't touching
-            min_dist = self.game.player.width
+            min_dist = 200 * SCALING
             left_bound = self.left - min_dist
-            right_bound = self.right = min_dist
+            right_bound = self.right + min_dist
             for block in self.game.blocks:
                 if (
                             left_bound < block.left < right_bound
                             or left_bound < block.right < right_bound
                         ) and (
-                            0 < self.bottom - block.top < min_dist
-                            or 0 < block.bottom - self.top < min_dist
+                            1 < self.bottom - block.top < min_dist
+                            or 1 < block.bottom - self.top < min_dist
                         ):
                     overlapping = True
-                    self.find_y()
                     break
             if not overlapping:
                 break
+        if not attempts:
+            self.center_y = HEIGHT * 2    # go off the screen till next time
         self.up = random.randrange(2)
 
     def total_reposition(self):
@@ -161,3 +162,8 @@ class Spike(arcade.Sprite):
 
     def update(self):
         self.center_x = self.block.center_x
+        blocks = arcade.check_for_collision_with_list(self, self.block.game.blocks)
+        for block in blocks:
+            if block != self.block:
+                self.remove_from_sprite_lists()
+                return
