@@ -140,7 +140,7 @@ class HealthBar(arcade.Sprite):
             self,
             view,
             fill_part_filename: str,
-            fill_part_width: int,
+            fill_part_width: float,
             *args,
             life_count: int = 10,
             is_filled: bool = True,
@@ -157,17 +157,15 @@ class HealthBar(arcade.Sprite):
         if not is_filled:
             return
 
-        self.fill_part_list.extend(
-            [
+        for i in range(life_count):
+            self.fill_part_list.append(
                 arcade.Sprite(
                     fill_part_filename,
-                    center_x=self.center_x + self.fill_part_width * i,
+                    center_x=(self.center_x - self.width / 2 + self.fill_part_width / 2) + self.fill_part_width * i,
                     center_y=self.center_y,
                     scale=scale
                 )
-                for i in range(life_count)
-            ]
-        )
+            )
         self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
 
     def remove_filling_part(self):
@@ -195,10 +193,10 @@ class HealthBar(arcade.Sprite):
                 fill_part.center_y += viewport[1] - self.prev_viewport[1]
 
             self.prev_viewport = viewport
-
         super().update()
         self.fill_part_list.update()
 
     def draw(self):
-        super().draw()
         self.fill_part_list.draw()
+        super().draw()
+
