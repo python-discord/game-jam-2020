@@ -113,12 +113,17 @@ class ActualGame(arcade.Window):
             self.bottomView += self.players[self.controlled].top - top_boundary
             needChange = True
 
+        bottom_boundary = self.bottomView + SCREEN_MARGIN
+        if self.players[self.controlled].bottom < bottom_boundary:
+            self.bottomView -= bottom_boundary - self.players[self.controlled].bottom
+            needChange = True
+
         self.leftView = round(self.leftView)
         self.bottomView = round(self.bottomView)
 
         if needChange:
-            arcade.set_viewport(self.leftView, SCREEN_WIDTH + self.leftView - 1,
-                                self.bottomView, SCREEN_HEIGHT + self.bottomView - 1)
+            arcade.set_viewport(self.leftView, SCREEN_WIDTH + self.leftView,
+                                self.bottomView, SCREEN_HEIGHT + self.bottomView)
 
     def stackCheck(self):
         if self.timeAfterSplit < 0.5:  # don't join right after the user tells the blocks to split
