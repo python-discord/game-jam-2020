@@ -37,9 +37,10 @@ class TripleVision(arcade.View):
         self.bullet_list = arcade.SpriteList()
 
         self.player = Player(self, 'm')
-        self.player.setup()
-
         self.camera = Camera(self, s.WINDOW_SIZE[0] / 2.5, s.WINDOW_SIZE[1] / 2.5)
+
+        # run the setup after the camera creation to prevent conflicts with HealthBar
+        self.player.setup()
 
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
