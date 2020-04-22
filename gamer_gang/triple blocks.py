@@ -11,8 +11,8 @@ class ActualGame(arcade.Window):
         self.levels = Level()
 
     def setup(self):
-        self.current_view = self.menuView
-        self.show_view(self.levels)
+        self.current_view = self.levels
+        self.show_view(self.current_view)
 
 def main():
     game = ActualGame()

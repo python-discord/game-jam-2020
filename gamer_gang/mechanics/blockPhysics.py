@@ -211,7 +211,8 @@ class Level(arcade.View):
     def on_update(self, dt):
         self.frames += 1
         self.timeAfterSplit += dt
-        self.space.step(1 / 60.0)
+        for _ in range(10):
+            self.space.step(1 / 600.0)
 
         self.movement()  # move all the players (well, the characters)
         self.cameraShift()  # shift camera

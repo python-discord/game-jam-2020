@@ -33,7 +33,6 @@ class MenuView(arcade.View):
                 self.decorations.append(toAdd)
 
         e = 0
-
         for i in range(30):
             toAdd = Deco(arcade.load_texture("images/stupidInterface/grass.png"), 1, e * 64 - 50, 100)
             self.decorations.append(toAdd)
@@ -50,8 +49,8 @@ class MenuView(arcade.View):
         for i in range(5):  # TODO: clouds are glitchy when they're near the edge
             toAdd = Clouds(arcade.load_texture("images/stupidInterface/cloud.png"), 0.3, random.randint(-232, 1032),
                            random.randint(400, 600), random.uniform(-1, 1))
-            while toAdd.dire == 0:
-                toAdd.dire = random.uniform(-1, 1)
+            while toAdd.direction == 0:
+                toAdd.direction = random.uniform(-1, 1)
             self.clouds.append(toAdd)
 
     def setup_theme(self):
@@ -91,38 +90,41 @@ class MenuView(arcade.View):
 
         self.decorations.draw()
 
-    def on_update(self, dt):
+    def on_update(self, dt):  # TODO: when you go back from the game to the menu, you have to reset the viewport
+        # arcade.set_viewport(0, WINDOW_SIZE[0], 0, WINDOW_SIZE[1])
         if self.scroll > self.curx:
             for i in self.decorations:
                 i.center_x = i.center_x - 20
             for i in self.button_list:
                 i.center_x = i.center_x - 20
             self.curx += 20
+
         if self.scroll < self.curx:
             for i in self.decorations:
                 i.center_x = i.center_x + 20
             for i in self.button_list:
                 i.center_x = i.center_x + 20
             self.curx -= 20
-        for i in self.clouds:
-            i.center_x += 0.2 * i.dire
+
+        for i in self.clouds:  # move the clouds
+            i.center_x += 0.2 * i.direction
             if (i.center_x > random.randint(832, 1032)) or (i.center_x < random.randint(-232, -32)):
                 choice = random.randint(0, 1)
                 if choice == 1:
                     i.center_x = random.randint(832, 1032)
                     i.center_y = random.randint(400, 600)
-                    i.dire = -1
+                    i.direction = -1
                 if choice == 0:
                     i.center_x = random.randint(-232, -32)
                     i.center_y = random.randint(400, 600)
-                    i.dire = 1
+                    i.direction = 1
 
 
 class Deco(arcade.Sprite):
     def __init__(self, textures, scale, x, y):
         super().__init__()
         self.texture = textures
-        self.scaling = 1
+        self.scale = 1
 
         self.center_x = x
         self.center_y = y
@@ -132,18 +134,17 @@ class Backdrop(arcade.Sprite):
     def __init__(self, x):
         super().__init__()
         self.texture = arcade.load_texture("images/stupidInterface/menuBackground.png")
-        self.scaling = 1
+        self.scale = 1
 
         self.center_x = SCREEN_WIDTH / 2
         self.center_y = SCREEN_HEIGHT / 2 + x * 100
 
 
 class Clouds(arcade.Sprite):
-    def __init__(self, textures, scale, x, y, ok):
+    def __init__(self, textures, scale, x, y, orientation):
         super().__init__()
-        self.dire = ok
+        self.direction = orientation
         self.texture = textures
-
         self.scale = scale
 
         self.center_x = x

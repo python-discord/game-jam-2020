@@ -1,8 +1,7 @@
 from PIL import Image
 from itertools import permutations
 
-players = [Image.open('mobs/player/1.png'), Image.open('mobs/player/2.png'), Image.open(
-    'mobs/player/3.png')]
+players = [Image.open('mobs/player/1.png'), Image.open('mobs/player/2.png'), Image.open('mobs/player/3.png')]
 
 def get_concat_v(im1, im2):
     dst = Image.new('RGB', (im1.width, im1.height + im2.height))
