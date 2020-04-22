@@ -140,7 +140,7 @@ class HealthBar(arcade.Sprite):
             self,
             view,
             fill_part_filename: str,
-            fill_part_width: int,
+            fill_part_width: float,
             *args,
             life_count: int = 10,
             is_filled: bool = True,
@@ -198,6 +198,6 @@ class HealthBar(arcade.Sprite):
         self.fill_part_list.update()
 
     def draw(self):
-        super().draw()
         self.fill_part_list.draw()
+        super().draw()
 
