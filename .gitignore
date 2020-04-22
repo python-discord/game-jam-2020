@@ -130,3 +130,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .vscode/settings.json
+Salami/icon.png
+Salami/spritesheet-src.pdn
+Salami/ruins_0.png
+Salami/ruins_1.png
