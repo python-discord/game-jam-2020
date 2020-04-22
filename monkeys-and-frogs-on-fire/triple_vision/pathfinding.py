@@ -53,10 +53,14 @@ class PathFinder:
         self,
         start_pos: Tuple[int, int],
         end_pos: Tuple[int, int],
-        collision_list: arcade.SpriteList
+        collision_list: arcade.SpriteList,
+        map_list: arcade.SpriteList
     ) -> List[Tuple[int, int]]:
 
         if self._tile_is_blocked(*end_pos, collision_list):
+            return
+
+        if not self._tile_is_blocked(*end_pos, map_list):
             return
 
         open_nodes = list()
