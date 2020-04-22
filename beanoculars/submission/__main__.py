@@ -11,7 +11,7 @@ import arcade
 
 from submission.game import GameView
 from submission.menu import MenuView
-from submission.gameConstants import WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE, GM_MENU, GM_GAME
+from submission.gameConstants import WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE
 
 
 def main() -> None:
