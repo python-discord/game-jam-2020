@@ -33,10 +33,12 @@ class Keyboard:
         self.add_key("zoom_in", arcade.key.EQUAL)
 
     def on_key_press(self, key: int, modifiers: int):
-        self.key_codes_list.get(key).pressed = True
+        if self.key_codes_list.get(key):
+            self.key_codes_list.get(key).pressed = True
 
     def on_key_release(self, key: int, modifiers: int):
-        self.key_codes_list.get(key).pressed = False
+        if self.key_codes_list.get(key):
+            self.key_codes_list.get(key).pressed = False
 
     def on_mouse_move(self, x, y, dx, dy):
         self.mouse_x = x
