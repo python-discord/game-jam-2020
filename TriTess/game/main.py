@@ -22,7 +22,7 @@ from TriTess.game import trigrid
 BOARD_SIZE = 12
 
 # This sets the WIDTH of each grid location
-WIDTH = 30
+WIDTH = 50
 
 # This sets the margin between each cell
 # and on the edges of the screen.
@@ -47,12 +47,8 @@ class TriTess(arcade.Window):
         """
 
         super().__init__(width, height, title)
-        self.trigrid = trigrid.TriGrid(BOARD_SIZE, CELL_WIDTH)
-
+        self.trigrid = trigrid.TriGrid(BOARD_SIZE, CELL_WIDTH, 'triangular')
         arcade.set_background_color(arcade.color.WHITE)
-
-    def on_update(self, dt):
-        pass
 
     def on_draw(self):
         """
@@ -63,7 +59,7 @@ class TriTess(arcade.Window):
         arcade.start_render()
 
         # Draw the grid
-        self.trigrid.on_draw()
+        self.trigrid.on_draw(grid_coord=True)
 
     def on_mouse_press(self, coord_x, coord_y, button, modifiers):
         """
