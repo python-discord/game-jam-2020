@@ -7,8 +7,8 @@ import os
 
 BASE_DIR = os.getcwd()
 print(BASE_DIR)
-song_filepath = r"TRACK_2.mp3"
-notes_filepath = r"track_2.json"
+song_filepath = r"TRACK_1.wav"
+notes_filepath = r"track_1.json"
 
 SPRITE_SCALING = 0.5
 TEXTURE_LEFT = 0
@@ -38,7 +38,7 @@ class GameScreen(arcade.View):
     frame_count = itertools.count(0, 1)
     all_sprites_list = arcade.SpriteList()
     background_sprite = arcade.Sprite(
-        filename=f"{BASE_DIR}/reasources/game_play/undertale.png",
+        filename=f"{BASE_DIR}/Resources/game_play/undertale.png",
         scale=1,
         image_height=height,
         image_width=width)

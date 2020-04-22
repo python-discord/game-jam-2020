@@ -138,7 +138,7 @@ class Settings(arcade.View):
 
 
 if __name__ == "__main__":
-    window = arcade.Window(Settings.width, Settings.height, "SETTINGS TEST")
+    window = arcade.Window(Settings.width, Settings.height, "SETTINGS")
     settings_view = Settings()
     window.show_view(settings_view)
     arcade.run()
