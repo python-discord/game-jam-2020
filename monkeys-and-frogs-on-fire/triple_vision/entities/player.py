@@ -83,17 +83,17 @@ class Player(LivingEntity, MovingSprite):
             (-6.0, -11.0),
             (-6.0, -3.0)
         ])
+        self.curr_color = 'red'
 
         self.health_bar = HealthBar(
             self.view,
-            fill_part_filename="assets/healthbar/health_fill_part.png",
+            fill_part_filename="assets/healthbar/mana_fill_part.png",
             fill_part_width=44.0,
-            filename="assets/healthbar/health_bar_border.png",
+            filename="assets/healthbar/mana_bar_border.png",
             center_x=120,
             center_y=18,
-            scale=0.5,
+            scale=1,
         )
-        self.curr_color = 'red'
 
     def process_mouse_press(self, x, y, button) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:

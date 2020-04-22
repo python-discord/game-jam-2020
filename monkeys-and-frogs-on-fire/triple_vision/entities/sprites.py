@@ -150,7 +150,7 @@ class HealthBar(arcade.Sprite):
             self.fill_part_list.append(
                 arcade.Sprite(
                     fill_part_filename,
-                    center_x=(self.center_x - self.width / 2 + self.fill_part_width / 2)
+                    center_x=self.center_x + (self.fill_part_width - self.width) / 2
                     + self.fill_part_width * i,
                     center_y=self.center_y,
                     scale=scale,
@@ -180,11 +180,12 @@ class HealthBar(arcade.Sprite):
     def update(self, delta_time: float = 1 / 60):
         viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
         if self.prev_viewport != viewport:
-            self.center_x += viewport[0] - self.prev_viewport[0]
-            self.center_y += viewport[1] - self.prev_viewport[1]
+            viewport_change = viewport[0] - self.prev_viewport[0], viewport[1] - self.prev_viewport[1]
+            self.center_x += viewport_change[0]
+            self.center_y += viewport_change[1]
             for fill_part in self.fill_part_list:
-                fill_part.center_x += viewport[0] - self.prev_viewport[0]
-                fill_part.center_y += viewport[1] - self.prev_viewport[1]
+                fill_part.center_x += viewport_change[0]
+                fill_part.center_y += viewport_change[1]
 
             self.prev_viewport = viewport
 
