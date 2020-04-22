@@ -15,6 +15,7 @@ class Trap(AnimatedEntity, SoundEntity):
             target_enemies: BaseEnemy,
             activation_rectangle: Tuple[int, int, int, int],
             working_radius: int = s.WINDOW_SIZE[0],
+            sound_radius: int = s.WINDOW_SIZE[0]//5,
             **kwargs
     ):
         super().__init__(assets_path='assets/dungeon/frames',
@@ -26,27 +27,43 @@ class Trap(AnimatedEntity, SoundEntity):
         self.target_enemies = target_enemies
         self.working_radius = working_radius
         self.activation_rectangle = activation_rectangle
+        self.sound_radius = sound_radius
 
     def is_activated(self):
-        # Should the trap work aka should it be animated and play sounds,
-        # Good for saving resources if trap is off screen or far for player.
+        """
+        Should the trap work aka should it be animated and play sounds,
+        Good for saving resources if trap is off screen or far for player.
+        """
         return is_in_radius(self, self.target_player, self.working_radius)
 
     def will_activate(self):
-        # based on self.target_player and self.activation_rectangle
-        # activation_rectangle is x_left, y_down, x_right, y_up relative area to self
-        # where the trap will activate if the player is in that area
+        """
+        Based on self.target_player and self.activation_rectangle.
+        activation_rectangle is x_left, y_down, x_right, y_up relative area to self
+        where the trap will activate if the player is in that area
+        """
         pass
 
     def activate(self):
         # To be overwritten
         pass
 
+    def play_activate_sound(self) -> None:
+        if self.is_in_sound_radius():
+            super().play_activate_sound()
+
+    def is_in_sound_radius(self):
+        """
+        Whether should we play sound effects (activation etc) or not.
+        Reduced sound spam.
+        """
+        return is_in_radius(self, self.target_player, self.sound_radius)
+
 
 class Spike(Trap):
     # TODO change these assets
-    activate_sounds = ("fireball.wav",)
-    hit_sounds = ("fireball.wav",)
+    activate_sounds = ("melee_activate_0.wav",)
+    hit_sounds = ("melee_hit_0.flac",)
 
     def __init__(self, target_player=None, target_enemies=None, **kwargs) -> None:
         super().__init__(
