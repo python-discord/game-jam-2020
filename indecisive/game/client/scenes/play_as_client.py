@@ -55,7 +55,7 @@ class PlayAsClient(Base):
 
     def connect(self):
         network_thread, receive, send = run(self.ip)
-        status = receive.get()
+        status = receive.get()["status"]
         if status == 0:
             # goto lobby
             print("tou")
@@ -87,10 +87,10 @@ class PlayAsClient(Base):
                 else:
                     self.ip = self.ip[:self.cursor_index] + self.ip[self.cursor_index + 1:]
             elif key == arcade.key.DELETE:
-                if self.cursor_index == -1:
-                    self.ip = self.ip[:-1]
+                if self.cursor_index == - (len(self.ip) + 1):
+                    self.ip = self.ip[1:]
                 else:
-                    self.ip = self.ip[:self.cursor_index + 1] + self.ip[self.cursor_index:]
+                    self.ip = self.ip[:self.cursor_index - 1] + self.ip[self.cursor_index:]
             elif key == arcade.key.LEFT:
                 self.cursor_index -= 1
                 if self.cursor_index <= - (len(self.ip) + 2):

@@ -2,7 +2,7 @@ import arcade
 from .base import Base
 from .util import arcade_int_to_string
 from ..network import run
-from server.network import run as server_run
+from server import run as server_run
 
 
 class PlayAsServer(Base):
@@ -31,10 +31,10 @@ class PlayAsServer(Base):
 
     def connect(self):
         network_thread, receive, send = run(self.ip)
-        status = receive.get()
+        status = receive.get()["status"]
+        print(status)
         if status == 0:
             # goto lobby
-            print("tou")
             self.display.change_scenes("lobby", network_thread, receive, send)
         elif status == 1 or status == 5:
             self.status = "Invalid address"
@@ -44,3 +44,4 @@ class PlayAsServer(Base):
             self.status = "Invalid Hostname"
         else:
             print(status)
+            self.display.change_scenes("mainMenu")

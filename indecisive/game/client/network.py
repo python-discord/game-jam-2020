@@ -27,22 +27,27 @@ class Client:
     async def _start(self):
         try:
             self.connection = await websockets.connect(f"ws://{self.ip}:{self.port}")
-            self.receive.put(0)
+            self.receive.put({"type": "status", "status": 0})
         except websockets.InvalidURI:
-            self.receive.put(1)
+            self.receive.put({"type": "status", "status": 1})
         except websockets.InvalidHandshake:
-            self.receive.put(2)
+            self.receive.put({"type": "status", "status": 2})
         except ConnectionRefusedError:
-            self.receive.put(3)
+            self.receive.put({"type": "status", "status": 3})
         except socket.gaierror:
-            self.receive.put(4)
+            self.receive.put({"type": "status", "status": 4})
         except OSError:
-            self.receive.put(5)
+            self.receive.put({"type": "status", "status": 5})
         else:
             while True:
                 # receive data
-                self.receive.put(await self.connection.recv())
-                print(":O")
+                data = await self.connection.recv()
+                try:
+                    data = json.loads(data)
+                except json.JSONDecodeError:
+                    print(f"Error decoding JSON {data}")
+                else:
+                    self.receive.put(data)
 
     async def _send(self):
         # send data
@@ -52,7 +57,12 @@ class Client:
             except queue.Empty:
                 pass
             else:
-                await self.connection.send(json.dumps(data))
+                try:
+                    data = json.dumps(data)
+                except (TypeError, OverflowError, ValueError):
+                    print(f"Error encoding json: {data}")
+                else:
+                    await self.connection.send(data)
             await asyncio.sleep(0.05)  # TODO why does removing this break everything...
 
 

@@ -6,6 +6,8 @@ from .util import arcade_int_to_string
 import queue
 import threading
 
+OFFSET = 320
+
 
 class Lobby(Base):
     def __init__(self, display):
@@ -21,6 +23,7 @@ class Lobby(Base):
         self.receive_queue = None
         self.send_queue = None
         self.other = ""
+        self.players = [{}, {}, {}]
         self.sprite_setup()
 
     def reset(self, network_thread: threading.Thread, receive: queue.Queue, send: queue.Queue) -> None:
@@ -53,13 +56,8 @@ class Lobby(Base):
         except queue.Empty:
             pass
         else:
-            try:
-                print("sadkjgf: ", data)
-                data = json.loads(data)
-                if data["type"] == "nameChange":
-                    self.other = data["data"]["newName"]
-            except TypeError:
-                pass
+            if data["type"] == "playersUpdate":
+                self.players = data["data"]
 
     def draw(self):
         self.spritelist.draw()
@@ -68,7 +66,10 @@ class Lobby(Base):
         else:
             buffer = ""
         arcade.draw_text(buffer + self.name[-25:], 15, 600, color=(255, 255, 255), font_size=35, width=560)
-        arcade.draw_text(self.other, 335, 600, color=(0, 0, 100), font_size=35)
+        for c, player in enumerate(self.players):
+            if len(player) == 0:
+                continue
+            arcade.draw_text(player["name"], OFFSET * (c + 1), 600, color=(0, 0, 100), font_size=35)
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
         if self.spritedict["back"].collides_with_point((x, y)) is True:
@@ -86,10 +87,10 @@ class Lobby(Base):
                 else:
                     self.name = self.name[:self.cursor_index] + self.name[self.cursor_index + 1:]
             elif key == arcade.key.DELETE:
-                if self.cursor_index == -1:
-                    self.name = self.name[:-1]
+                if self.cursor_index == - (len(self.ip) + 1):
+                    self.ip = self.ip[1:]
                 else:
-                    self.name = self.name[:self.cursor_index + 1] + self.name[self.cursor_index:]
+                    self.ip = self.ip[:self.cursor_index - 1] + self.ip[self.cursor_index:]
             elif key == arcade.key.LEFT:
                 self.cursor_index -= 1
                 if self.cursor_index <= - (len(self.name) + 2):
@@ -105,4 +106,4 @@ class Lobby(Base):
                         self.name = self.name + key
                     else:
                         self.name = self.name[:self.cursor_index + 1] + key + self.name[self.cursor_index + 1:]
-            self.send_queue.put({"type": "nameChange", "data": {"newName": self.name}})
+            self.send_queue.put({"type": "nameChange", "newName": self.name})
