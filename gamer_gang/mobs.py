@@ -11,7 +11,7 @@ class Player(arcade.Sprite):
         self.texture = self.textures[0]
         self.name = name
 
-        self.scaling = scale
+        self.scale = scale
 
         self.acc_x = self.acc_y = 0
 

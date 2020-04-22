@@ -8,7 +8,7 @@ class NormalGround(arcade.Sprite):
 
         self.allTextures = textures
         self.texture = self.allTextures[0]
-        self.scaling = scale
+        self.scale = scale
 
         self.center_x, self.center_y = x, y
 
@@ -19,7 +19,7 @@ class BadSpike(arcade.Sprite):
 
         self.allTextures = textures
         self.texture = self.allTextures[0]
-        self.scaling = scale
+        self.scale = scale
 
         self.center_x, self.center_y = x, y
 

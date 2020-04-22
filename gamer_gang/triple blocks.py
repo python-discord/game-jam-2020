@@ -1,6 +1,5 @@
 import math
 import os
-import pymunk.pygame_util
 import itertools
 from gamer_gang.mobs import *
 from gamer_gang.terrainStuff import *
@@ -53,10 +52,10 @@ class ActualGame(arcade.Window):
             self.playerHeight = p.height
 
         for i in range(20):
-            self.normalGrounds.append(makeTerrain(self.space, NormalGround, self.normalGroundTextures, 10, i * 32, 0))
+            self.normalGrounds.append(makeTerrain(self.space, NormalGround, self.normalGroundTextures, 12, i * 32, 0))
 
         for i in range(1):
-            self.spikes.append(makeTerrain(self.space, BadSpike, self.spikeTextures, 10, 50, 20))
+            self.spikes.append(makeTerrain(self.space, BadSpike, self.spikeTextures, 1, 50, 20))
 
     def on_draw(self):
         arcade.start_render()
@@ -69,6 +68,8 @@ class ActualGame(arcade.Window):
         if self.debugging:
             for i in self.players:
                 i.draw_hit_box((100, 100, 100), 3)
+            for f in self.normalGrounds:
+                f.draw_hit_box((100, 100, 100), 3)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
@@ -247,6 +248,5 @@ def main():
     window = ActualGame()
     window.setup()
     arcade.run()
-
 
 main()
