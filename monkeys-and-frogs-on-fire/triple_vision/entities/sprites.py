@@ -158,11 +158,10 @@ class HealthBar(arcade.Sprite):
             return
 
         for i in range(life_count):
-            print(self.center_x, f"{self.center_x} + {self.fill_part_width} * {i} = {self.center_x + self.fill_part_width * i}")
             self.fill_part_list.append(
                 arcade.Sprite(
                     fill_part_filename,
-                    center_x=(self.center_x - self.width / 2) + self.fill_part_width * i,
+                    center_x=(self.center_x - self.width / 2 + self.fill_part_width / 2) + self.fill_part_width * i,
                     center_y=self.center_y,
                     scale=scale
                 )
