@@ -44,15 +44,12 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
 
     def __init__(
         self,
-        ctx,
         enemy: Enemies,
         target_sprite: arcade.Sprite,
         detection_radius: int,
         **kwargs
     ) -> None:
         super().__init__(enemy, rotate=False, **kwargs)
-
-        self.ctx = ctx
 
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
@@ -100,7 +97,6 @@ class StationaryEnemy(BaseEnemy):
 
     def __init__(
         self,
-        ctx,
         enemy: Enemies,
         target_sprite: arcade.Sprite,
         detection_radius: int,
@@ -109,7 +105,6 @@ class StationaryEnemy(BaseEnemy):
     ) -> None:
         super().__init__(enemy, is_pushable=False, **kwargs)
 
-        self.ctx = ctx
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
         self.shoot_interval = shoot_interval

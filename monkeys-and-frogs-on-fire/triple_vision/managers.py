@@ -27,7 +27,8 @@ class GameManager:
         self.damage_indicators.draw()
 
     def create_enemy(self, enemy_class, *args, **kwargs) -> None:
-        enemy = enemy_class(self, *args, **kwargs)
+        enemy = enemy_class(ctx=self, *args, **kwargs)
+        enemy.setup()
         self.enemies.append(enemy)
 
     def create_dmg_indicator(self, text: str, position: Tuple[float, float]) -> None:

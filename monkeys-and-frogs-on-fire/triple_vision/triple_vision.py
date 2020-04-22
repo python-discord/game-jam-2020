@@ -47,28 +47,22 @@ class TripleVision(arcade.View):
 
         self.player.setup()
 
-        
-
-        for y in range(1, 3):
+        for y in range(10):
             self.game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.big_demon,
                 self.player,
                 Tile.SCALED * 10,
-                center_x=400,
-                center_y=y * 250,
                 moving_speed=1
             )
 
-        for y in range(1, 4):
+        for y in range(5):
             self.game_manager.create_enemy(
                 StationaryEnemy,
                 Enemies.imp,
                 self.player,
                 Tile.SCALED * 10,
-                0.75,
-                center_x=50,
-                center_y=y * 200
+                0.75
             )
 
         self.physics_engine = SlowModeSupportEngine(self.player, self.collision_list)

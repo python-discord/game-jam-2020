@@ -5,11 +5,38 @@ from typing import Any, Optional, Tuple
 
 import arcade
 
-from triple_vision import Direction
-from triple_vision.utils import get_change_vector, load_texture_pair
+from triple_vision import Direction, Settings as s
+from triple_vision.utils import (
+    get_change_vector,
+    load_texture_pair,
+    tile_to_pixels
+)
 
 
-class AnimatedEntity(arcade.Sprite):
+class Entity(arcade.Sprite):
+
+    def __init__(self, ctx, spawn_in_map=True, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.ctx = ctx
+        self.spawn_in_map = spawn_in_map
+
+    def setup(self) -> None:
+        if self.spawn_in_map:
+            while True:
+                center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
+
+                if (
+                    len(arcade.get_sprites_at_point(center, self.ctx.view.collision_list)) == 0 and 
+                    len(arcade.get_sprites_at_point(center, self.ctx.view.map.sprites)) > 0
+                ):
+                    break
+
+            self.center_x = center[0]
+            self.center_y = center[1]
+
+
+class AnimatedEntity(Entity):
 
     def __init__(
         self,

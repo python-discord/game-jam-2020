@@ -24,7 +24,8 @@ class Player(LivingEntity, MovingSprite):
             moving_speed=3,
             scale=s.SCALING,
             hp=1000,
-            rotate=False
+            rotate=False,
+            ctx=view.game_manager
         )
 
         self.view = view
