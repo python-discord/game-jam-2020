@@ -58,7 +58,7 @@
   <tile id="54" terrain="1,1,1,"/>
   <tile id="55" terrain="1,1,,1"/>
  </tileset>
- <layer id="4" name="BG" width="64" height="36">
+ <layer id="4" name="BG" width="64" height="36" visible="0">
   <data encoding="base64" compression="zlib">
    eJztwzEJAAAMA7Ae81f/bqpjkEB6SVVVVVVVVVVV1ZcH6lLrHw==
   </data>
@@ -70,7 +70,7 @@
  </layer>
  <layer id="2" name="Walls" width="64" height="36">
   <data encoding="base64" compression="zlib">
-   eJztWD1vxCAMzSVOly5dunTp0qUButyd2v//y5pIRn3lzpFy4my34UmIjxDgYWNsuq5hwYG6bpwTcVrKfdGW6wOUe66PkC9tD2TNaBueK6/3ZcN4uPf9lfIAe573u5QJQT+i33IcYRxJLo+G/GvPvQZpXbXX8OSUv7Su2vrvlf+bMNerIf/ac69B0n9L+/cfz3+216U9HsAeE3zXgsRfUwctoWX/vGLv/LXs/3Eeb5pTnNOJ88DlM+c5fTk4/5b2X1P3tOy/1/tPOv/vrJ+B9TOBfk5cj1wOUE6cT6DXS9vHH5P/Ae7ikS7jpl6IycrYV7Iva9C8e6X11ZLBLfw9yL/WGfQu/73z96j/HuRfi7/0ZkV0+UZIkGvh3vL3Dom/pg9iCS3/1yvuHf9/gn8YCh8xFin7kgH6Ruif4Fsq+kbhn3jlHxxP8ktr8b/F/nuA5f3vAXvnb+n/eMDe5Z/j/xzzJ/p5B8j28ww2O3/HN62tcX9DQ0ODJb4BNqYdhQ==
+   eJztWL2OwjAMLsVlYWFhueUWFtr0FkB3b8H7vw2JZAsT6pOoTOy7xtKn/DRN89WOY+cKTXOtaFYRXQQgUr3N+qi9ZvUW2x0rU9/GAadXsI/QlI+Z/76dqK/ZP6f/nesE2DiARz12bB5JL1tD/trfnrMu7TXsnPKX1qVt/175H4Q1fBry1/72byLZv6X/+4/7n/x17o/pjOQ+GxzwL2mDllLK/3mVpfMv5f9Pcb4+IkScsRywfsGS8ONg/1v6/5K2V8r/ez3/pP1/RPsc0D5HZp89tgPWB1YfseyZXae+rz+m/xU7izt4zptamM7J8txX8i9e4j9pfVo6mMPfg/619qB3/S+dv0f796B/Lf7SnRXA8x0hsLKUvFv/3kXiXzIGsZRS8a9XeXf+/w33+DCVPEYMGSiWHNjYwMaP7NmYjQ3CO2HiHT6fFJdq8Z/j/z3A8vz3gKXzt4x/PGDp+qf8n3L+5CvpHoD85wXuPpue8zutV/P+ioqKCkvcAB18Qlk=
   </data>
  </layer>
 </map>

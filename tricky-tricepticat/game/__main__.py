@@ -11,13 +11,14 @@ import time
 # Third Party
 import arcade
 from math import atan2, degrees, radians, sin, cos, sqrt
+import PIL
 from pyglet import gl
 
 UPDATES_PER_FRAME = 3
 
-PLAYER_MOVEMENT_SPEED = 300
+PLAYER_MOVEMENT_SPEED = 200
 SHIP_MOVEMENT_SPEED = 200
-CANNONBALL_SPEED = 50
+CANNONBALL_SPEED = 20
 
 # How many pixels to keep as a minimum margin between the character
 # and the edge of the screen.
@@ -69,8 +70,6 @@ class Ship(arcade.Sprite):
         self.health = 100
 
         self.scale = SHIP_SCALING
-
-
 
 
 class Pirate(arcade.Sprite):
@@ -189,6 +188,105 @@ class Pirate(arcade.Sprite):
         #     self.top = SCREEN_HEIGHT - 1
 
         self.update_animation()
+
+
+class Enemy_SpriteSheet(arcade.Sprite):
+    def __init__(self, sprite_root):
+        super().__init__()
+        self.character_face_direction = LEFT_FACING
+
+        self.cur_idle_texture = 0
+        self.cur_attack_texture = 0
+        self.cur_run_texture = 0
+        self.cur_hit_texture = 0
+
+        self.right_facing_textures = [
+            arcade.load_spritesheet(
+                path['img'] / sprite_root / f'{i}.png', 48, 48, 1, j)
+            for (i, j) in zip(
+                ('attack', 'death', 'hurt', 'idle', 'walk'),
+                (20, 13, 16, 18, 20))
+        ]
+        self.left_facing_textures = [
+            arcade.Texture(
+                f'{texture.name}_mirrored',
+                PIL.ImageOps.mirror(texture.image)
+            ) for animation in self.right_facing_textures
+            for texture in animation
+        ]
+
+        self.texture_dict = {}
+
+        # [[j for i in ('attack', 'death', 'hurt', 'idle', 'walk') for j in self.right_facing_textures],
+        # [j for i in ('attack', 'death', 'hurt', 'idle', 'walk') for j in self.left_facing_textures]]
+
+        self.texture = self.right_facing_textures[3][0]
+
+    def on_update(self, delta_time):
+        self.update_animation(delta_time)
+
+    def update_animation(self, delta_time):
+                # Figure out if we need to flip face left or right
+                if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
+                    self.character_face_direction = LEFT_FACING
+
+                elif (
+                        self.change_x > 0 and
+                        self.character_face_direction == LEFT_FACING
+                     ):
+                    self.character_face_direction = RIGHT_FACING
+
+                # Idle animation
+                if self.is_idle:
+                    frames = self.cur_idle_texture // UPDATES_PER_FRAME
+
+                    if frames == len(self.texture_dict['idle'])-1:
+                        self.cur_idle_texture = 0
+
+                    print(self.name, frames)
+                    self.texture = self.texture_dict['idle'][frames][
+                        self.character_face_direction
+                        ]
+
+                    self.cur_idle_texture += 1
+                    return
+
+                # Attack animation
+                elif self.is_attacking:
+                    frames = self.cur_attack_texture // UPDATES_PER_FRAME
+
+                    if frames == len(self.texture_dict['attack'])-1:
+                        self.cur_attack_texture = 0
+                        self.is_attacking = False
+                        return
+
+                    self.texture = self.texture_dict['attack'][frames][
+                        self.character_face_direction
+                        ]
+
+                    self.cur_attack_texture += 1
+
+                # Default animation
+                elif self.change_x == 0 and self.change_y == 0:
+                    self.texture = self.texture_dict['idle'][0][
+                        self.character_face_direction
+                    ]
+                    (self.cur_run_texture, self.cur_idle_texture,
+                        self.cur_attack_texture) = (0, 0, 0)
+                    return
+
+                # Walking animation
+                else:
+                    frames = self.cur_run_texture // UPDATES_PER_FRAME
+
+                    if frames == len(self.texture_dict['run'])-1:
+                        self.cur_run_texture = 0
+
+                    self.texture = self.texture_dict['run'][frames][
+                        self.character_face_direction
+                        ]
+
+                    self.cur_run_texture += 1
 
 
 class ShipView(arcade.View):
@@ -418,8 +516,8 @@ class ShipView(arcade.View):
 
         print((time.time(), self.collision_time, self.time_diff))
 
-        if wall_collision and speed > 0.1 and self.time_diff > 2:
-            self.ship_sprite.health -= 20
+        if wall_collision and speed > 0.1 and self.time_diff > 0.5:
+            self.ship_sprite.health -= 10
 
         if int(self.ship_sprite.health) in range(25, 51):
             self.ship_sprite.set_texture(1)
@@ -508,6 +606,8 @@ class PlayerView(arcade.View):
     def __init__(self):
         super().__init__()
 
+        self.formation = 0
+
         arcade.set_background_color(arcade.color.AMAZON)
 
         # Track the current state of what key is pressed
@@ -520,15 +620,24 @@ class PlayerView(arcade.View):
 
         self.player_sprite = Pirate('captain')
 
-        for i in ('brawn', 'bald'):
-            self.player_sprites.append(Pirate(i))
-
+        # for i in ('brawn', 'bald'):
+        #     self.player_sprites.append(Pirate(i))
+        self.player_sprites.append(Pirate('brawn'))
+        self.player_sprites.append(self.player_sprite)
+        self.player_sprites.append(Pirate('bald'))
         self.player_sprites[0].center_x = 400
         self.player_sprites[1].center_x = 600
         self.player_sprite.center_x = 200
         self.player_sprite.center_y = 200
 
-        self.player_sprites.append(self.player_sprite)
+        self.enemy_list = arcade.SpriteList()
+
+        self.enemy_list.append(
+            Enemy_SpriteSheet('undead')
+        )
+
+        self.enemy_list[0].set_position(800, 200)
+        self.enemy_list[0].scale = 1.25
 
         self.map = arcade.tilemap.read_tmx(path['maps'] / "dungeon_test.tmx")
 
@@ -544,23 +653,40 @@ class PlayerView(arcade.View):
                 )
             )
 
+        for sprite in self.enemy_list:
+            self.physics_engines.append(
+                arcade.PhysicsEngineSimple(
+                    sprite, self.map_layers[2]
+                )
+            )
+
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
 
-    def scroll(self):
-        self.viewport_scale = 0.5
-        # position_changed = (
-        #     self.up_pressed or
-        #     self.down_pressed or
-        #     self.left_pressed or
-        #     self.right_pressed
-        # )
+        self.viewport_scale = 1
 
-        left = int(self.player_sprite._get_position()[0]-SCREEN_WIDTH/2*self.viewport_scale)
-        right = int(self.player_sprite._get_position()[0]+SCREEN_WIDTH/2*self.viewport_scale)
-        bottom = int(self.player_sprite._get_position()[1]-SCREEN_HEIGHT/2*self.viewport_scale)
-        top = int(self.player_sprite._get_position()[1]+SCREEN_HEIGHT/2*self.viewport_scale)
+    def scroll(self):
+        # --- Manage Scrolling ---
+
+        if self.viewport_scale < 0.25:
+            self.viewport_scale = 0.25
+
+        if self.viewport_scale > 2.0:
+            self.viewport_scale = 2.0
+
+        left = int(
+            self.player_sprite._get_position()[0] -
+            SCREEN_WIDTH / 2 * self.viewport_scale)
+        right = int(
+            self.player_sprite._get_position()[0] +
+            SCREEN_WIDTH / 2 * self.viewport_scale)
+        bottom = int(
+            self.player_sprite._get_position()[1] -
+            SCREEN_HEIGHT / 2 * self.viewport_scale)
+        top = int(
+            self.player_sprite._get_position()[1] +
+            SCREEN_HEIGHT / 2 * self.viewport_scale)
 
         if left < 0:
             left = 0
@@ -591,6 +717,8 @@ class PlayerView(arcade.View):
         for layer in self.map_layers:
             layer.draw(filter=gl.GL_NEAREST)
         # self.player_sprite.draw()
+
+        self.enemy_list.draw(filter=gl.GL_NEAREST)
         self.player_sprites.draw(filter=gl.GL_NEAREST)
 
     def on_update(self, delta_time):
@@ -628,22 +756,24 @@ class PlayerView(arcade.View):
 
         count = 0
         for sprite in self.player_sprites:
-            count += 1
             if sprite is not self.player_sprite:
+                count += 1
                 if self.player_sprite.is_attacking:
                     sprite.is_attacking = True
                 sprite.character_face_direction = self.player_sprite.character_face_direction
                 sprite.change_x, sprite.change_y = self.player_sprite.change_x, self.player_sprite.change_y
-                if sprite.collides_with_list(self.map_layers[2]):
-                    print(f"{self.player_sprites.index(sprite)}. YEP.")
-                if count == 1:
-                    sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y+30*count)
+
+                if self.formation == 0:
+                    if count == 1:
+                        sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y+30*count)
+
+                    else:
+                        sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y-15*count)
                 else:
-                    sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y-15*count)
-                # if self.player_sprite.character_face_direction == RIGHT_FACING:
-                #     sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y-30*count)
-                # else:
-                    # sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y+30*count)
+                    if self.player_sprite.character_face_direction == RIGHT_FACING:
+                        sprite.set_position(self.player_sprite.center_x-30*count, self.player_sprite.center_y)
+                    else:
+                        sprite.set_position(self.player_sprite.center_x+30*count, self.player_sprite.center_y)
 
         for engine in self.physics_engines:
             engine.update()
@@ -667,6 +797,14 @@ class PlayerView(arcade.View):
         if key == arcade.key.E:
             self.player_sprite.is_attacking = True
             print(self.player_sprite.is_attacking)
+
+        if key == arcade.key.EQUAL:
+            self.viewport_scale -= 0.25
+        if key == arcade.key.MINUS:
+            self.viewport_scale += 0.25
+
+        if key == arcade.key.Q:
+            self.formation = not self.formation
 
     def on_key_release(self, key, key_modifiers):
         """
@@ -779,7 +917,7 @@ def main():
     # window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     ship_view = ShipView()
-    player_view = PlayerView()
+    # player_view = PlayerView()
 
     window.show_view(ship_view)
     # window.show_view(player_view)
