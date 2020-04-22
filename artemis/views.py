@@ -125,7 +125,7 @@ class Tutorial(View):
     def on_update(self, timedelta):
         super().on_update(timedelta)
         self.time_till_change -= timedelta
-        if self.time_till_change <= 0:
+        if self.time_till_change <= 0 and not self.done:
             try:
                 self.texture, self.time_till_change = next(self.textures)
             except StopIteration:

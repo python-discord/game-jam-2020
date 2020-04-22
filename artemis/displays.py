@@ -57,4 +57,5 @@ class PausePlay(IconButton):
         self.game.paused = not self.game.paused
         image = ['pause', 'play'][self.game.paused]
         self.icon_texture = self.load_texture(image, 16)
+        self.game.pause_screen = None
         self.game.window.show_view(self.game)

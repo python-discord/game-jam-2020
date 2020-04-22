@@ -24,6 +24,7 @@ class Game(View):
         self.score = 0
         self.hiscore = get_hiscore()
         self.paused = False
+        self.pause_screen = None
         self.blocks = arcade.SpriteList()
         self.gems = arcade.SpriteList()
         self.boxes = arcade.SpriteList()
@@ -83,7 +84,9 @@ class Game(View):
                 color=(255, 255, 255, 100)
             )
             super().on_draw()
-            self.window.show_view(views.Paused(self))
+            if not self.pause_screen:
+                self.pause_screen = views.Paused(self)
+                self.window.show_view(self.pause_screen)
 
     def on_update(self, timedelta):
         super().on_update(timedelta)
