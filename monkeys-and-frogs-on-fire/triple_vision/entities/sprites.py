@@ -1,10 +1,19 @@
 import math
 import time
+from enum import Enum
 from typing import Optional
 
 import arcade
 
 from triple_vision.utils import get_change_vector, is_in_radius_positions
+
+
+class States(Enum):
+    IDLE = 0
+    MOVING = 1
+    ATTACKING = 2
+
+
 
 
 class MovingSprite(arcade.Sprite):
@@ -126,3 +135,6 @@ class DamageIndicator(TemporarySprite, MovingSprite):
         temp_text = arcade.draw_text(text, start_x, start_y, arcade.color.WHITE)
         self.texture = temp_text.texture
         self.move_to(start_x, start_y + 10, set_target=False)
+
+
+
