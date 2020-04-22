@@ -59,6 +59,22 @@ def load_texture_pair(filename):
     ]
 
 
+class Weapon(arcade.Sprite):
+    def __init__(self, sprite_root):
+        super().__init__()
+        sprite_path = path['img'] / sprite_root
+
+        self.texture_dict = {}
+
+        for i in os.listdir(sprite_path):
+            self.texture_dict[i] = []
+            for j in range(1, len(os.listdir(sprite_path / i))+1):
+                self.texture_dict[i].append(load_texture_pair(
+                    sprite_path / i / f"({j}).png"))
+
+        # print(self.texture_dict)
+
+
 class Ship(arcade.Sprite):
     '''
     Playable Pirate Ship
@@ -408,14 +424,13 @@ class ShipView(arcade.View):
             if audio.get_stream_position() >= audio.get_length():
                 file_name = audio.file_name
                 volume = audio.get_volume()
-                self.audio_list.remove(audio)
-                newAudio = arcade.Sound(
+                print(file_name, volume)
+
+                audio = arcade.Sound(
                     file_name, streaming=True
-                )
+                ).play(volume=volume)
 
-                self.audio_list.append(newAudio)
 
-                audio.play(newAudio.get_volume())
 
     def on_draw(self):
         arcade.start_render()
@@ -625,10 +640,10 @@ class PlayerView(arcade.View):
         self.player_sprites.append(Pirate('brawn'))
         self.player_sprites.append(self.player_sprite)
         self.player_sprites.append(Pirate('bald'))
-        self.player_sprites[0].center_x = 400
-        self.player_sprites[1].center_x = 600
-        self.player_sprite.center_x = 200
-        self.player_sprite.center_y = 200
+
+        self.player_sprites[0].set_position(200, 200)
+        self.player_sprites[2].set_position(200, 200)
+        self.player_sprite.set_position(200, 200)
 
         self.enemy_list = arcade.SpriteList()
 
@@ -647,11 +662,12 @@ class PlayerView(arcade.View):
         self.physics_engines = []
 
         for sprite in self.player_sprites:
-            self.physics_engines.append(
-                arcade.PhysicsEngineSimple(
-                    sprite, self.map_layers[2]
+            if sprite is self.player_sprite:
+                self.physics_engines.append(
+                    arcade.PhysicsEngineSimple(
+                        sprite, self.map_layers[2]
+                    )
                 )
-            )
 
         for sprite in self.enemy_list:
             self.physics_engines.append(
@@ -760,23 +776,26 @@ class PlayerView(arcade.View):
                 count += 1
                 if self.player_sprite.is_attacking:
                     sprite.is_attacking = True
-                sprite.character_face_direction = self.player_sprite.character_face_direction
-                sprite.change_x, sprite.change_y = self.player_sprite.change_x, self.player_sprite.change_y
-
-                if self.formation == 0:
-                    if count == 1:
-                        sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y+30*count)
-
-                    else:
-                        sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y-15*count)
-                else:
-                    if self.player_sprite.character_face_direction == RIGHT_FACING:
-                        sprite.set_position(self.player_sprite.center_x-30*count, self.player_sprite.center_y)
-                    else:
-                        sprite.set_position(self.player_sprite.center_x+30*count, self.player_sprite.center_y)
+                # sprite.character_face_direction = self.player_sprite.character_face_direction
+                # direction = atan2(self.player_sprite.center_y, self.player_sprite.center_x)
+                # sprite.change_x, sprite.change_y = PLAYER_MOVEMENT_SPEED*
+                # if self.formation == 0:
+                #     if count == 1:
+                #         sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y+30*count)
+                #
+                #     else:
+                #         sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y-15*count)
+                # else:
+                #     if self.player_sprite.character_face_direction == RIGHT_FACING:
+                #         sprite.set_position(self.player_sprite.center_x-30*count, self.player_sprite.center_y)
+                #     else:
+                #         sprite.set_position(self.player_sprite.center_x+30*count, self.player_sprite.center_y)
 
         for engine in self.physics_engines:
             engine.update()
+
+        self.player_sprites[0].on_update(delta_time)
+        self.player_sprites[2].on_update(delta_time)
 
     def on_key_press(self, key, key_modifiers):
         """
@@ -916,11 +935,11 @@ def main():
     """ Main method """
     # window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    ship_view = ShipView()
-    # player_view = PlayerView()
+    # ship_view = ShipView()
+    player_view = PlayerView()
 
-    window.show_view(ship_view)
-    # window.show_view(player_view)
+    # window.show_view(ship_view)
+    window.show_view(player_view)
 
     arcade.run()
 
