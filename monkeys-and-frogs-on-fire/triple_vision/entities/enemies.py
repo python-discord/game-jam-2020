@@ -8,7 +8,8 @@ from triple_vision import Settings as s
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import MovingSprite
 from triple_vision.entities.weapons import LaserProjectile
-from triple_vision.utils import is_in_radius
+from triple_vision.pathfinding import PathFinder
+from triple_vision.utils import is_in_radius, pixels_to_tile, tile_to_pixels
 
 
 class Enemies(enum.Enum):
@@ -51,16 +52,40 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
     ) -> None:
         super().__init__(enemy, rotate=False, **kwargs)
 
+        self.ctx = ctx
+
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
+
+        self.path_finder = PathFinder()
+        self.path = None
 
     def on_update(self, delta_time: float = 1/60) -> None:
         if not self.being_pushed:
             if is_in_radius(self, self.target_sprite, self.detection_radius):
-                self.move_to(
-                    self.target_sprite.center_x,
-                    self.target_sprite.center_y,
-                )
+
+                if self.path is not None and self.target is None:
+
+                    try:
+                        self.move_to(*tile_to_pixels(*next(self.path)))
+
+                    except StopIteration:
+                        self.path = None
+
+                else:
+
+                    try:
+                        self.path = iter(
+                            self.path_finder.find(
+                                pixels_to_tile(self.center_x, self.center_y),
+                                pixels_to_tile(self.target_sprite.center_x, self.target_sprite.center_y),
+                                self.ctx.view.collision_list,
+                                self.ctx.view.map.sprites
+                            )
+                        )
+
+                    except TypeError:
+                        pass
             else:
                 self.change_x = 0
                 self.change_y = 0

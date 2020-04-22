@@ -106,7 +106,8 @@ class Player(LivingEntity, MovingSprite):
                     self.path_finder.find(
                         pixels_to_tile(self.center_x, self.center_y),
                         pixels_to_tile(x, y),
-                        self.view.collision_list
+                        self.view.collision_list,
+                        self.view.map.sprites
                     )
                 )
 

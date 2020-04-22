@@ -46,17 +46,21 @@ class Node:
 
 class PathFinder:
 
-    def __init__(self, max_tries: int = 1000) -> None:
+    def __init__(self, max_tries: int = 2000) -> None:
         self.max_tries = max_tries
 
     def find(
         self,
         start_pos: Tuple[int, int],
         end_pos: Tuple[int, int],
-        collision_list: arcade.SpriteList
+        collision_list: arcade.SpriteList,
+        map_list: arcade.SpriteList
     ) -> List[Tuple[int, int]]:
 
         if self._tile_is_blocked(*end_pos, collision_list):
+            return
+
+        if not self._tile_is_blocked(*end_pos, map_list):
             return
 
         open_nodes = list()
