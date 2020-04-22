@@ -55,7 +55,7 @@ class Planet(arcade.Sprite):
 
     def move(self, time_multiplier, delta_x=None, delta_y=None):
         # I have no idea why this needs to be 4 and not 2
-        planet_radius = self.width / 4
+        planet_radius = int(self.width / 4)
 
         if delta_x is None:
             delta_x = self.speed_x * PLANET_BASE_SPEED
@@ -65,28 +65,32 @@ class Planet(arcade.Sprite):
         delta_x *= time_multiplier
         delta_y *= time_multiplier
 
-        new_x = int(self.center_x + delta_x)
-        new_y = int(self.center_y + delta_y)
+        new_x = self.center_x + delta_x
+        new_y = self.center_y + delta_y
 
         if new_y >= SCREEN_SIZE[1] - planet_radius:
             new_y = SCREEN_SIZE[1] - planet_radius
-            self.speed_y = -abs(self.speed_y) - (random.random() / 100)
+            self.speed_y = min(-0.1, -random.random())
         if new_y <= BOTTOM_BORDER_Y + planet_radius:
-            new_y = BOTTOM_BORDER_Y
-            self.speed_y = abs(self.speed_y) + (random.random() / 100)
+            new_y = BOTTOM_BORDER_Y + planet_radius
+            self.speed_y = max(0.1, random.random())
         if new_x >= SCREEN_SIZE[0] - planet_radius:
             new_x = SCREEN_SIZE[0] - planet_radius
-            self.speed_x = -abs(self.speed_x) - (random.random() / 100)
+            self.speed_x = min(-0.1, -random.random())
         if new_x <= planet_radius:
             new_x = planet_radius
-            self.speed_x = abs(self.speed_x) + (random.random() / 100)
+            self.speed_x = max(0.1, random.random())
 
-        delta_x = new_x - self.center_x
-        delta_y = new_y - self.center_y
+        adjusted_delta_x = new_x - self.center_x
+        adjusted_delta_y = new_y - self.center_y
 
-        logger.debug(f"Moving {self.name}. {delta_x=}, {delta_y=}.")
-        self.center_y += delta_y
-        self.center_x += delta_x
+        logger.debug(
+            f"Moving {self.name}. {self.center_x=}, {self.center_y=}, "
+            f"{planet_radius=}, {delta_x=}, {delta_y=}, "
+            f"{adjusted_delta_x=}, {adjusted_delta_y=}, {self.speed_x=}, "
+            f"{self.speed_y=}")
+        self.center_y += adjusted_delta_y
+        self.center_x += adjusted_delta_x
 
     def try_push_others(self, time_multiplier):
         if not self.can_push_planets:
