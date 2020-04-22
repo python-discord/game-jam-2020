@@ -27,7 +27,7 @@ class MovingSprite(arcade.Sprite):
         self.change_x, self.change_y, angle = get_change_vector(
             start_position=self.position,
             destination_position=(x, y),
-            speed_multiplier=self.speed * self.speed_multiplier
+            speed_multiplier=self.speed * self.speed_multiplier,
         )
 
         if self.rotate:
@@ -48,12 +48,7 @@ class MovingSprite(arcade.Sprite):
         if set_target:
             self.target = (x, y)
 
-    def move_to_sprite(
-            self,
-            sprite: arcade.Sprite,
-            *,
-            set_target: bool = True
-    ) -> None:
+    def move_to_sprite(self, sprite: arcade.Sprite, *, set_target: bool = True) -> None:
         self.move_to(sprite.center_x, sprite.center_y, set_target=set_target)
 
     def move_to_angle(self, angle: int, *, rotate: bool = False) -> None:
@@ -80,7 +75,7 @@ class MovingSprite(arcade.Sprite):
         self._reached_target_check()
         self.update_(delta_time)
 
-    def on_update(self, delta_time: float = 1/60) -> None:
+    def on_update(self, delta_time: float = 1 / 60) -> None:
         self._reached_target_check()
         self.update_(delta_time)
 
@@ -88,9 +83,7 @@ class MovingSprite(arcade.Sprite):
         if self.target is not None:
             self.calc_change_vector(*self.target)
 
-            if (
-                is_in_radius_positions(self.position, self.target, 4)
-            ):
+            if is_in_radius_positions(self.position, self.target, 4):
                 self.change_x = 0
                 self.change_y = 0
                 self.target = None
@@ -102,7 +95,7 @@ class MovingSprite(arcade.Sprite):
         relative_speed = delta_time * 60
         self.position = [
             self._position[0] + self.change_x * relative_speed,
-            self._position[1] + self.change_y * relative_speed
+            self._position[1] + self.change_y * relative_speed,
         ]
         self.angle += self.change_angle * relative_speed
 
@@ -124,11 +117,7 @@ class TemporarySprite(arcade.Sprite):
 class DamageIndicator(TemporarySprite, MovingSprite):
     def __init__(self, text, start_x: int, start_y: int):
         super().__init__(
-            lifetime=1,
-            moving_speed=1,
-            center_x=start_x,
-            center_y=start_y,
-            rotate=False
+            lifetime=1, moving_speed=1, center_x=start_x, center_y=start_y, rotate=False
         )
         temp_text = arcade.draw_text(text, start_x, start_y, arcade.color.WHITE)
         self.texture = temp_text.texture
@@ -137,15 +126,15 @@ class DamageIndicator(TemporarySprite, MovingSprite):
 
 class HealthBar(arcade.Sprite):
     def __init__(
-            self,
-            view,
-            fill_part_filename: str,
-            fill_part_width: float,
-            *args,
-            life_count: int = 10,
-            is_filled: bool = True,
-            scale: int = 1,
-            **kwargs
+        self,
+        view,
+        fill_part_filename: str,
+        fill_part_width: float,
+        *args,
+        life_count: int = 10,
+        is_filled: bool = True,
+        scale: int = 1,
+        **kwargs
     ) -> None:
 
         super().__init__(*args, scale=scale, **kwargs)
@@ -161,12 +150,16 @@ class HealthBar(arcade.Sprite):
             self.fill_part_list.append(
                 arcade.Sprite(
                     fill_part_filename,
-                    center_x=(self.center_x - self.width / 2 + self.fill_part_width / 2) + self.fill_part_width * i,
+                    center_x=(self.center_x - self.width / 2 + self.fill_part_width / 2)
+                    + self.fill_part_width * i,
                     center_y=self.center_y,
-                    scale=scale
+                    scale=scale,
                 )
             )
-        self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
+        self.prev_viewport = (
+            self.view.camera.viewport_left,
+            self.view.camera.viewport_bottom,
+        )
 
     def remove_filling_part(self):
         if len(self.fill_part_list) == 0:
@@ -178,12 +171,13 @@ class HealthBar(arcade.Sprite):
             self.fill_part_list.append(
                 arcade.Sprite(
                     self.fill_part_filename,
-                    center_x=self.center_x + self.fill_part_width * len(self.fill_part_list),
-                    center_y=self.center_y
+                    center_x=self.center_x
+                    + self.fill_part_width * len(self.fill_part_list),
+                    center_y=self.center_y,
                 )
             )
 
-    def update(self, delta_time: float = 1/60):
+    def update(self, delta_time: float = 1 / 60):
         viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
         if self.prev_viewport != viewport:
             self.center_x += viewport[0] - self.prev_viewport[0]
@@ -199,4 +193,3 @@ class HealthBar(arcade.Sprite):
     def draw(self):
         self.fill_part_list.draw()
         super().draw()
-
