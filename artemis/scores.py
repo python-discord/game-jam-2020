@@ -24,6 +24,10 @@ def get_hiscore():
     return 0
 
 
+def get_scores():
+    return open_file().get('scores', [])
+
+
 def add_score(score):
     data = open_file()
     if 'scores' in data:
@@ -33,7 +37,14 @@ def add_score(score):
     save_file(data)
 
 
-def get_achievements():
-    achievements = open_file().get('achievments', [])
-    ordered = []
-    
+def get_seconds():
+    return open_file().get('seconds', 0)
+
+
+def add_time(seconds):
+    data = open_file()
+    if 'seconds' in data:
+        data['seconds'] += seconds
+    else:
+        data['seconds'] = seconds
+    save_file(data)

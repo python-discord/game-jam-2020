@@ -5,7 +5,7 @@ from engine import BiDirectionalPhysicsEnginePlatformer
 from player import Player
 from sprites import Block, Gem, RandomBlock
 from displays import Box, PausePlay
-from scores import get_hiscore, add_score
+from scores import get_hiscore, add_score, add_time
 from ui import View
 import views
 
@@ -20,6 +20,7 @@ class Game(View):
 
         self.left = 0
         self.score = 0
+        self.time = 0
         self.hiscore = get_hiscore()
         self.paused = False
         self.pause_screen = None
@@ -89,6 +90,7 @@ class Game(View):
     def on_update(self, timedelta):
         super().on_update(timedelta)
         if not self.paused:
+            self.time = timedelta
             for sprite_list in self.sprite_lists:
                 sprite_list.update()
             self.player.update(timedelta)
@@ -142,6 +144,7 @@ class Game(View):
 
     def game_over(self, message):
         add_score(self.score)
+        add_time(self.time)
         self.window.show_view(views.GameOver(message))
 
     def scroll(self):
