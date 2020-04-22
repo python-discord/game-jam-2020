@@ -85,11 +85,13 @@ class Player(LivingEntity, MovingSprite):
         ])
 
         self.health_bar = HealthBar(
+            self.view,
             fill_part_filename="assets/healthbar/health_fill_part.png",
             fill_part_width=11,
             filename="assets/healthbar/health_bar_border.png",
             center_x=600,
             center_y=300,
+            scale=2,
         )
         self.curr_color = 'red'
 
@@ -147,6 +149,7 @@ class Player(LivingEntity, MovingSprite):
 
         super().on_update(delta_time)
         super().force_moving_sprite_on_update(delta_time)
+        self.health_bar.update()
 
     def draw(self):
         super().draw()
