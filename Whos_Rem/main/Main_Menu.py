@@ -16,7 +16,12 @@ class MainMenu(arcade.View):
 
     cwd = os.getcwd()
 
-    setting_button = arcade.Sprite(
+    settings_button = Button(int(width*0.9), int(height*0.85),
+                             int(width*0.1), int(height*0.1),
+                             draw_func=lambda: None,
+                             activation=lambda: print("uwu"))
+
+    setting_button_image = arcade.Sprite(
         filename=f"{cwd}/Resources/menu/settings_button.png",
         scale=int(min(width, height)*0.15) / 256,
         center_x=int(width*0.925),
@@ -27,11 +32,11 @@ class MainMenu(arcade.View):
         arcade.start_render()
         arcade.set_background_color([0, 0, 0])
         arcade.draw_text("MENU", cls.width*0.36, cls.height*0.64,
-                         color=[255, 255, 255],
+                         color=cb.brightness([255, 255, 255], Settings().brightness),
                          font_size=min(cls.width, cls.height)*0.15,
                          )
-        cls.setting_button.alpha = int(255*Settings().brightness)
-        cls.setting_button.draw()
+        cls.setting_button_image.alpha = int(255*Settings().brightness)
+        cls.setting_button_image.draw()
 
 
 if __name__ == "__main__":

@@ -87,9 +87,15 @@ class Slider:
             self.__slide_dist = mouse_y - self.y
 
     def hit_box(self, mouse_x, mouse_y):
-        if -0.2 * self.width <= mouse_x - self.x <= 1.2 * self.width:
-            if 0.2 * self.height <= mouse_y - self.y <= 1.2 * self.height:
-                return True
+        if self.rotation == "hor":
+            if 0 <= mouse_x - self.x <= self.width:
+                print(1)
+                if -1.5 * self.height <= mouse_y - self.y <= 2.5 * self.height:
+                    return True
+        else:
+            if -1.5 * self.width <= mouse_x - self.x <= 2.5 * self.width:
+                if 0 <= mouse_y - self.y <= self.height:
+                    return True
 
         return False
 
