@@ -1,8 +1,14 @@
+import json
+
 import arcade
 from .base import Base
 from .util import arcade_int_to_string
 import queue
 import threading
+
+OFFSET = 320
+COLOURS = [(200, 100, 100), (100, 200, 100), (100, 100, 200)]
+
 
 class Lobby(Base):
     def __init__(self, display):
@@ -17,19 +23,43 @@ class Lobby(Base):
         self.network_thread = None
         self.receive_queue = None
         self.send_queue = None
+        self.players = [{}, {}, {}]
+        self.host = False
 
         self.sprite_setup()
 
-    def reset(self, network_thread: threading.Thread, receive: queue.Queue, send: queue.Queue) -> None:
-        self.sceneTime = 0
+    def reset(self, network_thread: threading.Thread, receive: queue.Queue, send: queue.Queue, host=False) -> None:
         self.network_thread = network_thread
         self.receive_queue = receive
         self.send_queue = send
+        self.host = host
+
+        self.sceneTime = 0
+        self.name = ""
+        self.cursor_index = -1
+        self.focus = None
+        self.players = [{}, {}, {}]
+
+        if self.host is True:
+            self.spritedict["start"] = arcade.Sprite(
+                "./assets/start_button.png",
+                scale=0.25,
+                center_x=160,
+                center_y=557.5
+            )
+            self.spritelist.append(self.spritedict["start"])
+            print(self.spritelist)
+        else:
+            try:
+                self.spritedict.pop("start")
+            except KeyError:
+                pass
+
 
     def sprite_setup(self):
         self.spritedict = {
             "back": arcade.Sprite(
-                "./assets/simple_button.png",
+                "./assets/back_button.png",
                 scale=0.25,
                 center_x=160,
                 center_y=687.5
@@ -45,6 +75,13 @@ class Lobby(Base):
 
     def update(self, delta_time: float) -> None:
         self.sceneTime += delta_time
+        try:
+            data = self.receive_queue.get(block=False)
+        except queue.Empty:
+            pass
+        else:
+            if data["type"] == "playersUpdate":
+                self.players = data["data"]
 
     def draw(self):
         self.spritelist.draw()
@@ -53,12 +90,20 @@ class Lobby(Base):
         else:
             buffer = ""
         arcade.draw_text(buffer + self.name[-25:], 15, 600, color=(255, 255, 255), font_size=35, width=560)
+        for c, player in enumerate(self.players):
+
+            if len(player) == 0:
+                continue
+            arcade.draw_text(player["name"], OFFSET * (c + 1), 640, color=(0, 0, 100), font_size=25)
+            arcade.draw_rectangle_filled(OFFSET * (c + 1.5), 700, 320, 40, COLOURS[c])
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
         if self.spritedict["back"].collides_with_point((x, y)) is True:
-            self.display.change_scenes("mainMenu", startup=False)
+            self.display.change_scenes("mainMenu")
         elif self.spritedict["name"].collides_with_point((x, y)) is True:
             self.focus = "name"
+        elif self.host is True and self.spritedict["start"].colliders_with_point((x, y)) is True:
+            self.start_game()
         else:
             self.focus = None
 
@@ -70,10 +115,10 @@ class Lobby(Base):
                 else:
                     self.name = self.name[:self.cursor_index] + self.name[self.cursor_index + 1:]
             elif key == arcade.key.DELETE:
-                if self.cursor_index == -1:
-                    self.name = self.name[:-1]
+                if self.cursor_index == - (len(self.ip) + 1):
+                    self.ip = self.ip[1:]
                 else:
-                    self.name = self.name[:self.cursor_index + 1] + self.name[self.cursor_index:]
+                    self.ip = self.ip[:self.cursor_index - 1] + self.ip[self.cursor_index:]
             elif key == arcade.key.LEFT:
                 self.cursor_index -= 1
                 if self.cursor_index <= - (len(self.name) + 2):
@@ -89,3 +134,7 @@ class Lobby(Base):
                         self.name = self.name + key
                     else:
                         self.name = self.name[:self.cursor_index + 1] + key + self.name[self.cursor_index + 1:]
+            self.send_queue.put({"type": "nameChange", "newName": self.name})
+
+    def start_game(self):
+        self.display.change_scenes("mainMenu")

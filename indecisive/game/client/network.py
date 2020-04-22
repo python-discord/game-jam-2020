@@ -3,6 +3,7 @@ import websockets
 import queue
 import threading
 import socket
+import json
 
 
 class Client:
@@ -19,24 +20,50 @@ class Client:
         self.port = port
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
-        loop.run_until_complete(self._start())
+        loop.create_task(self._send(), name="send")
+        loop.create_task(self._start())
+        loop.run_forever()
 
     async def _start(self):
         try:
             self.connection = await websockets.connect(f"ws://{self.ip}:{self.port}")
-            self.receive.put(0)
-            while True:
-                self.receive.put(await self.connection.recv())
+            self.receive.put({"type": "status", "status": 0})
         except websockets.InvalidURI:
-            self.receive.put(1)
+            self.receive.put({"type": "status", "status": 1})
         except websockets.InvalidHandshake:
-            self.receive.put(2)
+            self.receive.put({"type": "status", "status": 2})
         except ConnectionRefusedError:
-            self.receive.put(3)
+            self.receive.put({"type": "status", "status": 3})
         except socket.gaierror:
-            self.receive.put(4)
+            self.receive.put({"type": "status", "status": 4})
         except OSError:
-            self.receive.put(5)
+            self.receive.put({"type": "status", "status": 5})
+        else:
+            while True:
+                # receive data
+                data = await self.connection.recv()
+                try:
+                    data = json.loads(data)
+                except json.JSONDecodeError:
+                    print(f"Error decoding JSON {data}")
+                else:
+                    self.receive.put(data)
+
+    async def _send(self):
+        # send data
+        while True:
+            try:
+                data = self.send.get(block=False)
+            except queue.Empty:
+                pass
+            else:
+                try:
+                    data = json.dumps(data)
+                except (TypeError, OverflowError, ValueError):
+                    print(f"Error encoding json: {data}")
+                else:
+                    await self.connection.send(data)
+            await asyncio.sleep(0.05)  # TODO why does removing this break everything...
 
 
 def run(ip: str, port: int = None) -> (threading.Thread, queue.Queue, queue.Queue):

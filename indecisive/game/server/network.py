@@ -12,37 +12,47 @@ class Server:
         self.connections = []
         self.loop = asyncio.get_event_loop()
 
-    async def _start(self):
+    async def _send(self):
         while True:
-            for connection in self.connections:
-                await connection.send(json.dumps({"test": 7, "test2": 6}))
-            await asyncio.sleep(1)
+            try:
+                data = self.send.get(block=False)
+            except queue.Empty:
+                pass
+            else:
+                try:
+                    data = json.dumps(data)
+                except (TypeError, OverflowError, ValueError):
+                    print(f"Error encoding json: {data}")
+                else:
+                    for connection in self.connections:
+                        await connection.send(data)
+            await asyncio.sleep(0.05)
 
     def _websocket(self, ip: str, port: int):
         # noinspection PyTypeChecker
-        return websockets.serve(self._connection_manager, ip, port)
+        return websockets.serve(self._recv, ip, port)
 
-    async def _connection_manager(self, websocket, path):
-        print(f"Connection from {path}")
-        self.connections.append(websocket)
+    async def _recv(self, websocket, path):
+        if len(self.connections) < 3:
+            self.connections.append(websocket)
+            connection_number = self.connections.index(websocket)
+            self.receive.put({"type": "newConnection", "connection": connection_number})
+        else:
+            await websocket.close()
+
         async for message in websocket:
-            await asyncio.sleep(0)
+            try:
+                message = json.loads(message)
+            except json.JSONDecodeError:
+                print(f"Error decoding JSON {message}")
+            else:
+                message["connection"] = connection_number
+                self.receive.put(message)
 
     def start(self, ip: str, port: int = 10000):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
 
-        self.loop.create_task(self._start())
+        self.loop.create_task(self._send())
         self.loop.run_until_complete(self._websocket(ip, port))
         self.loop.run_forever()
-
-
-def run(ip: str, port: int = None) -> (threading.Thread, queue.Queue, queue.Queue):
-    receive, send = queue.Queue(), queue.Queue()
-    server = Server(receive, send)
-    if port is None:
-        port = 10000
-    network_thread = threading.Thread(target=server.start, name="network", args=(ip, port))
-    network_thread.start()
-    print("Network Server started!")
-    return network_thread, receive, send
