@@ -6,7 +6,7 @@ import arcade
 
 from triple_vision import Settings as s
 from triple_vision.entities import LivingEntity
-from triple_vision.entities.sprites import MovingSprite
+from triple_vision.entities.sprites import MovingSprite, HealthBar
 from triple_vision.entities.weapons import LaserProjectile
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
@@ -40,6 +40,8 @@ class Player(LivingEntity, MovingSprite):
 
         self.path_finder = PathFinder()
         self.path = None
+
+        self.health_bar: HealthBar = None
 
     @property
     def curr_color(self):
@@ -81,6 +83,14 @@ class Player(LivingEntity, MovingSprite):
             (-6.0, -11.0),
             (-6.0, -3.0)
         ])
+
+        self.health_bar = HealthBar(
+            fill_part_filename="assets/healthbar/health_fill_part.png",
+            fill_part_width=11,
+            filename="assets/healthbar/health_bar_border.png",
+            center_x=600,
+            center_y=300,
+        )
         self.curr_color = 'red'
 
     def process_mouse_press(self, x, y, button) -> None:
@@ -126,7 +136,7 @@ class Player(LivingEntity, MovingSprite):
         self.is_alive = False
         super().kill()
 
-    def on_update(self, delta_time: float = 1/60) -> None:
+    def on_update(self, delta_time: float = 1 / 60) -> None:
         if self.path is not None and self.target is None:
             try:
                 pos = tile_to_pixels(*next(self.path))
@@ -137,3 +147,7 @@ class Player(LivingEntity, MovingSprite):
 
         super().on_update(delta_time)
         super().force_moving_sprite_on_update(delta_time)
+
+    def draw(self):
+        super().draw()
+        self.health_bar.draw()
