@@ -180,3 +180,6 @@ class HealthBar(arcade.Sprite):
                 )
             )
 
+    def draw(self):
+        super().draw()
+        self.fill_part_list.draw()
