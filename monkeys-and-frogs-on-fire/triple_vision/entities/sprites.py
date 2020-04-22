@@ -35,7 +35,6 @@ class MovingSprite(arcade.Sprite):
                            (the sprite will stop after reaching it)
         :param x: x coordinate for the sprite to move into
         :param y: y coordinate for the sprite to move into
-        :param rotate: represents if we need to rotate the sprite or not
         """
         self.calc_change_vector(x, y)
 

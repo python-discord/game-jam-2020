@@ -1,3 +1,4 @@
+import random
 import itertools
 from pathlib import Path
 from typing import Any, Optional, Tuple
@@ -202,3 +203,28 @@ class LivingEntity(AnimatedEntity):
             self.reduce_throwback(delta_time)
 
         super().on_update(delta_time)
+
+
+class SoundEntity(arcade.Sprite):
+    assets_path = Path("assets/audio/sounds/")
+
+    def __init__(
+            self,
+            *args,
+            activate_sounds: tuple,
+            hit_sounds: tuple,
+            **kwargs
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        self._activate_sounds = self.load_sounds(activate_sounds)
+        self._hit_sounds = self.load_sounds(hit_sounds)
+
+    @classmethod
+    def load_sounds(cls, sounds: Tuple[str]):
+        return [arcade.load_sound(str(cls.assets_path / sound)) for sound in sounds]
+
+    def play_activate_sound(self) -> None:
+        arcade.play_sound(random.choice(self._activate_sounds))
+
+    def play_hit_sound(self) -> None:
+        arcade.play_sound(random.choice(self._hit_sounds))

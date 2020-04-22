@@ -5,7 +5,7 @@ from itertools import chain
 import arcade
 
 from triple_vision import Settings as s
-from triple_vision.entities.entities import LivingEntity
+from triple_vision.entities import LivingEntity
 from triple_vision.entities.sprites import MovingSprite
 from triple_vision.entities.weapons import LaserProjectile
 from triple_vision.pathfinding import PathFinder

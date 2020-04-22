@@ -151,8 +151,6 @@ class TripleVision(arcade.View):
         self.card_manager.update()
 
     def update_(self, delta_time: float) -> None:
-        self.physics_engine.update()
-
         if self.player.is_alive:
             self.player.on_update(delta_time)
 
