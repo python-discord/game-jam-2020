@@ -1,7 +1,7 @@
 ![beanoculars' logo](submission/images/icons/beanocularsMINI.png)
 ### Beanoculars' submission for the python-discord game jam 2020
 ---
-![Insane Irradiated Insectz title screen image](submission/images/icons/titleScreen/title.png)
+![Insane Irradiated Insectz title screen image](submission/images/icons/logo.png)
 ---
 > Insane Irradiated Insectz, made by sachapomme (Sacha#8175)
 
