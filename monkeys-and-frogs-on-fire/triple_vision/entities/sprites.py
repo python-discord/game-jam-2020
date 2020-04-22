@@ -14,8 +14,6 @@ class States(Enum):
     ATTACKING = 2
 
 
-
-
 class MovingSprite(arcade.Sprite):
     def __init__(self, moving_speed, rotate=True, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -137,4 +135,45 @@ class DamageIndicator(TemporarySprite, MovingSprite):
         self.move_to(start_x, start_y + 10, set_target=False)
 
 
+class HealthBar(arcade.Sprite):
+    def __init__(
+            self,
+            bar_sprite: arcade.Sprite,
+            fill_part_filename,
+            fill_part_width,
+            *args,
+            life_count: int = 10,
+            **kwargs
+    ) -> None:
 
+        super().__init__(*args, **kwargs)
+        self.bar_sprite = bar_sprite
+        self.fill_part_filename = fill_part_filename
+        self.fill_part_width = fill_part_width
+        self.life_count = life_count
+        self.fill_part_list = arcade.SpriteList()
+        self.fill_part_list.extend(
+            [
+                arcade.Sprite(
+                    fill_part_filename,
+                    center_x=self.bar_sprite.center_x + self.fill_part_width * i,
+                    center_y=self.bar_sprite.center_y
+                )
+                for i in range(life_count)
+            ]
+        )
+
+    def remove_filling_part(self):
+        if len(self.fill_part_list) == 0:
+            return
+        self.fill_part_list.pop()
+
+    def add_filling_part(self):
+        if len(self.fill_part_list) < self.life_count:
+            self.fill_part_list.append(
+                arcade.Sprite(
+                    self.fill_part_filename,
+                    center_x=self.bar_sprite.center_x + self.fill_part_width * len(self.fill_part_list),
+                    center_y=self.bar_sprite.center_y
+                )
+            )
