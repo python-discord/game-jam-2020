@@ -8,7 +8,7 @@ def _get_all_row_filepaths(row_num: int) -> List[str]:
     :param row_num: the row for which assets should be retrieved
     :return: a list of the relative filenames
     """
-    asset_path = Path(f'assets\\')
+    asset_path = Path(f'assets')
     all_files = asset_path.rglob(f'R{row_num}_*.png')
     all_row_items = [str(file.name) for file in all_files]
     return all_row_items
@@ -25,7 +25,7 @@ def get_r2_attrs(count=3) -> List[str]:
 
 
 def get_r3_attrs(count=3) -> List[str]:
-    attrs = _get_all_row_filepaths(2)
+    attrs = _get_all_row_filepaths(3)
     return random.sample(attrs, count)
 
 
