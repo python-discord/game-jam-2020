@@ -143,12 +143,13 @@ class HealthBar(arcade.Sprite):
             *args,
             life_count: int = 10,
             is_filled: bool = True,
+            scale: int = 1,
             **kwargs
     ) -> None:
 
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, scale=scale, **kwargs)
         self.fill_part_filename = fill_part_filename
-        self.fill_part_width = fill_part_width
+        self.fill_part_width = fill_part_width * scale
         self.life_count = life_count
         self.fill_part_list = arcade.SpriteList()
         if not is_filled:
@@ -159,7 +160,8 @@ class HealthBar(arcade.Sprite):
                 arcade.Sprite(
                     fill_part_filename,
                     center_x=self.center_x + self.fill_part_width * i,
-                    center_y=self.center_y
+                    center_y=self.center_y,
+                    scale=scale
                 )
                 for i in range(life_count)
             ]
