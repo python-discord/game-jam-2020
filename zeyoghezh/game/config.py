@@ -1,10 +1,11 @@
 import arcade
 
 SCREEN_SIZE = (800, 600)
+BOTTOM_BORDER_Y = int(SCREEN_SIZE[1] / 5)
 TRIANGULATION_START_LIKELIHOOD = 0.02
 TRIANGULATION_END_LIKELIHOOD = 0.05
 
-BASE_SPEED = 1e+2  # TODO change to 1e-1 when this is over
+BASE_SPEED = 1e+1  # TODO change to 1e-1 when this is over
 PLANET_BASE_SPEED = 5 * BASE_SPEED
 PUSH_BASE_SPEED = 3 * BASE_SPEED
 PUSH_MAX_DISTANCE = 80  # The most a planet can be away from Yogh to be pushed

@@ -9,7 +9,7 @@ from .config import (
     PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
     PLANET_COLORS, PLANET_SPRITES, TRIANGULATION_START_LIKELIHOOD,
     TRIANGULATION_END_LIKELIHOOD, ATTACK_SOUND, ATTACK_PLAYS_SOUND_CHANCE,
-    SOUND_VOLUME
+    SOUND_VOLUME, BOTTOM_BORDER_Y
 )
 
 logger = logging.getLogger()
@@ -56,14 +56,6 @@ class Planet(arcade.Sprite):
     def move(self, time_multiplier, delta_x=None, delta_y=None):
         # I have no idea why this needs to be 4 and not 2
         planet_radius = self.width / 4
-        if self.center_y > SCREEN_SIZE[1] - planet_radius:
-            self.speed_y = -abs(self.speed_y) - (random.random() / 100)
-        if self.center_y < planet_radius:
-            self.speed_y = abs(self.speed_y) + (random.random() / 100)
-        if self.center_x > SCREEN_SIZE[0] - planet_radius:
-            self.speed_x = -abs(self.speed_x) - (random.random() / 100)
-        if self.center_x < planet_radius:
-            self.speed_x = abs(self.speed_x) + (random.random() / 100)
 
         if delta_x is None:
             delta_x = self.speed_x * PLANET_BASE_SPEED
@@ -72,6 +64,25 @@ class Planet(arcade.Sprite):
 
         delta_x *= time_multiplier
         delta_y *= time_multiplier
+
+        new_x = int(self.center_x + delta_x)
+        new_y = int(self.center_y + delta_y)
+
+        if new_y >= SCREEN_SIZE[1] - planet_radius:
+            new_y = SCREEN_SIZE[1] - planet_radius
+            self.speed_y = -abs(self.speed_y) - (random.random() / 100)
+        if new_y <= BOTTOM_BORDER_Y + planet_radius:
+            new_y = BOTTOM_BORDER_Y
+            self.speed_y = abs(self.speed_y) + (random.random() / 100)
+        if new_x >= SCREEN_SIZE[0] - planet_radius:
+            new_x = SCREEN_SIZE[0] - planet_radius
+            self.speed_x = -abs(self.speed_x) - (random.random() / 100)
+        if new_x <= planet_radius:
+            new_x = planet_radius
+            self.speed_x = abs(self.speed_x) + (random.random() / 100)
+
+        delta_x = new_x - self.center_x
+        delta_y = new_y - self.center_y
 
         logger.debug(f"Moving {self.name}. {delta_x=}, {delta_y=}.")
         self.center_y += delta_y
