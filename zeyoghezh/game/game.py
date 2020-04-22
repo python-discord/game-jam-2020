@@ -49,6 +49,9 @@ class Game(arcade.Window):
         self.last_banner_change = None
         self.story_iter = None
 
+        self.banner_background_color = arcade.make_transparent_color(
+            arcade.color.BLUE, 100)
+
     def setup(self):
         self.player_in_tutorial = True
         self.game_is_over = False
@@ -147,10 +150,17 @@ class Game(arcade.Window):
 
         self.abscond_button.draw()
 
+        arcade.draw_rectangle_filled(
+            center_x=SCREEN_SIZE[0]/2,
+            center_y=20+self.banner_location[1],
+            width=SCREEN_SIZE[0],
+            height=40,
+            color=self.banner_background_color)
+
         arcade.draw_text(
             self.banner_text,
             *self.banner_location,
-            color=arcade.color.WHITE, font_size=24)
+            color=arcade.color.GREEN, font_size=24)
 
         if self.game_is_over:
             pass  # TODO restart game or whatever
