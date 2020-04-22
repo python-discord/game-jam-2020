@@ -212,6 +212,8 @@ class Game(arcade.Window):
         self.run_assertions()
 
     def update_banner(self):
+        if self.game_is_over:
+            return
         if not self.player_in_tutorial:
             self.update_banner_story()
             return
@@ -240,6 +242,8 @@ class Game(arcade.Window):
                 self.player_in_tutorial = False
 
     def update_banner_story(self):
+        if self.game_is_over:
+            return
         now = time.time()
         delta_time = now - self.last_banner_change
         if delta_time < 3:
