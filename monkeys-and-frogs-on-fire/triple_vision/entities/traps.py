@@ -1,28 +1,49 @@
 import random
+from typing import Tuple, List, Union
 
 from triple_vision import Settings as s
-from triple_vision.entities import AnimatedEntity, SoundEntity
+from triple_vision.entities import AnimatedEntity, SoundEntity, BaseEnemy, Player
 
 
-class Spike(AnimatedEntity, SoundEntity):
+class Trap(AnimatedEntity, SoundEntity):
+    def __init__(
+            self,
+            dmg: float,
+            throwback_force: int,
+            targets: List[Union[BaseEnemy, Player]],
+            working_radius: int,
+            activation_rectangle: Tuple[int, int, int, int],
+            **kwargs
+    ):
+        super().__init__(assets_path='assets/dungeon/frames',
+                         states=('',),
+                         **kwargs)
+        self.dmg = dmg
+        self.throwback_force = throwback_force
+        self.targets = targets
+        self.working_radius = working_radius
+        self.activation_rectangle = activation_rectangle
+
+
+class Spike(Trap):
     # TODO change these assets
     activate_sounds = ("fireball.wav",)
     hit_sounds = ("fireball.wav",)
 
     def __init__(self, view, **kwargs) -> None:
         super().__init__(
+            dmg=random.randrange(40, 50),
+            throwback_force=5,
+            targets=None,
+            working_radius=400,
+            activation_rectangle=(-10, -10, 10, 10),
             sprite_name='floor_spikes',
-            assets_path='assets/dungeon/frames',
-            states=('',),
             frame_range=(0, 1, 2, 3, 2, 1, 0),
             activate_sounds=self.activate_sounds,
             hit_sounds=self.hit_sounds,
             **kwargs
         )
         self.camera = view.camera
-
-        self.dmg = random.randrange(40, 50)
-        self.throwback_force = 5
 
         self.ticks = 7
         self.wait_time = random.randrange(2, 10)
