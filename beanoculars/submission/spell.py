@@ -10,8 +10,6 @@ def pickUp(sprite: arcade.sprite, player_list: arcade.sprite_list, path_list: ar
            turret_list: arcade.sprite_list):  # called when q is pressed
     """
     Manage the pick up of turrets and so on
-    :param sprite: player sprite
-    :return: current inventory state
     """
 
     if not sprite.is_moving:

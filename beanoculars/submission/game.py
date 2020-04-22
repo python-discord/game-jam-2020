@@ -7,7 +7,8 @@ from submission.tileMapLoader import *
 from submission.spell import pickUp
 from submission.sounds import loadSounds
 from submission.motion import moveEntities, updateActualPos, movePlayer
-from submission.waveManager import getSpawnList, manageEnemySpawn, decomposeSpawnList, EnemyGroup, SpawnOrder
+from submission.waveManager import getSpawnList, manageEnemySpawn, decomposeSpawnList, generateASpawn,\
+    EnemyGroup, SpawnOrder
 from random import randint
 import math
 
@@ -65,7 +66,11 @@ class MyGame(arcade.Window):
         self.spawnList = None
         self.roundTime = 0
 
+        self.animationDeltaTime = 0
+
         self.game_over = False
+
+        self.generatedTimeSinceFirst = 0
 
         arcade.set_background_color((94, 132, 63))
 
@@ -134,12 +139,15 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time: float):
         """ On Update method"""
+        self.animationDeltaTime += 1
+
         updateActualPos(self.player_sprite)
         movePlayer(self.player_sprite, delta_time)
         self.game_over = moveEntities(self.entity_list, self.path_list, delta_time)
 
         if self.betweenRounds:
-            self.spawnList = decomposeSpawnList(getSpawnList(self.roundNumber))
+            self.roundTime = 0
+            self.spawnList = decomposeSpawnList(getSpawnList(self.roundNumber, self.generatedTimeSinceFirst))
             self.betweenRounds = False
 
         if not self.betweenRounds:
@@ -148,8 +156,10 @@ class MyGame(arcade.Window):
                                                   [0, 8], [0, 3])
 
         self.player_list.update_animation()
-        self.entity_list.update_animation()
-        self.turret_list.update_animation()
+        if self.animationDeltaTime >= 10:
+            self.animationDeltaTime = 0
+            self.entity_list.update_animation()
+            self.turret_list.update_animation()
 
     def on_key_press(self, symbol: int, modifiers: int):
         """ Get keyboard's presses. """
@@ -165,12 +175,10 @@ class MyGame(arcade.Window):
             for i in range(len(self.entity_list)):
                 self.entity_list[0].kill()
             self.betweenRounds = True
-            if self.spawnList:
-                self.roundNumber += 1
+            self.roundNumber += 1
 
-        if symbol == arcade.key.A:
-            if self.entity_list:
-                self.entity_list[0].center_y += 10
+        if symbol == arcade.key.S:
+            self.sound_dict['test1.wav'].play()
 
     def on_key_release(self, symbol: int, modifiers: int):
         """ Get keyboard's releases. """

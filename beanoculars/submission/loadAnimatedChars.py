@@ -105,6 +105,7 @@ class AnimatedEntity(arcade.Sprite):
         self.center_y = coor[1]*32 + 16
 
         self.ud = True
+        self.downfirst = False
 
         self.texture = self.basic_textures[0][0]
 
@@ -151,6 +152,7 @@ class AnimatedPlayer(arcade.Sprite):
         self.dir_changed = False
         self.xdone = False
         self.ydone = False
+        self.can_pickup = True
 
         self.inventory = 0
         self.actual_cur_pos = []

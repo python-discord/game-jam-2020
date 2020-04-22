@@ -9,11 +9,11 @@ def movePlayer(sprite: arcade.sprite, delta_time: float):
 
         if sprite.is_moving:
             sprite.is_moving = False
-            print('Not moving')
 
     # sinon
     else:
         # moving est true
+
         sprite.is_moving = True
 
         # créer un vecteur (EN PX)
@@ -59,40 +59,39 @@ def movePlayer(sprite: arcade.sprite, delta_time: float):
 def moveEntities(entity_list: arcade.sprite_list, path_list: arcade.sprite_list, delta_time: float):
     for entity in entity_list:  # pour chaque entité
         position = [entity.center_x, entity.center_y]  # trouver la position actuelle (en px?)
-        if arcade.get_sprites_at_point(position, path_list):
-            cur_path = arcade.get_sprites_at_point(position, path_list)[0]  # trouver le sprite de chemin actuel
+
+        if entity.character_face_direction == DOWN_FACING:
+            grid_pos = [math.floor((position[0] - 16) / 32), math.floor((position[1] + 16) / 32)]
         else:
-            position[0] += 1
-            position[1] += 1
-            cur_path = arcade.get_sprites_at_point(position, path_list)[0]
+            grid_pos = [math.floor((position[0] - 16) / 32), math.floor((position[1] - 16) / 32)]
 
-        path_coor = [math.floor((cur_path.center_x - 16) / 32), math.floor((cur_path.center_y - 16) / 32)]
-
-        if path_coor in TILE_UP:
+        if grid_pos in TILE_UP:
             # changer la direction vers le haut et se snap sur l'axe
             if position[0] % 32 >= 16:
-                entity.center_x = path_coor[0] * 32 + 16
+                entity.center_x = grid_pos[0] * 32 + 16
                 entity.character_face_direction = UP_FACING
                 entity.ud = True
 
-        if path_coor in TILE_DOWN:
+        if grid_pos in TILE_DOWN:
             # changer la direction vers le bas
             if position[0] % 32 >= 16:
-                entity.center_x = path_coor[0] * 32 + 16
+                entity.center_x = grid_pos[0] * 32 + 16
                 entity.character_face_direction = DOWN_FACING
                 entity.ud = False
 
-        if path_coor in TILE_RIGHT:
+        if grid_pos in TILE_RIGHT:
             # changer la direction vers la droite
             if entity.character_face_direction == UP_FACING:
                 if position[1] % 32 >= 16:
-                    entity.center_y = path_coor[1] * 32 + 16
+                    entity.center_y = grid_pos[1] * 32 + 16
                     entity.character_face_direction = RIGHT_FACING
 
             elif entity.character_face_direction == DOWN_FACING:
+
                 if position[1] % 32 <= 16:
-                    entity.center_y = path_coor[1] * 32 + 16
+                    entity.center_y = grid_pos[1] * 32 + 16
                     entity.character_face_direction = RIGHT_FACING
+
         # selon le chemin, si l'on a passé la moitié (utiliser modulo)
         # se repositioner sur le bon axe et changer sa direction
 
