@@ -9,27 +9,30 @@ from ui import ViewButton, IconButton, View
 
 
 class Paused(View):
+    reset_viewport = False
+
     def __init__(self, game):
         self.game = game
         super().__init__()
-        self.buttons = arcade.SpriteList()
+
+    def on_show(self):
+        super().on_show()
         y = HEIGHT/2 - 50
         x = self.game.left + WIDTH/2
-        self.buttons.append(IconButton(x-70, y, self, 'home', self.home))
-        self.buttons.append(IconButton(x, y, self, 'play', self.play))
-        self.buttons.append(IconButton(x+70, y, self, 'restart', self.restart))
+        self.buttons.append(IconButton(self, x-70, y, 'home', self.home))
+        self.buttons.append(IconButton(self, x, y, 'play', self.play))
+        self.buttons.append(
+            IconButton(self, x+70, y, 'restart', self.restart)
+        )
 
     def home(self):
         self.window.show_view(Menu())
 
     def play(self):
-        self.game.pauseplay.pressed()
+        self.game.pauseplay.go()
 
     def restart(self):
         self.window.show_view(Game())
-
-    def on_show(self):
-        pass    # overwrite default of resetting viewport
 
     def on_draw(self):
         arcade.start_render()
@@ -39,18 +42,23 @@ class Paused(View):
             arcade.color.BLACK, font_size=50, anchor_x='center',
             font_name=FONT.format('b')
         )
-        self.buttons.draw()
+        super().on_draw()
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        print('!?')
+        for view in (super(), self.game):
+            view.on_mouse_press(x, y, button, modifiers)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        for button in self.buttons:
-            button.on_mouse(x, y)
-        self.game.pauseplay.on_mouse_release(x, y, button, modifiers)
+        print('?!')
+        for view in (super(), self.game):
+            view.on_mouse_release(x, y, button, modifiers)
 
 
 class Instructions(View):
     def on_show(self):
-        self.button_list.append(ViewButton(self, WIDTH/2-75, 50, 'Back', Menu))
-        self.button_list.append(ViewButton(self, WIDTH/2+75, 50, 'Play', Game))
+        self.buttons.append(ViewButton(self, WIDTH/2-75, 50, 'back', Menu))
+        self.buttons.append(ViewButton(self, WIDTH/2+75, 50, 'play', Game))
 
     def on_draw(self):
         arcade.start_render()
@@ -69,7 +77,8 @@ class Instructions(View):
 
 class About(View):
     def on_show(self):
-        self.button_list.append(ViewButton(self, WIDTH/2, 200, 'Home', Menu))
+        super().on_show()
+        self.buttons.append(ViewButton(self, WIDTH/2, 200, 'home', Menu))
 
     def on_draw(self):
         arcade.start_render()
@@ -101,62 +110,59 @@ class Tutorial(View):
                 break
 
     def on_show(self):
+        super().on_show()
         self.textures = self.get_textures(ASSETS + 'tutorial.gif')
         self.texture = None
         self.time_till_change = 0
         self.done = False
-        self.button = IconButton(WIDTH-70, HEIGHT-70, self, 'home', self.home)
+        self.buttons.append(
+            IconButton(self, WIDTH-70, HEIGHT-70, 'home', self.home)
+        )
 
     def home(self):
         self.window.show_view(Menu())
 
     def on_update(self, timedelta):
+        super().on_update(timedelta)
         self.time_till_change -= timedelta
         if self.time_till_change <= 0:
             try:
                 self.texture, self.time_till_change = next(self.textures)
             except StopIteration:
                 self.done = True
-                self.button_list.append(
-                    ViewButton(self, WIDTH/2-75, HEIGHT/2, 'Back', Menu)
+                self.buttons = []
+                self.buttons.append(
+                    ViewButton(self, WIDTH/2-35, HEIGHT/2, 'home', Menu)
                 )
-                self.button_list.append(
-                    ViewButton(self, WIDTH/2+75, HEIGHT/2, 'Play', Game)
+                self.buttons.append(
+                    ViewButton(self, WIDTH/2+35, HEIGHT/2, 'play', Game)
                 )
 
     def on_draw(self):
-        super().on_draw()
+        arcade.start_render()
         if self.texture and not self.done:
             self.texture.draw_scaled(WIDTH/2, HEIGHT/2)
-            self.button.draw()
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        self.button.on_mouse(x, y)
+        super().on_draw()
 
 
 class Menu(View):
     def on_show(self):
         super().on_show()
-        self.button_list.append(
-            ViewButton(self, WIDTH/2, HEIGHT/2-50, 'Play', Game)
+        self.buttons.append(
+            ViewButton(self, WIDTH/2, HEIGHT/2-50, 'play', Game)
         )
-        self.button_list.append(ViewButton(
-            self, WIDTH/2, HEIGHT/2-100, 'Help', Tutorial
+        self.buttons.append(ViewButton(
+            self, WIDTH/2-70, HEIGHT/2-50, 'help', Tutorial
         ))
-        self.button_list.append(ViewButton(
-            self, WIDTH/2, HEIGHT/2-150, 'About', About
+        self.buttons.append(ViewButton(
+            self, WIDTH/2+70, HEIGHT/2-50, 'about', About
         ))
 
     def on_draw(self):
         arcade.start_render()
         super().on_draw()
         arcade.draw_text(
-            'Menu', WIDTH/2, HEIGHT/2,
-            arcade.color.WHITE, font_size=50, anchor_x='center',
-            font_name=FONT.format('b')
-        )
-        arcade.draw_text(
-            'Artemis: Gem Matcher', WIDTH/2, HEIGHT/2 + 100,
+            'Artemis: Gem Matcher', WIDTH/2, HEIGHT/2,
             arcade.color.WHITE, font_size=50, anchor_x='center',
             anchor_y='bottom', font_name=FONT.format('b')
         )

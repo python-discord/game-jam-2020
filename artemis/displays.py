@@ -2,6 +2,7 @@ import arcade
 from PIL import Image
 
 from constants import ASSETS, SCALING, HEIGHT, TOP
+from ui import IconButton
 
 
 class BoxGem(arcade.Sprite):
@@ -46,28 +47,14 @@ class Box(arcade.Sprite):
         self.center_x += self.game.player.speed
 
 
-class PausePlay(arcade.Sprite):
+class PausePlay(IconButton):
     def __init__(self, x, y, game):
-        super().__init__(center_x=x, center_y=y)
+        super().__init__(game, x, y, 'pause', self.go, 32)
         self.game = game
         game.on_mouse_release = self.on_mouse_release
-        self.textures = {
-            'pause': self.load_texture('pause.png'),
-            'play': self.load_texture('play.png')
-        }
-        self.texture = self.textures['pause']
 
-    def load_texture(self, file, size=32):
-        im = Image.open(ASSETS+file).resize((size, size))
-        return arcade.Texture(file, im)
-
-    def pressed(self):
+    def go(self):
         self.game.paused = not self.game.paused
         image = ['pause', 'play'][self.game.paused]
-        self.texture = self.textures[image]
+        self.icon_texture = self.load_texture(image, 16)
         self.game.window.show_view(self.game)
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        x += self.game.left
-        if self.left <= x <= self.right and self.bottom <= y <= self.top:
-            self.pressed()

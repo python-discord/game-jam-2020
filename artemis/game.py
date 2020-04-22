@@ -13,9 +13,11 @@ import views
 
 
 class Game(View):
+    reset_viewport = False
+
     def __init__(self):
         super().__init__()
-        super().on_show()
+        arcade.set_viewport(0, WIDTH, 0, HEIGHT)
         arcade.set_background_color(BACKGROUND)
 
         self.left = 0
@@ -44,7 +46,7 @@ class Game(View):
             Box(self, n)
 
         self.pauseplay = PausePlay(0, HEIGHT - 40, self)
-        self.others.append(self.pauseplay)
+        self.buttons.append(self.pauseplay)
         
         self.engine = BiDirectionalPhysicsEnginePlatformer(
             self.player, self.blocks, 1
@@ -54,14 +56,12 @@ class Game(View):
             self.blocks, self.gems, self.boxes, self.others, self.spikes
         ]
 
-    def on_show(self):
-        pass    # overwrite default of resetting viewport
-
     def on_draw(self):
         arcade.start_render()
         self.pauseplay.center_x = self.left + WIDTH - 40
+        super().on_draw()
         arcade.draw_text(
-            text=f'Hiscore: {self.hiscore:03d}',
+            text=f'High Score: {self.hiscore:03d}',
             start_x=self.left + WIDTH - 100,
             start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2 + 15,
             color=arcade.color.WHITE, font_size=20, anchor_x='right',
@@ -82,10 +82,11 @@ class Game(View):
                 left=self.left, right=WIDTH+self.left, top=HEIGHT, bottom=0,
                 color=(255, 255, 255, 100)
             )
-            self.pauseplay.draw()
+            super().on_draw()
             self.window.show_view(views.Paused(self))
 
     def on_update(self, timedelta):
+        super().on_update(timedelta)
         if not self.paused:
             for sprite_list in self.sprite_lists:
                 sprite_list.update()
