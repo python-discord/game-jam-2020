@@ -64,6 +64,8 @@ class Weapon(arcade.Sprite):
         super().__init__()
         sprite_path = path['img'] / sprite_root
 
+        self.scale = 1
+
         self.texture_dict = {}
 
         for i in os.listdir(sprite_path):
@@ -72,8 +74,43 @@ class Weapon(arcade.Sprite):
                 self.texture_dict[i].append(load_texture_pair(
                     sprite_path / i / f"({j}).png"))
 
+        self.texture = self.texture_dict['sword_stab'][0][0]
+
+        self.is_stab = False
+        self.is_cut = False
+
+        self.cur_stab_texture = 0
+        self.cur_cut_texture = 0
+
         # print(self.texture_dict)
 
+    def update_animation(self):
+
+        # Attack animation
+        if self.is_stab:
+            frames = self.cur_stab_texture // UPDATES_PER_FRAME
+
+            if frames == len(self.texture_dict['sword_stab'])-1:
+                self.cur_stab_texture = 0
+                self.is_stab = False
+                return
+
+            self.texture = self.texture_dict['sword_stab'][frames][0]
+
+            self.cur_stab_texture += 1
+
+        if self.is_cut:
+            frames = self.cur_cut_texture // UPDATES_PER_FRAME
+
+            if frames == len(self.texture_dict['sword_cut'])-1:
+                self.cur_cut_texture = 0
+                self.is_cut = False
+                self.texture = self.texture_dict['sword_stab'][0][0]
+                return
+
+            self.texture = self.texture_dict['sword_cut'][frames][0]
+
+            self.cur_cut_texture += 1
 
 class Ship(arcade.Sprite):
     '''
@@ -623,6 +660,8 @@ class PlayerView(arcade.View):
 
         self.formation = 0
 
+        self.mouse_position = (0,0)
+
         arcade.set_background_color(arcade.color.AMAZON)
 
         # Track the current state of what key is pressed
@@ -682,6 +721,13 @@ class PlayerView(arcade.View):
 
         self.viewport_scale = 1
 
+        self.level_sprites = arcade.SpriteList()
+        self.player_sprite.weapon = Weapon('sword')
+        self.player_sprite.weapon.center_x = self.player_sprite.center_x-10
+        self.player_sprite.weapon.center_x = self.player_sprite.center_y
+
+        self.level_sprites.append(self.player_sprite.weapon)
+
     def scroll(self):
         # --- Manage Scrolling ---
 
@@ -736,6 +782,11 @@ class PlayerView(arcade.View):
 
         self.enemy_list.draw(filter=gl.GL_NEAREST)
         self.player_sprites.draw(filter=gl.GL_NEAREST)
+
+        self.level_sprites.draw(filter=gl.GL_NEAREST)
+
+        # arcade.draw_line(self.mouse_position[0]*self.viewport_scale, self.mouse_position[1]*self.viewport_scale, self.player_sprite.center_x, self.player_sprite.center_y, arcade.color.RED, 1)
+
 
     def on_update(self, delta_time):
 
@@ -797,6 +848,22 @@ class PlayerView(arcade.View):
         self.player_sprites[0].on_update(delta_time)
         self.player_sprites[2].on_update(delta_time)
 
+        self.level_sprites.update()
+
+        self.player_sprite.weapon.center_x = self.mouse_position[0]*self.viewport_scale+arcade.get_viewport()[0]
+        self.player_sprite.weapon.center_y = self.mouse_position[1]*self.viewport_scale+arcade.get_viewport()[2]
+
+        dx = (self.mouse_position[0]*self.viewport_scale+arcade.get_viewport()[0])-self.player_sprite.center_x
+        dy = (self.mouse_position[1]*self.viewport_scale+arcade.get_viewport()[2])-self.player_sprite.center_y
+
+        angle = atan2(dy, dx)
+        self.player_sprite.weapon.center_x = self.player_sprite.center_x+25*cos(angle)
+        self.player_sprite.weapon.center_y = self.player_sprite.center_y+25*sin(angle)
+        self.player_sprite.weapon.angle = degrees(angle)
+
+        self.player_sprite.weapon.update_animation()
+
+
     def on_key_press(self, key, key_modifiers):
         """
         Called whenever a key on the keyboard is pressed.
@@ -837,6 +904,15 @@ class PlayerView(arcade.View):
             self.left_pressed = False
         elif key == arcade.key.D:
             self.right_pressed = False
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        self.mouse_position = (x, y)
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            self.player_sprite.weapon.is_stab = True
+        elif button == arcade.MOUSE_BUTTON_RIGHT:
+            self.player_sprite.weapon.is_cut = True
 
 
 class MyGame(arcade.Window):
