@@ -35,3 +35,12 @@ INSTRUCTIONS = (
     'vice versa. Make sure not to hit any spikes, and\n'
     'Good luck!'
 )
+ABOUT = (
+    'Gem Matcher was created by Artemis#8799 for the\n'
+    '2020 Python Discord Game Jam. As per the\n'
+    'competition rules, the game is written in Python\n'
+    'and utilises Paul Craven\'s game library, Arcade.\n'
+    'All graphics were created by Artemis#8799 using\n'
+    'pixilart.com, and the font "Ubuntu" is used in the\n'
+    'Menu screen.'
+)

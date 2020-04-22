@@ -1,7 +1,7 @@
 import arcade
 from PIL import Image
 
-from constants import BACKGROUND, WIDTH, HEIGHT, ASSETS, INSTRUCTIONS
+from constants import BACKGROUND, WIDTH, HEIGHT, ASSETS, INSTRUCTIONS, ABOUT
 from game import Game
 from ui import ViewButton, IconButton, View
 
@@ -63,6 +63,24 @@ class Instructions(View):
         )
 
 
+class About(View):
+    def on_show(self):
+        self.button_list.append(ViewButton(self, WIDTH/2, 200, 'Home', Menu))
+
+    def on_draw(self):
+        arcade.start_render()
+        super().on_draw()
+        arcade.draw_text(
+            'About', WIDTH/2, HEIGHT-200,
+            arcade.color.WHITE, font_size=50, anchor_x='center',
+        )
+        arcade.draw_text(
+            ABOUT, WIDTH/2,  HEIGHT/2, arcade.color.WHITE,
+            font_size=20, anchor_x='center', anchor_y='center',
+            align='center'
+        )
+
+
 class Tutorial(View):
     def get_textures(self, file):
         gif = Image.open(file)
@@ -82,6 +100,10 @@ class Tutorial(View):
         self.texture = None
         self.time_till_change = 0
         self.done = False
+        self.button = IconButton(WIDTH-70, HEIGHT-70, self, 'home', self.home)
+
+    def home(self):
+        self.window.show_view(Menu())
 
     def on_update(self, timedelta):
         self.time_till_change -= timedelta
@@ -98,12 +120,13 @@ class Tutorial(View):
                 )
 
     def on_draw(self):
-        if not self.texture:
-            return
-        if self.done:
-            super().on_draw()
-        else:
+        super().on_draw()
+        if self.texture and not self.done:
             self.texture.draw_scaled(WIDTH/2, HEIGHT/2)
+            self.button.draw()
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        self.button.on_mouse(x, y)
 
 
 class Menu(View):
@@ -114,6 +137,9 @@ class Menu(View):
         )
         self.button_list.append(ViewButton(
             self, WIDTH/2, HEIGHT/2-100, 'Help', Tutorial
+        ))
+        self.button_list.append(ViewButton(
+            self, WIDTH/2, HEIGHT/2-150, 'About', About
         ))
 
     def on_draw(self):

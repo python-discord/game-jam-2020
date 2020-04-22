@@ -37,11 +37,7 @@ class Game(View):
         for n in range(5):
             Box(self, n)
 
-        self.pauseplay = PausePlay(
-            0,
-            HEIGHT - (TOP - self.blocks[0].height//2)//2 - 40,
-            self
-        )
+        self.pauseplay = PausePlay(0, HEIGHT - 40, self)
 
         self.others = arcade.SpriteList()
         self.spikes = arcade.SpriteList()
@@ -66,18 +62,18 @@ class Game(View):
 
     def on_draw(self):
         arcade.start_render()
-        self.pauseplay.center_x = self.left + WIDTH - 125
+        self.pauseplay.center_x = self.left + WIDTH - 40
         arcade.draw_text(
             text=f'Hiscore: {self.hiscore:03d}',
-            start_x=self.left + WIDTH - 50,
-            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2,
+            start_x=self.left + WIDTH - 100,
+            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2 + 15,
             color=arcade.color.WHITE, font_size=20, anchor_x='right',
             anchor_y='center'
         )
         arcade.draw_text(
             text=f'Score: {self.score:03d}',
-            start_x=self.left + WIDTH - 50,
-            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2 + 30,
+            start_x=self.left + WIDTH - 100,
+            start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2 - 15,
             color=arcade.color.WHITE, font_size=20, anchor_x='right',
             anchor_y='center'
         )
