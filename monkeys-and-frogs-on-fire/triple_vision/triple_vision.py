@@ -54,7 +54,7 @@ class TripleVision(arcade.View):
                 Enemies.big_demon,
                 self.player,
                 Tile.SCALED * 10,
-                center_x=50,
+                center_x=400,
                 center_y=y * 250,
                 moving_speed=1
             )
