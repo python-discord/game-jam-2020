@@ -1,9 +1,12 @@
 import arcade
 from PIL import Image
 
-from constants import WIDTH, HEIGHT, ASSETS, INSTRUCTIONS, ABOUT, FONT
+from constants import (
+    WIDTH, HEIGHT, ASSETS, INSTRUCTIONS, ABOUT, FONT, BACKGROUND
+)
 from game import Game
-from ui import ViewButton, IconButton, View
+from ui import ViewButton, IconButton, View, Achievement
+from achievements import get_achievements
 
 
 class Paused(View):
@@ -144,14 +147,17 @@ class Tutorial(View):
 class Menu(View):
     def on_show(self):
         super().on_show()
-        self.buttons.append(
-            ViewButton(self, WIDTH/2, HEIGHT/2-50, 'play', Game)
-        )
+        self.buttons.append(ViewButton(
+            self, WIDTH/2, HEIGHT/2-50, 'play', Game
+        ))
         self.buttons.append(ViewButton(
             self, WIDTH/2-70, HEIGHT/2-50, 'help', Tutorial
         ))
         self.buttons.append(ViewButton(
             self, WIDTH/2+70, HEIGHT/2-50, 'about', About
+        ))
+        self.buttons.append(ViewButton(
+            self, WIDTH/2, HEIGHT/2-120, 'achievements', Achievements
         ))
 
     def on_draw(self):
@@ -194,3 +200,34 @@ class GameOver(View):
 
     def on_key_release(self, key, modifiers):
         self.window.show_view(Game())
+
+
+class Achievements(View):
+    def on_show(self):
+        super().on_show()
+        achievements = get_achievements()
+        x = WIDTH/2 - 140
+        y = HEIGHT/2 + 105
+        self.on_top = []
+        for row in achievements:
+            for data in row:
+                x += 70
+                self.buttons.append(Achievement(
+                    self, x, y, data['type'], data['level'], data['name'],
+                    data['description'], data['achieved']
+                ))
+            y -= 70
+            x = WIDTH/2 - 140
+        self.buttons.append(
+            ViewButton(self, WIDTH/2, HEIGHT/2 - 190, 'home', Menu)
+        )
+
+    def on_draw(self):
+        super().on_draw()
+        arcade.draw_text(
+            'Achievements', WIDTH/2, HEIGHT/2 + 155,
+            arcade.color.WHITE, font_size=30, anchor_x='center',
+            font_name=FONT.format('b')
+        )
+        for achv in self.on_top:
+            achv.on_draw()

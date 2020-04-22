@@ -40,8 +40,11 @@ def get_achievements():
     checks = [check_type_0, check_type_1, check_type_2, check_type_3]
     for achv_type, check in zip(ACHIEVEMENTS, checks):
         level = check()
+        checked.append([])
         for n, achv in enumerate(achv_type):
             copy = dict(achv)
             copy['achieved'] = n <= level
-            checked.append(copy)
+            copy['type'] = checks.index(check)
+            copy['level'] = n
+            checked[-1].append(copy)
     return checked
