@@ -157,5 +157,6 @@ class TripleVision(arcade.View):
             self.player.on_update(delta_time)
 
         self.game_manager.on_update(delta_time)
+        self.physics_engine.update()
         self.map.on_update()
         self.camera.update()
