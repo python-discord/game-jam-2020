@@ -10,17 +10,16 @@ class Gem(arcade.Sprite):
     TEXTURES = 'rbywp'
 
     def __init__(self, game, image=ASSETS+'gem_{}.png'):
-        self.value = random.randrange(50, 125)
         super().__init__(image.format('w'), SCALING * 0.25)
         self.textures = []
         for texture in Gem.TEXTURES:
             self.textures.append(arcade.load_texture(
                 image.format(texture)
             ))
-        self.texture = self.get_texture()
         self.game = game
         self.game.gems.append(self)
-        self.reposition()
+        self.place()
+        self.center_x += WIDTH
 
     def get_texture(self):
         self.colour = random.choices(Gem.TEXTURES, weights=[3, 3, 3, 1, 1])[0]
@@ -28,9 +27,10 @@ class Gem(arcade.Sprite):
 
     def place(self):
         self.texture = self.get_texture()
-        self.center_x = self.game.left + WIDTH + random.randrange(SIDE, SIDE*2)
+        self.center_x = self.game.left+WIDTH+random.randrange(SIDE, SIDE*2)
         self.center_y = random.randrange(HEIGHT-TOP)
-        while True:
+        overlapping = True
+        while overlapping:
             overlapping = False
             for others in (
                     self.game.blocks, self.game.gems, self.game.spikes
@@ -38,8 +38,7 @@ class Gem(arcade.Sprite):
                 if arcade.check_for_collision_with_list(self, others):
                     overlapping = True
                     self.center_y = random.randrange(HEIGHT-TOP)
-            if not overlapping:
-                break
+                    break
 
     def reposition(self):
         self.center_x = random.randrange(WIDTH)
@@ -66,14 +65,13 @@ class Block(arcade.Sprite):
     def can_place_spike(self):
         for spike in self.game.spikes:
             if self.center_x in range(
-                    int(spike.center_x-self.width*3),
-                    int(spike.center_x+self.width*3)
+                    int(spike.center_x-self.width*5),
+                    int(spike.center_x+self.width*5)
                     ):
                 return False
         return True
 
     def reposition(self):
-        if isinstance(self, RandomBlock):print('NOOOOOOOOOOOOOooo')
         self.center_x += WIDTH + SIDE*2
 
     def update(self):
@@ -91,6 +89,7 @@ class RandomBlock(Block):
     def __init__(self, game):
         super().__init__(game, 0, 0, random.randrange(2), scale=SCALING*2)
         self.total_reposition()
+        self.reposition()
 
     def find_y(self):
         range_pixels = HEIGHT - TOP

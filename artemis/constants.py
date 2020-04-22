@@ -11,6 +11,7 @@ SPEED = 20 * SCALING
 GRAVITY = 10 * SCALING
 
 ASSETS = 'assets/'
+FONT = ASSETS + 'ubuntu_{}.ttf'
 BACKGROUND = (25, 0, 50)
 INSTRUCTIONS = (
     'You will play a green slime, moving along the walls\n'
@@ -41,6 +42,5 @@ ABOUT = (
     'competition rules, the game is written in Python\n'
     'and utilises Paul Craven\'s game library, Arcade.\n'
     'All graphics were created by Artemis#8799 using\n'
-    'pixilart.com, and the font "Ubuntu" is used in the\n'
-    'Menu screen.'
+    'pixilart.com, and the font "Ubuntu" is used.'
 )

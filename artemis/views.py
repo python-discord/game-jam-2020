@@ -1,7 +1,9 @@
 import arcade
 from PIL import Image
 
-from constants import BACKGROUND, WIDTH, HEIGHT, ASSETS, INSTRUCTIONS, ABOUT
+from constants import (
+    BACKGROUND, WIDTH, HEIGHT, ASSETS, INSTRUCTIONS, ABOUT, FONT
+)
 from game import Game
 from ui import ViewButton, IconButton, View
 
@@ -35,6 +37,7 @@ class Paused(View):
         arcade.draw_text(
             'Paused', self.game.left + WIDTH/2, HEIGHT/2 + 50,
             arcade.color.BLACK, font_size=50, anchor_x='center',
+            font_name=FONT.format('b')
         )
         self.buttons.draw()
 
@@ -55,11 +58,12 @@ class Instructions(View):
         arcade.draw_text(
             'Instructions', WIDTH/2, HEIGHT-75,
             arcade.color.WHITE, font_size=50, anchor_x='center',
+            font_name=FONT.format('b')
         )
         arcade.draw_text(
             INSTRUCTIONS, WIDTH/2,  HEIGHT/2, arcade.color.WHITE,
             font_size=20, anchor_x='center', anchor_y='center',
-            align='center'
+            align='center', font_name=FONT.format('r')
         )
 
 
@@ -73,11 +77,12 @@ class About(View):
         arcade.draw_text(
             'About', WIDTH/2, HEIGHT-200,
             arcade.color.WHITE, font_size=50, anchor_x='center',
+            font_name=FONT.format('b')
         )
         arcade.draw_text(
             ABOUT, WIDTH/2,  HEIGHT/2, arcade.color.WHITE,
             font_size=20, anchor_x='center', anchor_y='center',
-            align='center'
+            align='center', font_name=FONT.format('r')
         )
 
 
@@ -147,12 +152,13 @@ class Menu(View):
         super().on_draw()
         arcade.draw_text(
             'Menu', WIDTH/2, HEIGHT/2,
-            arcade.color.WHITE, font_size=50, anchor_x='center'
+            arcade.color.WHITE, font_size=50, anchor_x='center',
+            font_name=FONT.format('b')
         )
         arcade.draw_text(
             'Artemis: Gem Matcher', WIDTH/2, HEIGHT/2 + 100,
             arcade.color.WHITE, font_size=50, anchor_x='center',
-            anchor_y='bottom', font_name=ASSETS+'font.ttf'
+            anchor_y='bottom', font_name=FONT.format('b')
         )
 
 
@@ -167,15 +173,18 @@ class GameOver(View):
         arcade.set_viewport(0, WIDTH, 0, HEIGHT)
         arcade.draw_text(
             'Game Over:', WIDTH/2, HEIGHT/2,
-            arcade.color.RED, font_size=50, anchor_x='center'
+            arcade.color.RED, font_size=50, anchor_x='center',
+            font_name=FONT.format('b')
         )
         arcade.draw_text(
             self.message, WIDTH/2, HEIGHT/2-50,
-            arcade.color.RED, font_size=30, anchor_x='center'
+            arcade.color.RED, font_size=30, anchor_x='center',
+            font_name=FONT.format('m')
         )
         arcade.draw_text(
             'Click anywhere to continue', WIDTH/2, HEIGHT/2-100,
-            arcade.color.GRAY, font_size=20, anchor_x='center'
+            arcade.color.GRAY, font_size=20, anchor_x='center',
+            font_name=FONT.format('ri')
         )
 
     def on_mouse_release(self, x, y, button, modifiers):

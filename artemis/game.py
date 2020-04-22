@@ -2,7 +2,7 @@ import arcade
 import random
 import math
 
-from constants import WIDTH, HEIGHT, SCALING, SIDE, TOP, BACKGROUND
+from constants import WIDTH, HEIGHT, SCALING, SIDE, TOP, BACKGROUND, FONT
 from engine import BiDirectionalPhysicsEnginePlatformer
 from player import Player
 from sprites import Block, Gem, RandomBlock
@@ -18,44 +18,41 @@ class Game(View):
         super().on_show()
         arcade.set_background_color(BACKGROUND)
 
+        self.left = 0
+        self.score = 0
+        self.hiscore = get_hiscore()
+        self.paused = False
+        self.blocks = arcade.SpriteList()
+        self.gems = arcade.SpriteList()
+        self.boxes = arcade.SpriteList()
+        self.others = arcade.SpriteList()
+        self.spikes = arcade.SpriteList()
+
         # sprites
         self.player = Player(self)
-
-        self.blocks = arcade.SpriteList()
 
         size = int(128 * SCALING)
         for x in range(-SIDE, WIDTH+SIDE, size):
             Block(self, x, HEIGHT - TOP, False)
             Block(self, x, size//2, True)
 
-        self.gems = arcade.SpriteList()
         for _ in range(3):
             Gem(self)
             RandomBlock(self)
 
-        self.boxes = arcade.SpriteList()
         for n in range(5):
             Box(self, n)
 
         self.pauseplay = PausePlay(0, HEIGHT - 40, self)
-
-        self.others = arcade.SpriteList()
-        self.spikes = arcade.SpriteList()
-
         self.others.append(self.pauseplay)
         
         self.engine = BiDirectionalPhysicsEnginePlatformer(
             self.player, self.blocks, 1
         )
 
-        # keep track of things
         self.sprite_lists = [
             self.blocks, self.gems, self.boxes, self.others, self.spikes
         ]
-        self.left = 0
-        self.score = 0
-        self.hiscore = get_hiscore()
-        self.paused = False
 
     def on_show(self):
         pass    # overwrite default of resetting viewport
@@ -68,14 +65,14 @@ class Game(View):
             start_x=self.left + WIDTH - 100,
             start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2 + 15,
             color=arcade.color.WHITE, font_size=20, anchor_x='right',
-            anchor_y='center'
+            anchor_y='center', font_name=FONT.format('b')
         )
         arcade.draw_text(
             text=f'Score: {self.score:03d}',
             start_x=self.left + WIDTH - 100,
             start_y=HEIGHT - (TOP - self.blocks[0].height//2)//2 - 15,
             color=arcade.color.WHITE, font_size=20, anchor_x='right',
-            anchor_y='center'
+            anchor_y='center', font_name=FONT.format('b')
         )
         for sprite_list in self.sprite_lists:
             sprite_list.draw()

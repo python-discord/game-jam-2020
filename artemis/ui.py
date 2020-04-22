@@ -1,7 +1,7 @@
 import arcade
 from PIL import Image
 
-from constants import ASSETS, WIDTH, HEIGHT
+from constants import ASSETS, WIDTH, HEIGHT, FONT
 
 
 class ViewButton(arcade.gui.TextButton):
@@ -43,6 +43,7 @@ class View(arcade.View):
             image.format('normal'), image.format('hover'),
             image.format('active'), image.format('locked')
         )
+        self.theme.set_font(24,  (0, 0, 0), FONT.format('r'))
 
     def on_show(self):
         arcade.set_viewport(0, WIDTH, 0, HEIGHT)
