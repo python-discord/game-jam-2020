@@ -44,3 +44,77 @@ ABOUT = (
     'All graphics were created by Artemis#8799 using\n'
     'pixilart.com, and the font "Ubuntu" is used.'
 )
+ACHIEVMENTS = [
+    {
+        'type': 0,
+        'level': 0,
+        'description': 'Complete one game.',
+        'name': 'Novice'
+    },
+    {
+        'type': 0,
+        'level': 1,
+        'description': 'Complete ten games.',
+        'name': 'Experienced'
+    },
+    {
+        'type': 0,
+        'level': 2,
+        'description': 'Play one hundred games.',
+        'name': 'Addicted'
+    },
+    {
+        'type': 1,
+        'level': 0,
+        'description': 'Get a point.',
+        'name': 'Can play'
+    },
+    {
+        'type': 1,
+        'level': 1,
+        'description': 'Get ten points.',
+        'name': 'Getting the hang of it'
+    },
+    {
+        'type': 1,
+        'level': 2,
+        'description': 'Get one hundred points.',
+        'name': 'This is easy'
+    },
+    {
+        'type': 2,
+        'level': 0,
+        'description': 'Get a point.',
+        'name': 'Three gems'
+    },
+    {
+        'type': 2,
+        'level': 1,
+        'description': 'Get ten points in one game.',
+        'name': 'High score!'
+    },
+    {
+        'type': 2,
+        'level': 1,
+        'description': 'Get one hundred points in one game.',
+        'name': 'That took a while...'
+    },
+    {
+        'type': 3,
+        'level': 0,
+        'description': 'Play for a minute.',
+        'name': 'What\'s this!?'
+    },
+    {
+        'type': 3,
+        'level': 1,
+        'description': 'Play for an hour.',
+        'name': 'This is fun...'
+    },
+    {
+        'type': 3,
+        'level': 2,
+        'description': 'Play for ten hours.',
+        'name': 'All my spare time'
+    }
+]

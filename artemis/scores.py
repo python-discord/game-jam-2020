@@ -14,7 +14,7 @@ def open_file():
 
 def save_file(data):
     with open(FILE, 'w') as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=1)
 
 
 def get_hiscore():
@@ -31,3 +31,9 @@ def add_score(score):
     else:
         data['scores'] = [score]
     save_file(data)
+
+
+def get_achievements():
+    achievements = open_file().get('achievments', [])
+    ordered = []
+    
