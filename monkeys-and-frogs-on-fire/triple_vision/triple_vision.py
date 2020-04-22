@@ -39,14 +39,15 @@ class TripleVision(arcade.View):
         self.player = Player(self, 'm')
         self.camera = Camera(self, s.WINDOW_SIZE[0] / 2.5, s.WINDOW_SIZE[1] / 2.5)
 
-        # run the setup after the camera creation to prevent conflicts with HealthBar
-        self.player.setup()
-
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
 
         self.map = Map(self, s.MAP_SIZE)
         self.map.setup()
+
+        self.player.setup()
+
+        
 
         for y in range(1, 3):
             self.game_manager.create_enemy(

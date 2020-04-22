@@ -23,8 +23,6 @@ class Player(LivingEntity, MovingSprite):
             gender=gender,
             moving_speed=3,
             scale=s.SCALING,
-            center_x=500,
-            center_y=500,
             hp=1000,
             rotate=False
         )
@@ -95,6 +93,23 @@ class Player(LivingEntity, MovingSprite):
         )
         self.curr_color = 'red'
 
+        center = tuple()
+
+        while True:
+            center = (random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
+
+            if (
+                len(arcade.get_sprites_at_point(center, self.view.collision_list)) == 0 and 
+                len(arcade.get_sprites_at_point(center, self.view.map.sprites)) > 0
+            ):
+                break
+
+        self.center_x = center[0]
+        self.center_y = center[1] + s.PLAYER_CENTER_Y_COMPENSATION
+
+        # self.center_x = 500
+        # self.center_y = 500
+
     def process_mouse_press(self, x, y, button) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:
             # First path position is the closest grid center from player center,
@@ -150,7 +165,7 @@ class Player(LivingEntity, MovingSprite):
 
         super().on_update(delta_time)
         super().force_moving_sprite_on_update(delta_time)
-        self.health_bar.update()
+        self.health_bar.on_update(delta_time)
 
     def draw(self):
         super().draw()

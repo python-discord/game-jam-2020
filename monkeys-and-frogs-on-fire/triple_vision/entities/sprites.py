@@ -177,7 +177,7 @@ class HealthBar(arcade.Sprite):
                 )
             )
 
-    def update(self, delta_time: float = 1 / 60):
+    def on_update(self, delta_time: float = 1 / 60):
         viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
         if self.prev_viewport != viewport:
             self.center_x += viewport[0] - self.prev_viewport[0]
@@ -189,7 +189,7 @@ class HealthBar(arcade.Sprite):
             self.prev_viewport = viewport
 
         super().update()
-        self.fill_part_list.update()
+        self.fill_part_list.on_update(delta_time)
 
     def draw(self):
         self.fill_part_list.draw()
