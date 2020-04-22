@@ -96,7 +96,7 @@ class Player(LivingEntity, MovingSprite):
         center = tuple()
 
         while True:
-            center = (random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
+            center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
 
             if (
                 len(arcade.get_sprites_at_point(center, self.view.collision_list)) == 0 and 
@@ -106,9 +106,6 @@ class Player(LivingEntity, MovingSprite):
 
         self.center_x = center[0]
         self.center_y = center[1] + s.PLAYER_CENTER_Y_COMPENSATION
-
-        # self.center_x = 500
-        # self.center_y = 500
 
     def process_mouse_press(self, x, y, button) -> None:
         if button == arcade.MOUSE_BUTTON_LEFT:
