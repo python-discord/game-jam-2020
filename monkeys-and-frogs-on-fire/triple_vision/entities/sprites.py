@@ -133,7 +133,7 @@ class HealthBar(arcade.Sprite):
         *args,
         life_count: int = 10,
         is_filled: bool = True,
-        scale: int = 1,
+        scale: float = 1,
         **kwargs
     ) -> None:
 
@@ -187,6 +187,7 @@ class HealthBar(arcade.Sprite):
                 fill_part.center_y += viewport[1] - self.prev_viewport[1]
 
             self.prev_viewport = viewport
+
         super().update()
         self.fill_part_list.update()
 
