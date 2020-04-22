@@ -10,7 +10,7 @@ from .util import (
 from .planet import Planet
 from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
-    BACKGROUND_MUSIC_VOLUME, STORY_LINES
+    BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER
 )
 import sys
 
@@ -191,7 +191,7 @@ class Game(arcade.Window):
 
     def clicked_lithium(self):
         planet_avg_health = self.avg_planet_health()
-        self.lithium_count += planet_avg_health * 1.5
+        self.lithium_count += planet_avg_health * LITHIUM_MULTIPLIER
         self.lithium_location = get_new_lithium_location()
         self.player_has_clicked_lithium = True
 
