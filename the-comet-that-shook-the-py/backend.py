@@ -17,6 +17,11 @@ class RowItem(NamedTuple):
 
 
 def get_row_attrs(row_num: int, count: int = 3) -> List[RowItem]:
+    """
+    :param row_num: the row to be retrieved, either 1, 2, or 3
+    :param count: the amount of items to be returned
+    :return: a named tuple object with a title and a full file path
+    """
     asset_path = Path(f'assets\\row_{row_num}')
     all_files = asset_path.rglob('*.png')
     all_row_items = [RowItem(file.name[:-4], str(file)) for file in all_files]
