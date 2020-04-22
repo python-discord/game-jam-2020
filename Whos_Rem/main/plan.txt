@@ -1,17 +1,17 @@
-Menu     ~ Select song
-         ~ View score / level (db)
-         ~ Open settings
+Menu     ~ Select song                                                       x
+         ~ View score / level (db)                                           x
+         ~ Open settings                                                     x
 
-Songs    ~ Each song has a set difficulty
-         ~ Use algorithm to determine when beats are
-         ~ Create Shape object which is rendered as a note                  ✓
-         ~ Shape spawned certain distance away so that rectangle is over
+Songs    ~ Each song has a set difficulty                                    ?
+         ~ Use algorithm to determine when beats are                         ?
+         ~ Create Shape object which is rendered as a note                   ✓
+         ~ Shape spawned certain distance away so that rectangle is over     ✓
            the right area as the beat arrives
-         ~ Indicator for when to press key
-         ~ Path chosen by random seed/algo (still deciding)
+         ~ Indicator for when to press key                                   x
+         ~ Path chosen by random seed/algo (still deciding)                  x
 
-Inputs   ~ Mouse position for menu song selection / opening high scores
-         ~ Keyboard keys for main game
+Inputs   ~ Mouse position for menu song selection / opening high scores      ✓
+         ~ Keyboard keys for main game                                       ✓
 
-Settings ~ Adjust volume
-         ~ Key Binds?
+Settings ~ Adjust volume                                                     ✓
+         ~ Key Binds                                                         ✓
