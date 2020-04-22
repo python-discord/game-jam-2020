@@ -18,9 +18,11 @@ class Trap(AnimatedEntity, SoundEntity):
             sound_radius: int = s.WINDOW_SIZE[0]//5,
             **kwargs
     ):
-        super().__init__(assets_path='assets/dungeon/frames',
-                         states=('',),
-                         **kwargs)
+        super().__init__(
+            assets_path='assets/dungeon/frames',
+            states=('',),
+            **kwargs
+        )
         self.dmg = dmg
         self.throwback_force = throwback_force
         self.target_player = target_player

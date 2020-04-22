@@ -96,11 +96,13 @@ class Map:
 
                 if val == self.SPIKE:
                     sprite = Spike(
+                        ctx=self.view.game_manager,
                         target_player=self.view.player,
                         target_enemies=None,
                         scale=s.SCALING,
                         center_x=center_x,
-                        center_y=center_y
+                        center_y=center_y,
+                        spawn_in_map=False
                     )
                     spikes.append(sprite)
 
