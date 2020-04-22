@@ -3,6 +3,7 @@ from typing import Tuple
 
 from triple_vision.entities import AnimatedEntity, SoundEntity, BaseEnemy, Player
 from triple_vision.utils import is_in_radius
+from triple_vision import Settings as s
 
 
 class Trap(AnimatedEntity, SoundEntity):
@@ -13,7 +14,7 @@ class Trap(AnimatedEntity, SoundEntity):
             target_player: Player,
             target_enemies: BaseEnemy,
             activation_rectangle: Tuple[int, int, int, int],
-            working_radius: int = 400,
+            working_radius: int = s.WINDOW_SIZE,
             **kwargs
     ):
         super().__init__(assets_path='assets/dungeon/frames',
