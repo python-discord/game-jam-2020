@@ -9,6 +9,7 @@ from submission.sounds import loadSounds
 from submission.motion import moveEntities, updateActualPos, movePlayer
 from submission.waveManager import getSpawnList, manageEnemySpawn, decomposeSpawnList, generateASpawn, \
     EnemyGroup, SpawnOrder
+from submission.get_farthest_sprite import get_farthest_sprite
 from random import randint
 import math
 
@@ -85,8 +86,8 @@ class GameView(arcade.View):
         self.player_sprite.center_y = BP_PLAYER[1] * 32 + 16
         self.player_list.append(self.player_sprite)
 
-        self.turret_list.append(AnimatedEntity(T_SPRAY, BP_SPRAY))
-        self.turret_list.append(AnimatedEntity(T_LAMP, BP_LAMP))
+        #self.turret_list.append(AnimatedEntity(T_SPRAY, BP_SPRAY))
+        #self.turret_list.append(AnimatedEntity(T_LAMP, BP_LAMP))
         self.turret_list.append(AnimatedEntity(T_VACUUM, BP_VACUUM))
 
         self.path_list = loadPathTilemap()

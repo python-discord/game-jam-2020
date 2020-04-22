@@ -1,6 +1,6 @@
 """
 
-'Insane Irradiated Insects'
+'Insane Irradiated Insectz'
 A game of the python-discord game jam 2020, made
 in 10 days, using the Arcade library and based on
 the theme : Three of a kind
