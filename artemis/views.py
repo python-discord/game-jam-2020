@@ -1,9 +1,7 @@
 import arcade
 from PIL import Image
 
-from constants import (
-    WIDTH, HEIGHT, ASSETS, INSTRUCTIONS, ABOUT, FONT, BACKGROUND
-)
+from constants import WIDTH, HEIGHT, ASSETS, INSTRUCTIONS, ABOUT, FONT
 from game import Game
 from ui import ViewButton, IconButton, View, Achievement
 from achievements import get_achievements
