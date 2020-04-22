@@ -3,29 +3,29 @@ from pathlib import Path
 from typing import List
 
 
-def _get_all_row_filepaths(row_num: int) -> List[str]:
+def _get_count_files_starting_with(prefix: str) -> List[str]:
     """
-    :param row_num: the row for which assets should be retrieved
+    :param prefix: the prefix to use to retrieve assets
     :return: a list of the relative filenames
     """
-    asset_path = Path(f'assets')
-    all_files = asset_path.rglob(f'R{row_num}_*.png')
-    all_row_items = [str(file.name) for file in all_files]
+    asset_path = Path('assets')
+    all_files = asset_path.rglob(f'{prefix}_*.png')
+    all_row_items = [file.name for file in all_files]
     return all_row_items
 
 
 def get_r1_attrs(count=3) -> List[str]:
-    attrs = _get_all_row_filepaths(1)
+    attrs = _get_count_files_starting_with("R1")
     return random.sample(attrs, count)
 
 
 def get_r2_attrs(count=3) -> List[str]:
-    attrs = _get_all_row_filepaths(2)
+    attrs = _get_count_files_starting_with("R2")
     return random.sample(attrs, count)
 
 
 def get_r3_attrs(count=3) -> List[str]:
-    attrs = _get_all_row_filepaths(3)
+    attrs = _get_count_files_starting_with("R3")
     return random.sample(attrs, count)
 
 
