@@ -3,7 +3,10 @@ import arcade
 import logging
 import time
 from arcade.gui import Theme, TextButton
-from .util import get_distance, log_exceptions
+from .util import (
+    get_distance, log_exceptions, get_attack_triangle_points,
+    random_location_in_planet
+)
 from .planet import Planet
 from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
@@ -126,20 +129,22 @@ class Game(arcade.Window):
         super().on_draw()
         for planet in self.planets:
             for other in planet.attacked_last_round:
-                arcade.draw_line(
-                    start_x=planet.center_x, start_y=planet.center_y,
-                    end_x=(
-                        other.center_x+(
-                            random.random()*other.width/4)
-                        - (other.width/4)),
-                    end_y=(
-                        other.center_y+(
-                            random.random()*other.height/4)
-                        - (other.height/4)),
-                    color=planet.color,
-                    line_width=min(
-                        planet.base_damage * 1e4,
-                        planet.width / 2)
+                attack_point = random_location_in_planet(
+                    (other.center_x, other.center_y),
+                    other.width / 4
+                )
+                attack_start_radius = min(
+                    planet.base_damage * 1e4, planet.width / 4)
+                start_point_1, start_point_2 = get_attack_triangle_points(
+                    (planet.center_x, planet.center_y),
+                    attack_point,
+                    attack_start_radius
+                )
+                arcade.draw_triangle_filled(
+                    *start_point_1,
+                    *start_point_2,
+                    *attack_point,
+                    color=planet.color
                 )
             planet.attacked_last_round = []
             planet.pushed_last_round = []
