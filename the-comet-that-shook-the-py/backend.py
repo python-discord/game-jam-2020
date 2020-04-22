@@ -32,6 +32,9 @@ def get_new_game():
 
 
 def get_puzzle_clues(solution_list, fact_templates):
+    if not solution_list or not fact_templates:
+        raise TypeError("Missing input for function get_puzzle_clues!")
+
     return [fact.format(*solution_list) for fact in fact_templates]
 
 

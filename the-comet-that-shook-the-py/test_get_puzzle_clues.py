@@ -8,13 +8,13 @@ class TestGetPuzzleClues(unittest.TestCase):
         self.assertRaises(TypeError, get_puzzle_clues, None, None)
 
     def testNoneEmpty(self):
-        self.assertRaises(TypeError, get_puzzle_clues, None, None)
+        self.assertRaises(TypeError, get_puzzle_clues, None, [])
 
     def testEmptyNone(self):
-        self.assertRaises(TypeError, get_puzzle_clues, None, None)
+        self.assertRaises(TypeError, get_puzzle_clues, [], None)
 
     def testEmptyEmpty(self):
-        self.assertRaises(TypeError, get_puzzle_clues, None, None)
+        self.assertRaises(TypeError, get_puzzle_clues, [], [])
 
     def testLessSolutions(self):
         self.assertRaises(IndexError, get_puzzle_clues, ["Microsoft"], ["{0} programmers use {1}"])
