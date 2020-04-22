@@ -47,7 +47,7 @@ class TripleVision(arcade.View):
 
         self.player.setup()
 
-        for y in range(10):
+        for _ in range(10):
             self.game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.big_demon,
@@ -56,7 +56,7 @@ class TripleVision(arcade.View):
                 moving_speed=1
             )
 
-        for y in range(5):
+        for _ in range(5):
             self.game_manager.create_enemy(
                 StationaryEnemy,
                 Enemies.imp,
