@@ -1,33 +1,31 @@
 import random
+from collections import namedtuple
+from pathlib import Path
+from typing import List, NamedTuple
 
 
-def get_r1_attrs(count=3):
-    directory_list = []
+class RowItem(NamedTuple):
+    """
+    A simple object to hold the filepath of an object, and the identifier for that object.
+    For example, the title of an object might be Dracula or Plum, which can be used in clue creation,
+    and the filepath will be the complete filepath.
 
-    # query directory for r1*.png into directory_list
-    r1_attrs = random.sample(directory_list, count)
-    return r1_attrs
-
-
-def get_r2_attrs(count=3):
-    directory_list = []
-
-    # query directory for r2*.png into directory_list
-    r2_attrs = random.sample(directory_list, count)
-    return r2_attrs
+    Attributes can be accessed with row_item_instance.title/row_item_instance.file_path
+    """
+    title: str
+    file_path: str
 
 
-def get_r3_attrs(count=3):
-    directory_list = []
-
-    # query directory for r3*.png into directory_list
-
-    r3_attrs = random.sample(directory_list, count)
-    return r3_attrs
+def get_row_attrs(row_num: int, count: int = 3) -> List[RowItem]:
+    asset_path = Path(f'assets\\row_{row_num}')
+    all_files = asset_path.rglob('*.png')
+    all_row_items = [RowItem(file.name[:-4], str(file)) for file in all_files]
+    row_items = random.sample(all_row_items, count)
+    return row_items
 
 
 def get_new_game():
-    solution_list = get_r1_attrs() + get_r2_attrs() + get_r3_attrs()
+    solution_list = get_row_attrs(1) + get_row_attrs(2) + get_row_attrs(3)
     return solution_list
 
 
@@ -77,7 +75,7 @@ def start_new_game():
     # return solution_list, shuffled_list, clue_list
 
     # bogus test code follows:
-    solution_list = ['Tom','Dick','Harry','Grapes','Cherries','Blueberries','Red', 'White','Blue']
+    solution_list = ['Tom', 'Dick', 'Harry', 'Grapes', 'Cherries', 'Blueberries', 'Red', 'White', 'Blue']
     clue_list = ["Tom live next to the person who likes cherries",
                  "The person in the blue house likes blueberries",
                  "The person who likes cherries lives in the white house",
