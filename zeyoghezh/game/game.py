@@ -137,7 +137,10 @@ class Game(arcade.Window):
                             random.random()*other.height/4)
                         - (other.height/4)),
                     color=planet.color,
-                    line_width=planet.base_damage * 1e4)
+                    line_width=min(
+                        planet.base_damage * 1e4,
+                        planet.width / 2)
+                )
             planet.attacked_last_round = []
             planet.pushed_last_round = []
 

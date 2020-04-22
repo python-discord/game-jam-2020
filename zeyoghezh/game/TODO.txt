@@ -5,10 +5,4 @@ Improve aesthetic
 Could the damage lines be cones, big on source and point on target? (Won't matter if George finishes)
 Make game over screen look better; maybe just put a background behind the text? Same with lithium count text.
 
-Auto fade out and restart at game over
-
-Maybe during the tutorial the abscond button is locked, so you have to AT LEAST finish the tutorial, and then you decide whether to continue or abscond?
-
 Make sure music repeats.
-
-Have the attack line be the min of the previous logic and the size of the planet (so a strong attack will make the planet look like the base of a cone when we add the thing about making it a cone)
