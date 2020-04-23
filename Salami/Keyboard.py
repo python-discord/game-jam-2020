@@ -29,16 +29,23 @@ class Keyboard:
         self.add_key("left", arcade.key.LEFT, arcade.key.A)
         self.add_key("right", arcade.key.RIGHT, arcade.key.D)
         self.add_key("jump", arcade.key.SPACE)
+        self.add_key("attack", arcade.key.J)
+        self.add_key("sprint", arcade.key.MOD_SHIFT)
+        self.add_key("dash", arcade.key.K)
         self.add_key("zoom_out", arcade.key.MINUS)
         self.add_key("zoom_in", arcade.key.EQUAL)
 
     def on_key_press(self, key: int, modifiers: int):
         if self.key_codes_list.get(key):
             self.key_codes_list.get(key).pressed = True
+        if modifiers % 2 == 1:
+            self.key_codes_list.get(arcade.key.MOD_SHIFT).pressed = True
 
     def on_key_release(self, key: int, modifiers: int):
         if self.key_codes_list.get(key):
             self.key_codes_list.get(key).pressed = False
+        if modifiers % 2 == 1:
+            self.key_codes_list.get(arcade.key.MOD_SHIFT).pressed = False
 
     def on_mouse_move(self, x, y, dx, dy):
         self.mouse_x = x
