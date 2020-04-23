@@ -68,7 +68,7 @@ def speed_test(func):
 
 class PathFinder:
 
-    def __init__(self, max_tries: int = 1000) -> None:
+    def __init__(self, max_tries: int = 300) -> None:
         self.max_tries = max_tries
 
     @speed_test
