@@ -5,8 +5,8 @@ from werkzeug.security import generate_password_hash
 
 
 def init_db() -> None:
-    from frost.server.database import Message, Room
-    from server.models import User, Score
+    from frost.server.database import Message, Room, User
+    from server.models import Score
 
     Base.metadata.create_all(bind=engine)
 
