@@ -10,6 +10,7 @@ from triple_vision.utils import tile_to_pixels
 
 
 class Node:
+    __slots__ = ('parent', 'pos', 'f', 'g', 'h')
 
     def __init__(
         self,
@@ -56,7 +57,11 @@ def speed_test(func):
     def wrapper(*args, **kwargs):
         start = timer()
         maybe_return = func(*args, **kwargs)
-        print(f"{func.__name__} took {timer() - start} seconds.")
+        took = timer() - start
+        if took > 0.1:
+            print(f"!!!!!!!!!!!!!!!!!!{func.__name__} took {took} seconds.")
+        else:
+            print(f"{func.__name__} took {took} seconds.")
         return maybe_return
     return wrapper
 
@@ -90,10 +95,10 @@ class PathFinder:
         open_nodes.add(start_node)
 
         surroundings = (
-            (0, -1),
-            (1, 0),
-            (0, 1),
-            (-1, 0)
+            Node((0, -1)),
+            Node((1, 0)),
+            Node((0, 1)),
+            Node((-1, 0))
         )
 
         for _ in range(self.max_tries):
@@ -115,16 +120,14 @@ class PathFinder:
 
                 return reversed(path)
 
-            children = [
-                current_node + Node(pos) for pos in surroundings
-                if not self._tile_is_blocked(*(current_node + Node(pos)).pos, collision_list)
-            ]
+            children = (
+                current_node + pos_node for pos_node in surroundings
+                if not PathFinder._tile_is_blocked(*(current_node + pos_node).pos, collision_list)
+            )
 
             for child in children:
 
-                if any(
-                    child == closed_node for closed_node in closed_nodes
-                ):
+                if any(child == closed_node for closed_node in closed_nodes):
                     continue
 
                 # http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html#the-a-star-algorithm
@@ -135,14 +138,13 @@ class PathFinder:
 
                 child.f = child.g + child.h
 
-                if any(
-                    child == open_node and child.g > open_node.g for open_node in open_nodes
-                ):
+                if any(child == open_node and child.g > open_node.g for open_node in open_nodes):
                     continue
 
                 open_nodes.add(child)
 
-    def _tile_is_blocked(self, x: int, y: int, sprite_list: arcade.SpriteList) -> bool:
+    @staticmethod
+    def _tile_is_blocked(x: int, y: int, sprite_list: arcade.SpriteList) -> bool:
         if x < 0 or x > s.MAP_SIZE[0] or y < 0 or y > s.MAP_SIZE[1]:
             return True
 
@@ -150,7 +152,5 @@ class PathFinder:
             tile_to_pixels(x, y),
             sprite_list
         )
-        if len(blocking_sprites) > 0:
-            return True
 
-        return False
+        return len(blocking_sprites) > 0
