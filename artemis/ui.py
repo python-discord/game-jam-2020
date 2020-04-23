@@ -13,7 +13,7 @@ class IconButton():
     """A button, displayed with an icon."""
 
     def __init__(self, view: arcade.View, x: number, y: number, image: str,
-                 fun: typing.Callable, size: int = 64, tooltip=None):
+                 fun: typing.Callable, size: int = 64, tooltip: str = None):
         """Load textures and record parameters."""
         self.view = view
         self.state = 'normal'
@@ -210,7 +210,7 @@ class View(arcade.View):
         for button in self.buttons:
             button.on_mouse_motion(x, y, dx, dy)
 
-    def on_draw(self, start_render=True):
+    def on_draw(self, start_render: bool = True):
         """Draw buttons."""
         if start_render:
             arcade.start_render()

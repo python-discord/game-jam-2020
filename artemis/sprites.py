@@ -27,7 +27,15 @@ class Gem(arcade.Sprite):
 
     def get_texture(self) -> arcade.Texture:
         """Get a random texture."""
-        self.colour = random.choices(Gem.TEXTURES, weights=[3, 3, 3, 1, 1])[0]
+        progress = self.game.left / WIDTH
+        white_chance = max(4, 20 - progress / 2)
+        pink_chance = 20 - white_chance
+        common_chance = 30
+        weights = [
+            common_chance, common_chance, common_chance, white_chance,
+            pink_chance
+        ]
+        self.colour = random.choices(Gem.TEXTURES, weights=weights)[0]
         return self.textures[Gem.TEXTURES.index(self.colour)]
 
     def place(self):
@@ -73,6 +81,15 @@ class Block(arcade.Sprite):
         self.spike = None
         self.up = up
 
+    def should_place_spike(self) -> bool:
+        """Randomly decide whether to place a spike.
+
+        Based on game progression.
+        """
+        progress = (self.game.left / WIDTH) or 1
+        chance_in = int(max(10, 250 / progress))
+        return not random.randrange(chance_in)
+
     def can_place_spike(self) -> bool:
         """Check if we can place a spike.
 
@@ -95,7 +112,7 @@ class Block(arcade.Sprite):
             if self.spike:
                 self.spike.remove_from_sprite_lists()
                 self.spike = None
-            if self.can_place_spike() and not random.randrange(20):
+            if self.should_place_spike() and self.can_place_spike():
                 self.spike = Spike(self, self.up)
                 self.game.spikes.append(self.spike)
 
