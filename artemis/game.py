@@ -25,6 +25,7 @@ class Game(View):
         self.left = 0
         self.score = 0
         self.time = 0
+        self.randomblocks = 2
         self.hiscore = get_hiscore()
         self.paused = False
         self.pause_screen = None
@@ -101,6 +102,11 @@ class Game(View):
             for sprite_list in self.sprite_lists:
                 sprite_list.update()
             self.player.update(timedelta)
+            if self.randomblocks < 6:
+                progress = self.left / WIDTH
+                if 2 + progress / 3 < self.randomblocks:
+                    self.randomblocks += 1
+                    RandomBlock(self)
             self.engine.update()
             self.scroll()
 
@@ -154,7 +160,6 @@ class Game(View):
         """Save the player's score and time spent playing."""
         add_score(self.score)
         add_time(self.time)
-
 
     def game_over(self, message: str):
         """Display the game over view with some explanatory message."""

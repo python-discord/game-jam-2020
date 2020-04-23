@@ -55,7 +55,7 @@ class IconButton():
             x = self.right + self.tooltip_texture.width / 2 - 15
             y = self.bottom - self.tooltip_texture.height / 2 + 15
             _left, right, _top, _bottom = arcade.get_viewport()
-            x = min(x, right - self.tooltip_texture.width)
+            x = min(x, right - self.tooltip_texture.width / 2)
             self.tooltip_texture.draw_scaled(x, y)
             if self not in self.view.on_top:
                 self.view.on_top.append(self)
