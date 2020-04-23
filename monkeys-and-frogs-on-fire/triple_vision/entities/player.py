@@ -94,7 +94,7 @@ class Player(LivingEntity, MovingSprite):
             fill_part_filename="assets/healthbar/mana_fill_part.png",
             fill_part_width=44.0,
             filename="assets/healthbar/mana_bar_border.png",
-            center_x=120,
+            center_x=420,
             center_y=18,
             scale=1,
         )
