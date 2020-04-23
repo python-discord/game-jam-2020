@@ -121,27 +121,46 @@ class TextInput:
 
     def process_key_press(self, key, modifiers) -> None:
         if 32 <= key <= 126:
-            if modifiers & 1 == 1:
+            if modifiers & 1 == arcade.key.MOD_SHIFT:
                 key -= 32
 
             key = chr(key)
             self.text += key
 
-            self.text_sprites.pop(0)
-            self.text_sprites.append(
-                arcade.draw_text(
-                    text=self.text,
-                    start_x=self.center_x - (self.width / 2) + self.horizontal_margin,
-                    start_y=self.center_y - (self.height / 2) + self.vertical_margin,
-                    color=self.text_color,
-                    font_size=self.font_size,
-                    bold=self.bold,
-                    italic=self.italic
-                )
-            )
-
             self.text_widths.append(arcade.draw_text(key, 0, 0, self.box_color).width)
             self.cursor_idx += 1
+
+        elif key == arcade.key.BACKSPACE:
+            text = list(self.text)
+            text.pop(self.cursor_idx - 1)
+            self.text = ''.join(text)
+
+            self.text_widths.pop(self.cursor_idx - 1)
+            self.cursor_idx -= 1
+
+        elif key == arcade.key.DELETE:
+            try:
+                text = list(self.text)
+                text.pop(self.cursor_idx)
+                self.text = ''.join(text)
+
+                self.text_widths.pop(self.cursor_idx)
+
+            except IndexError:
+                pass
+
+        self.text_sprites.pop(0)
+        self.text_sprites.append(
+            arcade.draw_text(
+                text=self.text,
+                start_x=self.center_x - (self.width / 2) + self.horizontal_margin,
+                start_y=self.center_y - (self.height / 2) + self.vertical_margin,
+                color=self.text_color,
+                font_size=self.font_size,
+                bold=self.bold,
+                italic=self.italic
+            )
+        )
 
     def draw(self) -> None:
         self.shapes.draw()
