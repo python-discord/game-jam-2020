@@ -1,3 +1,6 @@
+from pathlib import Path
+import sys
+sys.path.insert(0, Path(__file__).parent)
 from arcade.gui import *
 import random
 from gamer_gang.dumbConstants import *

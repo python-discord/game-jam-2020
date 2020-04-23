@@ -1,6 +1,9 @@
 import math
 import itertools
-from gamer_gang.mechanics.mobs import *
+from pathlib import Path
+import sys
+sys.path.insert(0, Path(__file__).parent)
+from gamer_gang.mechanics.player import *
 from gamer_gang.mechanics.terrainStuff import *
 from gamer_gang.dumbConstants import *
 
