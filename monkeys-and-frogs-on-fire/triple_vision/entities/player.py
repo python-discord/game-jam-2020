@@ -163,6 +163,8 @@ class Player(LivingEntity, MovingSprite):
 
         super().on_update(delta_time)
         super().force_moving_sprite_on_update(delta_time)
+
+    def update_health_bar(self, delta_time):
         self.health_bar.on_update(delta_time)
 
     def draw(self):
