@@ -2,6 +2,7 @@ import logging
 
 import arcade
 from .gamestate import GameState
+from .effects import ColorIsolationWindow
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -11,7 +12,7 @@ format_string = "%(asctime)s | %(filename)s#%(lineno)d | %(levelname)s | %(messa
 logging.basicConfig(format=format_string, level=logging.DEBUG)
 
 
-class Game(arcade.Window):
+class Game(ColorIsolationWindow):
     """Main game object."""
 
     def __init__(self, *args, **kwargs) -> None:
@@ -26,7 +27,7 @@ class Game(arcade.Window):
         if self.gamestate:
             self.gamestate.on_update(delta_time)
 
-    def on_draw(self) -> None:
+    def render(self) -> None:
         """Send draw event to the gamestate."""
         if self.gamestate:
             self.gamestate.on_draw()
