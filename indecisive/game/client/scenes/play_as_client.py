@@ -33,7 +33,7 @@ class PlayAsClient(Base):
                 center_y=622.5
             ),
             "connect": arcade.Sprite(
-                "./assets/simple_button.png",
+                "./assets/connect_button.png",
                 scale=0.25,
                 center_x=160,
                 center_y=557.5
@@ -55,10 +55,9 @@ class PlayAsClient(Base):
 
     def connect(self):
         network_thread, receive, send = run(self.ip)
-        status = receive.get()
+        status = receive.get()["status"]
         if status == 0:
             # goto lobby
-            print("tou")
             self.display.change_scenes("lobby", network_thread, receive, send)
         elif status == 1 or status == 5:
             self.status = "Invalid address"
@@ -87,10 +86,10 @@ class PlayAsClient(Base):
                 else:
                     self.ip = self.ip[:self.cursor_index] + self.ip[self.cursor_index + 1:]
             elif key == arcade.key.DELETE:
-                if self.cursor_index == -1:
-                    self.ip = self.ip[:-1]
+                if self.cursor_index == - (len(self.ip) + 1):
+                    self.ip = self.ip[1:]
                 else:
-                    self.ip = self.ip[:self.cursor_index + 1] + self.ip[self.cursor_index:]
+                    self.ip = self.ip[:self.cursor_index - 1] + self.ip[self.cursor_index:]
             elif key == arcade.key.LEFT:
                 self.cursor_index -= 1
                 if self.cursor_index <= - (len(self.ip) + 2):
