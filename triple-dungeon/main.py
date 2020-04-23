@@ -295,7 +295,8 @@ class Game(arcade.Window):
                     self.enemy_list.remove(enemy)
         try:
             for enemy in self.active_enemies:
-                enemy.update()
+                monster_collisions = arcade.PhysicsEngineSimple(enemy, self.active_enemies)
+                monster_collisions.update()
                 path = enemy.get_path()
                 enemy.tick(path)
         except Exception:
