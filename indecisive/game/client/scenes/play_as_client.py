@@ -21,7 +21,7 @@ class PlayAsClient(Base):
     def sprite_setup(self):
         self.spritedict = {
             "back": arcade.Sprite(
-                "./assets/simple_button.png",
+                "./assets/back_button.png",
                 scale=0.25,
                 center_x=160,
                 center_y=687.5
