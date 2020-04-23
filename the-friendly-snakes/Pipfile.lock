@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "89780593d0694aa4f26f2f332b84e0dafccb1279a15884bee8eb60de06cf5749"
+            "sha256": "576dbcb4137a3bd7806cde266670371715644a87420665dc7b90e7d297b6ff8c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -18,10 +18,10 @@
     "default": {
         "arcade": {
             "hashes": [
-                "sha256:0ec8572d15f504ed081385d3d121a4647c0c4c0b3dcd5e0ed1ff9d49296f792d"
+                "sha256:c7b7749238f58856bf2eb4e44158b89af8a3d05de4aed1e8796dbb73108dcc8d"
             ],
             "index": "pypi",
-            "version": "==2.3.15"
+            "version": "==2.4a5"
         },
         "attrs": {
             "hashes": [
@@ -85,10 +85,10 @@
         },
         "pyglet": {
             "hashes": [
-                "sha256:bd96b9c374a7192e4787f989e8f911719476c71476466a02312839e8cb6a0d4e",
-                "sha256:c54d897d96bf65689bfaf094330ba3dc76af24daf74e7d98336157fd82b72f1b"
+                "sha256:9c616b8f5e73d33ccf6a0cdc53f260c5bff56f880d08e7d0083997546e483138",
+                "sha256:c818459b89c9f71aad495e7875ba6235512972f2f9c29e4ffd71519090cfda9d"
             ],
-            "version": "==1.5.3"
+            "version": "==1.5.4"
         },
         "pytiled-parser": {
             "hashes": [

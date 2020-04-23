@@ -1,4 +1,5 @@
 import arcade
+from pyglet import gl
 
 # help-phosphorus
 # game-development
@@ -19,6 +20,7 @@ BOTTOM_VIEWPORT_MARGIN = 128
 TOP_VIEWPORT_MARGIN = 0
 
 CAMERA_FOLLOW_SPEED = 0.2
+
 
 class Maths():
 
@@ -51,7 +53,112 @@ class Maths():
             x = upperlimit
         return x
 
-# class PauseView(arcade.View)
+
+class StartMenuView(arcade.View):
+    def __init__(self):
+        super().__init__()
+
+        self.wnidow = None
+
+        self.hover_color = [0, 0, 0, 100]
+        self.click_color = [0, 0, 0, 150]
+
+        self.hovering = None
+        self.clicking = None
+
+        self.draw_play_button_hover = None
+
+        self.play_bottom = None
+        self.play_left = None
+
+        self.title_text = None
+        self.play_button = None
+
+        self.old_screen_center_x = None
+        self.old_screen_center_y = None
+        self.screen_center_x = None
+        self.screen_center_y = None
+
+    def on_show(self):
+
+        self.window = arcade.get_window()
+
+        self.draw_play_button_hover = False
+
+        self.hovering = False
+        self.clicking = False
+
+        self.old_screen_center_x = int(self.window.get_size()[0] / 2)
+        self.old_screen_center_y = int(self.window.get_size()[1] / 2)
+        self.screen_center_x = int(self.window.get_size()[0] / 2)
+        self.screen_center_y = int(self.window.get_size()[1] / 2)
+
+        game_title_text = 'Three of a Kind'
+        self.title_text = arcade.draw_text(game_title_text, self.screen_center_x, self.screen_center_y + 150,
+                                                  anchor_x='center',
+                                                  anchor_y='center', color=arcade.csscolor.WHITE, font_size=64)
+        play_text = 'Play'
+        self.play_button = play_text_sprite = arcade.draw_text(play_text, self.screen_center_x, self.screen_center_y, anchor_x='center',
+                                            anchor_y='center', color=arcade.csscolor.WHITE, font_size=64)
+
+        arcade.set_background_color([66, 245, 212, 255])
+
+        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        if self.play_left + 134 + 50 >= x >= self.play_left - 50 and self.play_bottom + 80 + 25 >= y >= self.play_bottom - 25:
+            self.draw_play_button_hover = True
+            self.hovering = True
+        else:
+            self.draw_play_button_hover = False
+            self.hovering = False
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if self.play_left + 134 + 50 >= x >= self.play_left - 50 and self.play_bottom + 80 + 25 >= y >= self.play_bottom - 25:
+            self.draw_play_button_hover = True
+            self.clicking = True
+        else:
+            self.draw_play_button_hover = False
+            self.clicking = False
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        if self.play_left + 134 + 50 >= x >= self.play_left - 50 and self.play_bottom + 80 + 25 >= y >= self.play_bottom - 25:
+            game = MyGame()
+            self.window.show_view(game)
+
+    def on_draw(self):
+        arcade.start_render()
+
+        screen_width, screen_height = self.window.get_size()
+        self.screen_center_x = int(screen_width / 2)
+        self.screen_center_y = int(screen_height / 2)
+
+        if self.old_screen_center_x != self.screen_center_x or self.old_screen_center_y !=  self.screen_center_y:
+            game_title_text = 'Three of a Kind'
+            self.title_text = arcade.draw_text(game_title_text, self.screen_center_x, self.screen_center_y + 150,
+                                               anchor_x='center',
+                                               anchor_y='center', color=arcade.csscolor.WHITE, font_size=64)
+            play_text = 'Play'
+            self.play_button = play_text_sprite = arcade.draw_text(play_text, self.screen_center_x,
+                                                                   self.screen_center_y, anchor_x='center',
+                                                                   anchor_y='center', color=arcade.csscolor.WHITE,
+                                                                   font_size=64)
+
+        self.old_screen_center_x = self.screen_center_x
+        self.old_screen_center_y = self.screen_center_y
+
+        if self.draw_play_button_hover:
+            if self.clicking:
+                arcade.draw_rectangle_filled(self.screen_center_x, self.screen_center_y, 234, 130, self.click_color)
+            elif self.hovering:
+                arcade.draw_rectangle_filled(self.screen_center_x, self.screen_center_y, 234, 130, self.hover_color)
+
+        self.play_bottom = self.play_button.bottom
+        self.play_left = self.play_button.left
+
+        self.title_text.draw()
+        self.play_button.draw()
+
 
 class MyGame(arcade.View):
     def __init__(self):
@@ -78,8 +185,6 @@ class MyGame(arcade.View):
         self.jump_sound = arcade.load_sound('sounds/jump.wav')
 
         self.draw_shop_tip = False
-
-
 
     def on_show(self):
         self.player_list = arcade.SpriteList()
@@ -117,15 +222,15 @@ class MyGame(arcade.View):
     def on_draw(self):
         arcade.start_render()
 
-        self.background_list.draw()
-        self.wall_list.draw()
+        self.background_list.draw(filter=gl.GL_NEAREST)
+        self.wall_list.draw(filter=gl.GL_NEAREST)
 
         if self.draw_shop_tip:
             shop_tip = 'Press E to open the shop'
             arcade.draw_text(shop_tip, 50, 1350, arcade.csscolor.BLACK, 32)
 
-        self.player_list.draw()
-        self.coin_list.draw()
+        self.player_list.draw(filter=gl.GL_NEAREST)
+        self.coin_list.draw(filter=gl.GL_NEAREST)
 
         coin_text = f'Coins: {self.coin_counter}'
         arcade.draw_text(coin_text, self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 50, arcade.csscolor.BLACK, 32)
@@ -181,8 +286,8 @@ class MyGame(arcade.View):
 
 def main():
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=True)
-    game = MyGame()
-    window.show_view(game)
+    start_menu = StartMenuView()
+    window.show_view(start_menu)
     arcade.run()
 
 

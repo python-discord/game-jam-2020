@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-arcade = "*"
+arcade = "==2.4a5"
 
 [requires]
 python_version = "3.8"
