@@ -29,7 +29,6 @@ class Level(arcade.View):
     def on_show(self):
         self.frames = 0
         self.total_time = 0
-        self.game_over = False
         self.debugging = False
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
@@ -232,7 +231,7 @@ class Level(arcade.View):
     def entityInteractionCheck(self):
         for p in self.players:
             if arcade.check_for_collision_with_list(p, self.spikes):  # if you touch a spike, you DIE
-                self.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
+                self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
                 self.deathCause = 'you got impaled by a spike that looks awfully like a GD spike'
 
             for e in self.goombaThings:
@@ -242,7 +241,7 @@ class Level(arcade.View):
                         e.kill()
                         p.pymunk_shape.body.velocity += pymunk.Vec2d((0, 400))
                         continue
-                    self.game_over  = True
+                    self.window.game_over = True
                     self.deathCause = 'you got oofed by some random enemy, stupid i know right?'
 
     def on_update(self, dt):
@@ -258,10 +257,10 @@ class Level(arcade.View):
 
         for p in self.players:
             if p.top < -100:
-                self.game_over = True
+                self.window.game_over = True
                 self.deathCause = 'no pit is more bottomless than the bottomless pit! (which you fell into)'
 
-        if not self.game_over:
+        if not self.window.game_over:
             self.goombaThings.update()
             for p in self.players:
                 p.update()
@@ -276,5 +275,5 @@ class Level(arcade.View):
                 p.center_y = p.pymunk_shape.body.position.y
                 p.angle = math.degrees(p.pymunk_shape.body.angle)
 
-        else:  # TODO: implement a game over/restart screen
-            self.window.close()
+        else:
+            self.window.show_view(self.window.gameOver)

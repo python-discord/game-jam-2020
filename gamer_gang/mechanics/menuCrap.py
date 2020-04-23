@@ -91,8 +91,7 @@ class MenuView(arcade.View):
 
         self.decorations.draw()
 
-    def on_update(self, dt):  # TODO: when you go back from the game to the menu, you have to reset the viewport
-        # arcade.set_viewport(0, WINDOW_SIZE[0], 0, WINDOW_SIZE[1])
+    def on_update(self, dt):
         if self.scroll > self.curx:
             for i in self.decorations:
                 i.center_x = i.center_x - 20
@@ -121,11 +120,38 @@ class MenuView(arcade.View):
                     i.direction = 1
 
 
+class GameOverView(arcade.View):
+    def on_show(self):
+        arcade.set_viewport(0, 1000, 0, 600)
+        arcade.set_background_color(arcade.color.BLACK)
+        self.gameOverText = arcade.Sprite(center_x=SCREEN_WIDTH//2, center_y=SCREEN_HEIGHT//2 + 100)
+        self.gameOverText.textures = [arcade.load_texture('images/stupidInterface/gameOverText.png')]
+        self.gameOverText.texture = self.gameOverText.textures[0]
+        self.setup_theme()
+        self.set_buttons()
+
+    def setup_theme(self):
+        self.theme = Theme()
+        self.theme.set_font(24, arcade.color.WHITE)
+
+    def set_buttons(self):
+        self.theme.add_button_textures("images/stupidInterface/restart.png", None,
+                                       "images/stupidInterface/restart.png", None)
+        self.button_list.append(RestartButton(self, theme=self.theme))
+
+    def on_draw(self):
+        arcade.start_render()
+
+        self.gameOverText.draw()
+        for i in self.button_list:
+            i.draw()
+
+
 class Deco(arcade.Sprite):
     def __init__(self, textures, scale, x, y):
         super().__init__()
         self.texture = textures
-        self.scale = 1
+        self.scale = scale
 
         self.center_x = x
         self.center_y = y
@@ -195,3 +221,18 @@ class LevelButton(TextButton):
     def on_release(self):
         if self.pressed:
             self.pressed = False
+
+class RestartButton(TextButton):
+    def __init__(self, game, x=500, y=150, width=465, height=230, text="", theme=None):
+        super().__init__(x, y, width, height, text, theme=theme)
+        self.game = game
+        self.center_x, self.center_y = x, y
+        self.pressed = False
+
+    def on_press(self):
+        if not self.pressed:
+            self.pressed = True
+            self.game.window.show_view(self.game.window.menuView)
+
+    def on_release(self):
+        self.pressed = False

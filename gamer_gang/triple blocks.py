@@ -8,10 +8,12 @@ class ActualGame(arcade.Window):  # TODO: relative imports and crap
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         arcade.set_background_color(arcade.color.LIGHT_BLUE)
         self.menuView = MenuView()
+        self.gameOver = GameOverView()
         self.levels = Level()
 
     def setup(self):
         self.current_view = self.levels
+        self.game_over = False
         self.show_view(self.current_view)
 
 def main():
