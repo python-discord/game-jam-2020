@@ -13,7 +13,7 @@ from typing import Tuple, List
 import arcade
 from config import Config
 from map import Dungeon
-from mobs import Player, Enemy
+from mobs import Player, MobHandler
 from projectiles import Temp
 from recipe import ActiveRecipe
 
@@ -57,16 +57,13 @@ class Game(arcade.Window):
         self.physics_engine = None  # Our physics engine
         # Used to keep track of our scrolling
         self.view_bottom = self.view_left = 0
-        self.active_recipe = []
+        self.Recipe = []
 
         arcade.set_background_color(arcade.color.BLACK)
 
     def setup(self):
         """ Set up the game here. Call this function to restart the game. """
         # Create the Sprite lists
-
-        self.enemy_list = arcade.SpriteList()
-        self.active_enemies = arcade.SpriteList()
         self.fps = FPSCounter()
         self.bullet_list = arcade.SpriteList()
 
@@ -74,32 +71,21 @@ class Game(arcade.Window):
         self.dungeon = Dungeon(0, 3)
 
         # Set up recipes
-        self.active_recipe = ActiveRecipe()
-        self.active_recipe.set_ghosts()
+        self.Recipe = ActiveRecipe()
+        self.Recipe.set_ghosts()
 
         # Set up the player, specifically placing it at these coordinates.
         self.player = Player(self.dungeon)
         self.player.scale = 1
         level = random.choice(self.dungeon.levelList)
         self.player.center_x, self.player.center_y = level.center()
-        self.player.cur_recipe = self.active_recipe.active
+        self.player.cur_recipe = self.Recipe.active
         # x, y = level.center()
 
         # Set up monsters
-        for count in range(Config.MONSTER_COUNT//2):
-            mob = Enemy(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
-            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
-            mob.target = self.player
-            mob.scale = 4
-            mob.monster_type = 'ghost'
-            self.enemy_list.append(mob)
-        for count in range(Config.MONSTER_COUNT//2):
-            mob = Enemy(filename="resources/images/monsters/frog/frog1.png", dungeon=self.dungeon)
-            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
-            mob.target = self.player
-            mob.scale = 4
-            mob.monster_type = 'frog'
-            self.enemy_list.append(mob)
+        self.Mobs = MobHandler()
+        self.enemy_list = self.Mobs.setup(0, 1, self.player, self.dungeon)
+        self.active_enemies = self.Mobs.active_enemies
 
         # Setup viewport
         self.view_bottom = self.player.center_x - (0.5 * Config.SCREEN_WIDTH) + 300
@@ -121,10 +107,10 @@ class Game(arcade.Window):
             # Draw our sprites
             self.dungeon.render()
             self.player.draw()
-            self.enemy_list.draw()
+            self.Mobs.render()
             self.active_enemies.draw()
             self.bullet_list.draw()
-            self.active_recipe.render()
+            self.Recipe.render()
 
             if Config.DEBUG:
                 x, y = self.player.position
@@ -182,8 +168,8 @@ class Game(arcade.Window):
         elif key == 65307:
             self.close()
         elif key == 65505:
-            self.active_recipe.next_recipe()
-            self.player.cur_recipe = self.active_recipe.active
+            self.Recipe.next_recipe()
+            self.player.cur_recipe = self.Recipe.active
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
@@ -281,27 +267,8 @@ class Game(arcade.Window):
                                 Config.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
-        # Enemy activation and update
-        for enemy in reversed(self.enemy_list):
-            if (
-                    enemy.bottom > self.view_bottom and
-                    enemy.top < self.view_bottom + Config.SCREEN_HEIGHT and
-                    enemy.right < self.view_left + Config.SCREEN_WIDTH and
-                    enemy.left > self.view_left
-                ):
-                    if Config.DEBUG:
-                        print("Activate Enemy")
-                    self.active_enemies.append(enemy)
-                    self.enemy_list.remove(enemy)
-        try:
-            for enemy in self.active_enemies:
-                monster_collisions = arcade.PhysicsEngineSimple(enemy, self.active_enemies)
-                monster_collisions.update()
-                path = enemy.get_path()
-                enemy.tick(path)
-        except Exception:
-            import traceback
-            traceback.print_exc()
+        self.Mobs.update()
+
         # Projectile updates
         self.bullet_list.update()
         for bullet in self.bullet_list:
@@ -314,7 +281,9 @@ class Game(arcade.Window):
                 bullet.remove_from_sprite_lists()
             if len(enemy_hit_list):
                 self.player.add_kill(enemy_hit_list[0].monster_type)
+                self.Recipe.add_kill(enemy_hit_list[0].monster_type)
                 enemy_hit_list[0].remove_from_sprite_lists()
+                bullet.remove_from_sprite_lists()
 
             # If the bullet flies off-screen, remove it. TEMP change to range calc
             if (

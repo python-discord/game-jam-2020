@@ -6,9 +6,76 @@ Organizes all classes related to Mobs, Entities, Enemies, Players and Items.
 from typing import List, Tuple
 
 import arcade
+import random
+import math
+
 from config import Config, Enums, SpritePaths
 from map import Dungeon
 from sprites import PlayerAnimations
+
+class MobHandler(arcade.SpriteList):
+
+    def __init__(self):
+        super().__init__()
+        self.enemy_list = []
+        self.active_enemies = []
+        self.dungeon = None
+        self.player = None
+
+    def setup(self, ghost, frogs, player, dungeon) -> list:
+        self.enemy_list = arcade.SpriteList()
+        self.active_enemies = arcade.SpriteList()
+        self.dungeon = dungeon
+        self.player = player
+
+        for count in range(ghost):
+            mob = Enemy(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
+            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+            mob.target = self.player
+            mob.scale = 4
+            mob.monster_type = 'ghost'
+            self.enemy_list.append(mob)
+        for count in range(frogs):
+            mob = Enemy(filename="resources/images/monsters/frog/frog1.png", dungeon=self.dungeon)
+            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+            mob.target = self.player
+            mob.scale = 4
+            mob.monster_type = 'frog'
+            self.enemy_list.append(mob)
+
+        return self.enemy_list
+
+    def render(self) -> None:  
+        self.enemy_list.draw()
+
+    def update(self) -> None:
+        # Enemy activation and update
+        for enemy in reversed(self.enemy_list):
+            # TODO replace with distance checking
+            distance = self.get_distance(enemy)
+            if (distance < 500):
+                    self.active_enemies.append(enemy)
+                    self.enemy_list.remove(enemy)
+        try:
+            for enemy in self.active_enemies:
+                monster_collisions = arcade.PhysicsEngineSimple(enemy, self.active_enemies)
+                monster_collisions.update()
+                path = enemy.get_path()
+                enemy.tick(path)
+        except Exception:
+            import traceback
+            traceback.print_exc()
+
+    def get_distance(self, enemy) -> int:
+        start_x = enemy.center_x
+        start_y = enemy.center_y
+        end_x = self.player.center_x
+        end_y = self.player.center_y
+        try:
+            distance = math.sqrt(math.pow(start_x - end_x, 2) + math.pow(start_y - end_y, 2))
+            return distance
+        except:
+            return 0
 
 
 class Mob(arcade.Sprite):
@@ -30,6 +97,7 @@ class Mob(arcade.Sprite):
 
         self.dungeon = dungeon
         self.target = None
+        self.collisions = None
 
     
 class Player(Mob):
