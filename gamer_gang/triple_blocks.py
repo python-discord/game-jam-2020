@@ -18,7 +18,7 @@ class ActualGame(arcade.Window):  # TODO: relative imports and crap
         self.menuView = MenuView()
         self.gameOver = GameOverView()
         self.levels = {1: BaseLevel()}
-        self.current_view = self.levels[1]
+        self.current_view = self.menuView
         self.game_over = False
         self.show_view(self.current_view)
 

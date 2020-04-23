@@ -238,7 +238,6 @@ class RestartButton(TextButton):
         if not self.pressed:
             self.pressed = True
             self.game.window.setup()
-            self.game.window.show_view(self.game.window.menuView)
 
     def on_release(self):
         self.pressed = False
