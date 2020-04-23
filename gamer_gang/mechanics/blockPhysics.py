@@ -41,21 +41,27 @@ class Level(arcade.View):
 
         self.normalGrounds = arcade.SpriteList()
         self.spikes = arcade.SpriteList()
+        self.goombaThings = arcade.SpriteList()
         self.players = []
         self.shapes = []
 
         self.normalGroundTextures = [arcade.load_texture("images/ground/placeholderGround.png")]
         self.spikeTextures = [arcade.load_texture('images/ground/spike.png')]
-        self.playerTextures = [[arcade.load_texture("images/mobs/player/1.png")],
-                               [arcade.load_texture("images/mobs/player/2.png")],
-                               [arcade.load_texture("images/mobs/player/3.png")]]
+        self.playerTextures = [[arcade.load_texture("images/mobs/player/1.png"),
+                                arcade.load_texture("images/mobs/player/other1.png")],
+                               [arcade.load_texture("images/mobs/player/1.png"),
+                                arcade.load_texture("images/mobs/player/other3.png")],
+                               [arcade.load_texture("images/mobs/player/1.png"),
+                                arcade.load_texture("images/mobs/player/other2.png")]]
+        self.enemyTextures = [arcade.load_texture('images/mobs/goombaThing/goomba1.png'),
+                              arcade.load_texture('images/mobs/goombaThing/goomba1.png')]
 
         self.bodies = []
         self.make_level()
 
     def make_level(self):  # in the base class, this is just a placeholder level
         for i in range(1, 4):
-            p, body, shape = makeMob(1, self.space, Player, self.playerTextures[i - 1], 1, 17, 32 * i, str(i))
+            p, body, shape = makePlayer(1, self.space, self.playerTextures[i - 1], 1, 17, 32 * i, str(i))
             self.bodies.append(body)
             self.shapes.append(shape)
             self.players.append(p)
@@ -67,11 +73,15 @@ class Level(arcade.View):
         for i in range(1):
             self.spikes.append(makeTerrain(self.space, BadSpike, self.spikeTextures, 1, 200, 20))
 
+        for i in range(1):
+            self.goombaThings.append(makeEnemy(1, self.space, self.enemyTextures, 1, 150, 30, -1))
+
     def on_draw(self):
         arcade.start_render()
 
         self.spikes.draw()
         self.normalGrounds.draw()
+        self.goombaThings.draw()
         for p in self.players:
             p.draw()
 
@@ -148,8 +158,8 @@ class Level(arcade.View):
                             stackList.append(v)
 
                     possTextures = [arcade.load_texture(f'images/mobs/player/{n}.png') for n in getNames(stackName)]
-                    p, body, shape = makeMob(1, self.space, Player, possTextures,
-                                             1, down.center_x, (down.bottom + up.top) / 2, stackName)
+                    p, body, shape = makePlayer(1, self.space, possTextures,
+                                                1, down.center_x, (down.bottom + up.top) / 2, stackName)
 
                     for i in stackList:
                         self.players[i].kill()  # remove ALL TRACES of the prev sprites
@@ -176,9 +186,9 @@ class Level(arcade.View):
                 # configure top part of the stack (p, b, s stand for player, body, and shape respectively)
                 topListName = "on".join([str(s + 1) for s in topList])
                 possTextures = [arcade.load_texture(f'images/mobs/player/{n}.png') for n in getNames(topListName)]
-                p, b, s = makeMob(1, self.space, Player, possTextures,
-                                  1, p.center_x, bottom + self.playerHeight * (len(bottomList) + len(topList) / 2),
-                                  topListName)
+                p, b, s = makePlayer(1, self.space, possTextures, 1,
+                                     p.center_x, bottom + self.playerHeight * (len(bottomList) + len(topList) / 2),
+                                     topListName)
 
                 for i in topList:  # actually put the newly split sprites in the game
                     self.players[i].kill()
@@ -191,8 +201,8 @@ class Level(arcade.View):
                 # do the same for the bottom part
                 bottomListName = "on".join([str(s + 1) for s in bottomList])
                 possTextures = [arcade.load_texture(f'images/mobs/player/{n}.png') for n in getNames(bottomListName)]
-                p, b, s = makeMob(1, self.space, Player, possTextures,
-                                  1, p.center_x, bottom + self.playerHeight * (len(bottomList) / 2), bottomListName)
+                p, b, s = makePlayer(1, self.space, possTextures, 1, p.center_x,
+                                     bottom + self.playerHeight * (len(bottomList) / 2), bottomListName)
 
                 for i in bottomList:
                     self.players[i].kill()
@@ -223,7 +233,17 @@ class Level(arcade.View):
         for p in self.players:
             if arcade.check_for_collision_with_list(p, self.spikes):  # if you touch a spike, you DIE
                 self.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
-                self.deathCause = 'spike that looks awfully like a GD spike'
+                self.deathCause = 'you got impaled by a spike that looks awfully like a GD spike'
+
+            for e in self.goombaThings:
+                if arcade.check_for_collision(p, e):
+                    print(abs(p.bottom - e.top))
+                    if abs(p.bottom - e.top) < 3:
+                        e.kill()
+                        p.pymunk_shape.body.velocity += pymunk.Vec2d((0, 400))
+                        continue
+                    self.game_over  = True
+                    self.deathCause = 'you got oofed by some random enemy, stupid i know right?'
 
     def on_update(self, dt):
         self.frames += 1
@@ -242,8 +262,7 @@ class Level(arcade.View):
                 self.deathCause = 'no pit is more bottomless than the bottomless pit! (which you fell into)'
 
         if not self.game_over:
-            for i in self.normalGrounds:
-                i.update()
+            self.goombaThings.update()
             for p in self.players:
                 p.update()
                 p.update_animation(dt)

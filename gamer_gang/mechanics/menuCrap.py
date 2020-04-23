@@ -11,6 +11,7 @@ class MenuView(arcade.View):
         self.start = False
 
     def on_show(self):
+        arcade.set_viewport(0, 1000, 0, 600)
         self.setup_theme()
         self.set_buttons()
         self.clouds = arcade.SpriteList()
