@@ -127,7 +127,7 @@ class PathFinder:
 
             for child in children:
 
-                if any(child == closed_node for closed_node in closed_nodes):
+                if child in closed_nodes:
                     continue
 
                 # http://theory.stanford.edu/~amitp/GameProgramming/AStarComparison.html#the-a-star-algorithm
@@ -138,8 +138,9 @@ class PathFinder:
 
                 child.f = child.g + child.h
 
-                if any(child == open_node and child.g > open_node.g for open_node in open_nodes):
-                    continue
+                if child in open_nodes:
+                    if any(child.g > open_node.g for open_node in open_nodes):
+                        continue
 
                 open_nodes.add(child)
 
