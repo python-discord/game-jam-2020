@@ -1,0 +1,12 @@
+{
+  "basic": {
+      "name": "Basic",
+      "icons": [
+        "assets/RedSword.png",
+        "assets/GreenSword.png",
+        "assets/BlueSword.png"
+      ],
+      "base_attack": 50,
+      "base_defense": 50
+    }
+}

@@ -9,6 +9,7 @@ class Game:
         self.send_queue = send_queue
         self.players = [{}, {}, {}]
         self.world = None
+        self.turn = 0
 
     def start(self):
         starting = True
@@ -28,7 +29,19 @@ class Game:
         self.send_queue.put({"type": "world", "data": self.world})
         while True:
             # main game loop
-            pass
+            data = self.receive_queue.get()
+            if data["type"] == "turnFinal" and data["connection"] == self.turn:
+                if data["actionType"] == "moveUnit":
+                    pass
+                elif data["actionType"] == "createUnit":
+                    self.send_queue.put({"type": "newUnit", "data": data["data"]})
+                self.next_turn()
+
+    def next_turn(self):
+        self.turn += 1
+        if self.turn >= len(self.players):
+            self.turn = 0
+        self.send_queue.put({"type": "turn", "data": self.turn})
 
     def generate_map(self, x=33, y=11):
         world = {
