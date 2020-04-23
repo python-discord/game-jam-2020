@@ -99,7 +99,7 @@ class TextInput:
             self.cursor_sprites.remove(self.cursor)
 
             center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
-                sum(self.text_widths[:self.cursor_idx + 1]) + 1
+                sum(self.text_widths[:self.cursor_idx]) + 1
 
             center_y = self.center_y - (self.height / 2) + self.vertical_margin + \
                 self.text_sprites[0].height / 2
@@ -115,39 +115,48 @@ class TextInput:
             self.cursor_sprites.append(self.cursor)
             self.prev_cursor_idx = self.cursor_idx
 
+            print(self.text, self.cursor_idx)
+
             return True
 
         return False
 
     def process_key_press(self, key, modifiers) -> None:
+        changed = False
+
         if 32 <= key <= 126:
             if modifiers & 1 == arcade.key.MOD_SHIFT:
                 key -= 32
 
             key = chr(key)
-            self.text += key
+            self.text = self.text[:self.cursor_idx] + key + self.text[self.cursor_idx:]
 
-            self.text_widths.append(arcade.draw_text(key, 0, 0, self.box_color).width)
+            self.text_widths.insert(self.cursor_idx, arcade.draw_text(key, 0, 0, self.box_color).width)
             self.cursor_idx += 1
 
-        elif key == arcade.key.BACKSPACE:
-            text = list(self.text)
-            text.pop(self.cursor_idx - 1)
-            self.text = ''.join(text)
+            changed = True
 
-            self.text_widths.pop(self.cursor_idx - 1)
-            self.cursor_idx -= 1
+        elif key == arcade.key.BACKSPACE:
+            if len(self.text) > 0:
+                text = list(self.text)
+                text.pop(self.cursor_idx - 1)
+                self.text = ''.join(text)
+
+                self.text_widths.pop(self.cursor_idx - 1)
+                self.cursor_idx -= 1
+
+                changed = True
 
         elif key == arcade.key.DELETE:
-            try:
+
+            if self.cursor_idx + 1 < len(self.text):
                 text = list(self.text)
                 text.pop(self.cursor_idx)
                 self.text = ''.join(text)
 
                 self.text_widths.pop(self.cursor_idx)
 
-            except IndexError:
-                pass
+                changed = True
 
         elif key == arcade.key.LEFT:
             if self.cursor_idx > 0:
@@ -157,18 +166,19 @@ class TextInput:
             if self.cursor_idx < len(self.text):
                 self.cursor_idx += 1
 
-        self.text_sprites.pop(0)
-        self.text_sprites.append(
-            arcade.draw_text(
-                text=self.text,
-                start_x=self.center_x - (self.width / 2) + self.horizontal_margin,
-                start_y=self.center_y - (self.height / 2) + self.vertical_margin,
-                color=self.text_color,
-                font_size=self.font_size,
-                bold=self.bold,
-                italic=self.italic
+        if changed:
+            self.text_sprites.pop(0)
+            self.text_sprites.append(
+                arcade.draw_text(
+                    text=self.text,
+                    start_x=self.center_x - (self.width / 2) + self.horizontal_margin,
+                    start_y=self.center_y - (self.height / 2) + self.vertical_margin,
+                    color=self.text_color,
+                    font_size=self.font_size,
+                    bold=self.bold,
+                    italic=self.italic
+                )
             )
-        )
 
     def draw(self) -> None:
         self.shapes.draw()
@@ -185,7 +195,7 @@ class TextInput:
             self.cursor_sprites.remove(self.cursor)
 
             center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
-                sum(self.text_widths[:self.cursor_idx + 1]) + 1
+                sum(self.text_widths[:self.cursor_idx]) + 1
 
             center_y = self.center_y - (self.height / 2) + self.vertical_margin + \
                 self.text_sprites[0].height / 2
