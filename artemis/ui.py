@@ -182,9 +182,10 @@ class View(arcade.View):
         for button in self.buttons:
             button.on_mouse_motion(x, y, dx, dy)
 
-    def on_draw(self):
+    def on_draw(self, start_render=True):
         """Draw buttons."""
-        arcade.start_render()
+        if start_render:
+            arcade.start_render()
         for button in self.buttons:
             button.on_draw()
 

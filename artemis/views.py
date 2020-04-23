@@ -91,6 +91,17 @@ class About(View):
 class Tutorial(View):
     """View to display animated tutorial."""
 
+    def __init__(self):
+        """Begin loading textures, set up counters and create home button."""
+        super().__init__()
+        self.textures = self.get_textures(ASSETS + 'tutorial.gif')
+        self.texture = None
+        self.time_till_change = 0
+        self.done = False
+        self.buttons.append(
+            IconButton(self, WIDTH - 70, HEIGHT - 70, 'home', self.home)
+        )
+
     def get_textures(self, file: str) -> typing.Iterable[arcade.Texture]:
         """Open a GIF and yield a texture for each frame."""
         gif = Image.open(file)
@@ -104,17 +115,6 @@ class Tutorial(View):
                 gif.seek(n)
             except EOFError:
                 break
-
-    def on_show(self):
-        """Begin loading textures, set up counters and create home button."""
-        super().on_show()
-        self.textures = self.get_textures(ASSETS + 'tutorial.gif')
-        self.texture = None
-        self.time_till_change = 0
-        self.done = False
-        self.buttons.append(
-            IconButton(self, WIDTH - 70, HEIGHT - 70, 'home', self.home)
-        )
 
     def home(self):
         """Switch to the menu view."""
@@ -142,7 +142,7 @@ class Tutorial(View):
         arcade.start_render()
         if self.texture and not self.done:
             self.texture.draw_scaled(WIDTH / 2, HEIGHT / 2)
-        super().on_draw()
+        super().on_draw(start_render=False)
 
 
 class Menu(View):
