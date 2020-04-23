@@ -41,6 +41,7 @@ class Lane():
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.char, floor_list)
         self.valid_zone = self.generate_valid_zone()
+        self.difficulty = 6
 
     def generate_obstacle(self, sprite_path: str)-> arcade.Sprite:
         """
@@ -52,7 +53,7 @@ class Lane():
         obstacle.center_y = self.SCREEN_HEIGHT - \
                             (self.SCREEN_HEIGHT // 3) * self.tier + 40
         obstacle.scale = 0.8
-        obstacle.change_x = -6
+        obstacle.change_x = -self.difficulty
         return obstacle
 
     def generate_tree(self)->arcade.Sprite:

@@ -1,14 +1,17 @@
 from collections import deque
 import arcade
 from pyglet.gl import GL_NEAREST
-from pyglet.gl import GL_LINEAR
 from entities import Splash
 from lane import Lane
 from patterns import PatternGenerator
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-UPDATES_PER_FRAME = 7
+
+class EnumGameState:
+    title = 0
+    game = 1
+    game_over = 2
 
 
 class MyGame(arcade.Window):
@@ -36,14 +39,18 @@ class MyGame(arcade.Window):
         self.lane_down = None
         self.pattern = None
 
+        # Set up the title screen
+        self.game_state = EnumGameState.title
+        self.title_screen = arcade.load_texture("../ressources/title_screen.png")
+
         # Set up other settings
         self.score = 0
         self.time = 0
         self.frame = 0
         self.fps = 0
         self.combo = 0
+        self.stage = [100000, 50000, 10000]
         self.obstacle_queue = deque([[], [], [], [], []])
-
 
     def setup(self):
 
@@ -123,13 +130,10 @@ class MyGame(arcade.Window):
         self.time = 0
         self.fps = 0
 
-    def on_draw(self):
+    def draw_game(self):
         """
-        Render the screen.
+        Function to draw the game (on_draw)
         """
-
-        # This command has to happen before we start drawing
-        arcade.start_render()
 
         # Draw all the sprites (order determine Z axis)
         self.sky_list.draw(filter=GL_NEAREST)
@@ -147,44 +151,59 @@ class MyGame(arcade.Window):
         combo = f"COMBO: {self.combo}"
         arcade.draw_text(combo, 700, 535, arcade.color.BLACK, 14)
 
+    def draw_title_screen(self):
+        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
+                                      self.title_screen.width,
+                                      self.title_screen.height,
+                                      self.title_screen, 0)
+
+    def on_draw(self):
+        """
+        Function to render the game.
+        """
+        # This command has to happen before we start drawing
+        arcade.start_render()
+
+        if self.game_state == EnumGameState.title:
+            self.draw_title_screen()
+        elif self.game_state == EnumGameState.game:
+            self.draw_game()
+
     def on_key_press(self, key, modifiers):
         """
         Called whenever a key is pressed.
         """
-        result = 0
-        if key == arcade.key.A:
-            result = self.lane_up.action(self.obstacle_list)
-            splash = Splash(result.name,
-                            [self.lane_up.char.center_x + 75, self.lane_up.char.center_y + 50])
-            self.splash_list.append(splash)
-        elif key == arcade.key.Z:
-            result = self.lane_middle.action(self.obstacle_list)
-            splash = Splash(result.name,
-                            [self.lane_up.char.center_x + 75, self.lane_middle.char.center_y + 50])
-            self.splash_list.append(splash)
-        elif key == arcade.key.E:
-            result = self.lane_down.action(self.obstacle_list)
-            splash = Splash(result.name,
-                            [self.lane_up.char.center_x + 75, self.lane_down.char.center_y + 50])
-            self.splash_list.append(splash)
+        if self.game_state == EnumGameState.title:
+            self.game_state = EnumGameState.game
+            self.setup()
 
-        if result == 0:
-            pass
-        elif result.name == "miss":
+        elif self.game_state == 1:
+            if key == arcade.key.A or key == arcade.key.Q:
+                self.key_action(self.lane_up)
+            elif key == arcade.key.Z or key == arcade.key.W:
+                self.key_action(self.lane_middle)
+            elif key == arcade.key.E:
+                self.key_action(self.lane_down)
+
+    def key_action(self, lane):
+        result = lane.action(self.obstacle_list)
+        splash = Splash(result.name,
+                        [lane.char.center_x + 75, lane.char.center_y + 50])
+        self.splash_list.append(splash)
+
+        if result.name == "miss":
             self.combo = 0
         else:
             self.combo += 1
             self.score += result.value * self.combo
 
-
-
     def on_key_release(self, key, modifiers):
         """
         Called when the user releases a key.
         """
-        if key == arcade.key.A:
+        if key == arcade.key.A or key == arcade.key.Q:
             pass
-        elif key == arcade.key.Z:
+        elif key == arcade.key.Z or key == arcade.key.W:
             pass
         elif key == arcade.key.E:
             pass
@@ -199,7 +218,6 @@ class MyGame(arcade.Window):
             self.time = 0
 
             # Generation of obstacles
-
             if not self.obstacle_queue:
                 self.obstacle_queue.append(self.pattern.generate_pattern())
             for obstacle in self.obstacle_queue.popleft():
@@ -227,6 +245,12 @@ class MyGame(arcade.Window):
                     self.combo = 0
                 obstacle.remove_from_sprite_lists()
 
+        # Increase speed at each level of difficulty
+        if self.stage and self.score > self.stage[-1]:
+            self.lane_up.difficulty += 3
+            self.lane_middle.difficulty += 3
+            self.lane_down.difficulty += 3
+            self.stage.pop()
 def main():
     """ Main method """
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, "3 Keys on the Run")
