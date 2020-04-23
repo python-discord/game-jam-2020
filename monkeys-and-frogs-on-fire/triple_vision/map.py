@@ -79,7 +79,7 @@ class Map:
 
         return map_
 
-    def spritify(self, map_) -> arcade.SpriteList:
+    def spritify(self, map_) -> Tuple[arcade.SpriteList, arcade.SpriteList, arcade.SpriteList]:
         spikes = arcade.SpriteList(use_spatial_hash=True)
         sprites = arcade.SpriteList(use_spatial_hash=True)
         collision_list = arcade.SpriteList(use_spatial_hash=True)
