@@ -1,9 +1,10 @@
+import arcade
+
 from .constants import (
     FLOOR_LENGTH, FLOOR_TEXTURE_LENGTH, GRAVITY, GROUND_CONTROL, AIR_CONTROL, PLAYER_MOVEMENT_SPEED, JUMP_FORCE,
-    JUMP_COUNT, DASH_DISTANCE, RIGHT, LEFT, DASH_COUNT, JUMP_VELOCITY_BONUS
+    JUMP_COUNT, DASH_DISTANCE, RIGHT, LEFT, JUMP_VELOCITY_BONUS, DASH_COUNT
 )
 from .player import Player
-import arcade
 
 from .utils import sweep_trace
 
@@ -24,10 +25,10 @@ class GameState:
             floor.bottom = 0
             self.level_geometry.append(floor)
 
-        obstacle = arcade.Sprite('assets/simple_block.png')
-        obstacle.left = 100
-        obstacle.bottom = FLOOR_TEXTURE_LENGTH
-        self.level_geometry.append(obstacle)
+        block = arcade.Sprite('assets/simple_block.png')
+        block.left = 100
+        block.bottom = FLOOR_TEXTURE_LENGTH * 3
+        self.level_geometry.append(block)
 
         self.engine = arcade.PhysicsEnginePlatformer(self.player, self.level_geometry, GRAVITY)
 
@@ -47,18 +48,27 @@ class GameState:
         self.level_geometry.draw()
 
     def on_key_press(self, key, modifiers):
-        """Called whenever a key is pressed. """
-        # Dashing
-        if key == arcade.key.LSHIFT and not self.engine.can_jump():
-            if self.player.dash_count > 0 and not sweep_trace(self.player, DASH_DISTANCE, 0, self.level_geometry):
-                self.player.left += DASH_DISTANCE * self.player.direction
-                self.player.dash_count -= 1
-        else:
-            self.player.dash_count = DASH_COUNT
-
-        # Jumping
+        """Called whenever a key is pressed."""
+        # Pre
         if self.engine.can_jump():
             self.player.jump_count = 0
+            self.player.dash_count = 0
+
+        # Dashing
+        if key == arcade.key.LSHIFT:
+            if not sweep_trace(self.player, DASH_DISTANCE, 0, self.level_geometry):
+                can_dash = True
+
+                if self.player.dash_count < DASH_COUNT:
+                    self.player.dash_count += 1
+
+                else:
+                    can_dash = False
+
+                if can_dash:
+                    self.player.left += DASH_DISTANCE * self.player.direction
+
+        # Jumping
         if key == arcade.key.SPACE:
             self.player.jump_count += 1
             if self.player.jump_count <= JUMP_COUNT:
