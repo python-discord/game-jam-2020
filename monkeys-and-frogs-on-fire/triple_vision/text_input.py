@@ -149,6 +149,14 @@ class TextInput:
             except IndexError:
                 pass
 
+        elif key == arcade.key.LEFT:
+            if self.cursor_idx > 0:
+                self.cursor_idx -= 1
+
+        elif key == arcade.key.RIGHT:
+            if self.cursor_idx < len(self.text):
+                self.cursor_idx += 1
+
         self.text_sprites.pop(0)
         self.text_sprites.append(
             arcade.draw_text(
