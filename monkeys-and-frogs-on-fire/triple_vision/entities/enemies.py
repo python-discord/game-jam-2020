@@ -107,20 +107,24 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
                         self.path = None
 
                 else:
-                    # Once path is found it should be rarely updated
-                    # TODO first path finding should be fast, each next should be slower
-                    if self._tick_time > round(random.uniform(1, 3), 2):  # do not sync them
+                    # Once path is found it should be rarely updated.
+                    # However we don't really want multiple enemies to call find()
+                    # in the same on_update, so we add a bit of randomness to it that isn't
+                    # noticeable in the gameplay.
+                    if self._tick_time > round(random.uniform(0.0, 0.2), 2):
                         self._tick_time = 0.0
                         try:
                             self.path = self.path_finder.find(
                                         pixels_to_tile(self.center_x, self.center_y),
-                                        pixels_to_tile(self.target_sprite.center_x, self.target_sprite.center_y),
+                                        pixels_to_tile(
+                                            self.target_sprite.center_x,
+                                            self.target_sprite.center_y
+                                        ),
                                         self.ctx.view.collision_list,
                                         self.ctx.view.map.sprites
                             )
 
-                        except TypeError as e:
-                            print("hey wtf", e)
+                        except TypeError:
                             pass
                     else:
                         self._tick_time += delta_time

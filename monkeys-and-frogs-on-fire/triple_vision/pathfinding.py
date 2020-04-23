@@ -1,7 +1,7 @@
 from __future__ import annotations
 from timeit import default_timer as timer
 
-from typing import Optional, Tuple, Iterable
+from typing import Optional, Tuple, Iterator
 
 import arcade
 
@@ -78,7 +78,7 @@ class PathFinder:
         end_pos: Tuple[int, int],
         collision_list: arcade.SpriteList,
         map_list: arcade.SpriteList
-    ) -> Iterable[Tuple[int, int]]:
+    ) -> Iterator[Tuple[int, int]]:
 
         if self._tile_is_blocked(*end_pos, collision_list):
             return
