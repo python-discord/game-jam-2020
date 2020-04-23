@@ -3,7 +3,7 @@ from gamer_gang.mechanics.blockPhysics import *
 from gamer_gang.dumbConstants import *
 
 
-class ActualGame(arcade.Window):
+class ActualGame(arcade.Window):  # TODO: relative imports and crap
     def __init__(self):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         arcade.set_background_color(arcade.color.LIGHT_BLUE)

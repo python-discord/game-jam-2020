@@ -4,6 +4,23 @@ from gamer_gang.mechanics.mobs import *
 from gamer_gang.mechanics.terrainStuff import *
 from gamer_gang.dumbConstants import *
 
+def getNames(name):
+    name = name.split(sep='on')
+    frontier = [[]]
+    for _ in range(len(name)):
+        inLine = []
+        for n in frontier:
+            inLine.extend([n + [0], n + [1]])
+        frontier = inLine
+    newNames = []
+    for n in frontier:
+        new = ''
+        for i in range(len(name)):
+            new += 'other' + name[i] + 'on' if n[i] else name[i] + 'on'
+        newNames.append(new[:-2])
+
+    return newNames
+
 class Level(arcade.View):
     def __init__(self):
         super().__init__()
@@ -130,8 +147,8 @@ class Level(arcade.View):
                         if p.name in [up.name, down.name]:
                             stackList.append(v)
 
-                    p, body, shape = makeMob(1, self.space, Player,
-                                             [arcade.load_texture(f'images/mobs/player/{stackName}.png')],
+                    possTextures = [arcade.load_texture(f'images/mobs/player/{n}.png') for n in getNames(stackName)]
+                    p, body, shape = makeMob(1, self.space, Player, possTextures,
                                              1, down.center_x, (down.bottom + up.top) / 2, stackName)
 
                     for i in stackList:
@@ -158,8 +175,8 @@ class Level(arcade.View):
                     return
                 # configure top part of the stack (p, b, s stand for player, body, and shape respectively)
                 topListName = "on".join([str(s + 1) for s in topList])
-                p, b, s = makeMob(1, self.space, Player,
-                                  [arcade.load_texture(f'images/mobs/player/{topListName}.png')],
+                possTextures = [arcade.load_texture(f'images/mobs/player/{n}.png') for n in getNames(topListName)]
+                p, b, s = makeMob(1, self.space, Player, possTextures,
                                   1, p.center_x, bottom + self.playerHeight * (len(bottomList) + len(topList) / 2),
                                   topListName)
 
@@ -173,8 +190,8 @@ class Level(arcade.View):
 
                 # do the same for the bottom part
                 bottomListName = "on".join([str(s + 1) for s in bottomList])
-                p, b, s = makeMob(1, self.space, Player,
-                                  [arcade.load_texture(f'images/mobs/player/{bottomListName}.png')],
+                possTextures = [arcade.load_texture(f'images/mobs/player/{n}.png') for n in getNames(bottomListName)]
+                p, b, s = makeMob(1, self.space, Player, possTextures,
                                   1, p.center_x, bottom + self.playerHeight * (len(bottomList) / 2), bottomListName)
 
                 for i in bottomList:
@@ -240,4 +257,4 @@ class Level(arcade.View):
                 p.angle = math.degrees(p.pymunk_shape.body.angle)
 
         else:  # TODO: implement a game over/restart screen
-            self.close()
+            self.window.close()

@@ -1,5 +1,6 @@
 import arcade
 import pymunk
+import random
 
 class Player(arcade.Sprite):
     def __init__(self, pymunk_shape, textures, scale, x, y, name):
@@ -10,20 +11,15 @@ class Player(arcade.Sprite):
         self.textures = textures
         self.texture = self.textures[0]
         self.name = name
-
+        self.currState = 'normal'
         self.scale = scale
 
-        self.acc_x = self.acc_y = 0
-
         self.center_x, self.center_y = x, y
-        self.og_x, self.og_y = self.center_x, self.center_y
 
-    def update(self):
-        self.og_x, self.og_y = self.center_x, self.center_y
+    def update_animation(self, delta_time: float = 1/60):
+        nextState = random.randint(0, 1)
+        self.texture = self.textures[nextState]
 
-
-class EnemyThing(arcade.Sprite):
-    pass
 
 def makeMob(mass, space, mobType, textures, scale, x, y, name):
     pos_x, pos_y = x, y
@@ -37,5 +33,5 @@ def makeMob(mass, space, mobType, textures, scale, x, y, name):
     space.add(body, shape)
     sprite = mobType(shape, textures, scale, pos_x, pos_y, name)
     sprite.set_hit_box([[sprite.width / -2, sprite.height / -2 - 1], [sprite.width / 2, sprite.height / -2 - 1],
-                   [sprite.width / 2, sprite.height / 2], [sprite.width / -2, sprite.height / 2]])
+                        [sprite.width / 2, sprite.height / 2], [sprite.width / -2, sprite.height / 2]])
     return sprite, body, shape
