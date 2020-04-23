@@ -83,13 +83,20 @@ class Game(arcade.Window):
         self.active_recipe = ActiveRecipe()
         self.active_recipe.set_ghosts()
 
-        #Set up monsters
-        for count in range(Config.MONSTER_COUNT):
+        # Set up monsters
+        for count in range(Config.MONSTER_COUNT//2):
             mob = Enemy(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
             mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
             mob.target = self.player
             mob.scale = 4
             mob.monster_type = 'ghost'
+            self.enemy_list.append(mob)
+        for count in range(Config.MONSTER_COUNT//2):
+            mob = Enemy(filename="resources/images/monsters/frog/frog1.png", dungeon=self.dungeon)
+            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+            mob.target = self.player
+            mob.scale = 4
+            mob.monster_type = 'frog'
             self.enemy_list.append(mob)
 
         # Setup viewport
@@ -122,10 +129,10 @@ class Game(arcade.Window):
                 arcade.draw_rectangle_outline(round(x / Config.TILE_SIZE) * Config.TILE_SIZE,
                                               round(y / Config.TILE_SIZE) * Config.TILE_SIZE,
                                               Config.TILE_SIZE, Config.TILE_SIZE, arcade.color.RED)
-                #self.player.draw_hit_box()
-                #arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
-                #arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
-                #                arcade.color.WHITE, 16, font_name='Arial')
+                self.player.draw_hit_box()
+                arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
+                arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
+                                arcade.color.WHITE, 16, font_name='Arial')
 
                 # Draw paths for all mobs
                 for mob in self.active_enemies:
@@ -133,8 +140,8 @@ class Game(arcade.Window):
                         t1 = time.time()
                         path = mob.get_path()
                         t2 = time.time()
-                        #print(f'Path acquired in {round(t2 - t1, 4)}s')
-                        #self.draw_path(path)
+                        print(f'Path acquired in {round(t2 - t1, 4)}s')
+                        self.draw_path(path)
                         mob.tick(path)
 
                 self.fps.tick()
@@ -271,7 +278,7 @@ class Game(arcade.Window):
                                 Config.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
-        #Enemy activation and update
+        # Enemy activation and update
         for enemy in reversed(self.enemy_list):
             if (
                 enemy.bottom > self.view_bottom and
@@ -279,9 +286,10 @@ class Game(arcade.Window):
                 enemy.right < self.view_left + Config.SCREEN_WIDTH and
                 enemy.left > self.view_left
                 ):
-                if Config.DEBUG: print("Activate Enemy")
-                self.active_enemies.append(enemy)
-                self.enemy_list.remove(enemy)
+                    if Config.DEBUG: 
+                        print("Activate Enemy")
+                    self.active_enemies.append(enemy)
+                    self.enemy_list.remove(enemy)
         try:
             for enemy in self.active_enemies:
                 enemy.update()
@@ -293,7 +301,7 @@ class Game(arcade.Window):
         # Projectile updates
         self.bullet_list.update()
         for bullet in self.bullet_list:
-            
+
             # Collision Checks
             hit_list = arcade.check_for_collision_with_list(bullet, self.dungeon.getWalls())
             enemy_hit_list = arcade.check_for_collision_with_list(bullet, self.active_enemies)

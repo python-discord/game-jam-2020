@@ -32,8 +32,6 @@ class Mob(arcade.Sprite):
         self.target = None
 
     
-
-
 class Player(Mob):
     """
     Represents a Player.
@@ -66,7 +64,6 @@ class Player(Mob):
         if self.cur_recipe.sort() == self.kill_list.sort():
             print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
             self.kill_list = []
-
 
     def update_animation(self, delta_time: float = 1 / 60) -> None:
         """
@@ -161,4 +158,3 @@ class Enemy(Mob):
             paths, runs = self.dungeon.finder.find_path(start, end, self.dungeon.grid)
             self.dungeon.grid.cleanup()
             return paths
-
