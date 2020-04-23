@@ -58,13 +58,13 @@ class GameOverView(arcade.View):
             self.keyText = 'press any key to play again'
 
         elif self.frames < 2 * self.text_ur:
-            self.keyText = 'press any key to again.'
+            self.keyText = 'press any key to play again.'
 
         elif self.frames < 3 * self.text_ur:
-            self.keyText = 'press any key to again..'
+            self.keyText = 'press any key to play again..'
 
         elif self.frames < 4 * self.text_ur:
-            self.keyText = 'press any key to again...'
+            self.keyText = 'press any key to play again...'
 
         else:
             self.frames = 0

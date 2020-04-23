@@ -3,8 +3,8 @@ from arcade.sprite_list import get_distance_between_sprites
 from typing import Optional, Tuple
 
 
-def get_farthest_sprite(sprite: arcade.Sprite, sprite_list: arcade.SpriteList, radius: float = -1) -> Optional[
-    Tuple[arcade.Sprite, float]]:
+def get_farthest_sprite(sprite: arcade.Sprite, sprite_list: arcade.SpriteList, radius: float = -1): #-> Optional[
+    #Tuple[arcade.Sprite, float]]:
     """
     Given a Sprite and SpriteList, returns the closest sprite, and its distance.
 
@@ -19,17 +19,16 @@ def get_farthest_sprite(sprite: arcade.Sprite, sprite_list: arcade.SpriteList, r
         return None
 
     max_pos = 0
-    max_distance = get_distance_between_sprites(sprite, sprite_list[max_pos])
+    max_distance = -1
+
     if radius != -1:
         for i in range(1, len(sprite_list)):
-            distance = get_distance_between_sprites(sprite, sprite_list[i])
+            distance = sprite_list[i].center_x
             if radius > distance > max_distance:
                 max_pos = i
                 max_distance = distance
-    else:
-        for i in range(1, len(sprite_list)):
-            distance = get_distance_between_sprites(sprite, sprite_list[i])
-            if radius > distance > max_distance:
-                max_pos = i
-                max_distance = distance
+
+    if max_distance == -1:
+        return None
+
     return sprite_list[max_pos], max_distance

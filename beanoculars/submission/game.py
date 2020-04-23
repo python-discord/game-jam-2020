@@ -11,6 +11,7 @@ from submission.waveManager import getSpawnList, manageEnemySpawn, decomposeSpaw
     EnemyGroup, SpawnOrder
 from submission.get_farthest_sprite import get_farthest_sprite
 from submission.gameOver import GameOverView
+from submission.turretAttack import turretAttack
 from random import randint
 import math
 
@@ -60,10 +61,13 @@ class GameView(arcade.View):
         self.currentOrder = None
         self.orderCount = None
 
-        self.betweenRounds = False
+        self.betweenRounds = True
         self.roundNumber = 0
         self.spawnList = None
         self.roundTime = 0
+        self.firstRound = True
+
+        self.gui_background = None
 
         self.animationDeltaTime = 0
 
@@ -131,6 +135,7 @@ class GameView(arcade.View):
         self.player_list.draw()
 
         # GUI layer
+        arcade.draw_rectangle_filled(96, 512-24, 192, 48, arcade.csscolor.DARK_OLIVE_GREEN)
 
     def on_update(self, delta_time: float):
         """ On Update method"""
@@ -144,15 +149,19 @@ class GameView(arcade.View):
             gameOver_view = GameOverView(self)
             self.window.show_view(gameOver_view)
 
-        if self.betweenRounds:
-            self.roundTime = 0
-            self.spawnList = decomposeSpawnList(getSpawnList(self.roundNumber, self.generatedTimeSinceFirst))
-            self.betweenRounds = False
-
         if not self.betweenRounds:
             if self.spawnList:
                 self.roundTime = manageEnemySpawn(self.entity_list, self.spawnList, self.roundTime, delta_time, [0, 13],
                                                   [0, 8], [0, 3])
+
+            if not self.spawnList:
+                if not self.entity_list:
+                    self.betweenRounds = True
+                    self.roundNumber += 1
+
+            if len(self.entity_list) > 0 and len(self.turret_list) > 0:
+                for i in range(len(self.turret_list)):
+                    turretAttack(self.turret_list[i], self.entity_list, delta_time)
 
         self.player_list.update_animation()
         if self.animationDeltaTime >= 10:
@@ -173,11 +182,22 @@ class GameView(arcade.View):
         if symbol == arcade.key.F:
             for i in range(len(self.entity_list)):
                 self.entity_list[0].kill()
-            self.betweenRounds = True
-            self.roundNumber += 1
 
         if symbol == arcade.key.S:
             self.sound_dict['test1.wav'].play()
+
+        if symbol == arcade.key.ENTER:
+            if self.firstRound:
+                self.roundTime = 0
+                self.roundNumber = 0
+                self.spawnList = decomposeSpawnList(getSpawnList(self.roundNumber, self.generatedTimeSinceFirst))
+                self.betweenRounds = False
+                self.firstRound = False
+
+            elif self.betweenRounds:
+                self.roundTime = 0
+                self.spawnList = decomposeSpawnList(getSpawnList(self.roundNumber, self.generatedTimeSinceFirst))
+                self.betweenRounds = False
 
     def on_key_release(self, symbol: int, modifiers: int):
         """ Get keyboard's releases. """
@@ -186,21 +206,9 @@ class GameView(arcade.View):
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """ Get mouse's presses. """
         # if not self.player_sprite.is_moving:
-        if FULLSCREEN:
-            if self.mouse_x > self.screen_x / 2 + WINDOW_WIDTH / 2 or self.mouse_x < self.screen_x / 2 - WINDOW_WIDTH / 2:
-                print('Cannot move')
-            elif self.mouse_y > self.screen_y / 2 + WINDOW_HEIGHT / 2 or self.mouse_y < self.screen_y / 2 - WINDOW_HEIGHT / 2:
-                print('Cannot move')
 
-            else:
-                self.mouse_click = [self.mouse_x, self.mouse_y]
-                self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x,
-                                                             self.window_offset_y)
-
-        else:
-            self.mouse_click = [self.mouse_x, self.mouse_y]
-            self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x,
-                                                         self.window_offset_y)
+        self.mouse_click = [self.mouse_x, self.mouse_y]
+        self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
 
     def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
         """ Get mouse's releases. """

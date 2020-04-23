@@ -33,7 +33,7 @@ def load_texture_pack(filename: str, upFilename: str, e_type: int):  # à revoir
         ]
 
     else:
-        raise Exception('Problem with loading an entity sprite')
+        raise Exception('Problem with loading an entity sprite (e_type invalid)')
 
 
 class AnimatedEntity(arcade.Sprite):
@@ -89,9 +89,14 @@ class AnimatedEntity(arcade.Sprite):
             main_path = PATH['img'] / 'sprite' / 'vacuum'
 
         if e_type > 7:
-            self.character_face_direction = UP_FACING # TODO A CHANGER EN DOWN
+            self.character_face_direction = DOWN_FACING
+            self.cooldown = 0
+            self.target = None
+            self.dmg = T_DMG
+
         elif e_type < 7:
             self.character_face_direction = RIGHT_FACING
+            self.health = E_HP
 
         self.cur_texture_index = 0
 

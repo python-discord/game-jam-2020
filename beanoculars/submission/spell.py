@@ -15,16 +15,16 @@ def pickUp(sprite: arcade.sprite, player_list: arcade.sprite_list, path_list: ar
     if not sprite.is_moving:
         if sprite.inventory != 0:  # free it
             if not sprite.actual_cur_pos[0] > 28:  # if in town
-                if not arcade.sprite_list.get_sprites_at_point([sprite.center_x, sprite.center_y],
-                                                               path_list):  # check if turret can be placed
                     if not arcade.sprite_list.get_sprites_at_point([sprite.center_x, sprite.center_y],
-                                                                   turret_list):
-                        t_type = sprite.inventory
-                        newTurret = AnimatedEntity(t_type, [math.floor(sprite.center_x - 16) / 32,
-                                                            math.floor(sprite.center_y - 16) / 32])
-                        turret_list.append(newTurret)
-                        sprite.cur_speed = MOVE_SPEED  # reset speed
-                        sprite.inventory = 0  # reset inventory
+                                                                   path_list):  # check if turret can be placed
+                        if not arcade.sprite_list.get_sprites_at_point([sprite.center_x, sprite.center_y],
+                                                                       turret_list):
+                            t_type = sprite.inventory
+                            newTurret = AnimatedEntity(t_type, [math.floor(sprite.center_x - 16) / 32,
+                                                                math.floor(sprite.center_y - 16) / 32])
+                            turret_list.append(newTurret)
+                            sprite.cur_speed = MOVE_SPEED  # reset speed
+                            sprite.inventory = 0  # reset inventory
 
             return 0
 

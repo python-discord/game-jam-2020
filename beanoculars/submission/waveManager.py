@@ -90,9 +90,7 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
     if waveNumber < PREMADE_WAVES:
         # return the premade enemies
         if waveNumber == 0:
-            spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 100, .25))
-            spawnList.append(EnemyGroup(0, E_MOSQUITO, TOP_ROW, 100, .25))
-            spawnList.append(EnemyGroup(0, E_SPIDER, BOT_ROW, 100, .25))
+            spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 1, 1))
 
         elif waveNumber == 1:
             spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 3))
@@ -131,7 +129,6 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
         print('Generated wave for round: ' + str(waveNumber))
 
     if spawnList:
-        print(type(spawnList[0]))
         return spawnList
 
     else:

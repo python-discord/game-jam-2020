@@ -1,8 +1,6 @@
 import os
 from pathlib import Path
 
-FULLSCREEN = False
-
 # CONSTANTS
 TILE_SIZE = 32  # x32 = 256px
 PLAYER_SCALING = 1
@@ -30,10 +28,15 @@ E_ANT = 1
 E_MOSQUITO = 2
 E_SPIDER = 3
 E_DUNG_BEETLE = 4
+E_HP = 75
 
 T_SPRAY = 10
 T_LAMP = 11
 T_VACUUM = 12
+T_DMG = 25
+T_COOLDOWN = 1
+DMG_MULTIPLIER = 3
+T_RANGE = 3
 
 # ROWS
 TOP_ROW = 0
