@@ -40,20 +40,20 @@ class GameView(arcade.View):
 
         self.game_mode = None
 
-        self.mouse_x = 0
-        self.mouse_y = 0
+        self.mouse_x = None
+        self.mouse_y = None
 
-        self.mouse_click = [0, 0]
-        self.destination = [-1, -1]
-        self.order_list = []
+        self.mouse_click = None
+        self.destination = None
+        self.order_list = None
 
-        self.sound_dict = {}
+        self.sound_dict = None
 
-        self.window_offset_x = 0
-        self.window_offset_y = 0
+        self.window_offset_x = None
+        self.window_offset_y = None
 
-        self.screen_x = 0
-        self.screen_y = 0
+        self.screen_x = None
+        self.screen_y = None
 
         self.mosquito = None
 
@@ -62,23 +62,39 @@ class GameView(arcade.View):
         self.orderCount = None
 
         self.betweenRounds = True
-        self.roundNumber = 0
+        self.roundNumber = None
         self.spawnList = None
-        self.roundTime = 0
+        self.roundTime = None
         self.firstRound = True
 
-        self.shownRoundNumber = 1
+        self.shownRoundNumber = None
 
-        self.animationDeltaTime = 0
+        self.animationDeltaTime = None
 
         self.game_over = False
 
-        self.generatedTimeSinceFirst = 0
+        self.generatedTimeSinceFirst = None
 
         arcade.set_background_color((94, 132, 63))
 
     def setup(self):
         """ Set up the test here. Call this function to restart the test. """
+        self.roundNumber = 0
+        self.roundTime = 0
+        self.shownRoundNumber = 1
+        self.animationDeltaTime = 0
+        self.generatedTimeSinceFirst = 0
+
+        self.screen_x = 0
+        self.screen_y = 0
+        self.window_offset_x = 0
+        self.window_offset_y = 0
+        self.mouse_click = [0, 0]
+        self.destination = [-1, -1]
+        self.order_list = []
+        self.mouse_x = 0
+        self.mouse_y = 0
+        self.sound_dict = {}
 
         self.player_list = arcade.SpriteList()
         self.ground_list = arcade.SpriteList(is_static=True)
@@ -135,8 +151,22 @@ class GameView(arcade.View):
         self.player_list.draw()
 
         # GUI layer
-        arcade.draw_rectangle_filled(96, 512 - 24, 192, 48, arcade.csscolor.DARK_OLIVE_GREEN)
-        arcade.draw_text("Wave number: " + str(self.shownRoundNumber), 5, 512 - 40, arcade.csscolor.WHITE, 19, font_name='arial', bold=True)
+
+        if self.betweenRounds:
+            arcade.draw_rectangle_filled(96, 484, 204, 54, (70, 92, 32))
+            arcade.draw_rectangle_filled(99, 484, 192, 48, arcade.csscolor.DARK_OLIVE_GREEN)
+
+        elif not self.betweenRounds:
+            arcade.draw_rectangle_filled(96, 484, 204, 54, (75, 0, 0))
+            arcade.draw_rectangle_filled(99, 484, 192, 48, arcade.csscolor.DARK_RED)
+
+        if self.shownRoundNumber < 99:
+            arcade.draw_text("Wave number: " + str(self.shownRoundNumber), 10, 512 - 44, arcade.csscolor.WHITE, 18,
+                             font_name='arial', bold=True)
+
+        elif self.shownRoundNumber < 999:
+            arcade.draw_text("Wave number: " + str(self.shownRoundNumber), 10, 512 - 44, arcade.csscolor.WHITE, 16,
+                             font_name='arial', bold=True)
 
     def on_update(self, delta_time: float):
         """ On Update method"""
