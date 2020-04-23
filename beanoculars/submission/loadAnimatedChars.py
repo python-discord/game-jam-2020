@@ -20,10 +20,10 @@ def load_texture_pack(filename: str, upFilename: str, e_type: int):  # à revoir
 
     if e_type > 7:  # si tourelle (load 4 directions)
         return [
-            arcade.load_texture(PATH['img'] / filename, flipped=True),  # UP
-            arcade.load_texture(PATH['img'] / filename),  # DOWN
-            #arcade.load_texture(PATH['img'] / upFilename),  # RIGHT
-            #arcade.load_texture(PATH['img'] / upFilename, mirrored=True)  # LEFT
+            arcade.load_texture(PATH['img'] / upFilename, flipped=True),  # UP
+            arcade.load_texture(PATH['img'] / upFilename),  # DOWN
+            arcade.load_texture(PATH['img'] / filename),  # RIGHT
+            arcade.load_texture(PATH['img'] / filename, mirrored=True)  # LEFT
         ]
     elif e_type < 7:  # si ennemi (load 3 directions)
         return [
