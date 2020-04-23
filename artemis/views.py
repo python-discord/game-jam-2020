@@ -6,7 +6,8 @@ import typing
 from achievements import get_achievements
 from constants import ABOUT, ASSETS, FONT, HEIGHT, WIDTH
 from game import Game
-from ui import Achievement, IconButton, View, ViewButton
+from scores import get_awards
+from ui import Achievement, Award, IconButton, View, ViewButton
 
 
 class Paused(View):
@@ -225,7 +226,7 @@ class Achievements(View):
         super().on_show()
         achievements = get_achievements()
         x = WIDTH / 2 - 140
-        y = HEIGHT / 2 + 105
+        y = HEIGHT / 2 + 175
         for row in achievements:
             for data in row:
                 x += 70
@@ -235,15 +236,26 @@ class Achievements(View):
                 ))
             y -= 70
             x = WIDTH / 2 - 140
+        awards = get_awards()
+        x = WIDTH / 2 - 140
+        for n, award in enumerate(awards):
+            x += 70
+            self.buttons.append(Award(
+                self, x, y, n, award['name'], award['description'],
+                award['achieved']
+            ))
+            if not (n + 1) % 3:
+                y -= 70
+                x = WIDTH / 2 - 140
         self.buttons.append(
-            ViewButton(self, WIDTH / 2, HEIGHT / 2 - 190, 'home', Menu)
+            ViewButton(self, WIDTH / 2, HEIGHT / 2 - 260, 'home', Menu)
         )
 
     def on_draw(self):
         """Draw the text and buttons to the screen."""
         super().on_draw()
         arcade.draw_text(
-            'Achievements', WIDTH / 2, HEIGHT / 2 + 155,
+            'Achievements', WIDTH / 2, HEIGHT / 2 + 225,
             arcade.color.WHITE, font_size=30, anchor_x='center',
             font_name=FONT.format(type='b')
         )

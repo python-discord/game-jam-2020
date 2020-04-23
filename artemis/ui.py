@@ -185,7 +185,8 @@ class Award(Achievement):
         self.typ = typ
         self.achieved = achieved
         if not achieved:
-            name = description = '???'
+            name = '???'
+            description = ''
         self.setup(view, x, y, name, description, achieved, size)
 
     def load_textures(self):
