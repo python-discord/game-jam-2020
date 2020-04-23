@@ -55,14 +55,17 @@ class Player(Mob):
         self.prev = Enums.IDLE
         self.texture = next(self.map[self.prev])
         self.kill_list = []
-        self.cur_recipe = ['ghost', 'ghost', 'ghost']
+        self.cur_recipe = None
 
     def add_kill(self, creature):
         # Adds a kill to kill_list. If 3 or more check the recipe then give a power up if it matches.
-
         self.kill_list.append(creature)
-        if self.cur_recipe.sort() == self.kill_list.sort():
+        print(self.kill_list)
+        print(self.cur_recipe)
+        if self.cur_recipe == self.kill_list:
             print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+            self.kill_list = []
+        elif len(self.kill_list) >= 3:
             self.kill_list = []
 
     def update_animation(self, delta_time: float = 1 / 60) -> None:

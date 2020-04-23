@@ -73,15 +73,17 @@ class Game(arcade.Window):
         # Create the dungeon
         self.dungeon = Dungeon(0, 3)
 
+        # Set up recipes
+        self.active_recipe = ActiveRecipe()
+        self.active_recipe.set_ghosts()
+
         # Set up the player, specifically placing it at these coordinates.
         self.player = Player(self.dungeon)
         self.player.scale = 1
         level = random.choice(self.dungeon.levelList)
         self.player.center_x, self.player.center_y = level.center()
+        self.player.cur_recipe = self.active_recipe.active
         # x, y = level.center()
-
-        self.active_recipe = ActiveRecipe()
-        self.active_recipe.set_ghosts()
 
         # Set up monsters
         for count in range(Config.MONSTER_COUNT//2):
@@ -181,6 +183,7 @@ class Game(arcade.Window):
             self.close()
         elif key == 65505:
             self.active_recipe.next_recipe()
+            self.player.cur_recipe = self.active_recipe.active
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
@@ -281,12 +284,12 @@ class Game(arcade.Window):
         # Enemy activation and update
         for enemy in reversed(self.enemy_list):
             if (
-                enemy.bottom > self.view_bottom and
-                enemy.top < self.view_bottom + Config.SCREEN_HEIGHT and
-                enemy.right < self.view_left + Config.SCREEN_WIDTH and
-                enemy.left > self.view_left
+                    enemy.bottom > self.view_bottom and
+                    enemy.top < self.view_bottom + Config.SCREEN_HEIGHT and
+                    enemy.right < self.view_left + Config.SCREEN_WIDTH and
+                    enemy.left > self.view_left
                 ):
-                    if Config.DEBUG: 
+                    if Config.DEBUG:
                         print("Activate Enemy")
                     self.active_enemies.append(enemy)
                     self.enemy_list.remove(enemy)

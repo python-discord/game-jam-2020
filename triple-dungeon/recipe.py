@@ -4,10 +4,8 @@ Recipes are combinations of three monsters. When a player fills a recipe they ge
 
 import arcade
 
-from enum import Enum
 
-
-class Recipe(Enum):
+class Recipe:
     '''
     A class of different recipes
     '''
@@ -41,7 +39,6 @@ class ActiveRecipe(arcade.SpriteList):
             sprite.draw()
 
     def next_recipe(self):
-        
         self.cycle_recipes[self.pos]()
         self.pos += 1
         if self.pos == len(self.cycle_recipes):
