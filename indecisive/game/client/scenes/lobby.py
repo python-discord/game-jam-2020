@@ -4,7 +4,7 @@ import arcade
 from .base import Base
 from .util import arcade_int_to_string
 import queue
-import threading
+import multiprocessing
 
 OFFSET = 320
 COLOURS = [(200, 100, 100), (100, 200, 100), (100, 100, 200)]
@@ -25,10 +25,11 @@ class Lobby(Base):
         self.send_queue = None
         self.players = [{}, {}, {}]
         self.host = False
+        self.id = None
 
         self.sprite_setup()
 
-    def reset(self, network_thread: threading.Thread, receive: queue.Queue, send: queue.Queue, host=False) -> None:
+    def reset(self, network_thread: multiprocessing.Process, receive: multiprocessing.Queue, send: multiprocessing.Queue, id, host=False) -> None:
         self.network_thread = network_thread
         self.receive_queue = receive
         self.send_queue = send
@@ -38,6 +39,7 @@ class Lobby(Base):
         self.name = ""
         self.cursor_index = -1
         self.focus = None
+        self.id = None
         self.players = [{}, {}, {}]
 
         if self.host is True:
@@ -48,7 +50,6 @@ class Lobby(Base):
                 center_y=557.5
             )
             self.spritelist.append(self.spritedict["start"])
-            print(self.spritelist)
         else:
             try:
                 self.spritedict.pop("start")
@@ -82,6 +83,8 @@ class Lobby(Base):
         else:
             if data["type"] == "playersUpdate":
                 self.players = data["data"]
+            elif data["type"] == "startGame":
+                self.start_game()
 
     def draw(self):
         self.spritelist.draw()
@@ -98,12 +101,14 @@ class Lobby(Base):
             arcade.draw_rectangle_filled(OFFSET * (c + 1.5), 700, 320, 40, COLOURS[c])
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int):
+        print(self.host)
         if self.spritedict["back"].collides_with_point((x, y)) is True:
             self.display.change_scenes("mainMenu")
         elif self.spritedict["name"].collides_with_point((x, y)) is True:
             self.focus = "name"
-        elif self.host is True and self.spritedict["start"].colliders_with_point((x, y)) is True:
-            self.start_game()
+        elif self.host is True and self.spritedict["start"].collides_with_point((x, y)) is True:
+            print("starting game")
+            self.send_queue.put({"type": "startGame"})
         else:
             self.focus = None
 
@@ -115,10 +120,15 @@ class Lobby(Base):
                 else:
                     self.name = self.name[:self.cursor_index] + self.name[self.cursor_index + 1:]
             elif key == arcade.key.DELETE:
-                if self.cursor_index == - (len(self.ip) + 1):
-                    self.ip = self.ip[1:]
-                else:
-                    self.ip = self.ip[:self.cursor_index - 1] + self.ip[self.cursor_index:]
+                if self.cursor_index == - (len(self.name) + 1):
+                    self.name = self.name[1:]
+                    self.cursor_index += 1
+                elif self.cursor_index < -2:
+                    self.name = self.name[:self.cursor_index + 1] + self.name[self.cursor_index + 2:]
+                    self.cursor_index += 1
+                elif self.cursor_index == -2:
+                    self.name = self.name[:-1]
+                    self.cursor_index += 1
             elif key == arcade.key.LEFT:
                 self.cursor_index -= 1
                 if self.cursor_index <= - (len(self.name) + 2):
@@ -137,4 +147,4 @@ class Lobby(Base):
             self.send_queue.put({"type": "nameChange", "newName": self.name})
 
     def start_game(self):
-        self.display.change_scenes("mainMenu")
+        self.display.change_scenes("game", self.network_thread, self.receive_queue, self.send_queue, self.id)

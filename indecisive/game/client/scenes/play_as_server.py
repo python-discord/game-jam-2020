@@ -25,7 +25,10 @@ class PlayAsServer(Base):
         network_thread, receive, send = run(socket.gethostbyname(socket.gethostname()))
         server_run(socket.gethostbyname(socket.gethostname()))
 
-        self.display.change_scenes("lobby", network_thread, receive, send, True)
+        status = receive.get()["status"]
+        connection_number = receive.get()["data"]
+        print(connection_number)
+        self.display.change_scenes("lobby", network_thread, receive, send, connection_number, host=True)
 
     def draw(self):
-        arcade.draw_text("Loading?", 15, 470, color=(150, 100, 100), font_size=35)  # connection status message
+        arcade.draw_text("Loading", 15, 670, color=(150, 100, 100), font_size=35)  # connection status message

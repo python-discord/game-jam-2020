@@ -1,21 +1,19 @@
-import threading
+import multiprocessing
 import queue
 from .network import Server
 from .game import Game
 
 
-def run(ip: str, port: int = None) -> (threading.Thread, queue.Queue, queue.Queue):
+def run(ip: str, port: int = None) -> (multiprocessing.Process, multiprocessing.Queue, multiprocessing.Queue):
     if port is None:
         port = 10000
 
-    receive, send = queue.Queue(), queue.Queue()
+    receive, send = multiprocessing.Queue(), multiprocessing.Queue()
 
-    network = Server(receive, send)
-    network_thread = threading.Thread(target=network.start, name="network", args=(ip, port))
+    network_thread = multiprocessing.Process(target=network.run, name="Server network", args=(receive, send, ip, port))
     network_thread.start()
 
-    game = Game(receive, send)
-    game_thread = threading.Thread(target=game.start, name="game")
+    game_thread = multiprocessing.Process(target=game.run, name="game", args=(receive, send))
     game_thread.start()
     print("Server started!")
     return game_thread, network_thread

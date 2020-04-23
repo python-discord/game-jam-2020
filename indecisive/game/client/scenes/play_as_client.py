@@ -21,7 +21,7 @@ class PlayAsClient(Base):
     def sprite_setup(self):
         self.spritedict = {
             "back": arcade.Sprite(
-                "./assets/simple_button.png",
+                "./assets/back_button.png",
                 scale=0.25,
                 center_x=160,
                 center_y=687.5
@@ -58,7 +58,8 @@ class PlayAsClient(Base):
         status = receive.get()["status"]
         if status == 0:
             # goto lobby
-            self.display.change_scenes("lobby", network_thread, receive, send)
+            connection_number = receive.get()["data"]
+            self.display.change_scenes("lobby", network_thread, receive, send, connection_number)
         elif status == 1 or status == 5:
             self.status = "Invalid address"
         elif status == 2 or status == 3:
