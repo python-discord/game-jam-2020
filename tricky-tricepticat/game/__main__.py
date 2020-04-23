@@ -18,7 +18,7 @@ from pyglet import gl
 
 UPDATES_PER_FRAME = 3
 
-PLAYER_MOVEMENT_SPEED = 200
+PLAYER_MOVEMENT_SPEED = 150
 SHIP_MOVEMENT_SPEED = 200
 CANNONBALL_SPEED = 20
 
@@ -335,7 +335,7 @@ class Enemy_SpriteSheet(arcade.Sprite):
             return
 
         elif self.is_hit:
-            print("OW!SHIT!FUCK!THAT HURTS!")
+            print("OW! You hit me!")
             frames = self.cur_hit_texture // UPDATES_PER_FRAME
             print(frames)
 
@@ -958,6 +958,10 @@ class PlayerView(arcade.View):
         if key == arcade.key.Q:
             self.formation = not self.formation
 
+        if key == arcade.key.F11:
+            self.window.set_fullscreen(not self.window.fullscreen)
+            self.window.set_vsync(not self.window.vsync)
+
     def on_key_release(self, key, key_modifiers):
         """
         Called whenever the user lets off a previously pressed key.
@@ -1077,11 +1081,11 @@ def main():
     """ Main method """
     # window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    ship_view = ShipView()
-    # player_view = PlayerView()
+    # ship_view = ShipView()
+    player_view = PlayerView()
 
-    window.show_view(ship_view)
-    # window.show_view(player_view)
+    # window.show_view(ship_view)
+    window.show_view(player_view)
 
     arcade.run()
 
