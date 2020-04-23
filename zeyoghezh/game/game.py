@@ -10,7 +10,8 @@ from .util import (
 from .planet import Planet
 from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
-    BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER
+    BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER,
+    BASE_TIME_MULTIPLIER
 )
 import sys
 
@@ -202,10 +203,13 @@ class Game(arcade.Window):
 
     def on_update(self, delta_time):
         if self.game_over_time:
-            if time.time() - self.game_over_time > 3:
+            game_over_delta_time = (
+                BASE_TIME_MULTIPLIER * (time.time() - self.game_over_time)
+            )
+            if game_over_delta_time > 3:
                 self.setup()
                 return
-        time_multiplier = delta_time / 0.0168
+        time_multiplier = BASE_TIME_MULTIPLIER * delta_time / 0.0168
         if self.player_in_tutorial:
             time_multiplier /= 6
         logger.debug("\nNew Round\n")
@@ -242,7 +246,7 @@ class Game(arcade.Window):
         now = time.time()
         if self.last_banner_change is None:
             self.set_banner_text("This is the story of Ze, Yogh, and Ezh.")
-        delta_time = now - self.last_banner_change
+        delta_time = BASE_TIME_MULTIPLIER * (now - self.last_banner_change)
         if not self.player_has_clicked_lithium and delta_time > 3:
             self.set_banner_text(
                 "See the circles? Click on their intersection.")
@@ -259,7 +263,7 @@ class Game(arcade.Window):
             self.set_banner_text(
                 "You've healed them with lithium. Keep them alive."
             )
-            delta_time = now - self.last_banner_change
+            delta_time = BASE_TIME_MULTIPLIER * (now - self.last_banner_change)
             if delta_time > 2:
                 self.player_in_tutorial = False
 
@@ -268,7 +272,7 @@ class Game(arcade.Window):
             return
         now = time.time()
         self.last_banner_change = self.last_banner_change or now-5
-        delta_time = now - self.last_banner_change
+        delta_time = BASE_TIME_MULTIPLIER * (now - self.last_banner_change)
         if delta_time < 3:
             return
         next_story_part = next(self.story_iter, self.banner_text)
