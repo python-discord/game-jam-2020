@@ -1,7 +1,8 @@
+"""Run the actual game. This is the only file intended to be run directly."""
 import arcade
 
+from constants import BACKGROUND, HEIGHT, WIDTH
 from views import Menu
-from constants import WIDTH, HEIGHT, BACKGROUND
 
 
 window = arcade.Window(WIDTH, HEIGHT, 'Gem Matcher')

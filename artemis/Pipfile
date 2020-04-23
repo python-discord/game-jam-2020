@@ -1,0 +1,25 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+arcade = "~=2.3.11"
+Pillow = "~=7.1.1"
+
+[dev-packages]
+flake8 = "~=3.7"
+flake8-annotations = "~=2.0"
+flake8-bugbear = "~=20.1"
+flake8-docstrings = "~=1.5"
+flake8-import-order = "~=0.18"
+flake8-string-format = "~=0.3"
+flake8-tidy-imports = "~=4.0"
+flake8-todo = "~=0.7"
+
+[requires]
+python_version = "3.8"
+
+[scripts]
+start = "python main.py"
+lint = "flake8 --suppress-none-returning --ignore ANN101,ANN102,I201,W503,I100 ."

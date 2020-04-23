@@ -1,9 +1,14 @@
+"""Module for the player sprite."""
+from __future__ import annotations
 import arcade
 
-from constants import ASSETS, WIDTH, HEIGHT, SPEED, SCALING
+from constants import ASSETS, HEIGHT, SCALING, SPEED, WIDTH
+import game
 
 
 class Player(arcade.Sprite):
+    """The player sprite."""
+
     TEXTURES = [
         'jump_0', 'jump_1', 'jump_2', 'jump_3', 'walk_forward_up',
         'walk_right_0_up', 'walk_right_1_up', 'walk_right_2_up',
@@ -11,13 +16,13 @@ class Player(arcade.Sprite):
         'walk_right_1_down', 'walk_right_2_down', 'walk_right_3_down'
     ]
 
-    def __init__(
-            self, game, x=WIDTH//5, y=HEIGHT//2, speed=SPEED,
-            image=ASSETS+'player_{}.png'
-            ):
+    def __init__(self, game: game.Game, x: int = WIDTH // 5,
+                 y: int = HEIGHT // 2, speed: int = SPEED,
+                 image: str = ASSETS + 'player_{}.png'):
+        """Set up counters and load textures."""
         super().__init__(
             image.format('jump_0'), center_x=x, center_y=y,
-            scale=SCALING*0.25
+            scale=SCALING * 0.25
         )
         self.image = image
         self.textures = []
@@ -33,10 +38,12 @@ class Player(arcade.Sprite):
         self.last_x = -1
 
     def switch(self):
+        """If allowed, switch gravity."""
         if self.game.engine.can_jump():
             self.game.engine.gravity_constant *= -1
 
-    def update(self, timedelta):
+    def update(self, timedelta: float):
+        """Move the player and change the texture."""
         direction = ['up', 'down'][self.game.engine.gravity_constant < 0]
         if abs(self.center_x - self.last_x) < 1:
             name = f'walk_forward_{direction}'
@@ -63,7 +70,7 @@ class Player(arcade.Sprite):
             return
 
         self.change_x = self.speed
-        if self.center_x < self.game.left + WIDTH//5:
+        if self.center_x < self.game.left + WIDTH // 5:
             self.change_x *= 1.5
 
         self.time_since_change += timedelta
