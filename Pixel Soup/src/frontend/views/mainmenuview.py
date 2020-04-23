@@ -3,12 +3,10 @@ from arcade.gui import Theme
 
 from ..gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT
 
-from .gameview import GameView
-from .loadgameview import LoadGameView
 from .settingsview import SettingsView
 
 
-class NewGameButton(arcade.TextButton):
+class NewRoomButton(arcade.TextButton):
     def __init__(
         self,
         view_reference,
@@ -16,7 +14,7 @@ class NewGameButton(arcade.TextButton):
         y=0,
         width=100,
         height=40,
-        text="New Game",
+        text="New Room",
         theme=None,
     ):
         super().__init__(x, y, width, height, text, theme=theme)
@@ -29,12 +27,8 @@ class NewGameButton(arcade.TextButton):
         if self.pressed:
             self.view_reference.clear_buttons()
 
-            game_view = GameView()
-            game_view.setup()
-            self.view_reference.window.show_view(game_view)
 
-
-class LoadGameButton(arcade.TextButton):
+class JoinRoomButton(arcade.TextButton):
     def __init__(
         self,
         view_reference,
@@ -42,7 +36,7 @@ class LoadGameButton(arcade.TextButton):
         y=0,
         width=100,
         height=40,
-        text="Load Game",
+        text="Join Room",
         theme=None,
     ):
         super().__init__(x, y, width, height, text, theme=theme)
@@ -54,10 +48,6 @@ class LoadGameButton(arcade.TextButton):
     def on_release(self) -> None:
         if self.pressed:
             self.view_reference.clear_buttons()
-
-            load_game_view = LoadGameView()
-            load_game_view.setup()
-            self.view_reference.window.show_view(load_game_view)
 
 
 class SettingsButton(arcade.TextButton):
@@ -114,7 +104,7 @@ class MainMenuView(arcade.View):
     def set_buttons(self):
         """Initialize all the Main Menu buttons."""
         self.window.button_list.append(
-            NewGameButton(
+            NewRoomButton(
                 self,
                 0.5 * SCREEN_WIDTH,
                 0.62 * SCREEN_HEIGHT,
@@ -125,7 +115,7 @@ class MainMenuView(arcade.View):
         )
 
         self.window.button_list.append(
-            LoadGameButton(
+            JoinRoomButton(
                 self,
                 0.5 * SCREEN_WIDTH,
                 0.5 * SCREEN_HEIGHT,
