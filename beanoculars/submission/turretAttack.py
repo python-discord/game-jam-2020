@@ -72,7 +72,19 @@ def getTarget(turret: arcade.sprite, entity_list: arcade.sprite_list):
             return entity_list[max_pos_pref]
 
         elif max_x != 0:
+            x_sign = turret.center_x - entity_list[max_pos].center_x
+            y_sign = turret.center_y - entity_list[max_pos].center_y
+            if abs(x_sign) > abs(y_sign):
+                if x_sign > 0:
+                    turret.character_face_direction = RIGHT_FACING
+                else:
+                    turret.character_face_direction = LEFT_FACING
 
+            if abs(x_sign) <= abs(y_sign):
+                if y_sign > 0:
+                    turret.character_face_direction = DOWN_FACING
+                else:
+                    turret.character_face_direction = UP_FACING
             return entity_list[max_pos]
 
     else:
