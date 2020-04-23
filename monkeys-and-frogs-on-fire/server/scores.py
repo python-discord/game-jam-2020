@@ -29,3 +29,27 @@ class Scores(Cog, route='scores'):
                 'status': Status.SUCCESS.value
             }
         })
+
+    @auth_required
+    def get_top_ten(
+        data: Dict[str, Any],
+        token: str,
+        id_: str,
+        **kwargs: Any
+    ) -> None:
+        with managed_session() as session:
+            scores = session.query(Score).order_by(Score.score.desc()).limit(10).all()
+
+            kwargs['client_send']({
+                'headers': {
+                    'path': 'scores/post_top_ten',
+                    'status': Status.SUCCESS.value
+                },
+                'scores': [
+                    {
+                        'score': score.score,
+                        'username': score.user.username,
+                        'user_id': score.user.id
+                    } for score in scores
+                ]
+            })
