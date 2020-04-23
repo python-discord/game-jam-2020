@@ -80,5 +80,32 @@ ACHIEVEMENTS = [
             'description': 'Play for ten hours.',
             'name': 'All my spare time'
         }
-    ]
+    ],
+]
+
+AWARDS = [
+    {
+        'description': 'Get a point using no common gems.',
+        'name': 'All in white'
+    },
+    {
+        'description': 'Restart four times in a row.',
+        'name': 'The perfect spawn'
+    },
+    {
+        'description': 'Get a point while having two pink gems.',
+        'name': 'I like pink'
+    },
+    {
+        'description': 'Get a red, yellow and blue set in one game.',
+        'name': 'Gotta catch em all'
+    },
+    {
+        'description': 'Get a set without any white gems in.',
+        'name': 'Wildcards are for the weak',
+    },
+    {
+        'description': 'Score exactly 69.',
+        'name': 'The perfect score doesn\'t ex-'
+    },
 ]
