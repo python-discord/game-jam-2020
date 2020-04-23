@@ -44,6 +44,7 @@ class Game(View):
 
         for _ in range(3):
             Gem(self)
+        for _ in range(2):
             RandomBlock(self)
 
         for n in range(5):
@@ -149,10 +150,15 @@ class Game(View):
                 if removed == 3:
                     return
 
-    def game_over(self, message: str):
-        """Display the game over view with some explanatory message."""
+    def save(self):
+        """Save the player's score and time spent playing."""
         add_score(self.score)
         add_time(self.time)
+
+
+    def game_over(self, message: str):
+        """Display the game over view with some explanatory message."""
+        self.save()
         self.window.show_view(views.GameOver(message))
 
     def scroll(self):

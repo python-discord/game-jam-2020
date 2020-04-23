@@ -32,6 +32,7 @@ class Paused(View):
 
     def home(self):
         """Show the menu view."""
+        self.game.save()
         self.window.show_view(Menu())
 
     def play(self):
@@ -40,6 +41,7 @@ class Paused(View):
 
     def restart(self):
         """Start a new game."""
+        self.game.save()
         self.window.show_view(Game())
 
     def on_draw(self):
