@@ -23,4 +23,4 @@ python_version = "3.8"
 
 [scripts]
 start = "python main.py"
-lint = "flake8 --suppress-none-returning --ignore ANN101,ANN102,I201,W503,I100 ."
+lint = "flake8 --suppress-none-returning --ignore ANN002,ANN003,ANN101,ANN102,I201,W503,I100 ."

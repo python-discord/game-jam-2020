@@ -184,6 +184,8 @@ class Award(Achievement):
         """Load textures and store parameters."""
         self.typ = typ
         self.achieved = achieved
+        if not achieved:
+            name = description = '???'
         self.setup(view, x, y, name, description, achieved, size)
 
     def load_textures(self):
