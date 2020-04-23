@@ -61,11 +61,11 @@ class Level(arcade.View):
             self.players.append(p)
             self.playerHeight = p.height
 
-        for i in range(20):
+        for i in range(40):
             self.normalGrounds.append(makeTerrain(self.space, NormalGround, self.normalGroundTextures, 1, i * 32, 0))
 
         for i in range(1):
-            self.spikes.append(makeTerrain(self.space, BadSpike, self.spikeTextures, 1, 50, 20))
+            self.spikes.append(makeTerrain(self.space, BadSpike, self.spikeTextures, 1, 200, 20))
 
     def on_draw(self):
         arcade.start_render()
@@ -94,7 +94,7 @@ class Level(arcade.View):
             self.controlled = 1
         elif key == arcade.key.NUM_3 or key == arcade.key.KEY_3:
             self.controlled = 2
-        elif key == arcade.key.DOWN:
+        elif key == arcade.key.DOWN or key == arcade.key.S:
             self.splitStack()
 
     def on_key_release(self, key, modifiers):
@@ -246,6 +246,7 @@ class Level(arcade.View):
                 i.update()
             for p in self.players:
                 p.update()
+                p.update_animation(dt)
                 boxes = arcade.check_for_collision_with_list(p, self.normalGrounds)
                 if_collide = [True for pl in self.players if arcade.check_for_collision(p, pl) and pl != p]
                 if (boxes != [] or True in if_collide) and abs(p.pymunk_shape.body.velocity.y) < 3:

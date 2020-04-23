@@ -8,18 +8,30 @@ class Player(arcade.Sprite):
         self.pymunk_shape = pymunk_shape
         self.can_jump = True
 
-        self.textures = textures
-        self.texture = self.textures[0]
+        self.textureList = textures
+        self.texture = self.textureList[0]
         self.name = name
         self.currState = 'normal'
         self.scale = scale
 
         self.center_x, self.center_y = x, y
+        self.timeSinceAnimating = 0
 
     def update_animation(self, delta_time: float = 1/60):
+        if self.timeSinceAnimating < 1:  # don't wanna animate the thing too fast, makes it kinda distracting
+            self.timeSinceAnimating += delta_time
+            return
+        self.timeSinceAnimating = 0
         nextState = random.randint(0, 1)
-        self.texture = self.textures[nextState]
+        if nextState == 0:  # don't change the texture
+            return
+        else:  # ok, change
+            rnTexture = self.textureList.index(self.texture)
+            self.texture = random.choice(self.textureList[:rnTexture] + self.textureList[rnTexture + 1:])
 
+class EnemyThing:
+    def __init__(self):
+        pass
 
 def makeMob(mass, space, mobType, textures, scale, x, y, name):
     pos_x, pos_y = x, y
