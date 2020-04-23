@@ -72,6 +72,12 @@ class TripleVision(arcade.View):
 
         self.physics_engine = SlowModeSupportEngine(self.player, self.collision_list)
 
+    def on_key_press(self, key, modifiers) -> None:
+        self.player.process_key_press(key)
+
+    def on_key_release(self, key, modifiers) -> None:
+        self.player.process_key_release(key)
+
     def on_mouse_motion(self, x, y, dx, dy) -> None:
         self.card_manager.check_mouse_motion(
             x + self.camera.viewport_left,
@@ -87,8 +93,6 @@ class TripleVision(arcade.View):
 
         if not self.card_manager.process_mouse_press(x, y, button):
             if button == arcade.MOUSE_BUTTON_LEFT:
-                self.player.process_left_mouse_press(x, y)
-            elif button == arcade.MOUSE_BUTTON_RIGHT:
                 self.charging = True
 
     def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
@@ -98,8 +102,8 @@ class TripleVision(arcade.View):
         x += self.camera.viewport_left
         y += self.camera.viewport_bottom
 
-        if button == arcade.MOUSE_BUTTON_RIGHT and self.charging is True:
-            self.player.process_right_mouse_press(x, y, self.charge)
+        if button == arcade.MOUSE_BUTTON_LEFT and self.charging:
+            self.player.process_left_mouse_press(x, y, self.charge)
             self.charging = False
             self.charge = 0
 
@@ -139,14 +143,6 @@ class TripleVision(arcade.View):
     #     bullet.move_to_angle(math.atan2(vec[1], vec[0]))
     #     self.bullet_list.append(bullet)
 
-    def on_key_press(self, key, modifiers) -> None:
-        if key == arcade.key.KEY_1:
-            self.player.cur_color = 'red'
-        elif key == arcade.key.KEY_2:
-            self.player.cur_color = 'green'
-        elif key == arcade.key.KEY_3:
-            self.player.cur_color = 'blue'
-
     def on_draw(self) -> None:
         arcade.start_render()
 
@@ -165,14 +161,10 @@ class TripleVision(arcade.View):
         if self.charging and self.charge < 100:
             self.charge += delta_time*60
 
-        self.update_(delta_time)
-        self.card_manager.update()
-        self.player.update_health_bar(delta_time)
-
-    def update_(self, delta_time: float) -> None:
         if self.player.is_alive:
             self.player.on_update(delta_time)
 
+        self.card_manager.update()
         self.game_manager.on_update(delta_time)
         self.physics_engine.update()
         self.map.on_update()

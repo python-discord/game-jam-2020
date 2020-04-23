@@ -148,6 +148,7 @@ class AnimatedEntity(Entity):
 
     def on_update(self, delta_time: float = 1/60) -> None:
         self.update_animation(delta_time)
+        super().on_update(delta_time)
 
 
 class LivingEntity(AnimatedEntity):

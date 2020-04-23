@@ -5,8 +5,9 @@ from itertools import chain
 import arcade
 
 from triple_vision import Settings as s
+from triple_vision import Tile
 from triple_vision.entities import LivingEntity
-from triple_vision.entities.sprites import MovingSprite, HealthBar
+from triple_vision.entities.sprites import HealthBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
@@ -21,11 +22,11 @@ class Player(LivingEntity, MovingSprite):
             is_colored=True,
             has_hit_frame=True,
             gender=gender,
-            moving_speed=3,
             scale=s.SCALING,
             hp=1000,
-            rotate=False,
-            ctx=view.game_manager
+            ctx=view.game_manager,
+            moving_speed=3,
+            rotate=False
         )
 
         self.view = view
@@ -41,6 +42,11 @@ class Player(LivingEntity, MovingSprite):
         self.path = None
 
         self.health_bar: HealthBar = None
+
+        self.left_pressed = False
+        self.right_pressed = False
+        self.up_pressed = False
+        self.down_pressed = False
 
     @property
     def curr_color(self):
@@ -108,28 +114,27 @@ class Player(LivingEntity, MovingSprite):
         self.center_x = center[0]
         self.center_y = center[1] + s.PLAYER_CENTER_Y_COMPENSATION
 
-    def process_left_mouse_press(self, x, y) -> None:
-        # First path position is the closest grid center from player center,
-        # to force the player to be centered in tile before transversing
-        closest_grid_tile_x, closest_grid_tile_y = pixels_to_tile(self.center_x, self.center_y)
+    def process_key_press(self, key) -> None:
+        if key == arcade.key.W:
+            self.up_pressed = True
+        elif key == arcade.key.S:
+            self.down_pressed = True
+        elif key == arcade.key.A:
+            self.left_pressed = True
+        elif key == arcade.key.D:
+            self.right_pressed = True
 
-        try:
-            path = iter(
-                self.path_finder.find(
-                    pixels_to_tile(self.center_x, self.center_y),
-                    pixels_to_tile(x, y),
-                    self.view.collision_list,
-                    self.view.map.sprites
-                )
-            )
+    def process_key_release(self, key) -> None:
+        if key == arcade.key.W:
+            self.up_pressed = False
+        elif key == arcade.key.S:
+            self.down_pressed = False
+        elif key == arcade.key.A:
+            self.left_pressed = False
+        elif key == arcade.key.D:
+            self.right_pressed = False
 
-        except TypeError:
-            print('Path is either impossible or too far away!')
-
-        else:
-            self.path = chain(((closest_grid_tile_x, closest_grid_tile_y),), path)
-
-    def process_right_mouse_press(self, x, y, charge: int):
+    def process_left_mouse_press(self, x, y, charge) -> None:
         if time.time() - self.last_shot < self.dexterity:
             # TODO Play empty gun sound or something similar
             return
@@ -151,19 +156,31 @@ class Player(LivingEntity, MovingSprite):
         super().kill()
 
     def on_update(self, delta_time: float = 1 / 60) -> None:
-        if self.path is not None and self.target is None:
-            try:
-                pos = tile_to_pixels(*next(self.path))
-                self.move_to(pos[0], pos[1] + s.PLAYER_CENTER_Y_COMPENSATION)
+        change_x = 0
+        change_y = 0
 
-            except StopIteration:
-                self.path = None
+        if self.up_pressed and not self.down_pressed:
+            change_y = 1
+        elif self.down_pressed and not self.up_pressed:
+            change_y = -1
 
-        super().on_update(delta_time)
-        super().force_moving_sprite_on_update(delta_time)
+        if self.left_pressed and not self.right_pressed:
+            change_x = -1
+        elif self.right_pressed and not self.left_pressed:
+            change_x = 1
 
-    def update_health_bar(self, delta_time):
+        dest = tile_to_pixels(
+            *pixels_to_tile(
+                self.center_x + change_x * Tile.SCALED,
+                self.center_y + change_y * Tile.SCALED
+            )
+        )
+
+        if not arcade.get_sprites_at_exact_point(dest, self.view.collision_list):
+            self.move_to(dest[0], dest[1] + s.PLAYER_CENTER_Y_COMPENSATION)
+
         self.health_bar.on_update(delta_time)
+        super().on_update(delta_time)
 
     def draw(self):
         super().draw()
