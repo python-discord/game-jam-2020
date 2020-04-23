@@ -680,6 +680,10 @@ class ShipView(arcade.View):
         if key == arcade.key.MINUS:
             self.viewport_scale += 0.5
 
+        if key == arcade.key.F11:
+            self.window.set_fullscreen(not self.window.fullscreen)
+            self.window.set_vsync(not self.window.vsync)
+
     def on_key_release(self, key, key_modifiers):
         """
         Called whenever the user lets off a previously pressed key.
