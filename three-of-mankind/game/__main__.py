@@ -19,6 +19,7 @@ class Game(ColorIsolationWindow):
         super().__init__(*args, **kwargs)
         self.ingame = False
         self.gamestate = None
+        self.set_isolation_color((49, 119, 255))
 
     def on_update(self, delta_time: float) -> None:
         """Send update event to the gamestate."""

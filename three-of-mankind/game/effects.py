@@ -13,6 +13,7 @@ class ColorIsolationWindow(arcade.Window):
         super().__init__(*args, **kwargs)
 
         self.isolation_color = (0., 0., 0.)
+        self.threshold = 2.3
 
         self.fs_program = self.ctx.program(
             vertex_shader="""
@@ -111,10 +112,11 @@ class ColorIsolationWindow(arcade.Window):
             in vec2 v_uv;
             uniform sampler2D tex;
             uniform vec3 special_color;
+            uniform float threshold;
             out vec4 out_color;
             void main() {
                 vec3 col = texture(tex, v_uv).xyz;
-                if (deltaE(rgb2lab(special_color), rgb2lab(col)) > .1) {
+                if (deltaE(rgb2lab(special_color), rgb2lab(col)) > threshold) {
                     float g = 0.2989 * col.x + 0.5870 * col.y + 0.1140 * col.z;
                     col = vec3(g);
                 }
@@ -139,6 +141,7 @@ class ColorIsolationWindow(arcade.Window):
             # bind the texture
             self.ost.use(0)
             self.fs_program['special_color'] = self.isolation_color
+            self.fs_program['threshold'] = self.threshold
             # render the effect
             self.fs_quad.render(self.fs_program)
 
@@ -152,8 +155,11 @@ class ColorIsolationWindow(arcade.Window):
         """
         pass
 
-    def isolate_color(self, color) -> None:
-        self.isolation_color = color
+    def set_isolation_color(self, color) -> None:
+        self.isolation_color = (color[0] / 255., color[1] / 255., color[2] / 255.)
+
+    def set_isolation_threshold(self, threshold):
+        self.threshold = threshold
 
 
 if __name__ == "__main__":
