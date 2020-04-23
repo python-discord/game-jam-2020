@@ -1,6 +1,5 @@
-import time
 import random
-from itertools import chain
+import time
 
 import arcade
 
@@ -106,7 +105,7 @@ class Player(LivingEntity, MovingSprite):
             center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
 
             if (
-                len(arcade.get_sprites_at_point(center, self.view.collision_list)) == 0 and 
+                len(arcade.get_sprites_at_point(center, self.view.collision_list)) == 0 and
                 len(arcade.get_sprites_at_point(center, self.view.map.sprites)) > 0
             ):
                 break

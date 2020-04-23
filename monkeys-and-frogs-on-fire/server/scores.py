@@ -7,7 +7,6 @@ from frost.server.database import managed_session
 from server.models import Score
 
 
-
 class Scores(Cog, route='scores'):
 
     @auth_required

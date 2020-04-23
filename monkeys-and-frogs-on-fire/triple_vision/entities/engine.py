@@ -3,12 +3,12 @@ from typing import Tuple
 import arcade
 
 from triple_vision import Settings as s
+from triple_vision.entities import MovingSprite
 from triple_vision.utils import (
     pixels_to_tile,
     tile_to_pixels,
     closest_grid_position
 )
-from triple_vision.entities import MovingSprite
 
 
 class SlowModeSupportEngine:

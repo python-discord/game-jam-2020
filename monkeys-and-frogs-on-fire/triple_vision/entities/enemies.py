@@ -1,6 +1,5 @@
 import enum
 from pathlib import Path
-import random
 
 import arcade
 

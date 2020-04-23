@@ -1,6 +1,6 @@
 import itertools
-from pathlib import Path
 import random
+from pathlib import Path
 from typing import Any, Optional, Tuple
 
 import arcade
@@ -27,7 +27,7 @@ class Entity(arcade.Sprite):
                 center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
 
                 if (
-                    len(arcade.get_sprites_at_point(center, self.ctx.view.collision_list)) == 0 and 
+                    len(arcade.get_sprites_at_point(center, self.ctx.view.collision_list)) == 0 and
                     len(arcade.get_sprites_at_point(center, self.ctx.view.map.sprites)) > 0
                 ):
                     break

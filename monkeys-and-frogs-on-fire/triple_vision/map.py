@@ -45,7 +45,7 @@ class Map:
                         max(j - 1, 0): min(j + 2, map_.shape[1])
                     ]
                     flat_submap = submap.flatten()
-                    wall_count_1_away = len(np.where(flat_submap== self.WALL)[0])
+                    wall_count_1_away = len(np.where(flat_submap == self.WALL)[0])
                     floor_count_1_away = len(np.where((flat_submap == self.FLOOR) | (flat_submap == self.SPIKE))[0])
 
                     # Get walls that are 2 away from each index
