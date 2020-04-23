@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0, Path(__file__).parent)
 from arcade.gui import *
 import random
-from gamer_gang.dumbConstants import *
+from dumbConstants import *
 
 
 class MenuView(arcade.View):

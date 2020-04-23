@@ -3,9 +3,9 @@ import itertools
 from pathlib import Path
 import sys
 sys.path.insert(0, Path(__file__).parent)
-from gamer_gang.mechanics.player import *
-from gamer_gang.mechanics.terrainStuff import *
-from gamer_gang.dumbConstants import *
+from mechanics.player import *
+from mechanics.terrainStuff import *
+from dumbConstants import *
 
 def getNames(name):
     name = name.split(sep='on')
