@@ -430,14 +430,12 @@ class ShipView(arcade.View):
 
         self.audio_list = []
         self.music = arcade.Sound(
-            str(path['sound'] / "shanty1.mp3"), streaming=True
+            str(path['sound'] / "shanty1.mp3")
         )
 
         self.ambient_track = arcade.Sound(
-            str(path['sound'] / "ship_ambient.mp3"), streaming=True
+            str(path['sound'] / "ship_ambient.mp3")
         )
-
-
 
         self.audio_list.append(self.music)
         self.audio_list.append(self.ambient_track)
@@ -446,7 +444,7 @@ class ShipView(arcade.View):
             audio.play()
 
         self.music.set_volume(MUSIC_VOLUME*0.2)
-        self.ambient_track.set_volume(MUSIC_VOLUME*0.2)
+        self.ambient_track.set_volume(MUSIC_VOLUME*0.4)
 
         self.viewport_scale = 1
 
@@ -502,14 +500,12 @@ class ShipView(arcade.View):
 
     def play_audio(self):
         for audio in self.audio_list:
-            if audio.get_stream_position() >= audio.get_length():
-                file_name = audio.file_name
+            # Have to stop and play before audio ends or the audio
+            # cannot be played again
+            if audio.get_stream_position() >= audio.get_length()-0.5:
                 volume = audio.get_volume()
-                print(file_name, volume)
-
-                audio = arcade.Sound(
-                    file_name, streaming=True
-                ).play(volume=volume)
+                audio.stop()
+                audio.play(volume=volume)
 
     def on_draw(self):
         arcade.start_render()
@@ -898,7 +894,7 @@ class PlayerView(arcade.View):
 
         self.enemy_list.on_update(delta_time)
 
-        # Handle positioning the player's weapon
+        '''Handle positioning the player's weapon'''
         dx = (self.mouse_position[0]*self.viewport_scale+arcade.get_viewport()[0])-self.player_sprite.center_x
         dy = (self.mouse_position[1]*self.viewport_scale+arcade.get_viewport()[2])-self.player_sprite.center_y
         angle = atan2(dy, dx)
@@ -1081,11 +1077,11 @@ def main():
     """ Main method """
     # window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    # ship_view = ShipView()
-    player_view = PlayerView()
+    ship_view = ShipView()
+    # player_view = PlayerView()
 
-    # window.show_view(ship_view)
-    window.show_view(player_view)
+    window.show_view(ship_view)
+    # window.show_view(player_view)
 
     arcade.run()
 
