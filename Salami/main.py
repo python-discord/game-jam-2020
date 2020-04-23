@@ -12,33 +12,36 @@ import Maths
 import psutil
 import os
 
+from TextInput import TextInput
 from Constants import WIDTH, HEIGHT, TITLE
 
 class PyGameJam2020(arcade.Window):
 
     def __init__(self):
         super().__init__(WIDTH, HEIGHT, TITLE)
+        
+        arcade.set_background_color((19, 14, 30))
 
         self.frames = 0
         self.time = 0
 
-        self.mouse_x = 0
-        self.mouse_y = 0
+        self.debug_text = ""
+        self.debug = True
 
-        self.zoom_width = WIDTH
-        self.zoom_height = HEIGHT
+        self.process = psutil.Process(os.getpid())
+
+        self.set_icon(pyglet.image.load("Salami/icon.png"))
+
+        self.text_input = TextInput()
 
         self.camera = Camera.Camera(WIDTH, HEIGHT)
         self.keyboard = Keyboard.Keyboard()
 
-        self.debug_test = ""
-
-        self.set_icon(pyglet.image.load("Salami/icon.png"))
-
         self.set_location((self.camera.screen_width - WIDTH) // 2, (self.camera.screen_height - HEIGHT) // 2)
 
+
     def setup(self):
-        arcade.set_background_color((19, 14, 30))
+        
         self.level = Level.Level(self.camera, self.keyboard)
 
     def on_update(self, delta):
@@ -47,21 +50,25 @@ class PyGameJam2020(arcade.Window):
 
         self.camera.scroll_to(self.level.player.center_x, self.level.player.center_y)
 
+        # self.text_input.x = self.level.player.center_x
+        # self.text_input.y = self.level.player.center_y + 8
+
         if self.keyboard.is_pressed("zoom_in"):
             self.camera.zoom(0.95)
         elif self.keyboard.is_pressed("zoom_out"):
             self.camera.zoom(1/0.95)
 
-        self.frames += 1
-        self.time += delta
-
-        if self.time >= 1:
-            process = psutil.Process(os.getpid())
+        if self.debug:
             
-            self.debug_test = f"FPS: {self.frames}\nUsing: {process.memory_info().rss / 1000000} MB"
+            self.frames += 1
+            self.time += delta
 
-            self.time -= 1
-            self.frames = 0
+            if self.time >= 1:
+                
+                self.debug_text = f"FPS: {self.frames} | Using: {self.process.memory_info().rss / 1000000} MB"
+                # print(self.debug_text)
+                self.time -= 1
+                self.frames = 0
 
     def on_draw(self):
 
@@ -71,15 +78,18 @@ class PyGameJam2020(arcade.Window):
 
         self.level.draw()
 
-        self.camera.reset_viewport()
+        # self.text_input.draw()
 
-        arcade.draw_text(self.debug_test, 12, 12, arcade.color.WHITE)
+        # if self.debug:
+            # self.camera.reset_viewport()
+            # arcade.draw_text(self.debug_text, 12, 12, arcade.color.WHITE)
 
     def on_key_press(self, key, modifiers):
         self.keyboard.on_key_press(key, modifiers)
     
     def on_key_release(self, key, modifiers):
         self.keyboard.on_key_release(key, modifiers)
+        # self.text_input.on_key_press(key, modifiers)
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_x = x
