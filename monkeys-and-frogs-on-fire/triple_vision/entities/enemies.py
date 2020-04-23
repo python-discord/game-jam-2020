@@ -1,4 +1,5 @@
 import enum
+import random
 from pathlib import Path
 
 import arcade
@@ -95,6 +96,8 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
         self.path_finder = PathFinder()
         self.path = None
 
+        self._tick_time = 0.0
+
     def on_update(self, delta_time: float = 1/60) -> None:
         if not self.being_pushed:
             if is_in_radius(self, self.target_sprite, self.detection_radius):
@@ -108,19 +111,27 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
                         self.path = None
 
                 else:
-
-                    try:
-                        self.path = iter(
-                            self.path_finder.find(
-                                pixels_to_tile(self.center_x, self.center_y),
-                                pixels_to_tile(self.target_sprite.center_x, self.target_sprite.center_y),
-                                self.ctx.view.collision_list,
-                                self.ctx.view.map.sprites
+                    # Once path is found it should be rarely updated.
+                    # However we don't really want multiple enemies to call find()
+                    # in the same on_update, so we add a bit of randomness to it that isn't
+                    # noticeable in the gameplay.
+                    if self._tick_time > round(random.uniform(0.0, 0.2), 2):
+                        self._tick_time = 0.0
+                        try:
+                            self.path = self.path_finder.find(
+                                        pixels_to_tile(self.center_x, self.center_y),
+                                        pixels_to_tile(
+                                            self.target_sprite.center_x,
+                                            self.target_sprite.center_y
+                                        ),
+                                        self.ctx.view.collision_list,
+                                        self.ctx.view.map.sprites
                             )
-                        )
 
-                    except TypeError:
-                        pass
+                        except TypeError:
+                            pass
+                    else:
+                        self._tick_time += delta_time
             else:
                 self.change_x = 0
                 self.change_y = 0
