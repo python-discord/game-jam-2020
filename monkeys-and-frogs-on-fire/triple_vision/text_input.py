@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Tuple
 
 import arcade
 
@@ -14,7 +14,7 @@ class TextInput:
         box_color: Tuple[int, int, int, int] = arcade.color.WHITE,
         border_color: Tuple[int, int, int, int] = arcade.color.BLACK,
         border_width: float = 1,
-        text: Optional[str] = None,
+        text: str = '',
         text_color: Tuple[int, int, int, int] = arcade.color.BLACK,
         bold: bool = False,
         italic: bool = False,
@@ -64,36 +64,84 @@ class TextInput:
         )
 
         self.text_sprites = arcade.SpriteList()
-
-        text_sprite = arcade.draw_text(
-            text=text or 'L',
-            start_x=center_x - (width / 2) + horizontal_margin,
-            start_y=center_y - (height / 2) + vertical_margin,
-            color=text_color,
-            font_size=font_size,
-            bold=bold,
-            italic=italic
+        self.text_sprites.append(
+            arcade.draw_text(
+                text='',
+                start_x=center_x - (width / 2) + horizontal_margin,
+                start_y=center_y - (height / 2) + vertical_margin,
+                color=text_color,
+                font_size=font_size,
+                bold=bold,
+                italic=italic
+            )
         )
-        if not text:
-            text_sprite.alpha = 0
-
-        self.text_sprites.append(text_sprite)
+        self.text_widths = list()
 
         self.cursor_sprites = arcade.ShapeElementList()
         self.cursor = arcade.create_rectangle_filled(
             center_x=center_x - (width / 2) + horizontal_margin,
-            center_y=center_y - (height / 2) + vertical_margin + text_sprite.height / 2,
+            center_y=center_y - (height / 2) + vertical_margin + self.text_sprites[0].height / 2,
             width=1,
-            height=text_sprite.height,
+            height=self.text_sprites[0].height,
             color=cursor_color
         )
         self.cursor_sprites.append(self.cursor)
 
         self.cursor_color = cursor_color
+        self.prev_cursor_idx = 0
         self.cursor_idx = 0
 
         self.cursor_is_active = True
         self.cursor_blink_delta = 0
+
+    def move_cursor(self) -> bool:
+        if self.prev_cursor_idx != self.cursor_idx:
+            self.cursor_sprites.remove(self.cursor)
+
+            center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
+                sum(self.text_widths[:self.cursor_idx + 1]) + 1
+
+            center_y = self.center_y - (self.height / 2) + self.vertical_margin + \
+                self.text_sprites[0].height / 2
+
+            self.cursor = arcade.create_rectangle_filled(
+                center_x=center_x,
+                center_y=center_y,
+                width=1,
+                height=self.text_sprites[0].height,
+                color=self.cursor_color
+            )
+
+            self.cursor_sprites.append(self.cursor)
+            self.prev_cursor_idx = self.cursor_idx
+
+            return True
+
+        return False
+
+    def process_key_press(self, key, modifiers) -> None:
+        if 32 <= key <= 126:
+            if modifiers & 1 == 1:
+                key -= 32
+
+            key = chr(key)
+            self.text += key
+
+            self.text_sprites.pop(0)
+            self.text_sprites.append(
+                arcade.draw_text(
+                    text=self.text,
+                    start_x=self.center_x - (self.width / 2) + self.horizontal_margin,
+                    start_y=self.center_y - (self.height / 2) + self.vertical_margin,
+                    color=self.text_color,
+                    font_size=self.font_size,
+                    bold=self.bold,
+                    italic=self.italic
+                )
+            )
+
+            self.text_widths.append(arcade.draw_text(key, 0, 0, self.box_color).width)
+            self.cursor_idx += 1
 
     def draw(self) -> None:
         self.shapes.draw()
@@ -101,13 +149,19 @@ class TextInput:
         self.cursor_sprites.draw()
 
     def on_update(self, delta_time: float = 1/60) -> None:
+        if self.move_cursor():
+            return
+
         self.cursor_blink_delta += delta_time
 
         if self.cursor_blink_delta > 0.5:
             self.cursor_sprites.remove(self.cursor)
 
-            center_x = self.center_x - (self.width / 2) + self.horizontal_margin
-            center_y = self.center_y - (self.height / 2) + self.vertical_margin + self.text_sprites[0].height / 2
+            center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
+                sum(self.text_widths[:self.cursor_idx + 1]) + 1
+
+            center_y = self.center_y - (self.height / 2) + self.vertical_margin + \
+                self.text_sprites[0].height / 2
 
             if self.cursor_is_active:
                 self.cursor = arcade.create_rectangle_filled(
@@ -151,6 +205,9 @@ if __name__ == "__main__":
                 WINDOW_SIZE[1] / 2,
                 300, 25
             )
+
+        def on_key_press(self, key, modifiers) -> None:
+            self.text_input.process_key_press(key, modifiers)
 
         def on_draw(self) -> None:
             arcade.start_render()
