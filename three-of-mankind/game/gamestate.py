@@ -51,19 +51,20 @@ class GameState:
         """Called whenever a key is pressed."""
         # Pre
         if self.engine.can_jump():
-            self.player.jump_count = 0
             self.player.dash_count = 0
+            self.player.jump_count = 0
 
         # Dashing
         if key == arcade.key.LSHIFT:
             if not sweep_trace(self.player, DASH_DISTANCE, 0, self.level_geometry):
                 can_dash = True
 
-                if self.player.dash_count < DASH_COUNT:
-                    self.player.dash_count += 1
+                if not self.engine.can_jump():
+                    if self.player.dash_count < DASH_COUNT:
+                        self.player.dash_count += 1
 
-                else:
-                    can_dash = False
+                    else:
+                        can_dash = False
 
                 if can_dash:
                     self.player.left += DASH_DISTANCE * self.player.direction

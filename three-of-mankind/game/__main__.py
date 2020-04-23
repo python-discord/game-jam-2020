@@ -3,8 +3,8 @@ import logging
 import arcade
 from .gamestate import GameState
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 768
 SCREEN_TITLE = "epic"
 
 format_string = "%(asctime)s | %(filename)s#%(lineno)d | %(levelname)s | %(message)s"
