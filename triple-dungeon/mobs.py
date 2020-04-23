@@ -31,6 +31,90 @@ class Mob(arcade.Sprite):
         self.dungeon = dungeon
         self.target = None
 
+    
+
+
+class Player(Mob):
+    """
+    Represents a Player.
+    While this is a instance, there should only be one in the world at any given time.
+    """
+
+    def __init__(self, *args, **kwargs) -> None:
+        super(Player, self).__init__(*args, **kwargs)
+
+        self.animations = PlayerAnimations(SpritePaths.KNIGHT)
+        # Used for mapping directions to animations
+        self.map = {
+            Enums.IDLE: self.animations.idles,
+            Enums.UP: self.animations.up,
+            Enums.DOWN: self.animations.down,
+            Enums.RIGHT: self.animations.right,
+            Enums.LEFT: self.animations.left
+        }
+
+        self.refreshIndex = 0
+        self.prev = Enums.IDLE
+        self.texture = next(self.map[self.prev])
+        self.kill_list = []
+        self.cur_recipe = ['ghost', 'ghost', 'ghost']
+
+    def add_kill(self, creature):
+        # Adds a kill to kill_list. If 3 or more check the recipe then give a power up if it matches.
+
+        self.kill_list.append(creature)
+        if self.cur_recipe == self.kill_list:
+            print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+            self.kill_list = []
+
+
+    def update_animation(self, delta_time: float = 1 / 60) -> None:
+        """
+        Updates animations for the Player.
+        :param delta_time: No idea.
+        """
+
+        # Increase the refresh index according
+        self.refreshIndex = (self.refreshIndex + 1) % Config.RUN_UPDATES_PER_FRAME
+
+        # Logic to determine what direction we're in.
+        if self.change_x == 0 and self.change_y == 0:
+            cur = Enums.IDLE
+        elif self.change_y > 0:  # Up
+            cur = Enums.UP
+        elif self.change_y < 0:  # Down
+            cur = Enums.DOWN
+        elif self.change_x > 0:  # Left
+            cur = Enums.RIGHT
+        elif self.change_x < 0:  # Right
+            cur = Enums.LEFT
+        else:  # Idle
+            cur = Enums.IDLE
+
+        # If we're in a new direction or the refresh index has reset
+        if self.prev is not cur or self.refreshIndex == 0:
+            self.texture = next(self.map[cur])
+
+        self.prev = cur
+
+    def tick(self):
+        """
+        While Player objects do not have any AI (they are controlled by the user),
+        the tick function can keep track of statistics that progress over time, like
+        regenerating health/armor or status effects like poison.
+        """
+
+
+class Enemy(Mob):
+    """
+    Represents an Enemy Mob.
+    Will take basic offensive actions against Player objects.
+    """
+
+    def __init__(self, *args, **kwargs) -> None:
+        super(Enemy, self).__init__(*args, **kwargs)
+        self.monster_type = ''
+
     def nearestPosition(self) -> Tuple[int, int]:
         """
         Returns the nearest absolute dungeon tile the Mob is placed on.
@@ -78,86 +162,3 @@ class Mob(arcade.Sprite):
             self.dungeon.grid.cleanup()
             return paths
 
-
-class Player(Mob):
-    """
-    Represents a Player.
-    While this is a instance, there should only be one in the world at any given time.
-    """
-
-    def __init__(self, *args, **kwargs) -> None:
-        super(Player, self).__init__(*args, **kwargs)
-
-        self.animations = PlayerAnimations(SpritePaths.KNIGHT)
-        # Used for mapping directions to animations
-        self.map = {
-            Enums.IDLE: self.animations.idles,
-            Enums.UP: self.animations.up,
-            Enums.DOWN: self.animations.down,
-            Enums.RIGHT: self.animations.right,
-            Enums.LEFT: self.animations.left
-        }
-
-        self.refreshIndex = 0
-        self.prev = Enums.IDLE
-        self.texture = next(self.map[self.prev])
-
-    def update_animation(self, delta_time: float = 1 / 60) -> None:
-        """
-        Updates animations for the Player.
-        :param delta_time: No idea.
-        """
-
-        # Increase the refresh index according
-        self.refreshIndex = (self.refreshIndex + 1) % Config.RUN_UPDATES_PER_FRAME
-
-        # Logic to determine what direction we're in.
-        if self.change_x == 0 and self.change_y == 0:
-            cur = Enums.IDLE
-        elif self.change_y > 0:  # Up
-            cur = Enums.UP
-        elif self.change_y < 0:  # Down
-            cur = Enums.DOWN
-        elif self.change_x > 0:  # Left
-            cur = Enums.RIGHT
-        elif self.change_x < 0:  # Right
-            cur = Enums.LEFT
-        else:  # Idle
-            cur = Enums.IDLE
-
-        # If we're in a new direction or the refresh index has reset
-        if self.prev is not cur or self.refreshIndex == 0:
-            self.texture = next(self.map[cur])
-
-        self.prev = cur
-
-    def tick(self):
-        """
-        While Player objects do not have any AI (they are controlled by the user),
-        the tick function can keep track of statistics that progress over time, like
-        regenerating health/armor or status effects like poison.
-        """
-
-
-class Enemy(Mob):
-    """
-    Represents an Enemy Mob.
-    Will take basic offensive actions against Player objects.
-    """
-
-    def __init__(self, *args, **kwargs) -> None:
-        super(Enemy, self).__init__(*args, **kwargs)
-
-    def tick(self) -> None:
-        """
-        A on_update function, the Enemy Mob should scan for the player, decide how to path to it, and
-        decide how to take offensive action.
-        """
-        pass
-
-    def path(self) -> None:
-        """
-        Not yet decided how this function should work.
-        Basically, most pathfinding decisions should be kept within this function.
-        """
-        pass

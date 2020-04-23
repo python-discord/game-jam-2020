@@ -13,7 +13,7 @@ from typing import Tuple, List
 import arcade
 from config import Config
 from map import Dungeon
-from mobs import Player, Mob
+from mobs import Player, Enemy
 from projectiles import Temp
 
 
@@ -80,10 +80,11 @@ class Game(arcade.Window):
 
         #Set up monsters
         for count in range(Config.MONSTER_COUNT):
-            mob = Mob(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
+            mob = Enemy(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
             mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
             mob.target = self.player
             mob.scale = 4
+            mob.monster_type = 'ghost'
             self.enemy_list.append(mob)
         '''
         mob = Mob(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
@@ -140,10 +141,10 @@ class Game(arcade.Window):
                 arcade.draw_rectangle_outline(round(x / Config.TILE_SIZE) * Config.TILE_SIZE,
                                               round(y / Config.TILE_SIZE) * Config.TILE_SIZE,
                                               Config.TILE_SIZE, Config.TILE_SIZE, arcade.color.RED)
-                self.player.draw_hit_box()
-                arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
-                arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
-                                arcade.color.WHITE, 16, font_name='Arial')
+                #self.player.draw_hit_box()
+                #arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
+                #arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
+                #                arcade.color.WHITE, 16, font_name='Arial')
 
                 # Draw paths for all mobs
                 for mob in self.active_enemies:
@@ -152,7 +153,7 @@ class Game(arcade.Window):
                         path = mob.get_path()
                         t2 = time.time()
                         #print(f'Path acquired in {round(t2 - t1, 4)}s')
-                        self.draw_path(path)
+                        #self.draw_path(path)
                         mob.tick(path)
 
                 self.fps.tick()
@@ -288,7 +289,6 @@ class Game(arcade.Window):
                                 Config.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
-        
         #Enemy activation and update
         for enemy in reversed(self.enemy_list):
             if (
@@ -300,9 +300,14 @@ class Game(arcade.Window):
                 if Config.DEBUG: print("Activate Enemy")
                 self.active_enemies.append(enemy)
                 self.enemy_list.remove(enemy)
-        for enemy in self.active_enemies:
-            enemy.update()
-
+        try:
+            for enemy in self.active_enemies:
+                enemy.update()
+                path = enemy.get_path()
+                enemy.tick(path)
+        except Exception:
+            import traceback
+            traceback.print_exc()
         # Projectile updates
         self.bullet_list.update()
         for bullet in self.bullet_list:
@@ -314,6 +319,7 @@ class Game(arcade.Window):
             if len(hit_list) > 0:
                 bullet.remove_from_sprite_lists()
             if len(enemy_hit_list):
+                self.player.add_kill(enemy_hit_list[0].monster_type)
                 enemy_hit_list[0].remove_from_sprite_lists()
 
 

@@ -38,16 +38,16 @@ class Config(object):
     PLAYER_MOVEMENT_SPEED = 14
 
     # How many pixels to keep as a minimum margin between the characters and the edge of the screen.
-    LEFT_VIEWPORT_MARGIN = 500
-    RIGHT_VIEWPORT_MARGIN = 500
-    BOTTOM_VIEWPORT_MARGIN = 250
-    TOP_VIEWPORT_MARGIN = 200
+    LEFT_VIEWPORT_MARGIN = 700
+    RIGHT_VIEWPORT_MARGIN = 700
+    BOTTOM_VIEWPORT_MARGIN = 300
+    TOP_VIEWPORT_MARGIN = 350
 
     # All debug statements and renderings should use this
-    DEBUG = True
+    DEBUG = False
     
     #Monster Count to be spawned
-    MONSTER_COUNT = 4
+    MONSTER_COUNT = 20
 
 
 class Enums(Enum):
