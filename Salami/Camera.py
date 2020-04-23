@@ -36,7 +36,7 @@ class Camera:
         self.camera_lag = 2
         self.scroll_step = 0.005
         self.scroll_min_step = 0.1
-        self.scroll_curr_step = 0
+        self.scroll_curr_step = 0.2
 
         self.old_x = 0
         self.old_y = 0
@@ -71,11 +71,11 @@ class Camera:
         #     self.scroll_curr_step = self.scroll_min_step
 
         if abs(diff_x) > self.camera_lag:
-            self.x = self.x - 0.05 * diff_x
+            self.x = self.x - self.scroll_curr_step * diff_x
             # self.x = Maths.lerp(self.x, x, 0.95)
             # self.x = self.x - Maths.smoothstep(0, 1, self.scroll_curr_step) * diff_x
         if abs(diff_y) > self.camera_lag:
-            self.y = self.y - 0.05 * diff_y
+            self.y = self.y - self.scroll_curr_step * diff_y
             # self.y = Maths.lerp(self.y, y, 0.95)
             # self.y = self.y - Maths.smoothstep(0, 1, self.scroll_curr_step) * diff_y
 
