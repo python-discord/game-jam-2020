@@ -63,7 +63,7 @@ class Player(Mob):
         # Adds a kill to kill_list. If 3 or more check the recipe then give a power up if it matches.
 
         self.kill_list.append(creature)
-        if self.cur_recipe == self.kill_list:
+        if self.cur_recipe.sort() == self.kill_list.sort():
             print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
             self.kill_list = []
 

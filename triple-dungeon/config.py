@@ -47,7 +47,7 @@ class Config(object):
     DEBUG = False
     
     #Monster Count to be spawned
-    MONSTER_COUNT = 20
+    MONSTER_COUNT = 0
 
 
 class Enums(Enum):
