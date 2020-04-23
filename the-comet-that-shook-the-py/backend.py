@@ -9,7 +9,7 @@ def _get_count_files_starting_with(prefix: str) -> List[str]:
     :return: a list of the relative filenames
     """
     asset_path = Path('assets')
-    all_files = asset_path.rglob(f'{prefix}_*.png')
+    all_files = asset_path.rglob(f'{prefix}_*')
     all_row_items = [file.name for file in all_files]
     return all_row_items
 
