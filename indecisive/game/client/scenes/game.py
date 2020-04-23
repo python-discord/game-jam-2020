@@ -44,6 +44,7 @@ class Game(Base):
         self.city_ui = [arcade.SpriteList(), []]
         self.current_ui = [arcade.SpriteList(), []]
         self.empty_ui = [arcade.SpriteList(), []]
+        self.selectors = [arcade.SpriteList(), [lambda: None, lambda: None, lambda: None, lambda: None]]
         self.setup_ui()
 
         with open("data/units.json") as file:
@@ -68,6 +69,7 @@ class Game(Base):
             self.background.draw()
             self.city_sprites.draw()
             self.unit_sprites.draw()
+            self.selectors[0].draw()
             self.grid.draw()
 
             self.ui_background.draw()
@@ -158,7 +160,7 @@ class Game(Base):
 
     def server_create_city(self, city):
         self.world["cities"].append(city)
-        self.create_city(city)
+        self._create_city(city)
 
     def server_create_unit(self, unit):
         self.world["units"].append(unit)
@@ -177,33 +179,105 @@ class Game(Base):
             center_x=200,
             center_y=50
         )
-
+        # selectors
+        for selector_number in range(4):
+            self.selectors[0].append(arcade.Sprite(
+                "assets/selector.png",
+                center_x=-100,
+                center_y=-100
+            ))
+            self.selectors[1][selector_number] = lambda: None
         # city UI
         self.city_ui[0].append(create_unit)
-        self.city_ui[1] = [self.client_create_unit]
+        self.city_ui[1] = [self.create_unit]
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int) -> None:
-        for unit_num, unit in enumerate(self.unit_sprites):
-            if unit.collides_with_point((x, y)) is True:
-                self.selected = ["units", unit_num]
-                break
-        else:
-            for city_num, city in enumerate(self.city_sprites):
-                if city.collides_with_point((x, y)):
-                    self.selected = ["cities", city_num]
-                    break
-            else:
-                for ui_num, ui in enumerate(self.current_ui[0]):
-                    if ui.collides_with_point((x, y)):
-                        self.current_ui[1][ui_num]({"owner": self.player_id, "type": "basic", "loc": [self.player_id, self.player_id]})
-                        break
-                else:
-                    # did not click anything so end statement and hence no need to update ui
-                    self.selected = [None, None]
+        selected = self.is_xy_occupied(x, y)
+        if selected is False:
+            for ui_num, ui in enumerate(self.current_ui[0]):
+                if ui.collides_with_point((x, y)) is True:
+                    self.current_ui[1][ui_num](self.world[self.selected[0]][self.selected[1]])
+                    return
+
+            for selector_number in range(4):
+                if self.selectors[0][selector_number].collides_with_point((x, y)) is True:
+                    self.selectors[1][selector_number]()
+                    return
+
+            # did not click something new so end statement and hence no need to update ui
+            selected = [None, None]
+        self.selected = selected
         self.update_ui()
+
+    def create_unit(self, city):
+        action_maker = self.action_maker(self.client_create_unit, {"owner": self.player_id, "type": "basic"})
+        self.move_selectors_all_block(city["loc"], action_maker)
+
+    @staticmethod
+    def action_maker(action, arg: dict):
+
+        def _action_maker(**kwargs):
+            arg.update(kwargs)
+
+            def _action():
+                action(arg)
+            return _action
+
+        return _action_maker
 
     def update_ui(self):
         if self.selected[0] == "cities" and self.world["cities"][self.selected[1]]["owner"] == self.player_id:
             self.current_ui = self.city_ui
+            self.hide_selectors()
         else:
             self.current_ui = self.empty_ui
+            self.hide_selectors()
+
+    def hide_selectors(self):
+        for selector_number in range(4):
+            self.selectors[0][selector_number].center_y = -1000
+            self.selectors[1][selector_number] = lambda: None
+
+    def get_xy_centre(self, pos):
+        return (
+            pos[0] * self.square + self.x_buffer + self.square / 2,
+            pos[1] * self.square + self.y_buffer_bottom + self.square / 2
+        )
+
+    def set_xy_centre(self, sprite, pos):
+        centre = self.get_xy_centre(pos)
+        sprite.center_x = centre[0]
+        sprite.center_y = centre[1]
+
+    def move_selectors_all_block(self, pos, action_maker):
+        for selector_number in range(4):
+            new_pos = self._selectors_new_position(pos, selector_number)
+            if self.is_xy_occupied(*new_pos) is False:
+                self.set_xy_centre(self.selectors[0][selector_number], new_pos)
+                self.selectors[1][selector_number] = action_maker(loc=new_pos)
+
+    @staticmethod
+    def _selectors_new_position(pos, index):
+        pos = pos.copy()
+        if index == 0:
+            pos[0] += 1
+        elif index == 1:
+            pos[1] -= 1
+        elif index == 2:
+            pos[0] -= 1
+        elif index == 3:
+            pos[1] += 1
+        else:
+            raise IndexError(f"There are only four Cardinal directions (0-3) yet {index} was given")
+        return pos
+
+    def is_xy_occupied(self, x, y):
+        for unit_num, unit in enumerate(self.unit_sprites):
+            if unit.collides_with_point((x, y)) is True:
+                return ["units", unit_num]
+        else:
+            for city_num, city in enumerate(self.city_sprites):
+                if city.collides_with_point((x, y)):
+                    return ["cities", city_num]
+            else:
+                return False
