@@ -1,11 +1,12 @@
-from .player import Player
 import arcade
 
-FLOOR_LENGTH = 60
-FLOOR_TEXTURE_LENGTH = 64
-GRAVITY = 1
-PLAYER_JUMP_SPEED = 20
-PLAYER_MOVEMENT_SPEED = 5
+from .constants import (
+    FLOOR_LENGTH, FLOOR_TEXTURE_LENGTH, GRAVITY, GROUND_CONTROL, AIR_CONTROL, PLAYER_MOVEMENT_SPEED, JUMP_FORCE,
+    JUMP_COUNT, DASH_DISTANCE, RIGHT, LEFT, JUMP_VELOCITY_BONUS, DASH_COUNT
+)
+from .player import Player
+
+from .utils import sweep_trace
 
 
 class GameState:
@@ -24,10 +25,20 @@ class GameState:
             floor.bottom = 0
             self.level_geometry.append(floor)
 
+        block = arcade.Sprite('assets/simple_block.png')
+        block.left = 100
+        block.bottom = FLOOR_TEXTURE_LENGTH * 3
+        self.level_geometry.append(block)
+
         self.engine = arcade.PhysicsEnginePlatformer(self.player, self.level_geometry, GRAVITY)
 
     def on_update(self, delta_time: float) -> None:
         """Handle update event."""
+        if self.engine.can_jump():
+            self.player.movement_control = GROUND_CONTROL
+        else:
+            self.player.movement_control = AIR_CONTROL
+        self.player.update()
         self.engine.update()
 
     def on_draw(self) -> None:
@@ -37,20 +48,53 @@ class GameState:
         self.level_geometry.draw()
 
     def on_key_press(self, key, modifiers):
-        """Called whenever a key is pressed. """
+        """Called whenever a key is pressed."""
+        # Pre
+        if self.engine.can_jump():
+            self.player.dash_count = 0
+            self.player.jump_count = 0
+
+        # Dashing
+        if key == arcade.key.LSHIFT:
+            if not sweep_trace(self.player, DASH_DISTANCE, 0, self.level_geometry):
+                can_dash = True
+
+                if not self.engine.can_jump():
+                    if self.player.dash_count < DASH_COUNT:
+                        self.player.dash_count += 1
+
+                    else:
+                        can_dash = False
+
+                if can_dash:
+                    self.player.left += DASH_DISTANCE * self.player.direction
+
+        # Jumping
         if key == arcade.key.SPACE:
-            if self.engine.can_jump():
-                self.player.change_y = PLAYER_JUMP_SPEED
-        elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player.change_x = -PLAYER_MOVEMENT_SPEED
-        elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player.change_x = PLAYER_MOVEMENT_SPEED
+            self.player.jump_count += 1
+            if self.player.jump_count <= JUMP_COUNT:
+                self.player.change_y = 0
+                self.player.is_jumping = True
+                self.player.jump_force = JUMP_FORCE + abs(self.player.velocity[0]) * JUMP_VELOCITY_BONUS
+
+        # Moving
+        if key == arcade.key.LEFT or key == arcade.key.A:
+            self.player.movement_x = -PLAYER_MOVEMENT_SPEED
+            self.player.direction = LEFT
+        if key == arcade.key.RIGHT or key == arcade.key.D:
+            self.player.movement_x = PLAYER_MOVEMENT_SPEED
+            self.player.direction = RIGHT
 
     def on_key_release(self, key, modifiers):
-        """Called when the user releases a key. """
+        """Called when the user releases a key."""
+        # Jumping
+        if key == arcade.key.SPACE:
+            self.player.is_jumping = False
+
+        # Moving
         if key == arcade.key.LEFT or key == arcade.key.A:
-            if self.player.change_x < 0:
-                self.player.change_x = 0
+            if self.player.movement_x < 0:
+                self.player.movement_x = 0
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            if self.player.change_x > 0:
-                self.player.change_x = 0
+            if self.player.movement_x > 0:
+                self.player.movement_x = 0
