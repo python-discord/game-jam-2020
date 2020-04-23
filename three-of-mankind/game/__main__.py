@@ -6,7 +6,7 @@ from .effects import ColorIsolationWindow
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
-SCREEN_TITLE = "epic"
+SCREEN_TITLE = "lemon is epic"
 
 format_string = "%(asctime)s | %(filename)s#%(lineno)d | %(levelname)s | %(message)s"
 logging.basicConfig(format=format_string, level=logging.DEBUG)

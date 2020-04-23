@@ -1,12 +1,24 @@
 import arcade
 
 from .constants import (
-    FLOOR_LENGTH, FLOOR_TEXTURE_LENGTH, GRAVITY, GROUND_CONTROL, AIR_CONTROL, PLAYER_MOVEMENT_SPEED, JUMP_FORCE,
-    JUMP_COUNT, DASH_DISTANCE, RIGHT, LEFT, JUMP_VELOCITY_BONUS, DASH_COUNT
+    BLOCK_LEN,
+    FLOOR_LENGTH,
+    TEXTURE_SIZE,
+    GRAVITY,
+    GROUND_CONTROL,
+    AIR_CONTROL,
+    PLAYER_MOVEMENT_SPEED,
+    JUMP_FORCE,
+    JUMP_COUNT,
+    DASH_DISTANCE,
+    RIGHT,
+    LEFT,
+    JUMP_VELOCITY_BONUS,
+    DASH_COUNT,
 )
 from .player import Player
-from .respawncoin import RespawnCoin
-
+from .sprite import Sprite
+from .tile_image import tiles
 from .utils import sweep_trace
 
 
@@ -15,29 +27,46 @@ class GameState:
 
     def __init__(self):
         self.level_geometry = arcade.SpriteList()  # Have collisions
-        self.level_objects = arcade.SpriteList()   # Doesn't have collision
+        self.level_objects = arcade.SpriteList()  # Doesn't have collision
 
-        self.player = Player('assets/player/player.png')
+        self.player = Player(scale=0.99)
+        for tile in (tiles.player_white, tiles.player_red, tiles.player_green, tiles.player_blue):
+            self.player.append_texture(tile.texture)
+        self.player.set_texture(0)
+
         self.player.center_x = 200
         self.player.center_y = 200
 
-        coin = RespawnCoin()
-        coin.center_x = 800
-        coin.center_y = 200
-        self.level_objects.append(coin)
-
-        for left in range(0, FLOOR_LENGTH * FLOOR_TEXTURE_LENGTH, FLOOR_TEXTURE_LENGTH):
-            floor = arcade.Sprite('assets/simple_block.png')
-            floor.left = left
-            floor.bottom = 0
-            self.level_geometry.append(floor)
-
-        block = arcade.Sprite('assets/simple_block.png')
-        block.left = 100
-        block.bottom = FLOOR_TEXTURE_LENGTH * 3
-        self.level_geometry.append(block)
+        self.load_level(0)
 
         self.engine = arcade.PhysicsEnginePlatformer(self.player, self.level_geometry, GRAVITY)
+
+    def load_level(self, level_id: int) -> None:
+        self.level_objects = arcade.SpriteList()
+        self.level_geometry = arcade.SpriteList()
+
+        with open(f"levels/level_{level_id}") as file:
+            left, bottom = 0, 0
+            for line in reversed(file.read().strip().splitlines()):
+                for index in range(0, len(line), BLOCK_LEN):
+                    block_str = line[index:index+BLOCK_LEN].strip()
+
+                    if block_str:
+                        tile = getattr(tiles, block_str)
+
+                        sprite = Sprite.from_texture(tile.texture)
+                        sprite.left = left
+                        sprite.bottom = bottom
+
+                        if tile.name.startswith("block"):
+                            self.level_geometry.append(sprite)
+                        else:
+                            self.level_objects.append(sprite)
+
+                    left += TEXTURE_SIZE
+
+                left = 0
+                bottom += TEXTURE_SIZE
 
     def on_update(self, delta_time: float) -> None:
         """Handle update event."""
@@ -84,7 +113,9 @@ class GameState:
             if self.player.jump_count <= JUMP_COUNT:
                 self.player.change_y = 0
                 self.player.is_jumping = True
-                self.player.jump_force = JUMP_FORCE + abs(self.player.velocity[0]) * JUMP_VELOCITY_BONUS
+                self.player.jump_force = (
+                    JUMP_FORCE + abs(self.player.velocity[0]) * JUMP_VELOCITY_BONUS
+                )
 
         # Moving
         if key == arcade.key.LEFT or key == arcade.key.A:
