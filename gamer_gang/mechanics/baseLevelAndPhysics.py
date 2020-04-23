@@ -21,12 +21,13 @@ def getNames(name):
 
     return newNames
 
-class Level(arcade.View):
+class BaseLevel(arcade.View):
     def __init__(self):
         super().__init__()
         arcade.set_background_color(arcade.color.LIGHT_BLUE)
 
     def on_show(self):
+        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
         self.frames = 0
         self.total_time = 0
         self.debugging = False
@@ -262,6 +263,7 @@ class Level(arcade.View):
 
         if not self.window.game_over:
             self.goombaThings.update()
+            self.goombaThings.update_animation(dt)
             for p in self.players:
                 p.update()
                 p.update_animation(dt)

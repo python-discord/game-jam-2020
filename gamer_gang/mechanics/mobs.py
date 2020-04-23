@@ -45,7 +45,6 @@ class EnemyThing(arcade.Sprite):
         if self.timeSinceAnimating < 0.5:
             self.timeSinceAnimating += delta_time
             return
-        print(self.animState)
         self.timeSinceAnimating = 0
         self.texture = self.textureList[self.animState % 2]
         self.animState = (self.animState + 1) % 2  # move on to the next state

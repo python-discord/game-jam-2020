@@ -70,15 +70,12 @@ class MenuView(arcade.View):
 
         self.theme.add_button_textures("images/stupidInterface/levelButton1.png",
                                        "images/stupidInterface/levelButton1.png",
-                                       "images/stupidInterface/levelButton2.png", )
+                                       "images/stupidInterface/levelButton2.png")
         levelNum = 1
-        buttonToLevel = {}
         for x in range(5):
             for y in range(2):
-                theButton = LevelButton(self, SCREEN_WIDTH // 2 + 1750 + 100 * x,
-                                        SCREEN_HEIGHT // 2 + 150 - 100 * y, 64, 64, theme=self.theme)
-                buttonToLevel[theButton] = levelNum
-                self.button_list.append(theButton)
+                self.button_list.append(LevelButton(self, SCREEN_WIDTH // 2 + 1750 + 100 * x,
+                                        SCREEN_HEIGHT // 2 + 150 - 100 * y, 64, 64, theme=self.theme, levelNum=1))
                 levelNum += 1
 
     def on_draw(self):
@@ -122,9 +119,10 @@ class MenuView(arcade.View):
 
 class GameOverView(arcade.View):
     def on_show(self):
+        print('called onasdfasdf')
         arcade.set_viewport(0, 1000, 0, 600)
         arcade.set_background_color(arcade.color.BLACK)
-        self.gameOverText = arcade.Sprite(center_x=SCREEN_WIDTH//2, center_y=SCREEN_HEIGHT//2 + 100)
+        self.gameOverText = arcade.Sprite(center_x=SCREEN_WIDTH // 2, center_y=SCREEN_HEIGHT // 2 + 100)
         self.gameOverText.textures = [arcade.load_texture('images/stupidInterface/gameOverText.png')]
         self.gameOverText.texture = self.gameOverText.textures[0]
         self.setup_theme()
@@ -211,9 +209,10 @@ class BackButton(TextButton):
 
 
 class LevelButton(TextButton):
-    def __init__(self, game, x=0, y=0, width=48, height=48, text="", theme=None, ):
+    def __init__(self, game, x=0, y=0, width=48, height=48, text="", theme=None, levelNum: int = None):
         super().__init__(x, y, width, height, text, theme=theme)
         self.game = game
+        self.levelNum = levelNum
 
     def on_press(self):
         self.pressed = True
@@ -221,6 +220,8 @@ class LevelButton(TextButton):
     def on_release(self):
         if self.pressed:
             self.pressed = False
+            self.game.window.show_view(self.game.window.levels[self.levelNum])
+
 
 class RestartButton(TextButton):
     def __init__(self, game, x=500, y=150, width=465, height=230, text="", theme=None):
@@ -232,6 +233,7 @@ class RestartButton(TextButton):
     def on_press(self):
         if not self.pressed:
             self.pressed = True
+            self.game.window.setup()
             self.game.window.show_view(self.game.window.menuView)
 
     def on_release(self):
