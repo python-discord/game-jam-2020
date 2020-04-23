@@ -1,7 +1,7 @@
 import os
-from gamer_gang.mechanics.menuCrap import *
-from gamer_gang.mechanics.baseLevelAndPhysics import *
-from gamer_gang.dumbConstants import *
+from .mechanics.menuCrap import *
+from .mechanics.baseLevelAndPhysics import *
+from .dumbConstants import *
 
 
 class ActualGame(arcade.Window):  # TODO: relative imports and crap
