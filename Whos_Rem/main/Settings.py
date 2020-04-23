@@ -2,6 +2,7 @@ import arcade
 from screeninfo import get_monitors
 from Display import Button, Slider
 from Display import ColourBlend as cb
+from Main_Menu import MainMenu
 
 
 class Settings(arcade.View):
