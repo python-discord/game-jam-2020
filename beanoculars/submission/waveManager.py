@@ -93,40 +93,354 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 1, 1))
 
         elif waveNumber == 1:
-            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 3))
-            spawnList.append(EnemyGroup(0, E_MOSQUITO, MID_ROW, 10, 3))
-            spawnList.append(EnemyGroup(0, E_SPIDER, BOT_ROW, 10, 3))
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, BOT_ROW, 1, 1))
 
         elif waveNumber == 2:
+            spawnList.append(EnemyGroup(0, E_SPIDER, TOP_ROW, 1, 1))
+
+        elif waveNumber == 3:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 1, 1))
+            spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 1, 1))
+            spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 1, 1))
+
+        elif waveNumber == 4:
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, BOT_ROW, 3, 1))
+            spawnList.append(EnemyGroup(3, E_ANT, TOP_ROW, 3, 1))
+            spawnList.append(EnemyGroup(6, E_SPIDER, MID_ROW, 3, 1))
+
+        elif waveNumber == 5:
+            spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 10, 1))
+            spawnList.append(EnemyGroup(1, E_MOSQUITO, TOP_ROW, 10, 1))
+            spawnList.append(EnemyGroup(2, E_SPIDER, MID_ROW, 10, 1))
+
+        elif waveNumber == 6:
             spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 3, 1.5))
             spawnList.append(EnemyGroup(0.5, E_MOSQUITO, MID_ROW, 3, 1.5))
             spawnList.append(EnemyGroup(1, E_SPIDER, BOT_ROW, 3, 1.5))
-            spawnList.append(EnemyGroup(15, E_MOSQUITO, TOP_ROW, 3, 1.5))
-            spawnList.append(EnemyGroup(15.5, E_SPIDER, MID_ROW, 3, 1.5))
-            spawnList.append(EnemyGroup(16, E_ANT, BOT_ROW, 3, 1.5))
+            spawnList.append(EnemyGroup(10, E_MOSQUITO, TOP_ROW, 3, 1.5))
+            spawnList.append(EnemyGroup(10.5, E_SPIDER, MID_ROW, 3, 1.5))
+            spawnList.append(EnemyGroup(11, E_ANT, BOT_ROW, 3, 1.5))
 
-        elif waveNumber == 3:
+        elif waveNumber == 7:
             spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 1))
             spawnList.append(EnemyGroup(7.5, E_MOSQUITO, TOP_ROW, 10, 1))
             spawnList.append(EnemyGroup(15, E_SPIDER, TOP_ROW, 10, 1))
 
-        elif waveNumber == 4:
-            spawnList.append(EnemyGroup(0, E_SPIDER, BOT_ROW, 5, 1))
-            spawnList.append(EnemyGroup(0.5, E_ANT, BOT_ROW, 5, 1))
-            spawnList.append(EnemyGroup(4.5, E_ANT, MID_ROW, 5, 1))
-            spawnList.append(EnemyGroup(0.5, E_MOSQUITO, MID_ROW, 5, 1))
-            spawnList.append(EnemyGroup(4.5, E_MOSQUITO, TOP_ROW, 5, 1))
-            spawnList.append(EnemyGroup(0.5, E_SPIDER, TOP_ROW, 5, 1))
+        elif waveNumber == 8:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 2))
+            spawnList.append(EnemyGroup(0, E_SPIDER, TOP_ROW, 20, 1))
+            spawnList.append(EnemyGroup(1, E_MOSQUITO, BOT_ROW, 10, 0.75))
 
-        print('Manually made wave for round: ' + str(waveNumber))
+        elif waveNumber == 9:
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, TOP_ROW, 10, 1))
+            spawnList.append(EnemyGroup(0.5, E_SPIDER, TOP_ROW, 10, 1))
+
+        elif waveNumber == 10:
+            spawnList.append(EnemyGroup(0, E_SPIDER, BOT_ROW, 10, 1))
+            spawnList.append(EnemyGroup(0.5, E_ANT, BOT_ROW, 10, 1))
+
+        elif waveNumber == 11:
+            spawnList.append(EnemyGroup(0, E_SPIDER, MID_ROW, 15, 0.8))
+            spawnList.append(EnemyGroup(10, E_ANT, MID_ROW, 15, 0.8))
+            spawnList.append(EnemyGroup(20, E_MOSQUITO, MID_ROW, 15, 0.8))
+
+        elif waveNumber == 12:
+            spawnList.append(EnemyGroup(0, E_SPIDER, MID_ROW, 20, 1))
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, MID_ROW, 20, 1))
+            spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 20, 1))
+
+        elif waveNumber == 13:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 1.5))
+            spawnList.append(EnemyGroup(3, E_MOSQUITO, BOT_ROW, 10, 1.5))
+            spawnList.append(EnemyGroup(6, E_SPIDER, MID_ROW, 10, 1.5))
+
+            spawnList.append(EnemyGroup(21, E_ANT, BOT_ROW, 10, 1.5))
+            spawnList.append(EnemyGroup(15, E_MOSQUITO, MID_ROW, 10, 1.5))
+            spawnList.append(EnemyGroup(18, E_SPIDER, TOP_ROW, 10, 1.5))
+
+            spawnList.append(EnemyGroup(31, E_ANT, MID_ROW, 10, 1.5))
+            spawnList.append(EnemyGroup(28, E_MOSQUITO, TOP_ROW, 10, 1.5))
+            spawnList.append(EnemyGroup(25, E_SPIDER, BOT_ROW, 10, 1.5))
+
+        elif waveNumber == 14:
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, TOP_ROW, 10, 1))
+            spawnList.append(EnemyGroup(0.5, E_SPIDER, TOP_ROW, 10, 1))
+
+            spawnList.append(EnemyGroup(4, E_ANT, BOT_ROW, 10, 1))
+            spawnList.append(EnemyGroup(4.5, E_SPIDER, BOT_ROW, 10, 1))
+
+        elif waveNumber == 15:
+            spawnList.append(EnemyGroup(10, E_SPIDER, TOP_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(10, E_ANT, BOT_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(10, E_MOSQUITO, MID_ROW, 10, 0.25))
+
+        elif waveNumber == 16:
+            spawnList.append(EnemyGroup(0, E_SPIDER, BOT_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, TOP_ROW, 10, 0.5))
+
+            spawnList.append(EnemyGroup(15, E_SPIDER, BOT_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(15, E_ANT, MID_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(15, E_MOSQUITO, TOP_ROW, 10, 0.5))
+
+            spawnList.append(EnemyGroup(30, E_SPIDER, BOT_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(30, E_ANT, MID_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(30, E_MOSQUITO, TOP_ROW, 10, 0.5))
+
+        elif waveNumber == 17:
+            spawnList.append(EnemyGroup(0, E_SPIDER, TOP_ROW, 10, 1))
+            spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 20, 1))
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, BOT_ROW, 10, 1))
+
+            spawnList.append(EnemyGroup(6, E_MOSQUITO, TOP_ROW, 10, 1))
+            spawnList.append(EnemyGroup(6, E_SPIDER, BOT_ROW, 10, 1))
+
+        elif waveNumber == 18:
+            spawnList.append(EnemyGroup(0, E_SPIDER, TOP_ROW, 5, 0.5))
+            spawnList.append(EnemyGroup(0.25, E_ANT, TOP_ROW, 5, 0.5))
+
+            spawnList.append(EnemyGroup(3, E_ANT, BOT_ROW, 5, 0.5))
+            spawnList.append(EnemyGroup(3.25, E_MOSQUITO, BOT_ROW, 5, 0.5))
+
+            spawnList.append(EnemyGroup(6, E_MOSQUITO, MID_ROW, 5, 0.5))
+            spawnList.append(EnemyGroup(6.25, E_SPIDER, MID_ROW, 5, 0.5))
+
+            spawnList.append(EnemyGroup(7, E_ANT, MID_ROW, 5, 0.5))
+
+        elif waveNumber == 19:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.75))
+            spawnList.append(EnemyGroup(0.25, E_MOSQUITO, TOP_ROW, 10, 0.75))
+            spawnList.append(EnemyGroup(0.5, E_SPIDER, TOP_ROW, 10, 0.75))
+
+            spawnList.append(EnemyGroup(5, E_ANT, BOT_ROW, 5, 3))
+            spawnList.append(EnemyGroup(5, E_MOSQUITO, BOT_ROW, 5, 3))
+            spawnList.append(EnemyGroup(5, E_SPIDER, BOT_ROW, 5, 3))
+
+        elif waveNumber == 20:
+            spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(0.25, E_MOSQUITO, MID_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(0.5, E_SPIDER, MID_ROW, 2, 0.75))
+
+            spawnList.append(EnemyGroup(3, E_ANT, TOP_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(3.25, E_MOSQUITO, TOP_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(3.5, E_SPIDER, TOP_ROW, 2, 0.75))
+
+            spawnList.append(EnemyGroup(6, E_ANT, BOT_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(6.25, E_MOSQUITO, BOT_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(6.5, E_SPIDER, BOT_ROW, 2, 0.75))
+
+        elif waveNumber == 21:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(3, E_ANT, MID_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(6, E_ANT, BOT_ROW, 10, 0.25))
+
+        elif waveNumber == 22:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, MID_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(3, E_ANT, BOT_ROW, 10, 0.5))
+
+        elif waveNumber == 23:
+            spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 5, 0.5))
+            spawnList.append(EnemyGroup(0.25, E_MOSQUITO, BOT_ROW, 5, 0.5))
+
+            spawnList.append(EnemyGroup(3, E_ANT, TOP_ROW, 5, 0.5))
+            spawnList.append(EnemyGroup(3.25, E_MOSQUITO, TOP_ROW, 5, 0.5))
+
+            spawnList.append(EnemyGroup(6, E_ANT, MID_ROW, 5, 0.5))
+            spawnList.append(EnemyGroup(6.25, E_MOSQUITO, MID_ROW, 5, 0.5))
+
+        elif waveNumber == 24:
+            spawnList.append(EnemyGroup(0, E_SPIDER, MID_ROW, 100, 0.75))
+
+        elif waveNumber == 25:
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, BOT_ROW, 100, 0.75))
+
+        elif waveNumber == 26:
+            spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 100, 0.75))
+            spawnList.append(EnemyGroup(55, E_MOSQUITO, TOP_ROW, 10, 0.1))
+
+        elif waveNumber == 27:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, MID_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(3, E_ANT, BOT_ROW, 15, 0.5))
+
+        elif waveNumber == 28:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(0.25, E_MOSQUITO, TOP_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(0.5, E_SPIDER, TOP_ROW, 2, 0.75))
+
+            spawnList.append(EnemyGroup(2, E_ANT, BOT_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(2.25, E_MOSQUITO, BOT_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(2.5, E_SPIDER, BOT_ROW, 2, 0.75))
+
+            spawnList.append(EnemyGroup(4, E_ANT, MID_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(4.25, E_MOSQUITO, MID_ROW, 2, 0.75))
+            spawnList.append(EnemyGroup(4.5, E_SPIDER, MID_ROW, 2, 0.75))
+
+        elif waveNumber == 29:
+            spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 10, 1))
+            spawnList.append(EnemyGroup(0.25, E_MOSQUITO, MID_ROW, 15, 2 / 3))
+            spawnList.append(EnemyGroup(5, E_SPIDER, MID_ROW, 20, 0.5))
+
+        elif waveNumber == 30:
+            spawnList.append(EnemyGroup(0, E_SPIDER, BOT_ROW, 15, 0.1))
+
+        elif waveNumber == 31:
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, TOP_ROW, 15, 0.1))
+
+        elif waveNumber == 32:
+            spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 15, 0.1))
+
+        elif waveNumber == 33:
+            spawnList.append(EnemyGroup(0, E_SPIDER, TOP_ROW, 10, 0.75))
+            spawnList.append(EnemyGroup(0.25, E_ANT, TOP_ROW, 10, 0.75))
+            spawnList.append(EnemyGroup(0.5, E_MOSQUITO, TOP_ROW, 10, 0.75))
+
+        elif waveNumber == 34:
+            spawnList.append(EnemyGroup(10, E_SPIDER, TOP_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(10, E_ANT, BOT_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(10, E_MOSQUITO, MID_ROW, 10, 0.25))
+
+        elif waveNumber == 35:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(3, E_ANT, MID_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(6, E_ANT, BOT_ROW, 10, 0.25))
+
+        elif waveNumber == 36:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 5, 1))
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, BOT_ROW, 5, 1))
+            spawnList.append(EnemyGroup(2, E_SPIDER, MID_ROW, 5, 1))
+            spawnList.append(EnemyGroup(2.25, E_MOSQUITO, MID_ROW, 5, 1))
+            spawnList.append(EnemyGroup(2.5, E_ANT, MID_ROW, 5, 1))
+
+        elif waveNumber == 37:
+            spawnList.append(EnemyGroup(2, E_ANT, TOP_ROW, 15, 2))
+            spawnList.append(EnemyGroup(6, E_MOSQUITO, MID_ROW, 15, 2))
+            spawnList.append(EnemyGroup(10, E_SPIDER, BOT_ROW, 15, 2))
+
+        elif waveNumber == 38:
+            spawnList.append(EnemyGroup(2, E_ANT, TOP_ROW, 15, 1))
+            spawnList.append(EnemyGroup(4, E_MOSQUITO, MID_ROW, 15, 1))
+            spawnList.append(EnemyGroup(6, E_SPIDER, BOT_ROW, 15, 1))
+
+        elif waveNumber == 39:
+
+            spawnList.append(EnemyGroup(2, E_ANT, TOP_ROW, 15, 0.5))
+            spawnList.append(EnemyGroup(2, E_MOSQUITO, MID_ROW, 15, 0.5))
+            spawnList.append(EnemyGroup(2, E_SPIDER, BOT_ROW, 15, 0.5))
+
+        elif waveNumber == 40:
+            spawnList.append(EnemyGroup(4, E_ANT, BOT_ROW, 10, 0.3))
+            spawnList.append(EnemyGroup(4, E_MOSQUITO, MID_ROW, 15, 0.3))
+            spawnList.append(EnemyGroup(4, E_SPIDER, TOP_ROW, 10, 0.3))
+
+        elif waveNumber == 41:
+            spawnList.append(EnemyGroup(0, E_SPIDER, TOP_ROW, 10, 0.75))
+            spawnList.append(EnemyGroup(0.25, E_ANT, TOP_ROW, 10, 0.75))
+            spawnList.append(EnemyGroup(0.5, E_MOSQUITO, TOP_ROW, 10, 0.75))
+
+            spawnList.append(EnemyGroup(10, E_MOSQUITO, BOT_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(10.25, E_ANT, BOT_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(10.5, E_SPIDER, BOT_ROW, 10, 0.25))
+
+        elif waveNumber == 42:
+            spawnList.append(EnemyGroup(2, E_ANT, TOP_ROW, 15, 2))
+            spawnList.append(EnemyGroup(6, E_MOSQUITO, MID_ROW, 15, 2))
+            spawnList.append(EnemyGroup(10, E_SPIDER, BOT_ROW, 15, 2))
+
+        elif waveNumber == 43:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 30, 1))
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, BOT_ROW, 30, 1))
+
+            spawnList.append(EnemyGroup(0, E_SPIDER, MID_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(5.5, E_SPIDER, TOP_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(10.5, E_SPIDER, BOT_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(20.5, E_SPIDER, BOT_ROW, 10, 1))
+            spawnList.append(EnemyGroup(20.5, E_SPIDER, TOP_ROW, 10, 1))
+
+        elif waveNumber == 44:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 5, 0.75))
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, MID_ROW, 5, 0.75))
+            spawnList.append(EnemyGroup(0, E_SPIDER, TOP_ROW, 5, 0.1))
+
+            spawnList.append(EnemyGroup(5, E_ANT, TOP_ROW, 5, 0.75))
+            spawnList.append(EnemyGroup(5, E_MOSQUITO, MID_ROW, 5, 0.75))
+            spawnList.append(EnemyGroup(5, E_SPIDER, MID_ROW, 5, 0.1))
+
+            spawnList.append(EnemyGroup(10, E_ANT, TOP_ROW, 5, 0.1))
+            spawnList.append(EnemyGroup(10, E_MOSQUITO, MID_ROW, 5, 0.75))
+            spawnList.append(EnemyGroup(10, E_SPIDER, BOT_ROW, 5, 0.75))
+
+        elif waveNumber == 45:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(0.25, E_MOSQUITO, TOP_ROW, 10, 0.5))
+
+            spawnList.append(EnemyGroup(5, E_SPIDER, BOT_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(5.25, E_MOSQUITO, BOT_ROW, 10, 0.5))
+
+            spawnList.append(EnemyGroup(12, E_SPIDER, BOT_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(12.25, E_ANT, BOT_ROW, 10, 0.5))
+
+        elif waveNumber == 46:
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.1))
+            spawnList.append(EnemyGroup(1, E_SPIDER, MID_ROW, 10, 0.1))
+            spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 10, 0.1))
+
+        elif waveNumber == 47:
+            spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 12, 0.5))
+            spawnList.append(EnemyGroup(10, E_ANT, TOP_ROW, 12, 0.5))
+            spawnList.append(EnemyGroup(20, E_ANT, MID_ROW, 12, 0.5))
+
+            spawnList.append(EnemyGroup(35, E_ANT, BOT_ROW, 12, 0.5))
+            spawnList.append(EnemyGroup(45, E_ANT, TOP_ROW, 12, 0.5))
+            spawnList.append(EnemyGroup(55, E_ANT, MID_ROW, 12, 0.5))
+
+            spawnList.append(EnemyGroup(70, E_ANT, TOP_ROW, 12, 0.4))
+            spawnList.append(EnemyGroup(70, E_MOSQUITO, MID_ROW, 12, 0.4))
+            spawnList.append(EnemyGroup(70, E_SPIDER, BOT_ROW, 12, 0.4))
+
+        elif waveNumber == 48:
+            spawnList.append(EnemyGroup(5, E_ANT, BOT_ROW, 1, 1))
+            spawnList.append(EnemyGroup(5, E_MOSQUITO, MID_ROW, 1, 1))
+            spawnList.append(EnemyGroup(5, E_SPIDER, TOP_ROW, 1, 1))
+
+            spawnList.append(EnemyGroup(10, E_ANT, MID_ROW, 3, 1))
+            spawnList.append(EnemyGroup(10, E_MOSQUITO, TOP_ROW, 3, 1))
+            spawnList.append(EnemyGroup(10, E_SPIDER, BOT_ROW, 3, 1))
+
+        elif waveNumber == 49:
+            spawnList.append(EnemyGroup(5, E_SPIDER, TOP_ROW, 5, 1))
+            spawnList.append(EnemyGroup(5, E_ANT, MID_ROW, 5, 1))
+            spawnList.append(EnemyGroup(5, E_MOSQUITO, BOT_ROW, 5, 1))
+
+            spawnList.append(EnemyGroup(15, E_SPIDER, BOT_ROW, 5, 0.5))
+            spawnList.append(EnemyGroup(15, E_ANT, MID_ROW, 5, 1))
+            spawnList.append(EnemyGroup(15, E_MOSQUITO, TOP_ROW, 5, 0.5))
+
+            spawnList.append(EnemyGroup(20, E_SPIDER, TOP_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(20, E_MOSQUITO, BOT_ROW, 10, 0.25))
+
+            spawnList.append(EnemyGroup(35, E_SPIDER, MID_ROW, 35, 0.75))
+            spawnList.append(EnemyGroup(35, E_ANT, TOP_ROW, 10, 0.1))
+            spawnList.append(EnemyGroup(35, E_MOSQUITO, BOT_ROW, 10, 0.1))
+
+            spawnList.append(EnemyGroup(45, E_ANT, BOT_ROW, 10, 0.1))
+            spawnList.append(EnemyGroup(45, E_MOSQUITO, TOP_ROW, 10, 0.1))
+
+            spawnList.append(EnemyGroup(75, E_ANT, TOP_ROW, 20, 1))
+            spawnList.append(EnemyGroup(75, E_MOSQUITO, MID_ROW, 20, 1))
+            spawnList.append(EnemyGroup(75, E_SPIDER, BOT_ROW, 20, 1))
+
+            spawnList.append(EnemyGroup(100, E_MOSQUITO, TOP_ROW, 20, 0.5))
+            spawnList.append(EnemyGroup(100, E_SPIDER, MID_ROW, 20, 0.5))
+            spawnList.append(EnemyGroup(100, E_ANT, BOT_ROW, 20, 0.5))
 
     else:
         # return the generated enemies
-        for i in range(math.floor(50 + math.sqrt(waveNumber))):
+        for i in range(math.floor(math.sqrt(waveNumber))):
             group = generateASpawn(waveNumber, timeGeneration)
             spawnList.append(group[0])
             timeGeneration = group[1]
-        print('Generated wave for round: ' + str(waveNumber))
 
     if spawnList:
         return spawnList
