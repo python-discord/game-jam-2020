@@ -31,11 +31,14 @@ class TestFactTemplate(unittest.TestCase):
 
     def testTemplateStringsFromFile(self):
         template_one_file = get_fact_templates(['f1_templates_001.temp', 'f1_templates_002.temp'])
-        assert template_one_file == [['{0} is next to the {4} programmer', 'The person who uses {8} programs in {5}', 'The {4} programmer uses {7}', "The {3} programmer isn't next to the {5} programmer", '{2} uses {8}', ''], ['{1} is to the right of the {3} programmer', '{2} is to the right of the one who uses {6}', 'The {4} programmer does not use {6}', '{0} does not use {8}', "The person who uses {8} doesn't program in {4} ", "{2} doesn't program in {4}", '']]
+        assert template_one_file == [['{0} is next to the {4} programmer', 'The person who uses {8} programs in {5}', 'The {4} programmer uses {7}', "The {3} programmer isn't next to the {5} programmer", '{2} uses {8}'], ['{1} is to the right of the {3} programmer', '{2} is to the right of the one who uses {6}', 'The {4} programmer does not use {6}', '{0} does not use {8}', "The person who uses {8} doesn't program in {4} ", "{2} doesn't program in {4}"]]
 
     def testTemplateNoFile(self):
         self.assertRaises(FileNotFoundError, get_fact_templates, 'NotFoundFile.temp')
 
+    def testNoEmptyStrings(self):
+        template_list = get_fact_templates()
+        assert all([len(clue) for file in template_list for clue in file])
 
 class TestGetPuzzleClues(unittest.TestCase):
 

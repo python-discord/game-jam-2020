@@ -42,7 +42,7 @@ def get_fact_templates(files=None):
 
     for filename in files:
         with open(f'assets/{filename}', 'rt', encoding='utf8') as file:
-            template_ = file.read().splitlines()
+            template_ = [line for line in file.read().splitlines() if line.strip()]
             templates.append(template_)
 
     return templates
@@ -63,8 +63,15 @@ def start_new_game():
     shuffled_list = solution_list[:]
     random.shuffle(shuffled_list)
     fact_templates = get_fact_templates()
+    fact_template = fact_templates[0]
     # real return value
     # return solution_list, shuffled_list, clue_list
-    clue_list = get_puzzle_clues(solution_list, fact_templates)
+    clue_list = get_puzzle_clues(solution_list, fact_template)
 
     return solution_list, shuffled_list, clue_list
+
+a, b, c = start_new_game()
+
+print(a)
+print(b)
+print(c)
