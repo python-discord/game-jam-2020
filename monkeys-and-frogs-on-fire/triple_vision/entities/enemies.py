@@ -92,7 +92,7 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
         self.path_finder = PathFinder()
         self.path = None
 
-        self._tick = 0.0
+        self._tick_time = 0.0
 
     def on_update(self, delta_time: float = 1/60) -> None:
         if not self.being_pushed:
@@ -109,22 +109,21 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
                 else:
                     # Once path is found it should be rarely updated
                     # TODO first path finding should be fast, each next should be slower
-                    if self._tick > round(random.uniform(1, 3), 2):  # do not sync them
-                        self._tick = 0.0
+                    if self._tick_time > round(random.uniform(1, 3), 2):  # do not sync them
+                        self._tick_time = 0.0
                         try:
-                            self.path = iter(
-                                self.path_finder.find(
-                                    pixels_to_tile(self.center_x, self.center_y),
-                                    pixels_to_tile(self.target_sprite.center_x, self.target_sprite.center_y),
-                                    self.ctx.view.collision_list,
-                                    self.ctx.view.map.sprites
-                                )
+                            self.path = self.path_finder.find(
+                                        pixels_to_tile(self.center_x, self.center_y),
+                                        pixels_to_tile(self.target_sprite.center_x, self.target_sprite.center_y),
+                                        self.ctx.view.collision_list,
+                                        self.ctx.view.map.sprites
                             )
 
-                        except TypeError:
+                        except TypeError as e:
+                            print("hey wtf", e)
                             pass
                     else:
-                        self._tick += delta_time
+                        self._tick_time += delta_time
             else:
                 self.change_x = 0
                 self.change_y = 0

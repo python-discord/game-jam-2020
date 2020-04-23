@@ -1,6 +1,7 @@
 from __future__ import annotations
+from timeit import default_timer as timer
 
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple, Iterable
 
 import arcade
 
@@ -23,8 +24,14 @@ class Node:
         self.g = 0
         self.h = 0
 
+    def __key(self):
+        return self.pos[0], self.pos[1]
+
+    def __hash__(self):
+        return hash(self.__key())
+
     def __eq__(self, other: Node) -> bool:
-        return self.pos == other.pos
+        return self.__key() == other.__key()
 
     def __add__(self, other: Node) -> Node:
         return Node(
@@ -45,18 +52,28 @@ class Node:
         )
 
 
+def speed_test(func):
+    def wrapper(*args, **kwargs):
+        start = timer()
+        maybe_return = func(*args, **kwargs)
+        print(f"{func.__name__} took {timer() - start} seconds.")
+        return maybe_return
+    return wrapper
+
+
 class PathFinder:
 
     def __init__(self, max_tries: int = 1000) -> None:
         self.max_tries = max_tries
 
+    @speed_test
     def find(
         self,
         start_pos: Tuple[int, int],
         end_pos: Tuple[int, int],
         collision_list: arcade.SpriteList,
         map_list: arcade.SpriteList
-    ) -> List[Tuple[int, int]]:
+    ) -> Iterable[Tuple[int, int]]:
 
         if self._tile_is_blocked(*end_pos, collision_list):
             return
@@ -64,13 +81,20 @@ class PathFinder:
         if not self._tile_is_blocked(*end_pos, map_list):
             return
 
-        open_nodes = list()
-        closed_nodes = list()
+        open_nodes = set()
+        closed_nodes = set()
 
         start_node = Node(start_pos)
         end_node = Node(end_pos)
 
-        open_nodes.append(start_node)
+        open_nodes.add(start_node)
+
+        surroundings = (
+            (0, -1),
+            (1, 0),
+            (0, 1),
+            (-1, 0)
+        )
 
         for _ in range(self.max_tries):
             if not open_nodes:
@@ -79,24 +103,17 @@ class PathFinder:
             current_node = min(open_nodes, key=lambda node: node.f)
 
             open_nodes.remove(current_node)
-            closed_nodes.append(current_node)
+            closed_nodes.add(current_node)
 
             if current_node == end_node:
-                path = list()
+                path = []
 
                 current = current_node
                 while current is not None:
                     path.append(current.pos)
                     current = current.parent
 
-                return path[::-1]
-
-            surroundings = [
-                (0, -1),
-                (1, 0),
-                (0, 1),
-                (-1, 0)
-            ]
+                return reversed(path)
 
             children = [
                 current_node + Node(pos) for pos in surroundings
@@ -123,7 +140,7 @@ class PathFinder:
                 ):
                     continue
 
-                open_nodes.append(child)
+                open_nodes.add(child)
 
     def _tile_is_blocked(self, x: int, y: int, sprite_list: arcade.SpriteList) -> bool:
         if x < 0 or x > s.MAP_SIZE[0] or y < 0 or y > s.MAP_SIZE[1]:
