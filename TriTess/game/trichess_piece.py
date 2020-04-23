@@ -8,7 +8,7 @@ PLAYER2_COLOR = arcade.color.BLACK
 PLAYER3_COLOR = arcade.color.BATTLESHIP_GREY
 color_dict = {0: PLAYER1_COLOR, 1: PLAYER2_COLOR, 2: PLAYER3_COLOR}
 data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
-DEFAULT_SPRITE_SIZE = 32
+DEFAULT_SPRITE_SIZE = 20
 
 
 class TriPiece(arcade.Sprite):
@@ -37,6 +37,10 @@ class TriPiece(arcade.Sprite):
     def list_valid_attacks(self):
         return []
 
+    def move(self, grid_x, grid_y, grid_r):
+        self.grid_x, self.grid_y, self.grid_r = grid_x, grid_y, grid_r
+        self.center_x, self.center_y = self.get_coord_from_pos()
+
     @staticmethod
     def create_piece(name, pos, player, trigrid):
         return PIECE_DICT[name](pos, player, trigrid)
@@ -49,7 +53,7 @@ class Pawn(TriPiece):
         super().__init__(pos, player, self.piece_name, trigrid)
 
     def list_valid_moves(self):
-        if self.grid_r == 1:
+        if self.grid_r:
             return [(self.grid_x + 1, self.grid_y + 1, not self.grid_r),
                     (self.grid_x + 1, self.grid_y + 1, self.grid_r)]
         else:

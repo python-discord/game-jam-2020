@@ -9,7 +9,6 @@ ATTACKABLE_GRID_COLOR = arcade.color.CARMINE_RED
 MOVABLE_GRID_COLOR = arcade.color.ASPARAGUS
 
 
-
 class TriGrid:
     def __init__(self, board_size, cell_width, grid_type='triangular'):
         self.board_size = board_size
@@ -17,7 +16,7 @@ class TriGrid:
         self.shape_list = None
         self.grid, self.grid_map = self.init_grid(grid_type)
         self.piece_list = self.init_pieces(grid_type)
-        self.update_shape_list()
+        self.on_draw()
 
     def init_grid(self, grid_type):
         grid = []
@@ -27,12 +26,12 @@ class TriGrid:
             for row in range(self.board_size):
                 tmp_row = []
                 for col in range(self.board_size - row):
-                    tmp_col = [TriCell(row, col, 0, self.cell_width)]
-                    grid_map[(row, col, 0)] = grid_index
+                    tmp_col = [TriCell(row, col, False, self.cell_width)]
+                    grid_map[(row, col, False)] = grid_index
                     grid_index += 1
                     if col + row != self.board_size - 1:
-                        tmp_col.append(TriCell(row, col, 1, self.cell_width))
-                        grid_map[(row, col, 1)] = grid_index
+                        tmp_col.append(TriCell(row, col, True, self.cell_width))
+                        grid_map[(row, col, True)] = grid_index
                         grid_index += 1
                     tmp_row.append(tmp_col)
                 grid.append(tmp_row)
@@ -41,14 +40,17 @@ class TriGrid:
     def init_pieces(self, grid_type):
         piece_list = arcade.SpriteList()
         if grid_type == "triangular":
-            p1_piece_list = [("pawn", (index, 1, 0), 0) for index in range(2, 8)] + \
-                            [("pawn", (index, 1, 0), 0) for index in range(3, 7)] + \
+            p1_piece_list = [("pawn", (index, 1, 0), 0) for index in range(3, 8)] + \
+                            [("pawn", (index, 1, 1), 0) for index in range(2, 8)] + \
                             [("rook", (3, 0, 1), 0), ("rook", (7, 0, 1), 0)] + \
                             [("knight", (4, 0, 0), 0), ("knight", (7, 0, 0), 0)] + \
                             [("bishop", (4, 0, 1), 0), ("bishop", (6, 0, 1), 0)] + \
                             [("king", (5, 0, 0), 0), ("queen", (6, 0, 0), 0)]
             for name, pos, player in p1_piece_list:
-                piece_list.append(trichess_piece.TriPiece.create_piece(name, pos, player, self))
+                cur_piece = trichess_piece.TriPiece.create_piece(name, pos, player, self)
+                self.grid[pos[0]][pos[1]][pos[2]].piece = cur_piece
+                piece_list.append(cur_piece)
+
             return piece_list
 
     def update_shape_list(self):
@@ -82,44 +84,59 @@ class TriGrid:
     def is_valid_cell(self, x, y, r):
         return (x, y, r) in self.grid_map
 
+    def clear_highlights(self):
+        for grid_x, grid_y, grid_r in self.grid_map:
+            self.grid[grid_x][grid_y][grid_r].set_highlight(None)
+
     def on_draw(self, grid_coord=False):
+        self.update_shape_list()
         arcade.start_render()
         self.shape_list.draw()
         self.piece_list.draw()
         if grid_coord:
             for grid_x, grid_y, grid_r in self.grid_map:
-                coord_list = self.grid[grid_x][grid_y][grid_r].bound_coords
-                x, y = coord_list[0]
-                if grid_r == 1:
-                    x -= 45
-                    y -= 30
-                arcade.draw_text(f'{grid_x, grid_y, grid_r}', x, y, color=arcade.color.BLACK, font_size=12)
+                (x, y) = self.get_cell(grid_x, grid_y, grid_r).center_coord
+                x -= 20
+                arcade.draw_text(f'{grid_x, grid_y, int(grid_r)}', x, y, color=arcade.color.BLACK, font_size=12)
+
+    def get_cell(self, grid_x, grid_y, grid_r):
+        return self.grid[grid_x][grid_y][grid_r]
 
 
 class TriCell:
-    def __init__(self, x, y, r, cell_width, piece=None):
+    def __init__(self, x, y, r, cell_width, highlight=None, piece=None):
         self.x = x
         self.y = y
         self.r = r
         self.cell_width = cell_width
+        self.highlight = highlight
         self.bound_coords, self.center_coord = self.calc_cell_world_coords()
         self.piece = piece
 
     def calc_cell_world_coords(self):
-        if self.r == 0:
-            x_list = np.array([self.x, self.x, self.x + 1]) * self.cell_width
-            y_list = np.array([self.y, self.y + 1, self.y]) * self.cell_width
-            x_list_skewed = x_list + y_list * .5
-        else:
+        if self.r:
             x_list = np.array([self.x + 1, self.x, self.x + 1]) * self.cell_width
             y_list = np.array([self.y + 1, self.y + 1, self.y]) * self.cell_width
             x_list_skewed = x_list + y_list * .5
+        else:
+            x_list = np.array([self.x, self.x, self.x + 1]) * self.cell_width
+            y_list = np.array([self.y, self.y + 1, self.y]) * self.cell_width
+            x_list_skewed = x_list + y_list * .5
+
         x_center, y_center = np.mean(x_list_skewed), np.mean(y_list)
         return list(zip(x_list_skewed, y_list)), (x_center, y_center)
 
     def create_cell_poly(self):
         coord = self.bound_coords
-        cell_poly = arcade.create_polygon(coord, EVEN_GRID_COLOR if self.r else ODD_GRID_COLOR)
+        if self.highlight is None:
+            cell_color = EVEN_GRID_COLOR if self.r else ODD_GRID_COLOR
+        elif self.highlight == 'movable':
+            cell_color = MOVABLE_GRID_COLOR
+        elif self.highlight == 'attackable':
+            cell_color = ATTACKABLE_GRID_COLOR
+        else:
+            raise ValueError('cell is missing highlight')
+        cell_poly = arcade.create_polygon(coord, cell_color)
         return cell_poly
 
     def toggle(self, tog_val=None):
@@ -127,3 +144,6 @@ class TriCell:
             self.piece = not self.piece
         else:
             self.piece = tog_val
+
+    def set_highlight(self, hightlight=None):
+        self.highlight = hightlight

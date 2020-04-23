@@ -48,6 +48,10 @@ class TriTess(arcade.Window):
 
         super().__init__(width, height, title)
         self.trigrid = trigrid.TriGrid(BOARD_SIZE, CELL_WIDTH, 'triangular')
+        self.cur_player = 0
+        self.cur_cell = None
+        self.cur_valid_moves = None
+
         arcade.set_background_color(arcade.color.WHITE)
 
     def on_draw(self):
@@ -66,19 +70,32 @@ class TriTess(arcade.Window):
         Called when the user presses a mouse button.
         """
         x, y, r = self.trigrid.get_grid_position(coord_x, coord_y)
-        print(f"Click coordinates: ({coord_x}, {coord_y}). Grid coordinates: ({x}, {y}, {r})")
+        if (x, y, r) in self.trigrid.grid_map:
+            print(f"Click coordinates: ({coord_x}, {coord_y}). Grid coordinates: ({x}, {y}, {r})")
 
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            self.trigrid.toggle_cell(x, y, r)
-            self.trigrid.update_shape_list()
-        elif button == arcade.MOUSE_BUTTON_RIGHT:
-            self.trigrid.toggle_cell(x, y, r)
-            neighbor_list = self.trigrid.get_grid_neighbor(coord_x, coord_y)
-            for neighbor in neighbor_list:
-                self.trigrid.toggle_cell(*neighbor)
+            if button == arcade.MOUSE_BUTTON_LEFT:
+                self.trigrid.clear_highlights()
+                self.cur_cell = self.trigrid.get_cell(x, y, r)
+                if self.cur_cell.piece is not None:
+                    self.cur_valid_moves = self.cur_cell.piece.list_valid_moves()
+                    for move in self.cur_valid_moves:
+                        self.trigrid.get_cell(*move).set_highlight("movable")
+                else:
+                    self.cur_cell = None
+                    self.cur_valid_moves = None
+                    self.trigrid.clear_highlights()
 
-        self.trigrid.update_shape_list()
-        self.on_draw()
+            elif button == arcade.MOUSE_BUTTON_RIGHT:
+                if self.cur_cell is not None:
+                    if (x, y, r) in self.cur_valid_moves:
+                        self.trigrid.get_cell(x, y, r).piece = self.cur_cell.piece
+                        self.cur_cell.piece.move(x, y, r)
+                        self.cur_cell = None
+                        self.cur_valid_moves = None
+                        self.trigrid.clear_highlights()
+                        self.cur_player = self.cur_player + 1 % 3
+
+            self.on_draw()
 
 
 def main():
