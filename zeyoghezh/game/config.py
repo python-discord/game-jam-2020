@@ -6,7 +6,7 @@ TRIANGULATION_START_LIKELIHOOD = 0.02
 TRIANGULATION_END_LIKELIHOOD = 0.05
 LITHIUM_MULTIPLIER = 1.8
 
-BASE_TIME_MULTIPLIER = 1e+3  # TODO change to 1 when this is over
+BASE_TIME_MULTIPLIER = 1  # TODO change to 1 when this is over
 
 BASE_SPEED = 1e-1  # TODO change to 1e-1 when this is over
 PLANET_BASE_SPEED = 5 * BASE_SPEED
@@ -16,7 +16,7 @@ BASE_DAMAGE = 1e-4  # TODO change to 1e-4 when this is over
 PLANET_DAMAGE = {
     "ze": 20,
     "yogh": 5,
-    "ezh": 7
+    "ezh": 10
 }
 MAX_ATTACK_DISTANCE = {
     "ze": 60,
