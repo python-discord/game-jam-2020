@@ -47,7 +47,7 @@ class Node:
 
 class PathFinder:
 
-    def __init__(self, max_tries: int = 2000) -> None:
+    def __init__(self, max_tries: int = 1000) -> None:
         self.max_tries = max_tries
 
     def find(
@@ -73,6 +73,9 @@ class PathFinder:
         open_nodes.append(start_node)
 
         for _ in range(self.max_tries):
+            if not open_nodes:
+                return
+
             current_node = min(open_nodes, key=lambda node: node.f)
 
             open_nodes.remove(current_node)
