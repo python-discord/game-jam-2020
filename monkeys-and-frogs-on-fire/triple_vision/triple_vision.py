@@ -26,6 +26,9 @@ class TripleVision(arcade.View):
         self.bullet_list = None
 
         self.player = None
+        self.charge = None
+        self.charging = None
+
         self.camera = None
 
         self.card_manager = None
@@ -46,6 +49,8 @@ class TripleVision(arcade.View):
         self.map.setup()
 
         self.player.setup()
+        self.charge = 0.0
+        self.charging = False
 
         for _ in range(10):
             self.game_manager.create_enemy(
@@ -81,7 +86,22 @@ class TripleVision(arcade.View):
         y += self.camera.viewport_bottom
 
         if not self.card_manager.process_mouse_press(x, y, button):
-            self.player.process_mouse_press(x, y, button)
+            if button == arcade.MOUSE_BUTTON_LEFT:
+                self.player.process_left_mouse_press(x, y)
+            elif button == arcade.MOUSE_BUTTON_RIGHT:
+                self.charging = True
+
+    def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
+        if not self.player.is_alive:
+            return
+
+        x += self.camera.viewport_left
+        y += self.camera.viewport_bottom
+
+        if button == arcade.MOUSE_BUTTON_RIGHT and self.charging is True:
+            self.player.process_right_mouse_press(x, y, self.charge)
+            self.charging = False
+            self.charge = 0
 
     # def on_key_press(self, key, modifiers):
     #     """Called whenever a key is pressed. """
@@ -140,10 +160,12 @@ class TripleVision(arcade.View):
 
     def on_update(self, delta_time: float) -> None:
         if self.slow_down:
-            self.update_(delta_time / s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
-        else:
-            self.update_(delta_time)
+            delta_time = delta_time / s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER
 
+        if self.charging and self.charge < 100:
+            self.charge += delta_time*60
+
+        self.update_(delta_time)
         self.card_manager.update()
         self.player.update_health_bar(delta_time)
 

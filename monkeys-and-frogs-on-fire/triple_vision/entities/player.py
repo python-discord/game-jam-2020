@@ -7,7 +7,7 @@ import arcade
 from triple_vision import Settings as s
 from triple_vision.entities import LivingEntity
 from triple_vision.entities.sprites import MovingSprite, HealthBar
-from triple_vision.entities.weapons import LaserProjectile
+from triple_vision.entities.weapons import ChargedLaserProjectile
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
 
@@ -108,45 +108,43 @@ class Player(LivingEntity, MovingSprite):
         self.center_x = center[0]
         self.center_y = center[1] + s.PLAYER_CENTER_Y_COMPENSATION
 
-    def process_mouse_press(self, x, y, button) -> None:
-        if button == arcade.MOUSE_BUTTON_LEFT:
-            # First path position is the closest grid center from player center,
-            # to force the player to be centered in tile before transversing
-            closest_grid_tile_x, closest_grid_tile_y = pixels_to_tile(self.center_x, self.center_y)
+    def process_left_mouse_press(self, x, y) -> None:
+        # First path position is the closest grid center from player center,
+        # to force the player to be centered in tile before transversing
+        closest_grid_tile_x, closest_grid_tile_y = pixels_to_tile(self.center_x, self.center_y)
 
-            try:
-                path = iter(
-                    self.path_finder.find(
-                        pixels_to_tile(self.center_x, self.center_y),
-                        pixels_to_tile(x, y),
-                        self.view.collision_list,
-                        self.view.map.sprites
-                    )
+        try:
+            path = iter(
+                self.path_finder.find(
+                    pixels_to_tile(self.center_x, self.center_y),
+                    pixels_to_tile(x, y),
+                    self.view.collision_list,
+                    self.view.map.sprites
                 )
-
-            except TypeError:
-                print('Path is either impossible or too far away!')
-
-            else:
-                self.path = chain(((closest_grid_tile_x, closest_grid_tile_y),), path)
-
-        elif button == arcade.MOUSE_BUTTON_RIGHT:
-
-            if time.time() - self.last_shot < self.dexterity:
-                # TODO Play empty gun sound or something similar
-                return
-
-            bullet = LaserProjectile(
-                center_x=self.center_x,
-                center_y=self.center_y,
-                dmg=round(random.randrange(60, 70) * self.attack_multiplier, 2),
-                moving_speed=5,
-                rotate=True
             )
-            bullet.move_to(x, y, set_target=False)
-            bullet.play_activate_sound()
-            self.view.game_manager.player_projectiles.append(bullet)
-            self.last_shot = time.time()
+
+        except TypeError:
+            print('Path is either impossible or too far away!')
+
+        else:
+            self.path = chain(((closest_grid_tile_x, closest_grid_tile_y),), path)
+
+    def process_right_mouse_press(self, x, y, charge: int):
+        if time.time() - self.last_shot < self.dexterity:
+            # TODO Play empty gun sound or something similar
+            return
+
+        bullet = ChargedLaserProjectile(
+            charge=charge,
+            center_x=self.center_x,
+            center_y=self.center_y,
+            rotate=True
+        )
+
+        bullet.move_to(x, y, set_target=False)
+        bullet.play_activate_sound()
+        self.view.game_manager.player_projectiles.append(bullet)
+        self.last_shot = time.time()
 
     def kill(self):
         self.is_alive = False
