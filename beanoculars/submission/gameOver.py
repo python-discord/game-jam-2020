@@ -29,6 +29,10 @@ class GameOverView(arcade.View):
         imageSprite = arcade.Sprite(src, center_x=80, center_y=450)
         self.image_list.append(imageSprite)
 
+        src = path / 'pythonArcadeWhite.png'
+        imageSprite = arcade.Sprite(src, center_x=950, center_y=35)
+        self.image_list.append(imageSprite)
+
         src = path / 'gameOver.png'
         imageSprite = arcade.Sprite(src, center_x=self.x / 2, center_y=self.y / 2 + 60)
         self.image_list.append(imageSprite)
