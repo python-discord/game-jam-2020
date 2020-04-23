@@ -67,7 +67,7 @@ class GameView(arcade.View):
         self.roundTime = 0
         self.firstRound = True
 
-        self.gui_background = None
+        self.shownRoundNumber = 1
 
         self.animationDeltaTime = 0
 
@@ -135,7 +135,8 @@ class GameView(arcade.View):
         self.player_list.draw()
 
         # GUI layer
-        arcade.draw_rectangle_filled(96, 512-24, 192, 48, arcade.csscolor.DARK_OLIVE_GREEN)
+        arcade.draw_rectangle_filled(96, 512 - 24, 192, 48, arcade.csscolor.DARK_OLIVE_GREEN)
+        arcade.draw_text("Wave number: " + str(self.shownRoundNumber), 5, 512 - 40, arcade.csscolor.WHITE, 19, font_name='arial', bold=True)
 
     def on_update(self, delta_time: float):
         """ On Update method"""
@@ -196,6 +197,7 @@ class GameView(arcade.View):
 
             elif self.betweenRounds:
                 self.roundTime = 0
+                self.shownRoundNumber += 1
                 self.spawnList = decomposeSpawnList(getSpawnList(self.roundNumber, self.generatedTimeSinceFirst))
                 self.betweenRounds = False
 
