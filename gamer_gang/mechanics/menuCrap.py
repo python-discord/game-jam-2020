@@ -62,7 +62,7 @@ class MenuView(arcade.View):
         self.theme.add_button_textures("images/stupidInterface/startButton.png", None,
                                        "images/stupidInterface/startButton.png", None)
         self.button_list.append(
-            Start(self, SCREEN_WIDTH // 2 - 100, SCREEN_HEIGHT // 2 - 50, 320, 320, theme=self.theme))
+            Start(self, SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2 - 50, 320, 320, theme=self.theme))
 
         self.theme.add_button_textures("images/stupidInterface/backButton.png", None,
                                        "images/stupidInterface/backButton.png", None)
@@ -72,10 +72,11 @@ class MenuView(arcade.View):
                                        "images/stupidInterface/levelButton1.png",
                                        "images/stupidInterface/levelButton2.png")
         levelNum = 1
-        for x in range(5):
-            for y in range(2):
-                self.button_list.append(LevelButton(self, SCREEN_WIDTH // 2 + 1750 + 100 * x,
-                                        SCREEN_HEIGHT // 2 + 150 - 100 * y, 64, 64, theme=self.theme, levelNum=1))
+        for y in range(2):
+            for x in range(5):
+                self.button_list.append(LevelButton(self, SCREEN_WIDTH//2 + 1820 + 100 * x,
+                                                    SCREEN_HEIGHT//2 + 150 - 100 * y, 64, 64, text=str(levelNum),
+                                                    theme=self.theme, levelNum=1))
                 levelNum += 1
 
     def on_draw(self):

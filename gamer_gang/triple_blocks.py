@@ -1,3 +1,4 @@
+import os
 from gamer_gang.mechanics.menuCrap import *
 from gamer_gang.mechanics.baseLevelAndPhysics import *
 from gamer_gang.dumbConstants import *
@@ -5,6 +6,8 @@ from gamer_gang.dumbConstants import *
 
 class ActualGame(arcade.Window):  # TODO: relative imports and crap
     def __init__(self):
+        file_path = os.path.dirname(os.path.abspath(__file__))
+        os.chdir(file_path)
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
         arcade.set_background_color(arcade.color.LIGHT_BLUE)
 
@@ -12,8 +15,7 @@ class ActualGame(arcade.Window):  # TODO: relative imports and crap
         self.menuView = MenuView()
         self.gameOver = GameOverView()
         self.levels = {1: BaseLevel()}
-        self.current_view = self.menuView
-        print(self.current_view)
+        self.current_view = self.levels[1]
         self.game_over = False
         self.show_view(self.current_view)
 
