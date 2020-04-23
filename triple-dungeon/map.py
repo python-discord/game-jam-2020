@@ -7,11 +7,16 @@ Pathfinding will also depend on objects here, and is thus integral to it's funct
 from __future__ import annotations
 
 import json
+from pprint import pprint
+
 import arcade
 import numpy as np
 
 from itertools import chain
 from config import Config
+from pathfinding.core.diagonal_movement import DiagonalMovement
+from pathfinding.core.grid import Grid
+from pathfinding.finder.a_star import AStarFinder
 
 
 class Dungeon(object):
@@ -40,6 +45,16 @@ class Dungeon(object):
         self.levels = [
             [Level.load_file(x, y, center) for y in range(size)] for x in range(size)
         ]
+        self.matrix = [[1 for yy in range(size * 10)] for xx in range(10 * size)]
+        for column in self.levels:
+            for level in column:
+                for xx in range(10):
+                    for yy in range(10):
+                        if level.structure[xx][yy] == 'w':
+                            self.matrix[(level.x * 10) + xx][(level.y * 10) + yy] = 0
+        self.grid = Grid(matrix=self.matrix)
+        self.finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+        pprint(self.matrix, width=1000)
 
     def getWalls(self) -> arcade.SpriteList:
         """

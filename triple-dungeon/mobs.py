@@ -3,9 +3,11 @@ mobs.py
 Organizes all classes related to Mobs, Entities, Enemies, Players and Items.
 """
 
-import arcade
+from typing import List, Tuple
 
+import arcade
 from config import Config, Enums, SpritePaths
+from map import Dungeon
 from sprites import PlayerAnimations
 
 
@@ -14,9 +16,9 @@ class Mob(arcade.Sprite):
     Represents a Mob. No defined behaviour, it has no intelligence.
     """
 
-    def __init__(self, max_health=100, max_armor=0, *args, **kwargs) -> None:
+    def __init__(self, dungeon: Dungeon, max_health=100, max_armor=0, *args, **kwargs) -> None:
         # Set up parent class
-        super().__init__()
+        super(Mob, self).__init__(*args, **kwargs)
 
         self.max_health, self.max_armor = max_health, max_armor
         self.health, self.armor = max_health, max_armor
@@ -26,13 +28,10 @@ class Mob(arcade.Sprite):
         self.down_textures = []
         self.cur_texture = 0
 
-    def tick(self) -> None:
-        """
-        A on_update function, the Mob should decide it's next actions here.
-        """
-        pass
+        self.dungeon = dungeon
+        self.target = None
 
-
+    
 class Player(Mob):
     """
     Represents a Player.
@@ -55,6 +54,19 @@ class Player(Mob):
         self.refreshIndex = 0
         self.prev = Enums.IDLE
         self.texture = next(self.map[self.prev])
+        self.kill_list = []
+        self.cur_recipe = None
+
+    def add_kill(self, creature):
+        # Adds a kill to kill_list. If 3 or more check the recipe then give a power up if it matches.
+        self.kill_list.append(creature)
+        print(self.kill_list)
+        print(self.cur_recipe)
+        if self.cur_recipe == self.kill_list:
+            print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+            self.kill_list = []
+        elif len(self.kill_list) >= 3:
+            self.kill_list = []
 
     def update_animation(self, delta_time: float = 1 / 60) -> None:
         """
@@ -101,17 +113,51 @@ class Enemy(Mob):
 
     def __init__(self, *args, **kwargs) -> None:
         super(Enemy, self).__init__(*args, **kwargs)
+        self.monster_type = ''
 
-    def tick(self) -> None:
+    def nearestPosition(self) -> Tuple[int, int]:
         """
-        A on_update function, the Enemy Mob should scan for the player, decide how to path to it, and
-        decide how to take offensive action.
-        """
-        pass
+        Returns the nearest absolute dungeon tile the Mob is placed on.
 
-    def path(self) -> None:
+        :return: A tuple containing the Mob's dungeon tile position.
         """
-        Not yet decided how this function should work.
-        Basically, most pathfinding decisions should be kept within this function.
+        return (round(self.center_x / Config.TILE_SIZE),
+                round(self.center_y / Config.TILE_SIZE))
+
+    def tick(self, path: Tuple[int, int] = None) -> None:
         """
-        pass
+        A on_update function, the Mob should decide it's next actions here.
+        """
+        curpos, nextpos = self.nearestPosition(), path[1]
+        # print(curpos, nextpos)
+
+        if nextpos[0] > curpos[0]:
+            self.change_x = Config.PLAYER_MOVEMENT_SPEED - 3
+        elif nextpos[0] < curpos[0]:
+            self.change_x = -Config.PLAYER_MOVEMENT_SPEED + 3
+        else:
+            self.change_x = 0
+
+        if nextpos[1] > curpos[1]:
+            self.change_y = Config.PLAYER_MOVEMENT_SPEED - 3
+        elif nextpos[1] < curpos[1]:
+            self.change_y = -Config.PLAYER_MOVEMENT_SPEED + 3
+        else:
+            self.change_y = 0
+
+        # print(self.change_x, self.change_y)
+
+    def get_path(self, end: Tuple[int, int] = None) -> List[Tuple[int, int]]:
+        """
+        Returns the path to get to the Mob's target in absolute integer positions.
+
+        :param end: A the endpoint tuple. Must be a valid position within the matrix.
+        :return:
+        """
+        if end is None:
+            end = self.target.position
+            start, end = self.nearestPosition(), (round(end[0] / Config.TILE_SIZE), round(end[1] / Config.TILE_SIZE))
+            start, end = self.dungeon.grid.node(*start), self.dungeon.grid.node(*end)
+            paths, runs = self.dungeon.finder.find_path(start, end, self.dungeon.grid)
+            self.dungeon.grid.cleanup()
+            return paths

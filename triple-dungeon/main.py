@@ -8,13 +8,14 @@ import collections
 import math
 import random
 import time
+from typing import Tuple, List
 
 import arcade
-
 from config import Config
 from map import Dungeon
-from mobs import Player
+from mobs import Player, Enemy
 from projectiles import Temp
+from recipe import ActiveRecipe
 
 
 class FPSCounter:
@@ -47,6 +48,7 @@ class Game(arcade.Window):
 
         # Sprite Lists
         self.enemy_list = None
+        self.active_enemies = []
         self.bullet_list = None
         self.player = None
         # Game Objects
@@ -55,6 +57,7 @@ class Game(arcade.Window):
         self.physics_engine = None  # Our physics engine
         # Used to keep track of our scrolling
         self.view_bottom = self.view_left = 0
+        self.active_recipe = []
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -63,18 +66,40 @@ class Game(arcade.Window):
         # Create the Sprite lists
 
         self.enemy_list = arcade.SpriteList()
+        self.active_enemies = arcade.SpriteList()
         self.fps = FPSCounter()
         self.bullet_list = arcade.SpriteList()
 
         # Create the dungeon
         self.dungeon = Dungeon(0, 3)
 
+        # Set up recipes
+        self.active_recipe = ActiveRecipe()
+        self.active_recipe.set_ghosts()
+
         # Set up the player, specifically placing it at these coordinates.
-        self.player = Player()
+        self.player = Player(self.dungeon)
         self.player.scale = 1
         level = random.choice(self.dungeon.levelList)
         self.player.center_x, self.player.center_y = level.center()
+        self.player.cur_recipe = self.active_recipe.active
         # x, y = level.center()
+
+        # Set up monsters
+        for count in range(Config.MONSTER_COUNT//2):
+            mob = Enemy(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
+            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+            mob.target = self.player
+            mob.scale = 4
+            mob.monster_type = 'ghost'
+            self.enemy_list.append(mob)
+        for count in range(Config.MONSTER_COUNT//2):
+            mob = Enemy(filename="resources/images/monsters/frog/frog1.png", dungeon=self.dungeon)
+            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+            mob.target = self.player
+            mob.scale = 4
+            mob.monster_type = 'frog'
+            self.enemy_list.append(mob)
 
         # Setup viewport
         self.view_bottom = self.player.center_x - (0.5 * Config.SCREEN_WIDTH) + 300
@@ -83,10 +108,6 @@ class Game(arcade.Window):
                             Config.SCREEN_WIDTH + self.view_left,
                             self.view_bottom,
                             Config.SCREEN_HEIGHT + self.view_bottom)
-
-        # Create monsters
-        # self.enemy_list.append(Enemy("resources/images/monsters/ghost/ghost1.png", 200, 200, 4))
-        # self.enemy_list.append(Enemy("resources/images/monsters/frog/frog1.png", 200, 1000, 4))
 
         # Create the 'physics engine'
         self.physics_engine = arcade.PhysicsEngineSimple(self.player, self.dungeon.getWalls())
@@ -101,21 +122,47 @@ class Game(arcade.Window):
             self.dungeon.render()
             self.player.draw()
             self.enemy_list.draw()
+            self.active_enemies.draw()
             self.bullet_list.draw()
+            self.active_recipe.render()
 
             if Config.DEBUG:
                 x, y = self.player.position
-                tile = Config.TILE_WIDTH * Config.TILE_SCALING
-                arcade.draw_rectangle_outline(round(x / tile) * tile, round(y / tile) * tile, tile, tile,
-                                              arcade.color.RED)
+                arcade.draw_rectangle_outline(round(x / Config.TILE_SIZE) * Config.TILE_SIZE,
+                                              round(y / Config.TILE_SIZE) * Config.TILE_SIZE,
+                                              Config.TILE_SIZE, Config.TILE_SIZE, arcade.color.RED)
                 self.player.draw_hit_box()
                 arcade.draw_text(str((x, y)), x - 40, y + 50, arcade.color.WHITE, 15, font_name='Arial')
                 arcade.draw_text(f"FPS: {self.fps.get_fps():3.0f}", self.view_left + 50, self.view_bottom + 30,
-                                 arcade.color.WHITE, 16, font_name='Arial')
+                                arcade.color.WHITE, 16, font_name='Arial')
+
+                # Draw paths for all mobs
+                for mob in self.active_enemies:
+                    if mob.target is not None:
+                        t1 = time.time()
+                        path = mob.get_path()
+                        t2 = time.time()
+                        print(f'Path acquired in {round(t2 - t1, 4)}s')
+                        self.draw_path(path)
+                        mob.tick(path)
+
                 self.fps.tick()
         except Exception:
             import traceback
             traceback.print_exc()
+
+    @staticmethod
+    def draw_path(path: List[Tuple[int, int]]) -> None:
+        """
+        Draws a line between positions in a list of tuple, also known as the path.
+        :param path: A list of tuple positions defining a path that can be traversed.
+        """
+
+        if len(path) > 2:
+            path = map(lambda point: ((point[0]) * Config.TILE_SIZE, (point[1]) * Config.TILE_SIZE), path)
+            path = list(path)
+            for pos1, pos2 in zip(path, path[1:]):
+                arcade.draw_line(*pos1, *pos2, color=arcade.color.RED)
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
@@ -134,6 +181,9 @@ class Game(arcade.Window):
             self.prev_keypress.append(key)
         elif key == 65307:
             self.close()
+        elif key == 65505:
+            self.active_recipe.next_recipe()
+            self.player.cur_recipe = self.active_recipe.active
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
@@ -150,6 +200,7 @@ class Game(arcade.Window):
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.player.change_x = 0
             self.prev_keypress.remove(key)
+
         if self.prev_keypress:
             self.on_key_press(self.prev_keypress.pop(0), 0)
 
@@ -157,6 +208,7 @@ class Game(arcade.Window):
         """
         Called whenever the mouse is clicked.
         """
+
         # Create a bullet TEMP SPRITE, currently wielding frog slingshot
         bullet = Temp()
         # Position the bullet at the player's current location
@@ -229,16 +281,39 @@ class Game(arcade.Window):
                                 Config.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
-
+        # Enemy activation and update
+        for enemy in reversed(self.enemy_list):
+            if (
+                    enemy.bottom > self.view_bottom and
+                    enemy.top < self.view_bottom + Config.SCREEN_HEIGHT and
+                    enemy.right < self.view_left + Config.SCREEN_WIDTH and
+                    enemy.left > self.view_left
+                ):
+                    if Config.DEBUG:
+                        print("Activate Enemy")
+                    self.active_enemies.append(enemy)
+                    self.enemy_list.remove(enemy)
+        try:
+            for enemy in self.active_enemies:
+                enemy.update()
+                path = enemy.get_path()
+                enemy.tick(path)
+        except Exception:
+            import traceback
+            traceback.print_exc()
         # Projectile updates
         self.bullet_list.update()
         for bullet in self.bullet_list:
+
             # Collision Checks
             hit_list = arcade.check_for_collision_with_list(bullet, self.dungeon.getWalls())
-
+            enemy_hit_list = arcade.check_for_collision_with_list(bullet, self.active_enemies)
             # If it did, get rid of the bullet
             if len(hit_list) > 0:
                 bullet.remove_from_sprite_lists()
+            if len(enemy_hit_list):
+                self.player.add_kill(enemy_hit_list[0].monster_type)
+                enemy_hit_list[0].remove_from_sprite_lists()
 
             # If the bullet flies off-screen, remove it. TEMP change to range calc
             if (

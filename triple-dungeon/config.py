@@ -29,21 +29,25 @@ class Config(object):
     # Constants used to scale our sprites from their original size
     CHARACTER_SCALING = 1
     TILE_SCALING = 2
+    TILE_SIZE = TILE_WIDTH * TILE_SCALING
 
     # The number of pixels across the level
     LEVEL_SIZE = 10 * TILE_SCALING * TILE_WIDTH
 
     # Movement speed of player, in pixels per frame
-    PLAYER_MOVEMENT_SPEED = 7
+    PLAYER_MOVEMENT_SPEED = 14
 
     # How many pixels to keep as a minimum margin between the characters and the edge of the screen.
-    LEFT_VIEWPORT_MARGIN = 250
-    RIGHT_VIEWPORT_MARGIN = 250
-    BOTTOM_VIEWPORT_MARGIN = 50
-    TOP_VIEWPORT_MARGIN = 100
+    LEFT_VIEWPORT_MARGIN = 700
+    RIGHT_VIEWPORT_MARGIN = 700
+    BOTTOM_VIEWPORT_MARGIN = 300
+    TOP_VIEWPORT_MARGIN = 350
 
     # All debug statements and renderings should use this
-    DEBUG = True
+    DEBUG = False
+
+    # Monster Count to be spawned
+    MONSTER_COUNT = 10
 
 
 class Enums(Enum):
