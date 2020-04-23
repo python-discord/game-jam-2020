@@ -15,7 +15,7 @@ class GameState:
     def __init__(self):
         self.level_geometry = arcade.SpriteList()
 
-        self.player = Player('assets/simple_cube.png')
+        self.player = Player('assets/player/player.png')
         self.player.center_x = 200
         self.player.center_y = 200
 
