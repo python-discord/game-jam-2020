@@ -23,7 +23,7 @@ class Enemies(enum.Enum):
 class BaseEnemy(LivingEntity):
     enemy_assets_path = Path('assets/dungeon/frames')
 
-    def __init__(self, enemy: Enemies, hp: int = 0, **kwargs) -> None:
+    def __init__(self, enemy: Enemies, kill_value: int, hp: int = 0, **kwargs) -> None:
         super().__init__(
             sprite_name=enemy.name,
             assets_path=self.enemy_assets_path,
@@ -33,6 +33,10 @@ class BaseEnemy(LivingEntity):
 
         self.hp = enemy.value if hp < 1 else hp
         self.being_pushed = False
+
+    def kill(self) -> None:
+        self.ctx.enemy_killed(self)
+        super().kill()
 
 
 class SimpleChasingEnemy(BaseEnemy, MovingSprite):
@@ -83,7 +87,7 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
         detection_radius: int,
         **kwargs
     ) -> None:
-        super().__init__(enemy, rotate=False, **kwargs)
+        super().__init__(enemy, rotate=False, kill_value=5, **kwargs)
 
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
@@ -137,7 +141,7 @@ class StationaryEnemy(BaseEnemy):
         shoot_interval: float,
         **kwargs
     ) -> None:
-        super().__init__(enemy, is_pushable=False, **kwargs)
+        super().__init__(enemy, is_pushable=False, kill_value=5, **kwargs)
 
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
