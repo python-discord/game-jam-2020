@@ -1,4 +1,4 @@
-import random
+from random import randint
 
 class PatternGenerator:
 
@@ -6,7 +6,7 @@ class PatternGenerator:
         self.lanes = lanes
 
     def generate_pattern(self):
-        rand = random.randint(0, 99)
+        rand = randint(0, 99)
         if 0 <= rand <= 11:
             return []
         elif rand <= 34:
@@ -22,10 +22,10 @@ class PatternGenerator:
 
 
     def _generate_one(self, sprite_path):
-        return [self.lanes[random.randint(0, 2)].generate_obstacle(sprite_path)]
+        return [self.lanes[randint(0, 2)].generate_obstacle(sprite_path)]
 
     def _generate_consecutives(self, repeat: int, sprite_path)-> list:
-        rand = random.randint(0, len(self.lanes) - 1)
+        rand = randint(0, len(self.lanes) - 1)
         result = []
         for numbers in range(repeat):
             result.append(self.lanes[rand].generate_obstacle(sprite_path))
@@ -39,5 +39,5 @@ class PatternGenerator:
         for obstacle in range(number):
             result.append(self.lanes[
                               possibilities.pop(
-                                  random.randint(0, len(possibilities)-1))].generate_obstacle(sprite_path))
+                                  randint(0, len(possibilities)-1))].generate_obstacle(sprite_path))
         return result

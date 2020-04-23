@@ -1,5 +1,5 @@
 import arcade
-from entities import Character, Obstacle
+from entities import Character, Obstacle, Background
 from enum import Enum
 
 class EnumAction(Enum):
@@ -8,15 +8,17 @@ class EnumAction(Enum):
     super = 5
     perfect = 10
 
+
 class Lane():
     """
     Initialise and generate most objects in one of the three lanes.
     """
 
-
     # init a lane with char/floor/physics engine/
-    def __init__(self, tier: int, SCREEN_HEIGHT: int,
-                 SCREEN_WIDTH: int, sprite_path: str, run_textures: list):
+    def __init__(self, tier: int, scale: int,
+                 SCREEN_HEIGHT: int,
+                 SCREEN_WIDTH: int, sprite_path: str,
+                 run_textures: list, pattern_texture: dict):
         """
 
         :param tier: What tier of the screen the lane should be.
@@ -27,12 +29,13 @@ class Lane():
         self.tier = tier
         self.char = Character(sprite_path,
                               SCREEN_HEIGHT - (SCREEN_HEIGHT // 3)*tier + 20,
-                              run_textures)
+                              run_textures,
+                              pattern_texture)
         self.char.center_x = SCREEN_WIDTH // 10
-        self.char.scale = 1.7
+        self.char.scale = scale
 
         self.floor = arcade.Sprite("../ressources/Floor_Tempo.png")
-        self.floor.center_y = SCREEN_HEIGHT - (SCREEN_HEIGHT // 3)*tier
+        self.floor.center_y = SCREEN_HEIGHT - (SCREEN_HEIGHT // 3)*tier + 5
         floor_list = arcade.SpriteList()
         floor_list.append(self.floor)
 
@@ -85,7 +88,7 @@ class Lane():
             for collision in arcade.check_for_collision_with_list(self.valid_zone,
                                                                   obstacle_list):
                 collision.hit = True
-                if collision.collides_with_point((self.valid_zone.center_x, collision.center_y)):
+                if self.valid_zone.center_x - 10 < collision.center_x < self.valid_zone.center_x + 10:
                     result = EnumAction.perfect
                 elif collision.right < self.valid_zone.right and collision.left > self.valid_zone.left:
                     result = EnumAction.super
@@ -103,14 +106,14 @@ class Lane():
         """
         # offset 107 for Q
         result = []
-        background = arcade.Sprite(sprite_path)
+        background = Background(sprite_path, self.SCREEN_WIDTH)
         background.center_y = self.SCREEN_HEIGHT - (self.SCREEN_HEIGHT // 3)*self.tier \
                               + offset
         background.center_x = self.SCREEN_WIDTH // 2
         background.change_x = -speed
         result.append(background)
 
-        background = arcade.Sprite(sprite_path)
+        background = Background(sprite_path, self.SCREEN_WIDTH)
         background.center_y = self.SCREEN_HEIGHT - (self.SCREEN_HEIGHT // 3)*self.tier \
                                 + offset
         background.center_x = self.SCREEN_WIDTH + self.SCREEN_WIDTH // 2

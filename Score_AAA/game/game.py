@@ -1,6 +1,8 @@
+from collections import deque
 import arcade
-import random
-from entities import Character, Splash
+from pyglet.gl import GL_NEAREST
+from pyglet.gl import GL_LINEAR
+from entities import Splash
 from lane import Lane
 from patterns import PatternGenerator
 
@@ -33,13 +35,14 @@ class MyGame(arcade.Window):
         self.lane_middle = None
         self.lane_down = None
         self.pattern = None
+
         # Set up other settings
         self.score = 0
         self.time = 0
         self.frame = 0
         self.fps = 0
         self.combo = 0
-        self.obstacle_stack = [[], [], [], [], []]
+        self.obstacle_queue = deque([[], [], [], [], []])
 
 
     def setup(self):
@@ -56,24 +59,31 @@ class MyGame(arcade.Window):
         for i in range(4):
             q_run_textures.append(arcade.load_texture(f"../ressources/New_Q_Run_{i+1}.png"))
 
-        self.lane_up = Lane(1,
+        self.lane_up = Lane(1, 1.7,
                             SCREEN_HEIGHT,
                             SCREEN_WIDTH,
                             "../ressources/New_Q_Run_1.png",
-                            q_run_textures)
+                            q_run_textures,
+                            {0: 0, 1: 1, 2: 2, 3: 3, 4: 2})
         self.char_list.append(self.lane_up.char)
         self.floor_list.append(self.lane_up.floor)
-        for background in self.lane_up.generate_background("../ressources/Q_Background.png", 2, 107):
+        for background in self.lane_up.generate_background("../ressources/Q_Background_Crayon.png", 2, 107):
             self.background.append(background)
         for sky in self.lane_up.generate_background("../ressources/Q_Sky.png", 1, 107):
             self.sky_list.append(sky)
 
         # Set up lane 2
-        self.lane_middle = Lane(2,
+
+        w_run_textures = []
+        for i in range(3):
+            w_run_textures.append(arcade.load_texture(f"../ressources/W_Run_{i+1}.png"))
+
+        self.lane_middle = Lane(2, 1.8,
                                 SCREEN_HEIGHT,
                                 SCREEN_WIDTH,
                                 "../ressources/W_Idle.png",
-                                [])
+                                w_run_textures,
+                                {0: 0, 1: 0, 2: 1, 3: 1, 4: 2})
         self.char_list.append(self.lane_middle.char)
         self.floor_list.append(self.lane_middle.floor)
         for background in self.lane_up.generate_background("../ressources/W_Background.png", 2,  -93):
@@ -82,11 +92,17 @@ class MyGame(arcade.Window):
             self.sky_list.append(sky)
 
         # Set up lane 3
-        self.lane_down = Lane(3,
+
+        w_run_textures = []
+        for i in range(6):
+            w_run_textures.append(arcade.load_texture(f"../ressources/E_Run_{i+1}.png"))
+
+        self.lane_down = Lane(3, 1.7,
                               SCREEN_HEIGHT,
                               SCREEN_WIDTH,
                               "../ressources/E_Idle.png",
-                              [])
+                              w_run_textures,
+                              {0: 0, 1: 1, 2: 2, 3: 1, 4: 3, 5: 4, 6: 5})
         self.char_list.append(self.lane_down.char)
         self.floor_list.append(self.lane_down.floor)
         for background in self.lane_up.generate_background("../ressources/E_Sky_1.png", 3,  -300):
@@ -116,12 +132,12 @@ class MyGame(arcade.Window):
         arcade.start_render()
 
         # Draw all the sprites (order determine Z axis)
-        self.sky_list.draw()
-        self.background.draw()
+        self.sky_list.draw(filter=GL_NEAREST)
+        self.background.draw(filter=GL_NEAREST)
         self.floor_list.draw()
-        self.obstacle_list.draw()
-        self.char_list.draw()
-        self.splash_list.draw()
+        self.obstacle_list.draw(filter=GL_NEAREST)
+        self.char_list.draw(filter=GL_NEAREST)
+        self.splash_list.draw(filter=GL_NEAREST)
 
         # Put the text on the screen.
         output = f"Score: {self.score}"
@@ -138,12 +154,19 @@ class MyGame(arcade.Window):
         result = 0
         if key == arcade.key.A:
             result = self.lane_up.action(self.obstacle_list)
-            splash = Splash("../ressources/splash_super.png", [75, 50])
+            splash = Splash(result.name,
+                            [self.lane_up.char.center_x + 75, self.lane_up.char.center_y + 50])
             self.splash_list.append(splash)
         elif key == arcade.key.Z:
             result = self.lane_middle.action(self.obstacle_list)
+            splash = Splash(result.name,
+                            [self.lane_up.char.center_x + 75, self.lane_middle.char.center_y + 50])
+            self.splash_list.append(splash)
         elif key == arcade.key.E:
             result = self.lane_down.action(self.obstacle_list)
+            splash = Splash(result.name,
+                            [self.lane_up.char.center_x + 75, self.lane_down.char.center_y + 50])
+            self.splash_list.append(splash)
 
         if result == 0:
             pass
@@ -176,9 +199,10 @@ class MyGame(arcade.Window):
             self.time = 0
 
             # Generation of obstacles
-            if not self.obstacle_stack:
-                    self.obstacle_stack.append(self.pattern.generate_pattern())
-            for obstacle in self.obstacle_stack.pop():
+
+            if not self.obstacle_queue:
+                self.obstacle_queue.append(self.pattern.generate_pattern())
+            for obstacle in self.obstacle_queue.popleft():
                 self.obstacle_list.append(obstacle)
 
         # Update Physic Engine
@@ -195,7 +219,6 @@ class MyGame(arcade.Window):
         self.splash_list.update()
         for item in self.splash_list:
             item.update_age(delta_time)
-
         # Score points and remove obstacles
         for obstacle in self.obstacle_list:
             if obstacle.center_x < 0:
@@ -203,16 +226,6 @@ class MyGame(arcade.Window):
                     self.score -= 50
                     self.combo = 0
                 obstacle.remove_from_sprite_lists()
-
-    # Remove backgrounds item
-        for item in self.background:
-            if item.right < 0:
-                item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
-
-        # Handle sky
-        for item in self.sky_list:
-            if item.right < 0:
-                    item.center_x = SCREEN_WIDTH + SCREEN_WIDTH // 2
 
 def main():
     """ Main method """
