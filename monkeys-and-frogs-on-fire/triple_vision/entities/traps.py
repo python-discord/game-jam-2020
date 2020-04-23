@@ -1,9 +1,14 @@
 import random
 from typing import Tuple
 
-from triple_vision.entities import AnimatedEntity, SoundEntity, BaseEnemy, Player
-from triple_vision.utils import is_in_radius
 from triple_vision import Settings as s
+from triple_vision.entities import (
+    AnimatedEntity,
+    BaseEnemy,
+    Player,
+    SoundEntity
+)
+from triple_vision.utils import is_in_radius
 
 
 class Trap(AnimatedEntity, SoundEntity):

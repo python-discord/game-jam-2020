@@ -6,7 +6,7 @@ import arcade
 
 from triple_vision import Settings as s
 from triple_vision import Tile
-from triple_vision.entities import LivingEntity
+from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import HealthBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile
 from triple_vision.pathfinding import PathFinder

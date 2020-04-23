@@ -1,6 +1,6 @@
-import random
 import itertools
 from pathlib import Path
+import random
 from typing import Any, Optional, Tuple
 
 import arcade

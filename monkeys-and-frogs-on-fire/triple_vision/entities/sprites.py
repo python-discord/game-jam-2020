@@ -1,6 +1,6 @@
+from enum import Enum
 import math
 import time
-from enum import Enum
 from typing import Optional
 
 import arcade

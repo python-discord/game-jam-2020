@@ -3,6 +3,7 @@ import arcade
 from triple_vision import Settings as s
 from triple_vision import Tile
 from triple_vision.camera import Camera
+from triple_vision.engine import SlowModeSupportEngine
 from triple_vision.entities import (
     ChasingEnemy,
     Enemies,
@@ -11,7 +12,6 @@ from triple_vision.entities import (
 )
 from triple_vision.managers import CardManager, GameManager
 from triple_vision.map import Map
-from triple_vision.entities.engine import SlowModeSupportEngine
 
 
 class TripleVision(arcade.View):

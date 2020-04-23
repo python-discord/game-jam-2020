@@ -13,5 +13,3 @@ class Sound(arcade.Sound):
         if volume > self.max_volume:
             return
         super().set_volume(volume)
-
-

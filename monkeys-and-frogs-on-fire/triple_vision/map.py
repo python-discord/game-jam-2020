@@ -1,5 +1,4 @@
 import random
-import traceback
 from typing import Optional, Tuple
 
 import arcade
