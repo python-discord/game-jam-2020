@@ -147,15 +147,6 @@ class Game(Base):
         ))
 
     def _create_unit(self, unit):
-        print(unit)
-        print("0000")
-        print(self.unit_types)
-        print("aaaa")
-        print(unit["type"])
-        print("bbbb")
-        print(unit["owner"])
-        print("cccc")
-        print(self.unit_types[unit["type"]])
         self.unit_sprites.append(arcade.Sprite(
             self.unit_types[unit["type"]]["icons"][unit["owner"]],
             center_x=unit["loc"][0] * self.square + self.x_buffer + self.square / 2,
