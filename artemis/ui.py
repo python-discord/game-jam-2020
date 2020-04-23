@@ -110,19 +110,31 @@ class Achievement(IconButton):
                  level: int, name: str, description: str, achieved: bool,
                  size: int = 64):
         """Load textures and store parameters."""
+        self.typ = typ
+        self.level = level
+        self.setup(view, x, y, name, description, achieved, size)
+
+    def setup(self, view: arcade.View, x: number, y: number, name: str,
+              description: str, achieved: bool, size: int):
+        """Save parameters and load textures common with Awards."""
         self.view = view
         self.state = 'normal'
-        self.icon_texture = self.load_texture(
-            f'achievement_type_{typ}', size // 2
-        )
-        self.background_texture = self.load_texture(
-            f'achievement_level_{level}', size
-        )
+        self.size = size
         self.tooltip_texture = self.create_tooltip(name, description)
         self.center_x = x
         self.center_y = y
-        self.size = size
         self.alpha = 255 if achieved else 100
+        self.achieved = achieved
+        self.load_textures()
+
+    def load_textures(self):
+        """Load background and icon texture."""
+        self.icon_texture = self.load_texture(
+            f'achievement_type_{self.typ}', self.size // 2
+        )
+        self.background_texture = self.load_texture(
+            f'achievement_level_{self.level}', self.size
+        )
 
     def create_tooltip(self, name: str, desc: str) -> arcade.Texture:
         """Create an arcade texture for the tooltip."""
@@ -162,6 +174,25 @@ class Achievement(IconButton):
     def on_mouse_release(self, _x: int, _y: int, _button: int,
                          _modifiers: int):
         """Don't do anything since it isn't actually a button."""
+
+
+class Award(Achievement):
+    """The display for an award."""
+
+    def __init__(self, view: arcade.View, x: number, y: number, typ: int,
+                 name: str, description: str, achieved: bool, size: int = 64):
+        """Load textures and store parameters."""
+        self.typ = typ
+        self.achieved = achieved
+        self.setup(view, x, y, name, description, achieved, size)
+
+    def load_textures(self):
+        """Load background and icon texture."""
+        visible = 'visible' if self.achieved else 'hidden'
+        self.icon_texture = self.load_texture(
+            f'award_{self.typ}_{visible}', self.size // 2
+        )
+        self.background_texture = self.load_texture('award', self.size)
 
 
 class ViewButton(IconButton):
