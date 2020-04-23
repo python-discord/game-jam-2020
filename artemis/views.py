@@ -130,6 +130,7 @@ class Tutorial(View):
             except StopIteration:
                 self.done = True
                 self.buttons = []
+                self.on_top = []
                 self.buttons.append(
                     ViewButton(self, WIDTH / 2 - 35, HEIGHT / 2, 'home', Menu)
                 )
@@ -223,7 +224,6 @@ class Achievements(View):
         achievements = get_achievements()
         x = WIDTH / 2 - 140
         y = HEIGHT / 2 + 105
-        self.on_top = []
         for row in achievements:
             for data in row:
                 x += 70
@@ -245,5 +245,3 @@ class Achievements(View):
             arcade.color.WHITE, font_size=30, anchor_x='center',
             font_name=FONT.format(type='b')
         )
-        for achv in self.on_top:
-            achv.on_draw()

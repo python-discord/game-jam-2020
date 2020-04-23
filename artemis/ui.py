@@ -13,10 +13,14 @@ class IconButton():
     """A button, displayed with an icon."""
 
     def __init__(self, view: arcade.View, x: number, y: number, image: str,
-                 fun: typing.Callable, size: int = 64):
+                 fun: typing.Callable, size: int = 64, tooltip=None):
         """Load textures and record parameters."""
         self.view = view
         self.state = 'normal'
+        self.tooltip_text = tooltip
+        if not tooltip:
+            self.tooltip_text = image.title()
+        self.tooltip_texture = self.create_tooltip()
         self.icon_texture = self.load_texture(image, size // 2)
         self.textures = {}
         for state in ('normal', 'pressed', 'hover'):
@@ -31,10 +35,32 @@ class IconButton():
         im = Image.open(f'{ASSETS}{file}.png').resize((size, size))
         return arcade.Texture(file, im)
 
+    def create_tooltip(self) -> arcade.Texture:
+        """Create an arcade texture for the tooltip."""
+        padding = 5
+        font = ImageFont.truetype(FONT.format(type='ri'), 20)
+        text_width, text_height = font.getsize(self.tooltip_text)
+        width = text_width + padding * 2
+        height = text_height + padding * 2
+        im = Image.new('RGB', (width, height), color=(255, 255, 255))
+        draw = ImageDraw.Draw(im)
+        draw.text((padding, padding), self.tooltip_text, (0, 0, 0), font)
+        return arcade.Texture(self.tooltip_text, im)
+
     def on_draw(self):
         """Draw textures."""
         self.textures[self.state].draw_scaled(self.center_x, self.center_y)
         self.icon_texture.draw_scaled(self.center_x, self.center_y)
+        if self.state == 'hover':
+            x = self.right + self.tooltip_texture.width / 2 - 15
+            y = self.bottom - self.tooltip_texture.height / 2 + 15
+            _left, right, _top, _bottom = arcade.get_viewport()
+            x = min(x, right - self.tooltip_texture.width)
+            self.tooltip_texture.draw_scaled(x, y)
+            if self not in self.view.on_top:
+                self.view.on_top.append(self)
+        elif self in self.view.on_top:
+            self.view.on_top.remove(self)
 
     @property
     def left(self) -> int:
@@ -163,17 +189,19 @@ class View(arcade.View):
         if type(self).reset_viewport:
             arcade.set_viewport(0, WIDTH, 0, HEIGHT)
         self.buttons = []
+        self.on_top = []
         self.hide_mouse_after = 1
 
     def on_update(self, td: int):
         """Hide mouse if ready."""
         self.hide_mouse_after -= td
         if self.hide_mouse_after < 0:
-            self.window.set_mouse_visible(False)
+            visible = False
             for button in self.buttons:
                 if button.state != 'normal':
-                    self.window.set_mouse_visible(True)
+                    visible = True
                     break
+            self.window.set_mouse_visible(visible)
 
     def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
         """Check motion with buttons and unhide mouse."""
@@ -187,6 +215,8 @@ class View(arcade.View):
         if start_render:
             arcade.start_render()
         for button in self.buttons:
+            button.on_draw()
+        for button in self.on_top:
             button.on_draw()
 
     def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
