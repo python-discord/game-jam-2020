@@ -5,6 +5,7 @@ from .constants import (
     JUMP_COUNT, DASH_DISTANCE, RIGHT, LEFT, JUMP_VELOCITY_BONUS, DASH_COUNT
 )
 from .player import Player
+from .respawncoin import RespawnCoin
 
 from .utils import sweep_trace
 
@@ -13,11 +14,17 @@ class GameState:
     """Represent the state of the current game, and manage it."""
 
     def __init__(self):
-        self.level_geometry = arcade.SpriteList()
+        self.level_geometry = arcade.SpriteList()  # Have collisions
+        self.level_objects = arcade.SpriteList()   # Doesn't have collision
 
         self.player = Player('assets/player/player.png')
         self.player.center_x = 200
         self.player.center_y = 200
+
+        coin = RespawnCoin()
+        coin.center_x = 800
+        coin.center_y = 200
+        self.level_objects.append(coin)
 
         for left in range(0, FLOOR_LENGTH * FLOOR_TEXTURE_LENGTH, FLOOR_TEXTURE_LENGTH):
             floor = arcade.Sprite('assets/simple_block.png')
@@ -40,12 +47,14 @@ class GameState:
             self.player.movement_control = AIR_CONTROL
         self.player.update()
         self.engine.update()
+        self.level_objects.update()
 
     def on_draw(self) -> None:
         """Handle draw event."""
         arcade.start_render()
         self.player.draw()
         self.level_geometry.draw()
+        self.level_objects.draw()
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed."""
