@@ -5,7 +5,7 @@ from constants import BACKGROUND, FONT, HEIGHT, SCALING, SIDE, TOP, WIDTH
 from displays import Box, PausePlay
 from engine import BiDirectionalPhysicsEnginePlatformer
 from player import Player
-from scores import add_score, add_time, get_hiscore
+from scores import add_award, add_score, add_time, get_hiscore
 from sprites import Block, Gem, RandomBlock
 from ui import View
 import views
@@ -26,6 +26,7 @@ class Game(View):
         self.score = 0
         self.time = 0
         self.randomblocks = 2
+        self.matches = {'r': 0, 'b': 0, 'y': 0}
         self.hiscore = get_hiscore()
         self.paused = False
         self.pause_screen = None
@@ -95,10 +96,10 @@ class Game(View):
                 self.window.show_view(self.pause_screen)
 
     def on_update(self, timedelta: float):
-        """Moove sprites and update counters."""
+        """Move sprites and update counters."""
         super().on_update(timedelta)
         if not self.paused:
-            self.time = timedelta
+            self.time += timedelta
             for sprite_list in self.sprite_lists:
                 sprite_list.update()
             self.player.update(timedelta)
@@ -143,12 +144,28 @@ class Game(View):
     def remove_three(self, colour: str):
         """Once notified that there are three of some colour, remove them."""
         removed = 0
+        pinks = 0
+        done = False
         for box in self.boxes:
             if box.colour == colour:
                 box.remove_gem()
                 removed += 1
                 if removed == 3:
-                    return
+                    done = True
+            if box.colour == 'p':
+                pinks += 1
+        if pinks == 2:
+            add_award(2)
+        if removed == 0:
+            add_award(0)
+        else:
+            # only if it actually had some colour in it
+            self.matches[colour] += 1
+            if all(self.matches.values()):
+                add_award(3)
+        if done:
+            add_award(4)
+            return
         for box in self.boxes:
             if box.colour == 'w':
                 box.remove_gem()
@@ -158,6 +175,8 @@ class Game(View):
 
     def save(self):
         """Save the player's score and time spent playing."""
+        if self.score == 69:
+            add_award(5)
         add_score(self.score)
         add_time(self.time)
 

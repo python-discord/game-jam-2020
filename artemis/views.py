@@ -6,8 +6,12 @@ import typing
 from achievements import get_achievements
 from constants import ABOUT, ASSETS, FONT, HEIGHT, WIDTH
 from game import Game
-from scores import get_awards
+from scores import add_award, get_awards
 from ui import Achievement, Award, IconButton, View, ViewButton
+
+
+# keep track of restarts for award "The perfect spawn"
+restarts = 0
 
 
 class Paused(View):
@@ -42,6 +46,10 @@ class Paused(View):
 
     def restart(self):
         """Start a new game."""
+        global restarts
+        restarts += 1
+        if restarts == 4:
+            add_award(1)
         self.game.save()
         self.window.show_view(Game())
 
@@ -189,7 +197,9 @@ class GameOver(View):
 
     def on_draw(self):
         """Draw text."""
+        global restarts
         arcade.start_render()
+        restarts = 0
         # won't work without this for some reason
         arcade.set_viewport(0, WIDTH, 0, HEIGHT)
         arcade.draw_text(
