@@ -30,8 +30,18 @@ class Game:
             # main game loop
             pass
 
-    def generate_map(self, x=25, y=10):
-        world = [[{"loc": (x, y), "truefalse": True if 0.5 < random.random() else False} for y in range(y)] for x in range(x)]
+    def generate_map(self, x=33, y=11):
+        world = {
+            "cities": [],
+            "units": [],
+            "dim": [x, y]
+        }
+        for i in range(3):
+            # noinspection PyTypeChecker
+            world["cities"].append({
+                "loc": [i * 11 + 5, 5],
+                "owner": i
+            })
 
         self.world = world
 

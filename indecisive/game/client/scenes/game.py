@@ -4,6 +4,9 @@ import multiprocessing
 import queue
 
 
+COLOURS = [(200, 100, 100), (100, 200, 100), (100, 100, 200)]
+
+
 class Game(Base):
     def __init__(self, display):
         self.display = display
@@ -17,6 +20,10 @@ class Game(Base):
         self.receive_queue = None
         self.send_queue = None
 
+        # game drawing
+        self.shapes: arcade.ShapeElementList = arcade.ShapeElementList()
+
+        # game tracking
         self.world = None
         self.players = [dict(), dict(), dict()]
         self.id = None
@@ -36,12 +43,9 @@ class Game(Base):
 
     def draw(self) -> None:
         if self.initialised is True:
-            for x, row in enumerate(self.world):
-                for y, data in enumerate(row):
-                    arcade.draw_rectangle_filled((x + 5) * 10, (y + 5) * 10, 10, 10, (0, 0, 0) if data["truefalse"] is False else (255, 255, 255))
+            self.shapes.draw()
 
     def update(self, delta_time: float) -> None:
-        print(delta_time)
         self.sceneTime += delta_time
         if self.initialised is False:
             self.initialise()
@@ -65,4 +69,42 @@ class Game(Base):
                 ready[0] = True
             else:
                 self.receive_queue.put(data)
+        print(self.world)
+        self.setup_world()
         self.initialised = True
+
+    def setup_world(self):
+        self.shapes = arcade.ShapeElementList()
+
+        dim = self.world["dim"]
+        square = 38
+        x_buffer = 13
+        y_buffer = 151
+
+        self.shapes.append(arcade.create_rectangle_filled(
+            x_buffer + square * dim[0]//2,
+            y_buffer + square * dim[1]//2,
+            square * dim[0],
+            square * dim[1],
+            (150, 165, 135)
+        ))
+
+        for city in self.world["cities"]:
+            self.shapes.append(arcade.create_rectangle_filled(
+                city["loc"][0] * square + x_buffer + square/2,
+                city["loc"][1] * square + y_buffer + square/2,
+                square - 2, square - 2,
+                COLOURS[city["owner"]]
+            ))
+
+        lines = []
+
+        for y_line in range(dim[0] + 1):
+            lines.append([y_line * square + x_buffer, y_buffer])
+            lines.append([y_line * square + x_buffer, 720 - y_buffer])
+
+        for x_line in range(dim[1] + 1):
+            lines.append([x_buffer, x_line * square + y_buffer])
+            lines.append([1280 - x_buffer, x_line * square + y_buffer])
+
+        self.shapes.append(arcade.create_lines(lines, color=(0, 0, 0), line_width=1))
