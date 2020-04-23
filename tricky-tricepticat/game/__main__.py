@@ -4,13 +4,15 @@ Domicidal
 Python Discord | Game Jam 2020
 """
 # Standard Library
+from math import atan2, degrees, radians, sin, cos, sqrt
 import os
 from pathlib import Path
+import pprint
+import random
 import time
 
 # Third Party
 import arcade
-from math import atan2, degrees, radians, sin, cos, sqrt
 import PIL
 from pyglet import gl
 
@@ -111,6 +113,7 @@ class Weapon(arcade.Sprite):
             self.texture = self.texture_dict['sword_cut'][frames][0]
 
             self.cur_cut_texture += 1
+
 
 class Ship(arcade.Sprite):
     '''
@@ -248,6 +251,12 @@ class Enemy_SpriteSheet(arcade.Sprite):
         super().__init__()
         self.character_face_direction = LEFT_FACING
 
+        self.health = 100
+
+        self.is_idle = False
+        self.is_hit = False
+        self.is_attacking = False
+
         self.cur_idle_texture = 0
         self.cur_attack_texture = 0
         self.cur_run_texture = 0
@@ -255,91 +264,126 @@ class Enemy_SpriteSheet(arcade.Sprite):
 
         self.right_facing_textures = [
             arcade.load_spritesheet(
-                path['img'] / sprite_root / f'{i}.png', 48, 48, 1, j)
+                path['img'] / sprite_root / f'{i}.png', PIL.Image.open(path['img'] / sprite_root / f'{i}.png').size[0]/j, PIL.Image.open(path['img'] / sprite_root / f'{i}.png').size[1], j, j)
             for (i, j) in zip(
                 ('attack', 'death', 'hurt', 'idle', 'walk'),
                 (20, 13, 16, 18, 20))
         ]
-        self.left_facing_textures = [
-            arcade.Texture(
-                f'{texture.name}_mirrored',
-                PIL.ImageOps.mirror(texture.image)
-            ) for animation in self.right_facing_textures
-            for texture in animation
-        ]
+
+        self.left_facing_textures = []
+
+        for animation in self.right_facing_textures:
+            textures_list = []
+            for texture in animation:
+                textures_list.append(
+                arcade.Texture(
+                    f'{texture.name}_mirrored',
+                    PIL.ImageOps.mirror(texture.image)
+                ))
+            self.left_facing_textures.append(textures_list)
+
 
         self.texture_dict = {}
 
+        for (i, j) in zip(
+                ('attack', 'death', 'hurt', 'idle', 'walk'),
+                (0, 1, 2, 3, 4)
+        ):
+            self.texture_dict[i] = [
+                self.right_facing_textures[j], self.left_facing_textures[j]
+            ]
+        # print("RIGHT", self.right_facing_textures)
+        # print("LEFT", self.left_facing_textures)
+        pp = pprint.PrettyPrinter(indent=4)
+        pp.pprint(self.texture_dict)
+        # print("DICT", self.texture_dict)
         # [[j for i in ('attack', 'death', 'hurt', 'idle', 'walk') for j in self.right_facing_textures],
         # [j for i in ('attack', 'death', 'hurt', 'idle', 'walk') for j in self.left_facing_textures]]
 
-        self.texture = self.right_facing_textures[3][0]
+        self.texture = self.left_facing_textures[0][0]
 
     def on_update(self, delta_time):
         self.update_animation(delta_time)
 
+        if self.health <= 0:
+            self.kill()
+
     def update_animation(self, delta_time):
-                # Figure out if we need to flip face left or right
-                if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
-                    self.character_face_direction = LEFT_FACING
+        # Figure out if we need to flip face left or right
+        if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
+            self.character_face_direction = LEFT_FACING
 
-                elif (
-                        self.change_x > 0 and
-                        self.character_face_direction == LEFT_FACING
-                     ):
-                    self.character_face_direction = RIGHT_FACING
+        elif (
+                self.change_x > 0 and
+                self.character_face_direction == LEFT_FACING
+             ):
+            self.character_face_direction = RIGHT_FACING
 
-                # Idle animation
-                if self.is_idle:
-                    frames = self.cur_idle_texture // UPDATES_PER_FRAME
+        # Idle animation
+        if self.is_idle:
+            frames = self.cur_idle_texture // UPDATES_PER_FRAME
 
-                    if frames == len(self.texture_dict['idle'])-1:
-                        self.cur_idle_texture = 0
+            if frames == len(self.texture_dict['idle'][0])-1:
+                self.cur_idle_texture = 0
 
-                    print(self.name, frames)
-                    self.texture = self.texture_dict['idle'][frames][
-                        self.character_face_direction
-                        ]
+            # print(self.name, frames)
+            self.texture = self.texture_dict['idle'][
+                self.character_face_direction
+                ][frames]
 
-                    self.cur_idle_texture += 1
-                    return
+            self.cur_idle_texture += 1
+            return
 
-                # Attack animation
-                elif self.is_attacking:
-                    frames = self.cur_attack_texture // UPDATES_PER_FRAME
+        elif self.is_hit:
+            print("OW!SHIT!FUCK!THAT HURTS!")
+            frames = self.cur_hit_texture // UPDATES_PER_FRAME
+            print(frames)
 
-                    if frames == len(self.texture_dict['attack'])-1:
-                        self.cur_attack_texture = 0
-                        self.is_attacking = False
-                        return
+            if frames == len(self.texture_dict['hurt'][0])-1:
+                self.cur_hit_texture = 0
+                self.is_hit = False
+                return
 
-                    self.texture = self.texture_dict['attack'][frames][
-                        self.character_face_direction
-                        ]
+            self.texture = self.texture_dict['hurt'][
+                self.character_face_direction
+                ][frames]
 
-                    self.cur_attack_texture += 1
+            self.cur_hit_texture += 1
 
-                # Default animation
-                elif self.change_x == 0 and self.change_y == 0:
-                    self.texture = self.texture_dict['idle'][0][
-                        self.character_face_direction
-                    ]
-                    (self.cur_run_texture, self.cur_idle_texture,
-                        self.cur_attack_texture) = (0, 0, 0)
-                    return
+        # Attack animation
+        elif self.is_attacking:
+            frames = self.cur_attack_texture // UPDATES_PER_FRAME
 
-                # Walking animation
-                else:
-                    frames = self.cur_run_texture // UPDATES_PER_FRAME
+            if frames == len(self.texture_dict['attack'][0])-1:
+                self.cur_attack_texture = 0
+                self.is_attacking = False
+                return
 
-                    if frames == len(self.texture_dict['run'])-1:
-                        self.cur_run_texture = 0
+            self.texture = self.texture_dict['attack'][
+                self.character_face_direction
+                ][frames]
 
-                    self.texture = self.texture_dict['run'][frames][
-                        self.character_face_direction
-                        ]
+            self.cur_attack_texture += 1
 
-                    self.cur_run_texture += 1
+        # Default animation
+        elif self.change_x == 0 and self.change_y == 0:
+            self.texture = self.texture = self.texture_dict['idle'][self.character_face_direction][0]
+            (self.cur_run_texture, self.cur_idle_texture,
+                self.cur_attack_texture) = (0, 0, 0)
+            return
+
+        # Walking animation
+        else:
+            frames = self.cur_run_texture // UPDATES_PER_FRAME
+
+            if frames == len(self.texture_dict['walk'][0])-1:
+                self.cur_run_texture = 0
+
+            self.texture = self.texture_dict['walk'][
+                self.character_face_direction
+                ][frames]
+
+            self.cur_run_texture += 1
 
 
 class ShipView(arcade.View):
@@ -467,8 +511,6 @@ class ShipView(arcade.View):
                     file_name, streaming=True
                 ).play(volume=volume)
 
-
-
     def on_draw(self):
         arcade.start_render()
 
@@ -525,7 +567,6 @@ class ShipView(arcade.View):
             ) * delta_time
         )
 
-
         self.ship_sprite.change_angle = 0
 
         if self.up_pressed and not self.down_pressed:
@@ -555,6 +596,9 @@ class ShipView(arcade.View):
         elif self.ship_sprite.top > height - 1:
             self.ship_sprite.top = height - 1
 
+        '''
+        Handle wall collision damage
+        '''
         collided_walls = self.physics_engine.update()
         wall_collision = len(collided_walls) > 0
 
@@ -686,12 +730,14 @@ class PlayerView(arcade.View):
 
         self.enemy_list = arcade.SpriteList()
 
-        self.enemy_list.append(
-            Enemy_SpriteSheet('undead')
-        )
+        for i in range(5):
+            self.enemy_list.append(
+                Enemy_SpriteSheet('undead'))
+            self.enemy_list[i].scale = 1.25
+            self.enemy_list[i].set_position(random.randint(0, 500), random.randint(0, 500))
 
-        self.enemy_list[0].set_position(800, 200)
-        self.enemy_list[0].scale = 1.25
+        # self.enemy_list[0].set_position(800, 200)
+        # self.enemy_list[0].scale = 1.25
 
         self.map = arcade.tilemap.read_tmx(path['maps'] / "dungeon_test.tmx")
 
@@ -708,12 +754,12 @@ class PlayerView(arcade.View):
                     )
                 )
 
-        for sprite in self.enemy_list:
-            self.physics_engines.append(
-                arcade.PhysicsEngineSimple(
-                    sprite, self.map_layers[2]
-                )
-            )
+        # for sprite in self.enemy_list:
+        #     self.physics_engines.append(
+        #         arcade.PhysicsEngineSimple(
+        #             sprite, self.map_layers[2]
+        #         )
+        #     )
 
         # Used to keep track of our scrolling
         self.view_bottom = 0
@@ -773,6 +819,7 @@ class PlayerView(arcade.View):
 
     def on_show(self):
         print("Switched to PlayerView")
+        self.window.set_mouse_visible(False)
 
     def on_draw(self):
         arcade.start_render()
@@ -786,7 +833,6 @@ class PlayerView(arcade.View):
         self.level_sprites.draw(filter=gl.GL_NEAREST)
 
         # arcade.draw_line(self.mouse_position[0]*self.viewport_scale, self.mouse_position[1]*self.viewport_scale, self.player_sprite.center_x, self.player_sprite.center_y, arcade.color.RED, 1)
-
 
     def on_update(self, delta_time):
 
@@ -848,14 +894,13 @@ class PlayerView(arcade.View):
         self.player_sprites[0].on_update(delta_time)
         self.player_sprites[2].on_update(delta_time)
 
-        self.level_sprites.update()
+        # self.level_sprites.update()
 
-        self.player_sprite.weapon.center_x = self.mouse_position[0]*self.viewport_scale+arcade.get_viewport()[0]
-        self.player_sprite.weapon.center_y = self.mouse_position[1]*self.viewport_scale+arcade.get_viewport()[2]
+        self.enemy_list.on_update(delta_time)
 
+        # Handle positioning the player's weapon
         dx = (self.mouse_position[0]*self.viewport_scale+arcade.get_viewport()[0])-self.player_sprite.center_x
         dy = (self.mouse_position[1]*self.viewport_scale+arcade.get_viewport()[2])-self.player_sprite.center_y
-
         angle = atan2(dy, dx)
         self.player_sprite.weapon.center_x = self.player_sprite.center_x+25*cos(angle)
         self.player_sprite.weapon.center_y = self.player_sprite.center_y+25*sin(angle)
@@ -863,6 +908,31 @@ class PlayerView(arcade.View):
 
         self.player_sprite.weapon.update_animation()
 
+
+
+        player_stab = (
+            self.player_sprite.weapon.is_stab and
+            self.player_sprite.weapon.cur_stab_texture == 1
+        )
+
+        player_cut = (
+            self.player_sprite.weapon.is_cut and
+            self.player_sprite.weapon.cur_cut_texture == 1
+        )
+
+        if player_cut or player_stab:
+            enemy_collisions = self.player_sprite.weapon.collides_with_list(
+                self.enemy_list)
+        else:
+            enemy_collisions = []
+
+        '''Check for enemy being hit'''
+        if len(enemy_collisions) > 0:
+            for enemy in enemy_collisions:
+                print("LOL BRUH U JUST GOT HIT")
+                enemy.is_hit = True
+                enemy.health -= 10
+        # print(self.player_sprite.weapon.collides_with_list(self.enemy_list))
 
     def on_key_press(self, key, key_modifiers):
         """
