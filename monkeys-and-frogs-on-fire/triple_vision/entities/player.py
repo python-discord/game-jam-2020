@@ -178,8 +178,10 @@ class Player(LivingEntity, MovingSprite):
         if not arcade.get_sprites_at_exact_point(dest, self.view.collision_list):
             self.move_to(dest[0], dest[1] + s.PLAYER_CENTER_Y_COMPENSATION)
 
-        self.health_bar.on_update(delta_time)
         super().on_update(delta_time)
+
+    def update_health_bar(self, delta_time):
+        self.health_bar.on_update(delta_time)
 
     def draw(self):
         super().draw()
