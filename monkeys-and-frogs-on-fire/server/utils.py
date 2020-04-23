@@ -5,8 +5,8 @@ from werkzeug.security import generate_password_hash
 
 
 def init_db() -> None:
-    from frost.server.database import Message, Room
-    from server.models import User, Score
+    from frost.server.database import Message, Room, User  # NOQA: F401
+    from server.models import Score  # NOQA: F401
 
     Base.metadata.create_all(bind=engine)
 

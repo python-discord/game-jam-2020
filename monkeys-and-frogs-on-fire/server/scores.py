@@ -30,7 +30,7 @@ class Scores(Cog, route='scores'):
         })
 
     @auth_required
-    def get_top_ten(
+    def get_top(
         data: Dict[str, Any],
         token: str,
         id_: str,
@@ -41,7 +41,7 @@ class Scores(Cog, route='scores'):
 
             kwargs['client_send']({
                 'headers': {
-                    'path': 'scores/post_top_ten',
+                    'path': 'scores/post_top',
                     'status': Status.SUCCESS.value
                 },
                 'scores': [

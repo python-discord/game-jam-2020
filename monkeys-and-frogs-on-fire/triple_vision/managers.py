@@ -20,6 +20,9 @@ class GameManager:
 
         self.spikes: Optional[arcade.SpriteList] = None
 
+        self.points = 0
+        self.prev_sent = False
+
     def draw(self) -> None:
         self.enemies.draw()
         self.player_projectiles.draw()
@@ -58,6 +61,13 @@ class GameManager:
         self.player_projectiles.on_update(delta_time)
         self.enemy_projectiles.on_update(delta_time)
         self.damage_indicators.on_update(delta_time)
+
+        if not self.view.player.is_alive and not self.prev_sent:
+            # send score to server
+            pass
+
+    def enemy_killed(self, enemy) -> None:
+        self.points += enemy.kill_value
 
 
 class CardManager:

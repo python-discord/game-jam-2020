@@ -2,8 +2,17 @@ import math
 from typing import Tuple
 
 import arcade
+from frost.client.events import EventStatus
 
 from triple_vision import Tile
+
+
+def get_status(name):
+    status = None
+    while status is None:
+        status = EventStatus.get_status(name)
+
+    return status
 
 
 def load_texture_pair(filename: str) -> Tuple[arcade.Texture, arcade.Texture]:
@@ -18,13 +27,13 @@ def is_in_radius(center_object: arcade.Sprite, target_object: arcade.Sprite, rad
 
 
 def is_in_radius_positions(
-        center_position: Tuple[float, float],
-        target_position: Tuple[float, float],
-        radius: int
-        ):
+    center_position: Tuple[float, float],
+    target_position: Tuple[float, float],
+    radius: int
+):
     return (
-            abs(center_position[0] - target_position[0]) <= radius and
-            abs(center_position[1] - target_position[1]) <= radius
+        abs(center_position[0] - target_position[0]) <= radius and
+        abs(center_position[1] - target_position[1]) <= radius
     )
 
 
