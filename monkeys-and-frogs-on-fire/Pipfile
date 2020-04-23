@@ -10,6 +10,7 @@ pre-commit = "*"
 [packages]
 arcade = "*"
 numpy = "*"
+pyfrost = "*"
 
 [requires]
 python_version = "3.8"
@@ -18,3 +19,4 @@ python_version = "3.8"
 start = 'python -m triple_vision'
 lint = "python -m flake8"
 precommit = "pre-commit install"
+server = 'python -m server'
