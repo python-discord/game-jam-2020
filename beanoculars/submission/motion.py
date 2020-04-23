@@ -106,8 +106,8 @@ def moveEntities(entity_list: arcade.sprite_list, path_list: arcade.sprite_list,
             entity.center_x += ENTITY_MS * delta_time
 
         if entity.center_x >= 32 * 31:
-            print('GAME OVER')
             entity.kill()
+            return True
         # si le x est au delà d'un point, return True (game over)
         # sinon, return false
 

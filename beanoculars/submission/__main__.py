@@ -11,6 +11,7 @@ import arcade
 
 from submission.game import GameView
 from submission.menu import MenuView
+from submission.gameOver import GameOverView
 from submission.gameConstants import WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE
 
 
