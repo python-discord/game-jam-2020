@@ -1,13 +1,13 @@
 import asyncio
 import websockets
 import queue
-import threading
+import multiprocessing
 import socket
 import json
 
 
 class Client:
-    def __init__(self, receive_queue: queue.Queue, send_queue: queue.Queue):
+    def __init__(self, receive_queue: multiprocessing.Queue, send_queue: multiprocessing.Queue):
         self.receive = receive_queue
         self.send = send_queue
         self.connection = None
@@ -47,7 +47,9 @@ class Client:
                 except json.JSONDecodeError:
                     print(f"Error decoding JSON {data}")
                 else:
+                    print(data["type"])
                     self.receive.put(data)
+                await asyncio.sleep(0.05)
 
     async def _send(self):
         # send data
@@ -66,13 +68,17 @@ class Client:
             await asyncio.sleep(0.05)  # TODO why does removing this break everything...
 
 
-def run(ip: str, port: int = None) -> (threading.Thread, queue.Queue, queue.Queue):
-    receive, send = queue.Queue(), queue.Queue()
-    client = Client(receive, send)
+def run(ip: str, port: int = None) -> (multiprocessing.Process, multiprocessing.Queue, multiprocessing.Queue):
+    receive, send = multiprocessing.Queue(), multiprocessing.Queue()
     if port is None:
         port = 10000
-    network_thread = threading.Thread(target=client.start, name="network", args=(ip, port))
+    network_thread = multiprocessing.Process(target=_run, name="network", args=(receive, send, ip, port))
     network_thread.start()
     print("Network Client started!")
 
     return network_thread, receive, send
+
+
+def _run(receive, send, ip, port):
+    client = Client(receive, send)
+    client.start(ip, port)
