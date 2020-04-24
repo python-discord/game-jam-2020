@@ -212,13 +212,13 @@ class Player(LivingEntity, MovingSprite):
 
 class PlayerLiveManager:
     def __init__(
-            self,
-            view,
-            *args,
-            life_count: int = 10,
-            is_filled: bool = True,
-            scale: float = 1,
-            **kwargs
+        self,
+        view,
+        *args,
+        life_count: int = 10,
+        is_filled: bool = True,
+        scale: float = 1,
+        **kwargs
     ) -> None:
 
         super().__init__(*args, scale=scale, **kwargs)
@@ -229,6 +229,7 @@ class PlayerLiveManager:
         self.margin = 30
         self.hearts = arcade.SpriteList()
         self.heart_map = [2, 2, 2]
+        self.scaling = scale
 
         if not is_filled:
             return
@@ -238,13 +239,20 @@ class PlayerLiveManager:
                 arcade.Sprite(
                     "assets/hearts/heart_2.png",
                     center_x=100 + i * self.margin,
-                    center_y=100
+                    center_y=100,
+                    scale=self.scaling
                 )
             )
 
     def update_hearts(self):
         for i in range(3):
-            self.hearts.sprite_list[i] = arcade.Sprite(f"assets/hearts/heart_{i}.png")
+            current_heart = self.hearts.sprite_list[i]
+            self.hearts.sprite_list[i] = arcade.Sprite(
+                f"assets/hearts/heart_{i}.png",
+                center_x=current_heart.center_x,
+                center_y=current_heart.center_y,
+                scale=self.scaling
+            )
 
     def update(self):
         # hearts = round(self.life_count / 3, 1)
