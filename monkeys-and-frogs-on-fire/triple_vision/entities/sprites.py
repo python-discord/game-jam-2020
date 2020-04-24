@@ -16,6 +16,9 @@ class MovingSprite(arcade.Sprite):
         self.target = None
         self.rotate = rotate
 
+    def is_moving(self) -> bool:
+        return any((self.change_x, self.change_y))
+
     def calc_change_vector(self, x: float, y: float) -> None:
         self.change_x, self.change_y, angle = get_change_vector(
             start_position=self.position,
