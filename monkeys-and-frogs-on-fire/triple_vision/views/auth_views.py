@@ -148,6 +148,10 @@ class AuthView(arcade.View):
         self.username.process_key_press(key, modifiers)
         self.password.process_key_press(key, modifiers)
 
+    def on_key_release(self, key, modifiers) -> None:
+        self.username.process_key_release(key, modifiers)
+        self.password.process_key_release(key, modifiers)
+
     def on_mouse_press(self, x, y, key, modifiers) -> None:
         self.username.process_mouse_press(x, y, key, modifiers)
         self.password.process_mouse_press(x, y, key, modifiers)
