@@ -35,6 +35,7 @@ class GameView(arcade.View):
         self.player_list = None
         self.entity_list = None
         self.turret_list = None
+        self.dmg_list = None
 
         self.player_sprite = None
 
@@ -101,6 +102,7 @@ class GameView(arcade.View):
         self.path_list = arcade.SpriteList(is_static=True)
         self.entity_list = arcade.SpriteList()
         self.turret_list = arcade.SpriteList()
+        self.dmg_list = arcade.SpriteList()
 
         self.player_sprite = AnimatedPlayer('player', 4)
         self.player_sprite.center_x = BP_PLAYER[0] * 32 + 16
@@ -145,6 +147,7 @@ class GameView(arcade.View):
         # Entity layer
         self.turret_list.draw()
         self.entity_list.draw()
+        self.dmg_list.draw()
         # Turrets layer
 
         # Player layer
@@ -192,9 +195,10 @@ class GameView(arcade.View):
 
             if len(self.entity_list) > 0 and len(self.turret_list) > 0:
                 for i in range(len(self.turret_list)):
-                    turretAttack(self.turret_list[i], self.entity_list, delta_time)
+                    turretAttack(self.turret_list[i], self.entity_list, delta_time, self.dmg_list)
 
         self.player_list.update_animation()
+        self.dmg_list.update_animation()
         if self.animationDeltaTime >= 10:
             self.animationDeltaTime = 0
             self.entity_list.update_animation()

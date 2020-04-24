@@ -3,6 +3,10 @@ import arcade
 from submission.gameConstants import *
 
 
+def load_dmg_texture(filename):
+    return arcade.load_texture(PATH['img'] / filename)
+
+
 def load_texture_pair(filename):
     """
     Load a texture pair, with the second being a mirror image. For the player char.
@@ -103,11 +107,11 @@ class AnimatedEntity(arcade.Sprite):
         self.basic_textures = []
 
         for i in range(self.numberFrames):  # nb of frames of the animation
-            texture_pack = load_texture_pack(f"{main_path}_f{i + 1}.png", f"{main_path}_Uf{i+1}.png", e_type)
+            texture_pack = load_texture_pack(f"{main_path}_f{i + 1}.png", f"{main_path}_Uf{i + 1}.png", e_type)
             self.basic_textures.append(texture_pack)
 
-        self.center_x = coor[0]*32 + 16
-        self.center_y = coor[1]*32 + 16
+        self.center_x = coor[0] * 32 + 16
+        self.center_y = coor[1] * 32 + 16
 
         self.ud = True
         self.downfirst = False
@@ -141,7 +145,7 @@ class AnimatedPlayer(arcade.Sprite):
         self.basic_textures = []
 
         for i in range(num_of_frames):  # nb of frames of the animation
-            texture_pair = load_texture_pair(f"{main_path}_f{i+1}.png")
+            texture_pair = load_texture_pair(f"{main_path}_f{i + 1}.png")
             self.basic_textures.append(texture_pair)
 
         self.texture = self.basic_textures[0][0]
@@ -170,3 +174,38 @@ class AnimatedPlayer(arcade.Sprite):
             self.texture = self.basic_textures[self.cur_texture_index // UR_PLAYER][1]
         elif self.character_face_direction == LEFT_FACING:
             self.texture = self.basic_textures[self.cur_texture_index // UR_PLAYER][0]
+
+
+class AnimatedDamage(arcade.Sprite):
+    """
+    Creates the damage animation
+    """
+
+    def __init__(self, anim_filename: str, coor: [int, int], scale: float = 1):
+        super().__init__(scale=scale)
+
+        self.numberFrames = 2
+        self.cur_texture_index = 0
+
+        main_path = PATH['img'] / 'sprite' / anim_filename  # path
+
+        self.basic_textures = []
+
+        self.center_x = coor[0]
+        self.center_y = coor[1]
+
+        for i in range(self.numberFrames):
+            texture_pair = load_dmg_texture(f"{main_path}_f{i + 1}.png")
+            self.basic_textures.append(texture_pair)
+            print(self.basic_textures)
+
+        self.texture = self.basic_textures[0]
+
+    def update_animation(self, delta_time: float = 1/60):
+        self.cur_texture_index += 1
+
+        if self.cur_texture_index >= self.numberFrames * UR_DMG:
+            self.kill()
+            return True
+
+        self.texture = self.basic_textures[self.cur_texture_index // UR_DMG]

@@ -58,6 +58,8 @@ UR_SPRAY = 30
 UR_LAMP = 30
 UR_VACUUM = 30
 
+UR_DMG = 5
+
 # num of frames
 F_ANT = 2
 F_MOSQUITO = 2
