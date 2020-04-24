@@ -51,6 +51,10 @@ class MobHandler(arcade.SpriteList):
         self.enemy_list.draw()
 
     def update(self) -> None:
+        #update player
+        self.player.monster_collisions.update()
+        self.player.update_animation()
+
         # Enemy activation and update
         for enemy in reversed(self.enemy_list):
             # TODO replace with distance checking
@@ -170,6 +174,8 @@ class Player(Mob):
         the tick function can keep track of statistics that progress over time, like
         regenerating health/armor or status effects like poison.
         """
+
+
 
 
 class Enemy(Mob):

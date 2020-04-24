@@ -225,13 +225,41 @@ class Game(arcade.Window):
     def on_update(self, delta_time):
         """ Movement and game logic """
 
-        # Move the player with the physics engine
-        self.player.monster_collisions.update()
-        self.player.update_animation()
+        # Update Mobs
+        self.Mobs.update()
+
+        # scroll screen
+        self.scroll_screen()
+
+        # Projectile updates
+        self.bullet_list.update()
+        for bullet in self.bullet_list:
+
+            # Collision Checks
+            hit_list = arcade.check_for_collision_with_list(bullet, self.dungeon.getWalls())
+            enemy_hit_list = arcade.check_for_collision_with_list(bullet, self.active_enemies)
+            # If it did, get rid of the bullet
+            if len(hit_list) > 0:
+                bullet.remove_from_sprite_lists()
+            if len(enemy_hit_list):
+                self.player.add_kill(enemy_hit_list[0].monster_type)
+                self.Recipe.add_kill(enemy_hit_list[0].monster_type)
+                enemy_hit_list[0].remove_from_sprite_lists()
+                bullet.remove_from_sprite_lists()
+
+            # If the bullet flies off-screen, remove it. TEMP change to range calc
+            if (
+                    bullet.bottom < self.view_bottom or
+                    bullet.top > self.view_bottom + Config.SCREEN_HEIGHT or
+                    bullet.right > self.view_left + Config.SCREEN_WIDTH or
+                    bullet.left < self.view_left
+            ):
+                bullet.remove_from_sprite_lists()
+
+    def scroll_screen(self):
+        # Below manages all scrolling mechanics
 
         changed = False  # Track if we need to change the viewport
-
-        # Below manages all scrolling mechanics
         # Scroll left
         left_boundary = self.view_left + Config.LEFT_VIEWPORT_MARGIN
         if self.player.left < left_boundary:
@@ -264,34 +292,6 @@ class Game(arcade.Window):
                                 Config.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
-        # Update Mobs
-        self.Mobs.update()
-
-        # Projectile updates
-        self.bullet_list.update()
-        for bullet in self.bullet_list:
-
-            # Collision Checks
-            hit_list = arcade.check_for_collision_with_list(bullet, self.dungeon.getWalls())
-            enemy_hit_list = arcade.check_for_collision_with_list(bullet, self.active_enemies)
-            # If it did, get rid of the bullet
-            if len(hit_list) > 0:
-                bullet.remove_from_sprite_lists()
-            if len(enemy_hit_list):
-                self.player.add_kill(enemy_hit_list[0].monster_type)
-                self.Recipe.add_kill(enemy_hit_list[0].monster_type)
-                enemy_hit_list[0].remove_from_sprite_lists()
-                bullet.remove_from_sprite_lists()
-
-            # If the bullet flies off-screen, remove it. TEMP change to range calc
-            if (
-                    bullet.bottom < self.view_bottom or
-                    bullet.top > self.view_bottom + Config.SCREEN_HEIGHT or
-                    bullet.right > self.view_left + Config.SCREEN_WIDTH or
-                    bullet.left < self.view_left
-            ):
-                bullet.remove_from_sprite_lists()
-
 
 def main() -> None:
     """
