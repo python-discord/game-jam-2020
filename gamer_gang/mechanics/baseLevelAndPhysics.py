@@ -24,6 +24,24 @@ def getNames(name):
 
     return newNames
 
+
+def fetch_layer(layer_path, map_object):
+    def _get_tilemap_layer(path, layers):
+        layer_name = path.pop(0)
+        for layer in layers:
+            if layer.name.lower() == layer_name.lower():
+                if isinstance(layer, pytiled_parser.objects.LayerGroup):
+                    if len(path) != 0:
+                        return _get_tilemap_layer(path, layer.layers)
+                else:
+                    return layer
+        return None
+
+    path = layer_path.strip('/').split('/')
+    layer = _get_tilemap_layer(path, map_object.layers)
+    return layer
+
+
 class BaseLevel(arcade.View):
     def __init__(self):
         super().__init__()
@@ -42,6 +60,9 @@ class BaseLevel(arcade.View):
         self.userInputs = [0, 0, 0]  # the user input
         self.deathCause = None
 
+        self.make_level()
+
+    def make_level(self):  # in the base class, this is just a placeholder level
         self.normalGrounds = arcade.SpriteList()
         self.spikes = arcade.SpriteList()
         self.goombaThings = arcade.SpriteList()
@@ -57,9 +78,6 @@ class BaseLevel(arcade.View):
                                [arcade.load_texture("images/mobs/player/1.png"),
                                 arcade.load_texture("images/mobs/player/other2.png")]]
 
-        self.make_level()
-
-    def make_level(self):  # in the base class, this is just a placeholder level
         for i in range(1, 4):
             p, body, shape = makePlayer(1, self.space, self.playerTextures[i - 1], 1, 17, 32 * i, str(i))
             self.playerBodies.append(body)
@@ -263,3 +281,8 @@ class BaseLevel(arcade.View):
 
         else:
             self.window.show_view(self.window.gameOver)
+
+if __name__ == '__main__':
+    testGame = arcade.window(600, 1000, 'test')
+    testGame.level = BaseLevel()
+    testGame.show_view(testGame.level)

@@ -79,7 +79,7 @@ class MenuView(arcade.View):
             for x in range(5):
                 self.button_list.append(LevelButton(self, SCREEN_WIDTH//2 + 1820 + 100 * x,
                                                     SCREEN_HEIGHT//2 + 150 - 100 * y, 64, 64, text=str(levelNum),
-                                                    theme=self.theme, levelNum=1))
+                                                    theme=self.theme, levelNum=levelNum))
                 levelNum += 1
 
     def on_draw(self):
@@ -123,7 +123,6 @@ class MenuView(arcade.View):
 
 class GameOverView(arcade.View):
     def on_show(self):
-        print('called onasdfasdf')
         arcade.set_viewport(0, 1000, 0, 600)
         arcade.set_background_color(arcade.color.BLACK)
         self.gameOverText = arcade.Sprite(center_x=SCREEN_WIDTH // 2, center_y=SCREEN_HEIGHT // 2 + 100)
@@ -224,6 +223,7 @@ class LevelButton(TextButton):
     def on_release(self):
         if self.pressed:
             self.pressed = False
+            print(self.levelNum)
             self.game.window.show_view(self.game.window.levels[self.levelNum])
 
 
