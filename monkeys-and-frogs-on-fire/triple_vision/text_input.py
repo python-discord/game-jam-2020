@@ -199,7 +199,7 @@ class TextInput:
                 self.cursor_idx += 1
 
         elif key == arcade.key.ENTER:
-            self.on_enter()
+            self.on_enter(self.text)
 
         if changed:
             self.text_sprites.pop(0)
@@ -215,7 +215,7 @@ class TextInput:
                 )
             )
 
-    def on_enter(self) -> None:
+    def on_enter(self, text) -> None:
         pass
 
     def draw(self) -> None:
