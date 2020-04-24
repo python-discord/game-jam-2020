@@ -53,6 +53,7 @@ class MyGame(arcade.Window):
         Initializer for MyGame
         """
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, "2048")
+        self.dragging_sprite: Optional[TileSprite] = None
         self.main_sprites: Optional[arcade.SpriteList] = None
         self.tile_sprites: Optional[arcade.SpriteList] = None
 
@@ -90,7 +91,8 @@ class MyGame(arcade.Window):
 
     def on_mouse_motion(self, x, y, dx, dy):
         """ Called to update our objects. Happens approximately 60 times per second."""
-        # TODO add code that makes a tile track the mouse here
+        self.dragging_sprite.center_x = x
+        self.dragging_sprite.center_y = y
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -102,13 +104,13 @@ class MyGame(arcade.Window):
                     (x, y),
                     (tile_sprite.boundary_left, tile_sprite.boundary_bottom),
                     (tile_sprite.boundary_right, tile_sprite.boundary_top)):
-                print(
-                    f'{x, y} is within the bounds of {(tile_sprite.boundary_left, tile_sprite.boundary_bottom)} and {(tile_sprite.boundary_right, tile_sprite.boundary_top)}')
+                self.dragging_sprite = tile_sprite
 
     def on_mouse_release(self, x, y, button, modifiers):
         """
         Called when a user releases a mouse button.
         """
+        self.dragging_sprite = None
 
 
 def check_bounds(point: Tuple[float, float],
