@@ -94,6 +94,26 @@ class TextInput:
 
         self._active = False
 
+        self.KEY_SHIFTS = {
+            arcade.key.GRAVE: arcade.key.ASCIITILDE,
+            arcade.key.KEY_2: arcade.key.AT,
+            arcade.key.KEY_6: arcade.key.ASCIICIRCUM,
+            arcade.key.KEY_7: arcade.key.AMPERSAND,
+            arcade.key.KEY_8: arcade.key.ASTERISK,
+            arcade.key.KEY_9: arcade.key.PARENLEFT,
+            arcade.key.KEY_0: arcade.key.PARENRIGHT,
+            arcade.key.MINUS: arcade.key.UNDERSCORE,
+            arcade.key.EQUAL: arcade.key.PLUS,
+            arcade.key.BRACKETLEFT: arcade.key.BRACELEFT,
+            arcade.key.BRACKETRIGHT: arcade.key.BRACERIGHT,
+            arcade.key.BACKSLASH: arcade.key.BAR,
+            arcade.key.SEMICOLON: arcade.key.COLON,
+            arcade.key.APOSTROPHE: arcade.key.DOUBLEQUOTE,
+            arcade.key.COMMA: arcade.key.LESS,
+            arcade.key.PERIOD: arcade.key.GREATER,
+            arcade.key.SLASH: arcade.key.QUESTION
+        }
+
     @property
     def cursor_pos(self) -> Tuple[float, float]:
         center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
@@ -206,7 +226,14 @@ class TextInput:
 
         if 32 <= key <= 126:
             if modifiers & 1 == arcade.key.MOD_SHIFT:
-                key -= 32
+                key_shift = self.KEY_SHIFTS.get(key)
+
+                if key_shift is not None:
+                    key = key_shift
+                elif 97 <= key <= 122:
+                    key -= 32
+                else:
+                    key -= 16
 
             self.draw_text_at_cursor(chr(key))
 
