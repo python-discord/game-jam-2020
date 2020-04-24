@@ -40,7 +40,7 @@ class Game(arcade.Window):
         self.lithium_score_location = (SCREEN_SIZE[0]/3, SCREEN_SIZE[1]/20)
         self.theme = None
         self.background = None
-        self.background_music = arcade.Sound(BACKGROUND_MUSIC, streaming=True)
+        self.background_music = arcade.Sound(BACKGROUND_MUSIC)
 
         self.abscond_button = None
 
