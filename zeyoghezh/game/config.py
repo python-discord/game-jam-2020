@@ -53,7 +53,7 @@ ALL_PLANETS = ("ze", "yogh", "ezh")
 
 
 STORY_LINES = (
-    # STOP RIGHT THERE!
+    # STOP RIGHT THERE, CRIMINAL SCUM!
     # The story is much more interesting when you experience it while playing.
     "This is the story of three planets: Ze, Yogh, and Ezh.",
     "Each are made of one of the three elements of alchemy.",
@@ -192,9 +192,11 @@ STORY_LINES = (
     "Chris went home.",
     "Chris realized that their world was different.",
     "They weren't lonely anymore.",
-    "A week passed.",
+    "Three weeks passed.",
+    "Three days before the end of the winter break.",
     "The school told the parents first.",
     "The parents told Chris.",
+    "They wouldn't say how it happened.",
     "A girl had died.",
     "When someone dies, you can feel it.",
     "Chris knew what the name was without being told.",
@@ -211,6 +213,14 @@ STORY_LINES = (
     "...",
     "Three years passed.",
     "Chris was alone.",
+    "Three days before graduation, Chris overheard someone.",
+    "Someone had hanged themself three years ago.",
+    "Over winter break.",
+    "Hadn't Chris been punished enough?",
+    "Why was it brought up again, this close to the end?",
+    "Was it a message?",
+    "If it was, it didn't do any good.",
+    "Three days passed.",
     "Chris graduated.",
     "It should have been happy.",
     "But it meant that everything was over.",
@@ -221,5 +231,20 @@ STORY_LINES = (
     "Chris could have changed.",
     "Now, Chris could not have.",
     "No matter what, they couldn't change the past.",
-    # TODO add more
+    "...",
+    "There are three interesting traits about Chris.",
+    "Chris hurts people who approach them.",
+    "Chris pushes people away.",
+    "Chris is defenseless when people get close.",
+    "Chris is me.",
+    "Ze. Yogh. Ezh.",
+    "Rock. Paper. Scissors.",
+    "Shoot.",
+    "And Chris fell to the ground.",
+    "The gun fell out of their hand.",
+    "The mistake could never be fixed, so why keep trying?",
+    "All is lost. Chris has died.",
+    "...",
+    "And then the game restarted."
+    # TODO add more or cycle
 )
