@@ -165,10 +165,10 @@ class TripleVision(arcade.View):
         if self.player.is_alive:
             self.player.on_update(delta_time)
 
-        self.card_manager.update()
         self.game_manager.on_update(delta_time)
         self.physics_engine.update()
         self.map.on_update(delta_time)
         self.camera.update()
+        self.card_manager.update()
         self.player.update_health_bar(delta_time)
         SoundManager.update(self.slow_down)
