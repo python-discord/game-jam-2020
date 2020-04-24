@@ -10,7 +10,7 @@ import json
 from pprint import pprint
 
 import arcade
-import numpy as np
+import random
 
 from itertools import chain
 from config import Config
@@ -177,13 +177,10 @@ class Level:
         """
         return int((self.x + 0.5) * Config.LEVEL_SIZE), int((self.y + 0.5) * Config.LEVEL_SIZE)
 
-    def rotate_level(self, times_rotated):
+    def random(self) -> tuple:
         """
-        Rotates the
-        :param times_rotated:
-        :return:
+        Returns a random spot in the level.
+        :return: A tuple containing the X and Y coordinates
         """
-        m = np.array(self.level)
-        for i in range(0, times_rotated % 4):
-            m = np.rot90(m)
-        self.level = m.tolist()
+
+        return int((self.x + random.randint(1,9)/10) * Config.LEVEL_SIZE), int((self.y + random.randint(1,9)/10) * Config.LEVEL_SIZE)

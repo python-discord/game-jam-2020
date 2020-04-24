@@ -13,60 +13,89 @@ from config import Config, Enums, SpritePaths
 from map import Dungeon
 from sprites import PlayerAnimations
 
-class MobHandler(arcade.SpriteList):
+class MobHandler:
 
     def __init__(self):
         super().__init__()
         self.enemy_list = []
-        self.active_enemies = []
+        self.avoid_list = []
         self.dungeon = None
         self.player = None
 
     def setup(self, ghost, frogs, player, dungeon) -> list:
         self.enemy_list = arcade.SpriteList()
-        self.active_enemies = arcade.SpriteList()
         self.dungeon = dungeon
         self.player = player
+        self.avoid_list = arcade.SpriteList()
+        self.avoid_list.append(self.player)
+        for d in dungeon.getWalls():
+            self.avoid_list.append(d)
 
         for count in range(ghost):
             mob = Enemy(filename="resources/images/monsters/ghost/ghost1.png", dungeon=self.dungeon)
-            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+            level = random.choice(self.dungeon.levelList)
+            mob.center_x, mob.center_y = level.random()
             mob.target = self.player
             mob.scale = 4
             mob.monster_type = 'ghost'
-            mob.monster_collisions = arcade.PhysicsEngineSimple(mob, self.active_enemies)
+            mob.collisions = arcade.PhysicsEngineSimple(mob, self.avoid_list)
+            mob.level = level
             self.enemy_list.append(mob)
+            self.avoid_list.append(mob)
         for count in range(frogs):
             mob = Enemy(filename="resources/images/monsters/frog/frog1.png", dungeon=self.dungeon)
-            mob.center_x, mob.center_y = random.choice(self.dungeon.levelList).center()
+            level = random.choice(self.dungeon.levelList)
+            mob.center_x, mob.center_y = level.random()
             mob.target = self.player
             mob.scale = 4
             mob.monster_type = 'frog'
-            mob.monster_collisions = arcade.PhysicsEngineSimple(mob, self.active_enemies)
+            mob.collisions = arcade.PhysicsEngineSimple(mob, self.avoid_list)
+            mob.level = level
             self.enemy_list.append(mob)
+            self.avoid_list.append(mob)
 
         return self.enemy_list
 
-    def render(self) -> None:  
+    def render(self) -> None:
+        self.player.draw()
         self.enemy_list.draw()
 
     def update(self) -> None:
+        #update player
+        self.player.collisions.update()
+        self.player.update_animation()
+
         # Enemy activation and update
         for enemy in reversed(self.enemy_list):
             # TODO replace with distance checking
             distance = self.get_distance(enemy)
+            enemy.collisions.update()
             if (distance < 300):
-                    self.active_enemies.append(enemy)
-                    self.enemy_list.remove(enemy)
-                    enemy.active = True
-        try:
-            for enemy in self.active_enemies:
-                enemy.monster_collisions.update()
-                path = enemy.get_path()
-                enemy.tick(path)
-        except Exception:
-            import traceback
-            traceback.print_exc()
+                enemy.speed = Config.MONSTER_MOVEMENT_SPEED
+                try:
+                    path = enemy.get_path(enemy.target.position)
+                    enemy.tick(path)
+                except Exception:
+                    import traceback
+                    traceback.print_exc()
+            else:
+                left, right, bottom, top = arcade.get_viewport()
+                if (
+                    enemy.bottom > bottom and
+                    enemy.top < bottom + Config.SCREEN_HEIGHT and
+                    enemy.right < left + Config.SCREEN_WIDTH and
+                    enemy.left > left
+                    ):
+                        enemy.speed = 5
+                        ran = random.randint(0,1000)
+                        if ran > 950:
+                            print(ran)
+                            try:
+                                path = enemy.get_path(enemy.level.random())
+                                enemy.tick(path)
+                            except Exception:
+                                import traceback
+                                traceback.print_exc()
 
     def get_distance(self, enemy) -> int:
         start_x = enemy.center_x
@@ -75,6 +104,20 @@ class MobHandler(arcade.SpriteList):
         end_y = self.player.center_y
         distance = math.sqrt(math.pow(start_x - end_x, 2) + math.pow(start_y - end_y, 2))
         return distance
+
+    @staticmethod
+    def draw_path(path: List[Tuple[int, int]]) -> None:
+        """
+        Draws a line between positions in a list of tuple, also known as the path.
+        :param path: A list of tuple positions defining a path that can be traversed.
+        """
+
+        if len(path) > 2:
+            path = map(lambda point: ((point[0]) * Config.TILE_SIZE, (point[1]) * Config.TILE_SIZE), path)
+            path = list(path)
+            #print(path)
+            for pos1, pos2 in zip(path, path[1:]):
+                arcade.draw_line(*pos1, *pos2, color=arcade.color.RED)
 
 
 class Mob(arcade.Sprite):
@@ -93,10 +136,10 @@ class Mob(arcade.Sprite):
         self.up_textures = []
         self.down_textures = []
         self.cur_texture = 0
-        self.monster_collisions = None
+        self.collisions = None
         self.dungeon = dungeon
         self.target = None
-        self.collisions = None
+        self.level = None
 
     
 class Player(Mob):
@@ -123,6 +166,7 @@ class Player(Mob):
         self.texture = next(self.map[self.prev])
         self.kill_list = []
         self.cur_recipe = None
+        self.speed = 14
 
     def add_kill(self, creature):
         # Adds a kill to kill_list. If 3 or more check the recipe then give a power up if it matches.
@@ -181,7 +225,6 @@ class Enemy(Mob):
     def __init__(self, *args, **kwargs) -> None:
         super(Enemy, self).__init__(*args, **kwargs)
         self.monster_type = ''
-        self.active = False
 
     def nearestPosition(self) -> Tuple[int, int]:
         """
@@ -196,25 +239,26 @@ class Enemy(Mob):
         """
         A on_update function, the Mob should decide it's next actions here.
         """
-
-        curpos, nextpos = self.nearestPosition(), path[1]
+        near_pos = self.nearestPosition()
+        
+        curpos, nextpos = near_pos, path[1]
         # print(curpos, nextpos)
 
         if nextpos[0] > curpos[0]:
-            self.change_x = Config.PLAYER_MOVEMENT_SPEED - 3
+            self.change_x = self.speed
         elif nextpos[0] < curpos[0]:
-            self.change_x = -Config.PLAYER_MOVEMENT_SPEED + 3
+            self.change_x = -self.speed
         else:
             self.change_x = 0
 
         if nextpos[1] > curpos[1]:
-            self.change_y = Config.PLAYER_MOVEMENT_SPEED - 3
+            self.change_y = self.speed
         elif nextpos[1] < curpos[1]:
-            self.change_y = -Config.PLAYER_MOVEMENT_SPEED + 3
+            self.change_y = -self.speed
         else:
             self.change_y = 0
 
-        # print(self.change_x, self.change_y)
+
 
     def get_path(self, end: Tuple[int, int] = None) -> List[Tuple[int, int]]:
         """
@@ -223,10 +267,9 @@ class Enemy(Mob):
         :param end: A the endpoint tuple. Must be a valid position within the matrix.
         :return:
         """
-        if end is None:
-            end = self.target.position
-            start, end = self.nearestPosition(), (round(end[0] / Config.TILE_SIZE), round(end[1] / Config.TILE_SIZE))
-            start, end = self.dungeon.grid.node(*start), self.dungeon.grid.node(*end)
-            paths, runs = self.dungeon.finder.find_path(start, end, self.dungeon.grid)
-            self.dungeon.grid.cleanup()
-            return paths
+
+        start, end = self.nearestPosition(), (round(end[0] / Config.TILE_SIZE), round(end[1] / Config.TILE_SIZE))
+        start, end = self.dungeon.grid.node(*start), self.dungeon.grid.node(*end)
+        paths, runs = self.dungeon.finder.find_path(start, end, self.dungeon.grid)
+        self.dungeon.grid.cleanup()
+        return paths

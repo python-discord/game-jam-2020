@@ -37,6 +37,8 @@ class Config(object):
     # Movement speed of player, in pixels per frame
     PLAYER_MOVEMENT_SPEED = 14
 
+    MONSTER_MOVEMENT_SPEED = 11
+
     # How many pixels to keep as a minimum margin between the characters and the edge of the screen.
     LEFT_VIEWPORT_MARGIN = 700
     RIGHT_VIEWPORT_MARGIN = 700
@@ -47,7 +49,7 @@ class Config(object):
     DEBUG = False
 
     # Monster Count to be spawned
-    MONSTER_COUNT = 6
+    MONSTER_COUNT = 8
 
 
 class Enums(Enum):
