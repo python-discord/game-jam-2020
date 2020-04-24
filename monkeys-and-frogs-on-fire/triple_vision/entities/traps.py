@@ -96,12 +96,12 @@ class Spike(Trap):
                 self.waited_time += delta_time
 
                 if self.waited_time >= self.wait_time:
+                    self.play_activate_sound()
                     self.ticks = 0
                     self.wait_time = random.randrange(2, 10)
                     self.waited_time = 0
         else:
             if self._prev_anim_delta + delta_time > 0.15:
-                self.play_activate_sound()
                 self.ticks += 1
 
             super().on_update(delta_time)
