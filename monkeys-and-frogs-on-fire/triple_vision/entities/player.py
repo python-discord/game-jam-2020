@@ -1,5 +1,6 @@
 import random
 import time
+from enum import Enum
 
 import arcade
 
@@ -10,6 +11,15 @@ from triple_vision.entities.sprites import HealthBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
+
+
+class States(Enum):
+    IDLE = 0
+    MOVING = 1
+    ATTACKING_RANGED = 2
+    ATTACKING_MELEE = 3
+    AIMING_BLOCKED = 4
+    AIMING_NOT_BLOCKED = 5
 
 
 class Player(LivingEntity, MovingSprite):
