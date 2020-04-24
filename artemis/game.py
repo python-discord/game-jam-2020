@@ -10,8 +10,6 @@ from sprites import Block, Gem, RandomBlock
 from ui import View
 import views
 
-import multiplayer
-
 
 class Game(View):
     """A single run of the game."""
@@ -114,7 +112,7 @@ class Game(View):
             self.engine.update()
             self.scroll()
 
-    def gem_added(self):
+    def gem_added(self, _player: Player):
         """Check if the inventory is full or gems can be matched."""
         colours = [box.colour for box in self.boxes if box.colour]
         counts = {'r': 0, 'b': 0, 'y': 0}

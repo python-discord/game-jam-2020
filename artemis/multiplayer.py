@@ -2,7 +2,7 @@
 import arcade
 
 from constants import (
-    BACKGROUND, FONT, HEIGHT, SCALING, SIDE, TOP, WIDTH, SPEED, GRAVITY
+    BACKGROUND, FONT, GRAVITY, HEIGHT, SCALING, SIDE, SPEED, TOP, WIDTH
 )
 from displays import Box, PausePlay
 from engine import BiDirectionalPhysicsEnginePlatformer
@@ -162,8 +162,6 @@ class MultiplayerGame(View):
                 removed += 1
                 if removed == 3:
                     return
-            if box.colour == 'p':
-                pinks += 1
         for box in self.boxes:
             if box.colour == 'w':
                 box.remove_gem()

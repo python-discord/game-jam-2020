@@ -4,7 +4,7 @@ import arcade
 from typing import Mapping
 from PIL import Image, ImageDraw
 
-from constants import ASSETS, HEIGHT, SCALING, SPEED, WIDTH, GRAVITY
+from constants import ASSETS, HEIGHT, SPEED, WIDTH
 import game
 
 
@@ -17,10 +17,10 @@ class Player(arcade.Sprite):
         'walk_right_6', 'walk_right_7'
     ]
 
-    def __init__(self, game: game.Game, n: int=0, x: int = WIDTH // 5,
+    def __init__(self, game: game.Game, n: int = 0, x: int = WIDTH // 5,
                  y: int = HEIGHT // 2, speed: int = SPEED):
         """Set up counters and load textures."""
-        self.image = ASSETS + f'player_{n}_{{}}.png'
+        self.image = ASSETS + f'player_{n}_{{name}}.png'
         super().__init__(center_x=x, center_y=y)
         self.player = n
         self.textures = {}
@@ -37,8 +37,10 @@ class Player(arcade.Sprite):
         self.last_x = -1
         self.engine = None    # will be overwritten by game
 
-    def resize(self, old: Image.Image) -> Image.Image:
-        """Resize an image for a texture."""
+    def prepare(self, name: str) -> Image.Image:
+        """Open and resize an image for a texture."""
+        file = self.image.format(name=name)
+        old = Image.open(file)
         pixel_size = 2
         old_w, old_h = old.size
         new_w = old_w * pixel_size
@@ -56,22 +58,20 @@ class Player(arcade.Sprite):
 
     def load_rotations(self, name: str) -> Mapping[str, arcade.Texture]:
         """Load the four rotations by 90 degrees of an image."""
-        file = self.image.format(name)
-        im = self.resize(Image.open(file))
+        im = self.prepare(name)
         textures = {}
         for n in range(4):
             n_name = f'{name}_{n}'
-            textures[n_name] = arcade.Texture(f'{file}{n}', im.rotate(n * 90))
+            textures[n_name] = arcade.Texture(n_name, im.rotate(n * 90))
         return textures
 
     def load_flipped_pair(self, name: str) -> Mapping[str, arcade.Texture]:
         """Load the vertically flipped versions of an image."""
-        file = self.image.format(name)
-        im = self.resize(Image.open(file))
+        im = self.prepare(name)
         return {
-            f'{name}_up': arcade.Texture(file + 'up', im),
+            f'{name}_up': arcade.Texture(name + 'up', im),
             f'{name}_down': arcade.Texture(
-                file + 'down', im.transpose(Image.FLIP_TOP_BOTTOM)
+                name + 'down', im.transpose(Image.FLIP_TOP_BOTTOM)
             )
         }
 
@@ -98,13 +98,13 @@ class Player(arcade.Sprite):
         for gem in gems:
             for box in self.game.boxes:
                 if not box.colour:
-                    box.add_gem(gem.colour)
+                    box.add_gem(gem.colour, self.player)
                     break
             gem.place()
 
         spikes = arcade.check_for_collision_with_list(self, self.game.spikes)
         if spikes:
-            self.game.game_over('Hit a Spike')
+            self.game.game_over('Hit a Spike', self.player)
             return
 
         self.change_x = self.speed

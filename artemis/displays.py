@@ -2,7 +2,7 @@
 from __future__ import annotations
 import arcade
 
-from constants import ASSETS, HEIGHT, SCALING, TOP, SPEED
+from constants import ASSETS, HEIGHT, SCALING, SPEED, TOP
 import game
 from ui import IconButton
 
