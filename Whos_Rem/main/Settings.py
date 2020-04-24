@@ -1,8 +1,7 @@
 import arcade
 from screeninfo import get_monitors
-from Display import Button, Slider
-from Display import ColourBlend as cb
-from Main_Menu import MainMenu
+from .Display import Button, Slider
+from .Display import ColourBlend as cb
 
 
 class Settings(arcade.View):
@@ -27,6 +26,10 @@ class Settings(arcade.View):
 
     binding_key = None
     key_binds = {"left": arcade.key.A, "center": arcade.key.S, "right": arcade.key.D}
+
+    def __init__(self, main):
+        super().__init__()
+        self.main = main
 
     def on_draw(self):
         arcade.start_render()
