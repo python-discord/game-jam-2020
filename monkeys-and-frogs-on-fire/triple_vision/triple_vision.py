@@ -10,7 +10,7 @@ from triple_vision.entities import (
     Player,
     StationaryEnemy
 )
-from triple_vision.managers import CardManager, GameManager
+from triple_vision.managers import CardManager, GameManager, CursorManager
 from triple_vision.sound import SoundManager
 from triple_vision.map import Map
 
@@ -34,6 +34,7 @@ class TripleVision(arcade.View):
 
         self.card_manager = None
         self.game_manager = None
+        self.cursor_manager: CursorManager = None
 
         self.physics_engine = None
 
@@ -47,6 +48,7 @@ class TripleVision(arcade.View):
 
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
+        self.cursor_manager = CursorManager(self, self.player)
 
         self.map = Map(self, s.MAP_SIZE)
         self.map.setup()
@@ -86,6 +88,7 @@ class TripleVision(arcade.View):
             x + self.camera.viewport_left,
             y + self.camera.viewport_bottom
         )
+        self.cursor_manager.process_mouse_motion(x, y)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int) -> None:
         if not self.player.is_alive:
@@ -156,6 +159,7 @@ class TripleVision(arcade.View):
             self.player.draw()
 
         self.card_manager.draw()
+        self.cursor_manager.draw()
 
     def on_update(self, delta_time: float) -> None:
         if self.slow_down:
@@ -174,3 +178,4 @@ class TripleVision(arcade.View):
         self.card_manager.update()
         self.player.update_health_bar(delta_time)
         SoundManager.update(self.slow_down)
+        self.cursor_manager.update()

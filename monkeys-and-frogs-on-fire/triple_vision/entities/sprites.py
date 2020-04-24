@@ -1,17 +1,10 @@
 import math
 import time
-from enum import Enum
 from typing import Optional
 
 import arcade
 
 from triple_vision.utils import get_change_vector, is_in_radius_positions
-
-
-class States(Enum):
-    IDLE = 0
-    MOVING = 1
-    ATTACKING = 2
 
 
 class MovingSprite(arcade.Sprite):
@@ -22,6 +15,9 @@ class MovingSprite(arcade.Sprite):
         self.speed_multiplier = 1
         self.target = None
         self.rotate = rotate
+
+    def is_moving(self) -> bool:
+        return any((self.change_x, self.change_y))
 
     def calc_change_vector(self, x: float, y: float) -> None:
         self.change_x, self.change_y, angle = get_change_vector(
@@ -133,6 +129,7 @@ class HealthBar(arcade.Sprite):
         *args,
         life_count: int = 10,
         is_filled: bool = True,
+        auto_filling_speed: Optional[float] = None,
         scale: float = 1,
         **kwargs
     ) -> None:
@@ -143,6 +140,7 @@ class HealthBar(arcade.Sprite):
         self.fill_part_width = fill_part_width * scale
         self.life_count = life_count
         self.fill_part_list = arcade.SpriteList()
+        self.auto_filling_speed = auto_filling_speed
         if not is_filled:
             return
 
@@ -160,6 +158,10 @@ class HealthBar(arcade.Sprite):
             self.view.camera.viewport_left,
             self.view.camera.viewport_bottom,
         )
+        self.waited_time = 0
+
+    def __len__(self):
+        return len(self.fill_part_list)
 
     def remove_filling_part(self):
         if len(self.fill_part_list) == 0:
@@ -171,13 +173,18 @@ class HealthBar(arcade.Sprite):
             self.fill_part_list.append(
                 arcade.Sprite(
                     self.fill_part_filename,
-                    center_x=self.center_x
+                    center_x=self.center_x + (self.fill_part_width - self.width) / 2
                     + self.fill_part_width * len(self.fill_part_list),
                     center_y=self.center_y,
                 )
             )
 
     def on_update(self, delta_time: float = 1 / 60):
+        self.waited_time += delta_time
+        if self.auto_filling_speed is not None and self.waited_time >= self.auto_filling_speed:
+            self.add_filling_part()
+            self.waited_time = 0
+
         viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
         if self.prev_viewport != viewport:
             viewport_change = viewport[0] - self.prev_viewport[0], viewport[1] - self.prev_viewport[1]

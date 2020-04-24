@@ -1,5 +1,6 @@
 import random
 import time
+from enum import Enum
 
 import arcade
 
@@ -10,6 +11,17 @@ from triple_vision.entities.sprites import HealthBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
+from triple_vision.sound import SoundManager
+
+
+class States(Enum):
+    # TODO save player states by current weapon and update cursor
+    IDLE = 0
+    # MOVING = 1
+    ATTACKING_RANGED = 2
+    ATTACKING_MELEE = 3
+    AIMING_BLOCKED = 4
+    AIMING_NOT_BLOCKED = 5
 
 
 class Player(LivingEntity, MovingSprite):
@@ -31,6 +43,8 @@ class Player(LivingEntity, MovingSprite):
         self.view = view
         self.last_shot = time.time()
 
+        self.state = States.IDLE
+
         self.is_alive = True
         self.attack_multiplier = 1
         self.dexterity = 0.75
@@ -40,7 +54,7 @@ class Player(LivingEntity, MovingSprite):
         self.path_finder = PathFinder()
         self.path = None
 
-        self.health_bar: HealthBar = None
+        self.mana_bar: HealthBar = None
 
         self.left_pressed = False
         self.right_pressed = False
@@ -89,7 +103,7 @@ class Player(LivingEntity, MovingSprite):
         ])
         self.curr_color = 'red'
 
-        self.health_bar = HealthBar(
+        self.mana_bar = HealthBar(
             self.view,
             fill_part_filename="assets/healthbar/mana_fill_part.png",
             fill_part_width=44.0,
@@ -97,6 +111,7 @@ class Player(LivingEntity, MovingSprite):
             center_x=420,
             center_y=18,
             scale=1,
+            auto_filling_speed=1.0
         )
 
         center = tuple()
@@ -135,7 +150,8 @@ class Player(LivingEntity, MovingSprite):
 
     def process_left_mouse_press(self, x, y, charge) -> None:
         if time.time() - self.last_shot < self.dexterity:
-            # TODO Play empty gun sound or something similar
+            SoundManager.add_sound("empty_gun.wav")
+            SoundManager.play_sound("empty_gun.wav")
             return
 
         bullet = ChargedLaserProjectile(
@@ -149,6 +165,8 @@ class Player(LivingEntity, MovingSprite):
         bullet.play_activate_sound()
         self.view.game_manager.player_projectiles.append(bullet)
         self.last_shot = time.time()
+        self.mana_bar.remove_filling_part()
+        self.state = States.ATTACKING_RANGED
 
     def kill(self):
         self.is_alive = False
@@ -174,15 +192,15 @@ class Player(LivingEntity, MovingSprite):
                 self.center_y + change_y * Tile.SCALED
             )
         )
-
         if not arcade.get_sprites_at_exact_point(dest, self.view.collision_list):
             self.move_to(dest[0], dest[1] + s.PLAYER_CENTER_Y_COMPENSATION)
+            # self.state = States.MOVING
 
         super().on_update(delta_time)
 
     def update_health_bar(self, delta_time):
-        self.health_bar.on_update(delta_time)
+        self.mana_bar.on_update(delta_time)
 
     def draw(self):
         super().draw()
-        self.health_bar.draw()
+        self.mana_bar.draw()

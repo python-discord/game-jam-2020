@@ -45,6 +45,7 @@ class SoundManager:
     def play_sound(cls, sound_name: str) -> None:
         path = cls.get_sound_path(sound_name)
         if path not in cls._loaded_sounds:
+            # TODO Can we just add it automatically?
             print(f"Can't play sound {path} add it first!")
             return
 

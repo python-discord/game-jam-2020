@@ -4,7 +4,7 @@ from typing import Optional, Tuple, List
 import arcade
 
 from triple_vision import Settings as s, SoundSettings as ss
-from triple_vision.entities import DamageIndicator
+from triple_vision.entities import DamageIndicator, States
 from triple_vision.sound import SoundTrack
 
 
@@ -256,3 +256,52 @@ class SoundtrackManager:
 
         self.curr_sound.set_volume(self.curr_sound.get_volume() + ss.FADE_AMOUNT)
         self.tick_delta = 0.0
+
+
+class CursorManager:
+    def __init__(self, view: arcade.View, player):
+        self.view = view
+        self.window = view.window
+        self.player = player
+
+        self.cursors = {
+            "moving": arcade.Sprite("assets/crosshairs/moving.png"),
+            "ranged": arcade.Sprite("assets/crosshairs/ranged.png"),
+            "blocked": arcade.Sprite("assets/crosshairs/blocked.png"),
+        }
+        self._curr_cursor: arcade.Sprite = self.cursors["ranged"]
+        self.window.set_mouse_visible(False)
+
+    def set_curr_cursor(self, value):
+        last_position = self._curr_cursor.center_x, self._curr_cursor.center_y
+        self._curr_cursor = self.cursors.get(value, None)
+        self._curr_cursor.center_x, self._curr_cursor.center_y = last_position[0],  last_position[1]
+
+    def get_curr_cursor(self):
+        return self._curr_cursor
+
+    curr_cursor = property(get_curr_cursor, set_curr_cursor)
+
+    def update_cursor_position(self, x, y):
+        self._curr_cursor.center_x = x + self.view.camera.viewport_left
+        self._curr_cursor.center_y = y + self.view.camera.viewport_bottom
+
+    def process_mouse_motion(self, x, y):
+        if arcade.get_sprites_at_exact_point((x, y), self.view.collision_list):
+            self.curr_cursor = "blocked"
+        self.update_cursor_position(x, y)
+
+    def update(self):
+        # TODO save player states by current weapon and update cursor
+        if self.player.is_moving():
+            self.curr_cursor = "moving"
+        elif self.player.state == States.ATTACKING_RANGED:
+            self.curr_cursor = "ranged"
+        elif self.player.state == States.AIMING_BLOCKED:
+            self.curr_cursor = "blocked"
+        elif self.player.state == States.IDLE:
+            self.curr_cursor = "ranged"
+
+    def draw(self):
+        if self._curr_cursor is not None:
+            self._curr_cursor.draw()

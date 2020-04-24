@@ -134,6 +134,7 @@ dmypy.json
 # IDEs
 .idea/
 .vscode/
+*.iml
 
 # Databases
 *.sqlite3
