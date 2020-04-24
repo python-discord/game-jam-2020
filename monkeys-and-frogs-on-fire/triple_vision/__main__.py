@@ -1,12 +1,12 @@
 import arcade
 
 from triple_vision import Settings as s
-from triple_vision.triple_vision import TripleVision
+from triple_vision.main_menu import MainMenu
 
 
 def main() -> None:
     window = arcade.Window(*s.WINDOW_SIZE, s.TITLE)
-    game = TripleVision()
+    game = MainMenu()
 
     window.show_view(game)
     game.setup()

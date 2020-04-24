@@ -89,10 +89,10 @@ class TextInput:
         self.prev_cursor_idx = 0
         self.cursor_idx = 0
 
-        self.cursor_is_active = True
+        self.cursor_is_active = False
         self.cursor_blink_delta = 0
 
-        self._active = True
+        self._active = False
 
     @property
     def cursor_pos(self) -> Tuple[float, float]:
