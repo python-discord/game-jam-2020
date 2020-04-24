@@ -34,6 +34,7 @@ class MobHandler(arcade.SpriteList):
             mob.target = self.player
             mob.scale = 4
             mob.monster_type = 'ghost'
+            mob.monster_collisions = arcade.PhysicsEngineSimple(mob, self.active_enemies)
             self.enemy_list.append(mob)
         for count in range(frogs):
             mob = Enemy(filename="resources/images/monsters/frog/frog1.png", dungeon=self.dungeon)
@@ -41,6 +42,7 @@ class MobHandler(arcade.SpriteList):
             mob.target = self.player
             mob.scale = 4
             mob.monster_type = 'frog'
+            mob.monster_collisions = arcade.PhysicsEngineSimple(mob, self.active_enemies)
             self.enemy_list.append(mob)
 
         return self.enemy_list
@@ -53,13 +55,13 @@ class MobHandler(arcade.SpriteList):
         for enemy in reversed(self.enemy_list):
             # TODO replace with distance checking
             distance = self.get_distance(enemy)
-            if (distance < 500):
+            if (distance < 300):
                     self.active_enemies.append(enemy)
                     self.enemy_list.remove(enemy)
+                    enemy.active = True
         try:
             for enemy in self.active_enemies:
-                monster_collisions = arcade.PhysicsEngineSimple(enemy, self.active_enemies)
-                monster_collisions.update()
+                enemy.monster_collisions.update()
                 path = enemy.get_path()
                 enemy.tick(path)
         except Exception:
@@ -71,11 +73,8 @@ class MobHandler(arcade.SpriteList):
         start_y = enemy.center_y
         end_x = self.player.center_x
         end_y = self.player.center_y
-        try:
-            distance = math.sqrt(math.pow(start_x - end_x, 2) + math.pow(start_y - end_y, 2))
-            return distance
-        except:
-            return 0
+        distance = math.sqrt(math.pow(start_x - end_x, 2) + math.pow(start_y - end_y, 2))
+        return distance
 
 
 class Mob(arcade.Sprite):
@@ -94,7 +93,7 @@ class Mob(arcade.Sprite):
         self.up_textures = []
         self.down_textures = []
         self.cur_texture = 0
-
+        self.monster_collisions = None
         self.dungeon = dungeon
         self.target = None
         self.collisions = None
@@ -182,6 +181,7 @@ class Enemy(Mob):
     def __init__(self, *args, **kwargs) -> None:
         super(Enemy, self).__init__(*args, **kwargs)
         self.monster_type = ''
+        self.active = False
 
     def nearestPosition(self) -> Tuple[int, int]:
         """
@@ -196,6 +196,7 @@ class Enemy(Mob):
         """
         A on_update function, the Mob should decide it's next actions here.
         """
+
         curpos, nextpos = self.nearestPosition(), path[1]
         # print(curpos, nextpos)
 

@@ -54,10 +54,10 @@ class Game(arcade.Window):
         # Game Objects
         self.dungeon = None
         self.prev_keypress = []  # A list that assists with tracking keypress events
-        self.physics_engine = None  # Our physics engine
         # Used to keep track of our scrolling
         self.view_bottom = self.view_left = 0
         self.Recipe = []
+        self.enemies_in_range = []
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -80,11 +80,11 @@ class Game(arcade.Window):
         level = random.choice(self.dungeon.levelList)
         self.player.center_x, self.player.center_y = level.center()
         self.player.cur_recipe = self.Recipe.active
-        # x, y = level.center()
+        self.player.monster_collisions = arcade.PhysicsEngineSimple(self.player, self.dungeon.getWalls())
 
         # Set up monsters
         self.Mobs = MobHandler()
-        self.enemy_list = self.Mobs.setup(0, 1, self.player, self.dungeon)
+        self.enemy_list = self.Mobs.setup(Config.MONSTER_COUNT, Config.MONSTER_COUNT, self.player, self.dungeon)
         self.active_enemies = self.Mobs.active_enemies
 
         # Setup viewport
@@ -94,9 +94,6 @@ class Game(arcade.Window):
                             Config.SCREEN_WIDTH + self.view_left,
                             self.view_bottom,
                             Config.SCREEN_HEIGHT + self.view_bottom)
-
-        # Create the 'physics engine'
-        self.physics_engine = arcade.PhysicsEngineSimple(self.player, self.dungeon.getWalls())
 
     def on_draw(self):
         """ Render the screen. """
@@ -229,7 +226,7 @@ class Game(arcade.Window):
         """ Movement and game logic """
 
         # Move the player with the physics engine
-        self.physics_engine.update()
+        self.player.monster_collisions.update()
         self.player.update_animation()
 
         changed = False  # Track if we need to change the viewport
@@ -267,6 +264,7 @@ class Game(arcade.Window):
                                 Config.SCREEN_WIDTH + self.view_left,
                                 self.view_bottom,
                                 Config.SCREEN_HEIGHT + self.view_bottom)
+        # Update Mobs
         self.Mobs.update()
 
         # Projectile updates
