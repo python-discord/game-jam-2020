@@ -154,6 +154,10 @@ class Player(LivingEntity, MovingSprite):
             SoundManager.play_sound("empty_gun.wav")
             return
 
+        if len(self.mana_bar) == 0:
+            # TODO empty mana sound
+            return
+
         bullet = ChargedLaserProjectile(
             charge=charge,
             center_x=self.center_x,

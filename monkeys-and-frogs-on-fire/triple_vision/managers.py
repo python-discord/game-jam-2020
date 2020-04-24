@@ -316,8 +316,7 @@ class CursorManager:
             self._curr_cursor.center_y += viewport[1] - self.prev_viewport[1]
             self.prev_viewport = viewport
 
-        self._curr_cursor.color = self.colors.get(self.player.curr_color)
-        print(self._curr_cursor.color)
+        self._curr_cursor.color = self.colors[self.player.curr_color]
 
     def draw(self):
         if self._curr_cursor is not None:
