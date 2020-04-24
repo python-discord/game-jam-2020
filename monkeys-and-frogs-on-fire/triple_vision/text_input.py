@@ -90,9 +90,14 @@ class TextInput:
         self.cursor_idx = 0
 
         self.cursor_is_active = False
-        self.cursor_blink_delta = 0
+        self._cursor_blink_delta = 0
 
         self._active = False
+
+        self._current_key_pressed = None
+        self._key_hold_delta = 0
+        self._key_processed = False
+        self._should_process_key = False
 
         self.KEY_SHIFTS = {
             arcade.key.GRAVE: arcade.key.ASCIITILDE,
@@ -242,6 +247,10 @@ class TextInput:
         if not self.active:
             return
 
+        self._current_key_pressed = (key, modifiers)
+        self.process_key(key, modifiers)
+
+    def process_key(self, key, modifiers) -> None:
         if arcade.key.SPACE <= key <= arcade.key.ASCIITILDE:
             if modifiers & 1 == arcade.key.MOD_SHIFT:
                 key_shift = self.KEY_SHIFTS.get(key)
@@ -279,6 +288,9 @@ class TextInput:
         elif key == arcade.key.ENTER:
             self.on_enter(self.text)
 
+    def process_key_release(self, key, modifiers) -> None:
+        self._current_key_pressed = None
+
     def on_enter(self, text) -> None:
         pass
 
@@ -294,9 +306,10 @@ class TextInput:
         if self.move_cursor():
             return
 
-        self.cursor_blink_delta += delta_time
+        self._cursor_blink_delta += delta_time
+        self._key_hold_delta += delta_time
 
-        if self.cursor_blink_delta > 0.5:
+        if self._cursor_blink_delta > 0.5:
 
             if self.cursor_is_active:
                 color = self.box_color
@@ -307,7 +320,18 @@ class TextInput:
                 self.cursor_is_active = True
 
             self.draw_cursor(*self.cursor_pos, color)
-            self.cursor_blink_delta = 0
+            self._cursor_blink_delta = 0
+
+        if self._current_key_pressed is not None:
+
+            if self._key_hold_delta > 0.25:
+
+                if self._key_hold_delta > 0.3:
+                    self.process_key(*self._current_key_pressed)
+                    self._key_hold_delta = 0.25
+
+        else:
+            self._key_hold_delta = 0
 
 
 if __name__ == "__main__":
@@ -333,6 +357,9 @@ if __name__ == "__main__":
 
         def on_key_press(self, key, modifiers) -> None:
             self.text_input.process_key_press(key, modifiers)
+
+        def on_key_release(self, key, modifiers) -> None:
+            self.text_input.process_key_release(key, modifiers)
 
         def on_draw(self) -> None:
             arcade.start_render()
