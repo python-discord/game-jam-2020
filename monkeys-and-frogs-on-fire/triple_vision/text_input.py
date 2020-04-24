@@ -96,8 +96,6 @@ class TextInput:
 
         self._current_key_pressed = None
         self._key_hold_delta = 0
-        self._key_processed = False
-        self._should_process_key = False
 
         self.KEY_SHIFTS = {
             arcade.key.GRAVE: arcade.key.ASCIITILDE,
