@@ -192,8 +192,9 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 20, 1))
             spawnList.append(EnemyGroup(0, E_MOSQUITO, BOT_ROW, 10, 1))
 
-            spawnList.append(EnemyGroup(6, E_MOSQUITO, TOP_ROW, 10, 1))
-            spawnList.append(EnemyGroup(6, E_SPIDER, BOT_ROW, 10, 1))
+            spawnList.append(EnemyGroup(11, E_MOSQUITO, TOP_ROW, 10, 1))
+            spawnList.append(EnemyGroup(11, E_SPIDER, BOT_ROW, 10, 1))
+            spawnList.append(EnemyGroup(11, E_SPIDER, BOT_ROW, 10, 1))
 
         elif waveNumber == 18:
             spawnList.append(EnemyGroup(0, E_SPIDER, TOP_ROW, 5, 0.5))
