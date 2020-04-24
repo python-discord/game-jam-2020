@@ -45,7 +45,9 @@ PUSH_SOUND = ":resources:sounds/upgrade1.wav"
 # Music made by missingfragment#1983
 BACKGROUND_MUSIC = "./game/music.ogg"
 ATTACK_PLAYS_SOUND_CHANCE = 1
+LITHIUM_SOUND = ":resources:sounds/jump5.wav"
 
+LITHIUM_VOLUME = 0.03
 BACKGROUND_MUSIC_VOLUME = 0.03
 SOUND_VOLUME = 0.01
 

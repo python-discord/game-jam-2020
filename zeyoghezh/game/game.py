@@ -11,8 +11,8 @@ from .util import (
 from .planet import Planet
 from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
-    BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER,
-    BASE_TIME_MULTIPLIER, VOLUME_IMAGE, VOLUME_MOVER_IMAGE
+    BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER, LITHIUM_SOUND,
+    BASE_TIME_MULTIPLIER, VOLUME_IMAGE, VOLUME_MOVER_IMAGE, LITHIUM_VOLUME,
 )
 import sys
 
@@ -42,6 +42,7 @@ class Game(arcade.Window):
         self.theme = None
         self.background = None
         self.background_music = arcade.Sound(BACKGROUND_MUSIC)
+        self.lithium_sound = arcade.Sound(LITHIUM_SOUND)
 
         self.master_volume = 0.5
 
@@ -242,6 +243,7 @@ class Game(arcade.Window):
         self.check_volume_press(x, y)
 
     def clicked_lithium(self):
+        self.lithium_sound.play(self.master_volume * LITHIUM_VOLUME)
         planet_avg_health = self.avg_planet_health()
         self.lithium_count += planet_avg_health * LITHIUM_MULTIPLIER
         self.lithium_location = get_new_lithium_location()
