@@ -28,10 +28,10 @@ class Camera:
         self.mouse_x = 0
         self.mouse_y = 0
 
-        self.left = 0
-        self.right = width
-        self.bottom = 0
-        self.top = height
+        self.zoom_left = 0
+        self.zoom_right = width
+        self.zoom_bottom = 0
+        self.zoom_top = height
 
         self.camera_lag = 2
         self.scroll_step = 0.005
@@ -50,12 +50,12 @@ class Camera:
         # bottom = int(self.bottom + int(self.y) - self.height_center)
         # top = int(self.top + int(self.y) - self.height_center)
 
-        left = self.left + self.x - self.width_center
-        right = self.right + self.x - self.width_center
-        bottom = self.bottom + self.y - self.height_center
-        top = self.top + self.y - self.height_center
+        self.left = self.zoom_left + self.x - self.width_center
+        self.right = self.zoom_right + self.x - self.width_center
+        self.bottom = self.zoom_bottom + self.y - self.height_center
+        self.top = self.zoom_top + self.y - self.height_center
         
-        arcade.set_viewport(left, right, bottom, top)
+        arcade.set_viewport(self.left, self.right, self.bottom, self.top)
 
     def scroll_to(self, x, y):
 
@@ -86,17 +86,37 @@ class Camera:
         self.zoom_width *= amount
         self.zoom_height *= amount
 
-        if self.zoom_width < self.width * 0.55:
-            self.zoom_width = self.width * 0.55 + 0.1
-        if self.zoom_height < self.height * 0.55:
-            self.zoom_height = self.height * 0.55 + 0.1
+        if self.zoom_width < self.width * 0.54:
+            self.zoom_width = self.width * 0.54 + 0.1
+        if self.zoom_height < self.height * 0.54:
+            self.zoom_height = self.height * 0.54 + 0.1
 
-        self.left   = self.width - self.zoom_width
-        self.right  = self.zoom_width
-        self.bottom = self.height - self.zoom_height
-        self.top    = self.zoom_height
+        self.set_zoom()
 
         # self.left   = self.mouse_x * self.zoom_width
         # self.right  = (1 - self.mouse_x) * self.zoom_width
         # self.bottom = self.mouse_y * self.zoom_height
         # self.top    = (1 - self.mouse_y) * self.zoom_height
+
+    def set_zoom(self):
+        self.zoom_left   = self.width - self.zoom_width
+        self.zoom_right  = self.zoom_width
+        self.zoom_bottom = self.height - self.zoom_height
+        self.zoom_top    = self.zoom_height
+
+    def resize(self, width, height):
+
+        scale_x = width / self.width
+        scale_y = height / self.height
+
+        self.zoom_width *= scale_x
+        self.zoom_height *= scale_y
+
+        self.width = width
+        self.height = height
+
+        self.width_center = width // 2
+        self.height_center = height // 2
+
+        self.set_zoom()
+        self.set_viewport()

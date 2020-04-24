@@ -20,7 +20,7 @@ from Constants import WIDTH, HEIGHT, TITLE
 class PyGameJam2020(arcade.Window):
 
     def __init__(self):
-        super().__init__(WIDTH, HEIGHT, TITLE)
+        super().__init__(WIDTH, HEIGHT, TITLE, resizable=True)
         
         arcade.set_background_color((19, 14, 30))
 
@@ -38,14 +38,21 @@ class PyGameJam2020(arcade.Window):
         self.text_input = TextInput()
 
         self.camera = Camera.Camera(WIDTH, HEIGHT)
+        self.camera.zoom(4)
         self.keyboard = Keyboard.Keyboard()
 
-        self.set_location((self.camera.screen_width - WIDTH) // 2, (self.camera.screen_height - HEIGHT) // 2)
+        self.set_min_size(WIDTH, HEIGHT)
+        self.prev_size = self.get_size()
 
+        self.set_location(
+            (self.camera.screen_width - WIDTH) // 2,
+            (self.camera.screen_height - HEIGHT) // 2)
 
     def setup(self):
         
         self.level = Level.Level(self.camera, self.keyboard)
+
+        print(Textures.SPRITESHEET[2].height)
 
     def on_update(self, delta):
 
@@ -68,10 +75,10 @@ class PyGameJam2020(arcade.Window):
 
             if self.time >= 1:
                 self.debug_text = f"FPS: {self.frames} | Using: {round(self.process.memory_info().rss / 1000000, 2)} MB"
-                # self.debug_text_list = Graphics.create_text_list(self.debug_text, 12, 12)
+
                 Graphics.empty_text_list(self.debug_text_list)
                 Graphics.add_to_text_list(self.debug_text, self.debug_text_list, 12, 12)
-                print(self.debug_text)
+                
                 self.time -= 1
                 self.frames = 0
 
@@ -92,6 +99,8 @@ class PyGameJam2020(arcade.Window):
 
     def on_key_press(self, key, modifiers):
         self.keyboard.on_key_press(key, modifiers)
+        if self.keyboard.is_pressed("fullscreen"):
+            self.set_fullscreen(not self.fullscreen)
     
     def on_key_release(self, key, modifiers):
         self.keyboard.on_key_release(key, modifiers)
@@ -103,6 +112,16 @@ class PyGameJam2020(arcade.Window):
 
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         pass
+
+    def on_resize(self, width: float, height: float):
+        self.camera.resize(width, height)
+        
+        # scale_x = width / self.prev_size[0]
+        # scale_y = height / self.prev_size[1]
+        # scale = min(scale_x, scale_y)
+
+        # self.set_size(int(self.prev_size[0] * scale), int(self.prev_size[1] * scale))
+        # self.prev_size = self.get_size()
 
 def main():
     window = PyGameJam2020()
