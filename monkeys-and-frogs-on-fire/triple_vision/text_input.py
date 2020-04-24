@@ -96,6 +96,16 @@ class TextInput:
         self._active = True
 
     @property
+    def cursor_pos(self) -> Tuple[float, float]:
+        center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
+                sum(self.text_widths[:self.cursor_idx]) + 1
+
+        center_y = self.center_y - (self.height / 2) + self.vertical_margin + \
+            self.text_sprites[0].height / 2
+
+        return center_x, center_y
+
+    @property
     def active(self) -> bool:
         return self._active
 
@@ -104,15 +114,8 @@ class TextInput:
         if not value:
             self.cursor_sprites.remove(self.cursor)
 
-            center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
-                sum(self.text_widths[:self.cursor_idx]) + 1
-
-            center_y = self.center_y - (self.height / 2) + self.vertical_margin + \
-                self.text_sprites[0].height / 2
-
             self.cursor = arcade.create_rectangle_filled(
-                center_x=center_x,
-                center_y=center_y,
+                *self.cursor_pos,
                 width=1,
                 height=self.text_sprites[0].height,
                 color=self.box_color
@@ -125,15 +128,8 @@ class TextInput:
         if self.prev_cursor_idx != self.cursor_idx:
             self.cursor_sprites.remove(self.cursor)
 
-            center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
-                sum(self.text_widths[:self.cursor_idx]) + 1
-
-            center_y = self.center_y - (self.height / 2) + self.vertical_margin + \
-                self.text_sprites[0].height / 2
-
             self.cursor = arcade.create_rectangle_filled(
-                center_x=center_x,
-                center_y=center_y,
+                *self.cursor_pos,
                 width=1,
                 height=self.text_sprites[0].height,
                 color=self.cursor_color
@@ -235,12 +231,6 @@ class TextInput:
         if self.cursor_blink_delta > 0.5:
             self.cursor_sprites.remove(self.cursor)
 
-            center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
-                sum(self.text_widths[:self.cursor_idx]) + 1
-
-            center_y = self.center_y - (self.height / 2) + self.vertical_margin + \
-                self.text_sprites[0].height / 2
-
             if self.cursor_is_active:
                 color = self.box_color
                 self.cursor_is_active = False
@@ -250,8 +240,7 @@ class TextInput:
                 self.cursor_is_active = True
 
             self.cursor = arcade.create_rectangle_filled(
-                center_x=center_x,
-                center_y=center_y,
+                *self.cursor_pos,
                 width=1,
                 height=self.text_sprites[0].height,
                 color=color
