@@ -4,7 +4,7 @@ from typing import Optional, Tuple, List
 import arcade
 
 from triple_vision import Settings as s, SoundSettings as ss
-from triple_vision.entities import DamageIndicator
+from triple_vision.entities import DamageIndicator, States
 from triple_vision.sound import SoundTrack
 
 
