@@ -50,8 +50,8 @@ class Scores(Cog, route='scores'):
                 'scores': [
                     {
                         'score': score.score,
-                        'username': score.user.username,
-                        'user_id': score.user.id
+                        'username': session.query(User).filter(User.id == score.user_id).first().username,
+                        'user_id': score.user_id
                     } for score in scores
                 ]
             })
