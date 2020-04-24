@@ -11,6 +11,7 @@ from triple_vision.entities.sprites import HealthBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
+from triple_vision.sound import SoundManager
 
 
 class States(Enum):
@@ -40,6 +41,8 @@ class Player(LivingEntity, MovingSprite):
 
         self.view = view
         self.last_shot = time.time()
+
+        self.state = States.IDLE
 
         self.is_alive = True
         self.attack_multiplier = 1
@@ -145,7 +148,6 @@ class Player(LivingEntity, MovingSprite):
 
     def process_left_mouse_press(self, x, y, charge) -> None:
         if time.time() - self.last_shot < self.dexterity:
-            # TODO Play empty gun sound or something similar
             return
 
         bullet = ChargedLaserProjectile(
@@ -159,6 +161,7 @@ class Player(LivingEntity, MovingSprite):
         bullet.play_activate_sound()
         self.view.game_manager.player_projectiles.append(bullet)
         self.last_shot = time.time()
+        self.state = States.ATTACKING_RANGED
 
     def kill(self):
         self.is_alive = False
@@ -184,9 +187,9 @@ class Player(LivingEntity, MovingSprite):
                 self.center_y + change_y * Tile.SCALED
             )
         )
-
         if not arcade.get_sprites_at_exact_point(dest, self.view.collision_list):
             self.move_to(dest[0], dest[1] + s.PLAYER_CENTER_Y_COMPENSATION)
+            self.state = States.MOVING
 
         super().on_update(delta_time)
 
