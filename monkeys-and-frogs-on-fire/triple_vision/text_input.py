@@ -74,7 +74,6 @@ class TextInput:
                 italic=italic
             )
         )
-        self.text_widths = list()
 
         self.cursor_sprites = arcade.ShapeElementList()
         self.cursor = arcade.create_rectangle_filled(
@@ -98,7 +97,7 @@ class TextInput:
     @property
     def cursor_pos(self) -> Tuple[float, float]:
         center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
-                sum(self.text_widths[:self.cursor_idx]) + 1
+                sum(text_sprite.width for text_sprite in self.text_sprites[:self.cursor_idx]) + 1
 
         center_y = self.center_y - (self.height / 2) + self.vertical_margin + \
             self.text_sprites[0].height / 2
@@ -131,11 +130,44 @@ class TextInput:
             center_x=center_x,
             center_y=center_y,
             width=1,
-            height=self.text_sprites[0].height,
+            height=self.text_sprites[self.cursor_idx].height,
             color=color
         )
 
         self.cursor_sprites.append(self.cursor)
+
+    def draw_text_at_cursor(self, text: str) -> None:
+        self.text = self.text[:self.cursor_idx] + text + self.text[self.cursor_idx:]
+
+        start_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
+            sum(text_sprite.width for text_sprite in self.text_sprites[:self.cursor_idx])
+
+        start_y = self.center_y - (self.height / 2) + self.vertical_margin
+
+        text_sprite = arcade.draw_text(
+            text=text,
+            start_x=start_x,
+            start_y=start_y,
+            color=self.text_color,
+            font_size=self.font_size,
+            bold=self.bold,
+            italic=self.italic
+        )
+
+        for sprite in self.text_sprites[self.cursor_idx:]:
+            sprite.center_x += text_sprite.width
+
+        self.text_sprites.insert(self.cursor_idx, text_sprite)
+
+        # Prevent the use of the same instance
+        arcade.text.draw_text_cache.clear()
+
+    def delete_text(self, idx) -> None:
+        self.text = self.text[:idx] + self.text[idx + 1:]
+        old_sprite = self.text_sprites.pop(idx)
+
+        for sprite in self.text_sprites[idx:]:
+            sprite.center_x -= old_sprite.width
 
     def move_cursor(self) -> bool:
         if self.prev_cursor_idx != self.cursor_idx:
@@ -160,35 +192,22 @@ class TextInput:
         if not self.active:
             return
 
-        changed = False
-
         if 32 <= key <= 126:
             if modifiers & 1 == arcade.key.MOD_SHIFT:
                 key -= 32
 
-            key = chr(key)
-            self.text = self.text[:self.cursor_idx] + key + self.text[self.cursor_idx:]
-
-            self.text_widths.insert(self.cursor_idx, arcade.draw_text(key, 0, 0, self.box_color).width)
+            self.draw_text_at_cursor(chr(key))
             self.cursor_idx += 1
-
-            changed = True
 
         elif key == arcade.key.BACKSPACE:
             if len(self.text) > 0:
-                self.text = self.text[:self.cursor_idx - 1] + self.text[self.cursor_idx:]
-                self.text_widths.pop(self.cursor_idx - 1)
+                self.delete_text(self.cursor_idx - 1)
                 self.cursor_idx -= 1
-
-                changed = True
 
         elif key == arcade.key.DELETE:
 
             if self.cursor_idx < len(self.text):
-                self.text = self.text[:self.cursor_idx] + self.text[self.cursor_idx + 1:]
-                self.text_widths.pop(self.cursor_idx)
-
-                changed = True
+                self.delete_text(self.cursor_idx)
 
         elif key == arcade.key.LEFT:
             if self.cursor_idx > 0:
@@ -200,20 +219,6 @@ class TextInput:
 
         elif key == arcade.key.ENTER:
             self.on_enter(self.text)
-
-        if changed:
-            self.text_sprites.pop(0)
-            self.text_sprites.append(
-                arcade.draw_text(
-                    text=self.text,
-                    start_x=self.center_x - (self.width / 2) + self.horizontal_margin,
-                    start_y=self.center_y - (self.height / 2) + self.vertical_margin,
-                    color=self.text_color,
-                    font_size=self.font_size,
-                    bold=self.bold,
-                    italic=self.italic
-                )
-            )
 
     def on_enter(self, text) -> None:
         pass
