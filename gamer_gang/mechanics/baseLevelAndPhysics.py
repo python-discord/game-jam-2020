@@ -1,11 +1,10 @@
 import math
 import itertools
 from pathlib import Path
-import sys
-sys.path.insert(0, Path(__file__).parent)
-from mechanics.player import *
-from mechanics.terrainStuff import *
-from dumbConstants import *
+import pytiled_parser
+from gamer_gang.mechanics.entities import *
+from gamer_gang.mechanics.terrainStuff import *
+from gamer_gang.dumbConstants import *
 
 def getNames(name):
     name = name.split(sep='on')
@@ -25,7 +24,7 @@ def getNames(name):
     return newNames
 
 
-def fetch_layer(layer_path, map_object):
+def getLayer(layer_path, map_object):
     def _get_tilemap_layer(path, layers):
         layer_name = path.pop(0)
         for layer in layers:
@@ -60,56 +59,84 @@ class BaseLevel(arcade.View):
         self.userInputs = [0, 0, 0]  # the user input
         self.deathCause = None
 
-        self.make_level()
+        self.makeLevel()
 
-    def make_level(self):  # in the base class, this is just a placeholder level
-        self.normalGrounds = arcade.SpriteList()
-        self.spikes = arcade.SpriteList()
-        self.goombaThings = arcade.SpriteList()
+    def makeLevel(self):  # the placeholder level here is just level 1
+        self.map = arcade.tilemap.read_tmx(str(Path(__file__).parent) + '/levels/level1/level_1.tmx')
+        self.ground = arcade.SpriteList()
+        self.deco = arcade.SpriteList()
+        self.boxes = arcade.SpriteList()
+        self.BEES = arcade.SpriteList()
         self.players = []
-        self.playerShapes, self.playerBodies = [], []
+        self.bodies = []
+        self.shapes = []
+        self.backgroundImage = arcade.Sprite(str(Path(__file__).parent) + "/levels/level1/blueBackground.png",
+                                             center_x=self.map.map_size.width * self.map.tile_size.width / 2,
+                                             center_y=self.map.map_size.height * self.map.tile_size.height / 2)
+        self.deco = arcade.SpriteList()
+        self.score = 0
+        self.gotToExit = []  # the players that have gotten to the exit
 
-        self.normalGroundTextures = [arcade.load_texture("images/ground/placeholderGround.png")]
-        self.spikeTextures = [arcade.load_texture('images/ground/spike.png')]
-        self.playerTextures = [[arcade.load_texture("images/mobs/player/1.png"),
-                                arcade.load_texture("images/mobs/player/other1.png")],
-                               [arcade.load_texture("images/mobs/player/1.png"),
-                                arcade.load_texture("images/mobs/player/other3.png")],
-                               [arcade.load_texture("images/mobs/player/1.png"),
-                                arcade.load_texture("images/mobs/player/other2.png")]]
+        ground_list = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/Ground", self.map))
+        for i in ground_list:
+            self.ground.append(makeLand(self.space, BoxOfSmth, i.textures, 1, i.center_x, i.center_y))
 
-        for i in range(1, 4):
-            p, body, shape = makePlayer(1, self.space, self.playerTextures[i - 1], 1, 17, 32 * i, str(i))
-            self.playerBodies.append(body)
-            self.playerShapes.append(shape)
+        pName = 1
+        for i in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/Players", self.map)):
+            p, body, shape = makePlayer(1, self.space, i.textures, 1, i.center_x, i.center_y, str(pName))
+            self.bodies.append(body)
+            self.shapes.append(shape)
             self.players.append(p)
             self.playerHeight = p.height
+            pName += 1
 
-        for i in range(40):
-            self.normalGrounds.append(makeTerrain(self.space, NormalGround, self.normalGroundTextures, 1, i * 32, 0))
+        for b in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/boxes", self.map)):
+            box = makeBox(1, self.space, b.textures, b.hit_box, b.scale, b.center_x, b.center_y)
+            self.boxes.append(box)
 
-        for i in range(1):
-            self.spikes.append(makeTerrain(self.space, BadSpike, self.spikeTextures, 1, 200, 20))
+        for b in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/bees", self.map)):
+            self.BEES.append(BeeSprite(b.textures, b.scale, b.center_x, b.center_y))
+
+        self.spikes = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/spikes", self.map))
+        self.jumpPads = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/jumping pads", self.map))
+        self.stars = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/stars", self.map))
+        self.exit = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/exit door", self.map))
+
+        self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Signs", self.map)))
+        self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Trees", self.map)))
+        self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Plants", self.map)))
+        self.backgroundSprites = arcade.tilemap._process_tile_layer(self.map,
+                                                                    getLayer("DecorationsBack/Ocean", self.map))
 
     def on_draw(self):
         arcade.start_render()
 
+        self.backgroundImage.draw()
+        self.backgroundSprites.draw()
+        self.deco.draw()
         self.spikes.draw()
-        self.normalGrounds.draw()
+        self.BEES.draw()
+        self.ground.draw()
+        self.boxes.draw()
+        self.jumpPads.draw()
+        self.exit.draw()
+        self.stars.draw()
+
         for p in self.players:
-            p.draw()
+            if p is not None:
+                p.draw()
 
         if self.debugging:
             for i in self.players:
                 i.draw_hit_box((100, 100, 100), 3)
-            for f in self.normalGrounds:
+            for f in self.ground:
                 f.draw_hit_box((100, 100, 100), 3)
 
     def on_key_press(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
-            self.userInputs[1] = -20
+            self.userInputs[1] = -30
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.userInputs[0] = 20
+            self.userInputs[0] = 30
         elif key == arcade.key.UP or key == arcade.key.W:
             self.userInputs[2] = 500
         elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
@@ -152,7 +179,7 @@ class BaseLevel(arcade.View):
             needChange = True
 
         self.leftView = round(self.leftView)
-        self.bottomView = round(self.bottomView)
+        self.bottomView = round(self.bottomView) if self.bottomView > 0 else 0
 
         if needChange:
             arcade.set_viewport(self.leftView, SCREEN_WIDTH + self.leftView,
@@ -163,25 +190,26 @@ class BaseLevel(arcade.View):
             return
 
         for up, down in itertools.permutations(self.players, 2):
-            if up.name != down.name:
+            if up is not None and down is not None and up.name != down.name:
                 if abs(up.bottom - down.top) < 5 and abs(up.center_x - down.center_x) < 10:
                     stackName = f'{up.name}on{down.name}'
                     stackList = []
                     for v, p in enumerate(self.players):
-                        if p.name in [up.name, down.name]:
+                        if p is not None and p.name in [up.name, down.name]:
                             stackList.append(v)
 
-                    possTextures = [arcade.load_texture(f'images/mobs/player/{n}.png') for n in getNames(stackName)]
+                    possTextures = [arcade.load_texture(str(Path(__file__).parent) + f'/playerImages/{n}.png')
+                                    for n in getNames(stackName)]
                     p, body, shape = makePlayer(1, self.space, possTextures,
                                                 1, down.center_x, (down.bottom + up.top) / 2, stackName)
 
                     for i in stackList:
                         self.players[i].kill()  # remove ALL TRACES of the prev sprites
                         try:
-                            self.space.remove(self.playerBodies[i], self.playerShapes[i])
+                            self.space.remove(self.bodies[i], self.shapes[i])
                         except KeyError:  # no idea why this crap happens
                             pass
-                        self.players[i], self.playerBodies[i], self.playerShapes[i] = p, body, shape
+                        self.players[i], self.bodies[i], self.shapes[i] = p, body, shape
 
                     break  # break bc we can only have 2 things join at a time, right?
 
@@ -190,7 +218,7 @@ class BaseLevel(arcade.View):
             return
 
         for p in self.players:
-            if str(self.controlled + 1) in p.name:
+            if p is not None and str(self.controlled + 1) in p.name:
                 presentIndexes = [int(i) - 1 for i in p.name.split(sep='on')]
                 topList = presentIndexes[:presentIndexes.index(self.controlled) + 1]
                 bottomList = presentIndexes[presentIndexes.index(self.controlled) + 1:]
@@ -199,7 +227,8 @@ class BaseLevel(arcade.View):
                     return
                 # configure top part of the stack (p, b, s stand for player, body, and shape respectively)
                 topListName = "on".join([str(s + 1) for s in topList])
-                possTextures = [arcade.load_texture(f'images/mobs/player/{n}.png') for n in getNames(topListName)]
+                possTextures = [arcade.load_texture(str(Path(__file__).parent) + f'/playerImages/{n}.png')
+                                for n in getNames(topListName)]
                 p, b, s = makePlayer(1, self.space, possTextures, 1,
                                      p.center_x, bottom + self.playerHeight * (len(bottomList) + len(topList) / 2),
                                      topListName)
@@ -207,34 +236,41 @@ class BaseLevel(arcade.View):
                 for i in topList:  # actually put the newly split sprites in the game
                     self.players[i].kill()
                     try:
-                        self.space.remove(self.playerBodies[i], self.playerShapes[i])
+                        self.space.remove(self.bodies[i], self.shapes[i])
                     except KeyError:
                         pass
-                    self.players[i], self.playerBodies[i], self.playerShapes[i] = p, b, s
+                    self.players[i], self.bodies[i], self.shapes[i] = p, b, s
 
                 # do the same for the bottom part
                 bottomListName = "on".join([str(s + 1) for s in bottomList])
-                possTextures = [arcade.load_texture(f'images/mobs/player/{n}.png') for n in getNames(bottomListName)]
+                possTextures = [arcade.load_texture(str(Path(__file__).parent) + f'/playerImages/{n}.png')
+                                for n in getNames(bottomListName)]
                 p, b, s = makePlayer(1, self.space, possTextures, 1, p.center_x,
                                      bottom + self.playerHeight * (len(bottomList) / 2), bottomListName)
 
                 for i in bottomList:
                     self.players[i].kill()
                     try:
-                        self.space.remove(self.playerBodies[i], self.playerShapes[i])
+                        self.space.remove(self.bodies[i], self.shapes[i])
                     except KeyError:
                         pass
-                    self.players[i], self.playerBodies[i], self.playerShapes[i] = p, b, s
+                    self.players[i], self.bodies[i], self.shapes[i] = p, b, s
                 self.userInputs[2] = 500
                 self.timeAfterSplit = 0
                 break
 
     def movement(self):
         for p in self.players:
+            if p is None:
+                continue
+
             if p.name == self.players[self.controlled].name:
-                p.pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.userInputs[:2]), 0))  # hor. movement
+                p.pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.userInputs[:2]), 0))  # horizontal movement
                 if p.can_jump:
-                    p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.userInputs[2]))
+                    if arcade.check_for_collision_with_list(p, self.jumpPads):
+                        p.pymunk_shape.body.velocity += pymunk.Vec2d((0, 600))
+                    else:
+                        p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.userInputs[2]))
                     p.can_jump = False
 
                 if p.pymunk_shape.body.velocity.x > 300:  # prevent from accelerating too fast
@@ -245,9 +281,45 @@ class BaseLevel(arcade.View):
 
     def entityInteractionCheck(self):
         for p in self.players:
+            if p is None:
+                continue
+
             if arcade.check_for_collision_with_list(p, self.spikes):  # if you touch a spike, you DIE
-                self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
+                #self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
                 self.deathCause = 'a spike that looks awfully like a GD spike'
+                continue
+
+            if arcade.check_for_collision_with_list(p, self.BEES):
+                #self.window.game_over = True
+                self.deathCause = 'BEEEEEEEEES that most definitely don\'t like jazz ' \
+                                  '(and probably aren\'t from animal crossing either)'
+                continue
+
+            if arcade.check_for_collision_with_list(p, self.stars):
+                for collided in arcade.check_for_collision_with_list(p, self.stars):
+                    collided.remove_from_sprite_lists()
+                self.score += 1
+
+            left = []
+            if arcade.check_for_collision_with_list(p, self.exit):
+                for v, pl in enumerate(self.players):
+                    if pl == p:
+                        self.players[v].kill()
+                        try:
+                            self.space.remove(self.bodies[v], self.shapes[v])
+                        except KeyError:
+                            pass
+                        self.players[v] = None
+                        self.gotToExit.append(v + 1)
+                    elif pl is not None:
+                        if set([int(c) for c in pl.name.split('on') if c]).intersection(self.gotToExit):
+                            continue
+                        left.append(v)
+
+                if left:
+                    self.controlled = left[0]
+                else:
+                    self.window.show_view(self.window.menuView)
 
     def on_update(self, dt):
         self.frames += 1
@@ -261,28 +333,49 @@ class BaseLevel(arcade.View):
         self.entityInteractionCheck()  # check for interaction with any enemies, bad stuff, etc.
 
         for p in self.players:
-            if p.top < -100:
+            if p is not None and p.top < -50:
                 self.window.game_over = True
                 self.deathCause = 'no pit is more bottomless than the bottomless pit! (which you fell into)'
 
         if not self.window.game_over:
             for p in self.players:
+                if p is None:
+                    continue
+
                 p.update()
                 p.update_animation(dt)
-                boxes = arcade.check_for_collision_with_list(p, self.normalGrounds)
-                if_collide = [True for pl in self.players if arcade.check_for_collision(p, pl) and pl != p]
-                if (boxes != [] or True in if_collide) and abs(p.pymunk_shape.body.velocity.y) < 3:
+                collidedGround = [g for g in arcade.check_for_collision_with_list(p, self.ground) if p.top > g.bottom]
+                collidedBoxes = [b for b in arcade.check_for_collision_with_list(p, self.boxes)
+                                 if abs(p.bottom - b.top) < 5]
+                metPlayers = [True for pl in self.players if pl is not None and
+                              arcade.check_for_collision(p, pl) and pl != p]  # the players that are beneath
+
+                if (collidedGround or metPlayers or collidedBoxes) and abs(p.pymunk_shape.body.velocity.y) < 3:
                     p.can_jump = True
 
-            for p in self.players:
                 p.center_x = p.pymunk_shape.body.position.x
                 p.center_y = p.pymunk_shape.body.position.y
                 p.angle = math.degrees(p.pymunk_shape.body.angle)
 
+            for b in self.boxes:
+                b.center_x = b.pymunk_shape.body.position.x
+                b.center_y = b.pymunk_shape.body.position.y
+                b.angle = math.degrees(b.pymunk_shape.body.angle)
+                if b.center_y <= 0:
+                    self.space.remove(b.pymunk_shape, b.pymunk_shape.body)
+                    b.kill()
+
+            for b in self.BEES:
+                b.update(self.players)
+
         else:
+            print(self.deathCause)
             self.window.show_view(self.window.gameOver)
 
+
 if __name__ == '__main__':
-    testGame = arcade.window(600, 1000, 'test')
+    testGame = arcade.Window(1000, 600, 'test')
     testGame.level = BaseLevel()
+    testGame.game_over = False
     testGame.show_view(testGame.level)
+    arcade.run()

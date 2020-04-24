@@ -1,6 +1,7 @@
+import random
+import math
 import arcade
 import pymunk
-import random
 
 class Player(arcade.Sprite):
     def __init__(self, pymunk_shape, textures, scale, x, y, name):
@@ -26,7 +27,38 @@ class Player(arcade.Sprite):
             return
         else:  # ok, change
             rnTexture = self.textureList.index(self.texture)
-            self.texture = random.choice(self.textureList[:rnTexture] + self.textureList[rnTexture + 1:])
+            if self.textureList[:rnTexture] + self.textureList[rnTexture + 1:]:
+                self.texture = random.choice(self.textureList[:rnTexture] + self.textureList[rnTexture + 1:])
+
+
+class BeeSprite(arcade.Sprite):
+    def __init__(self, textures, scale, x, y):
+        super().__init__()
+
+        self.textures = textures
+        self.texture = self.textures[0]
+
+        self.scale = scale
+
+        self.og_x, self.og_y = self.center_x, self.center_y = x, y
+
+    def update(self, players):
+        dists = []
+        for p in players:
+            if p is not None:
+                dists.append(math.sqrt((self.center_x - p.center_x) ** 2 + (self.center_y - p.center_y) ** 2))
+            else:
+                dists.append(float('inf'))
+
+        if min(dists) < 32 * 8:
+            tar = dists.index(min(dists))
+            angle = math.atan2((players[tar].center_y - self.center_y), (players[tar].center_x - self.center_x))
+            self.center_x += math.cos(angle)
+            self.center_y += math.sin(angle)
+        else:
+            angle = math.atan2((self.og_y - self.center_y), (self.og_x - self.center_x))
+            self.center_x += math.cos(angle)
+            self.center_y += math.sin(angle)
 
 
 def makePlayer(mass, space, textures, scale, x, y, name):

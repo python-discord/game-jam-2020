@@ -1,8 +1,8 @@
 from PIL import Image
 from itertools import permutations
 
-players = ['mobs/player/1.png', 'mobs/player/2.png', 'mobs/player/3.png',
-           'mobs/player/other1.png', 'mobs/player/other2.png', 'mobs/player/other3.png']
+players = ['1.png', '2.png', '3.png',
+           'other1.png', 'other2.png', 'other3.png']
 
 def get_concat_v(im1, im2):
     dst = Image.new('RGB', (im1.width, im1.height + im2.height))
@@ -16,7 +16,7 @@ for part in permutations(players, 2):
     if int(top.replace('other', '')) == int(down.replace('other', '')):
         continue
 
-    get_concat_v(Image.open(part[0]), Image.open(part[1])).save(f'mobs/player/{top}on{down}.png')
+    get_concat_v(Image.open(part[0]), Image.open(part[1])).save(f'{top}on{down}.png')
 
 
 for part in permutations(players, 3):
@@ -31,6 +31,6 @@ for part in permutations(players, 3):
             break
     else:
         print(top, middle, bottom)
-        get_concat_v(Image.open(part[0]), Image.open(part[1])).save(f'mobs/player/{top}on{middle}.png')
-        second = Image.open(f'mobs/player/{top}on{middle}.png')
-        get_concat_v(second, Image.open(part[2])).save(f'mobs/player/{top}on{middle}on{bottom}.png')
+        get_concat_v(Image.open(part[0]), Image.open(part[1])).save(f'{top}on{middle}.png')
+        second = Image.open(f'{top}on{middle}.png')
+        get_concat_v(second, Image.open(part[2])).save(f'{top}on{middle}on{bottom}.png')
