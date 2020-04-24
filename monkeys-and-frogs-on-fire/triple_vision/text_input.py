@@ -114,6 +114,24 @@ class TextInput:
             arcade.key.SLASH: arcade.key.QUESTION
         }
 
+        self.KEY_NUMS = {
+            arcade.key.NUM_1: arcade.key.KEY_1,
+            arcade.key.NUM_2: arcade.key.KEY_2,
+            arcade.key.NUM_3: arcade.key.KEY_3,
+            arcade.key.NUM_4: arcade.key.KEY_4,
+            arcade.key.NUM_5: arcade.key.KEY_5,
+            arcade.key.NUM_6: arcade.key.KEY_6,
+            arcade.key.NUM_7: arcade.key.KEY_7,
+            arcade.key.NUM_8: arcade.key.KEY_8,
+            arcade.key.NUM_9: arcade.key.KEY_9,
+            arcade.key.NUM_0: arcade.key.KEY_0,
+            arcade.key.NUM_DIVIDE: arcade.key.SLASH,
+            arcade.key.NUM_MULTIPLY: arcade.key.ASTERISK,
+            arcade.key.NUM_SUBTRACT: arcade.key.MINUS,
+            arcade.key.NUM_ADD: arcade.key.PLUS,
+            arcade.key.NUM_DECIMAL: arcade.key.PERIOD
+        }
+
     @property
     def cursor_pos(self) -> Tuple[float, float]:
         center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
@@ -224,7 +242,7 @@ class TextInput:
         if not self.active:
             return
 
-        if 32 <= key <= 126:
+        if arcade.key.SPACE <= key <= arcade.key.ASCIITILDE:
             if modifiers & 1 == arcade.key.MOD_SHIFT:
                 key_shift = self.KEY_SHIFTS.get(key)
 
@@ -236,6 +254,9 @@ class TextInput:
                     key -= 16
 
             self.draw_text_at_cursor(chr(key))
+
+        elif arcade.key.NUM_MULTIPLY <= key <= arcade.key.NUM_9:
+            self.draw_text_at_cursor(chr(self.KEY_NUMS[key]))
 
         elif key == arcade.key.BACKSPACE:
             if len(self.text) > 0:
