@@ -272,6 +272,8 @@ class CursorManager:
         self._curr_cursor: arcade.Sprite = self.cursors["ranged"]
         self.window.set_mouse_visible(False)
 
+        self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
+
     def set_curr_cursor(self, value):
         last_position = self._curr_cursor.center_x, self._curr_cursor.center_y
         self._curr_cursor = self.cursors.get(value, None)
@@ -282,14 +284,14 @@ class CursorManager:
 
     curr_cursor = property(get_curr_cursor, set_curr_cursor)
 
-    def update_cursor_position(self, x, y):
+    def set_cursor_position(self, x, y):
         self._curr_cursor.center_x = x + self.view.camera.viewport_left
         self._curr_cursor.center_y = y + self.view.camera.viewport_bottom
 
     def process_mouse_motion(self, x, y):
         if arcade.get_sprites_at_exact_point((x, y), self.view.collision_list):
             self.curr_cursor = "blocked"
-        self.update_cursor_position(x, y)
+        self.set_cursor_position(x, y)
 
     def update(self):
         # TODO save player states by current weapon and update cursor
@@ -301,6 +303,12 @@ class CursorManager:
             self.curr_cursor = "blocked"
         elif self.player.state == States.IDLE:
             self.curr_cursor = "ranged"
+
+        viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
+        if self.prev_viewport != viewport:
+            self._curr_cursor.center_x += viewport[0] - self.prev_viewport[0]
+            self._curr_cursor.center_y += viewport[1] - self.prev_viewport[1]
+            self.prev_viewport = viewport
 
     def draw(self):
         if self._curr_cursor is not None:
