@@ -30,6 +30,7 @@ class LaserProjectile(Projectile):
 
     def __init__(
         self,
+        color: str,
         dmg: float = random.randrange(60, 70),
         moving_speed: float = 5.0,
         **kwargs: Any
@@ -41,7 +42,7 @@ class LaserProjectile(Projectile):
             hit_sounds=self.hit_sounds,
             lifetime=3,
             moving_speed=moving_speed,
-            filename='assets/lasers/blue_laser.png',
+            filename=f'assets/lasers/{color}_laser.png',
             **kwargs
         )
 

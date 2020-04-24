@@ -171,6 +171,7 @@ class StationaryEnemy(BaseEnemy):
             return
 
         laser = LaserProjectile(
+            color='red',
             center_x=self.center_x,
             center_y=self.center_y,
             rotate=True
