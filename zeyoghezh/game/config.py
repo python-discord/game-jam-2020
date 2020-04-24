@@ -4,7 +4,7 @@ SCREEN_SIZE = (800, 600)
 BOTTOM_BORDER_Y = int(SCREEN_SIZE[1] / 8)
 TRIANGULATION_START_LIKELIHOOD = 0.02
 TRIANGULATION_END_LIKELIHOOD = 0.05
-LITHIUM_MULTIPLIER = 1.8
+LITHIUM_MULTIPLIER = 1
 
 BASE_TIME_MULTIPLIER = 1  # TODO change to 1 when this is over
 
@@ -45,9 +45,17 @@ PUSH_SOUND = ":resources:sounds/upgrade1.wav"
 # Music made by missingfragment#1983
 BACKGROUND_MUSIC = "./game/music.ogg"
 ATTACK_PLAYS_SOUND_CHANCE = 1
+LITHIUM_SOUND = ":resources:sounds/jump5.wav"
+HEAL_SOUND = ":resources:sounds/secret2.wav"
+ABSCOND_SOUND = ":resources:sounds/jump1.wav"
+GAME_OVER_SOUND = ":resources:sounds/lose2.wav"
 
+LITHIUM_VOLUME = 0.03
 BACKGROUND_MUSIC_VOLUME = 0.03
 SOUND_VOLUME = 0.01
+HEAL_VOLUME = 0.03
+ABSCOND_VOLUME = 0.04
+GAME_OVER_VOLUME = 0.04
 
 
 SCREEN_TITLE = "Zeyoghezh"
@@ -82,7 +90,7 @@ STORY_LINES = (
     "How much you reserve for home or for them is up to you.",
     "You must balance three tasks: ",
     "Collect lithium.",
-    "heal wounded planets.",
+    "Heal wounded planets.",
     "And abscond when all is lost.",
     "Do not wait too long to abscond.",
     "You will need all three planets alive to escape.",
@@ -132,7 +140,7 @@ STORY_LINES = (
     "I told a lie earlier. Well, more of a fib.",
     "I'm not Ze. I'm not Yogh. I'm not Ezh.",
     "But I am Ze, Yogh, and Ezh.",
-    "Sorry for bending the truth, pop.",
+    "Sorry for bending the truth, you.",
     "I'm not sure what to call you. You didn't make me, but...",
     "...you're part of the reason I exist.",
     "You ordered my construction, didn't you?",
@@ -173,8 +181,8 @@ STORY_LINES = (
     "They never knew love.",
     "They met someone like them.",
     "...this is getting confusing.",
-    "Let's give this person a name.",
-    "Chris."
+    "Let's give our character a name.",
+    "Chris.",
     "Chris met a girl. She was a cute girl.",
     "It wasn't romantic. Maybe Chris wanted it to be.",
     "It was a little before the winter holidays.",
@@ -184,11 +192,11 @@ STORY_LINES = (
     "But they didn't realize what was happening.",
     "For the first time in their life...",
     "...Chris had a friend.",
-    "This was the first year of college for the two.",
-    "The two had similar majors, and shared classes.",
+    "This was the first year of college for both.",
+    "She had a similar major, and shared classes.",
     "It was the first time in a long time...",
     "...that Chris's heart was not strained.",
-    "Chris and their friend were together...",
+    "She and Chris were together...",
     "...before the holiday break...",
     "...and then, never again.",
     "Chris went home.",
@@ -210,14 +218,17 @@ STORY_LINES = (
     "...",
     "Chris also knows that it wasn't actually like that.",
     "It was an terrible event.",
-    "But it was an unfortunate coincidence.",
+    "And it was an unfortunate coincidence.",
     "No one orcastrated it.",
     "...",
     "Three years passed.",
     "Chris was alone.",
     "Three days before graduation, Chris overheard someone.",
-    "Someone had hanged themself three years ago.",
+    "Someone talking about life at college.",
+    "A girl was mentioned.",
+    "A girl who had hanged herself three years ago.",
     "Over winter break.",
+    "...",
     "Hadn't Chris been punished enough?",
     "Why was it brought up again, this close to the end?",
     "Was it a message?",
@@ -242,8 +253,9 @@ STORY_LINES = (
     "Ze. Yogh. Ezh.",
     "Rock. Paper. Scissors.",
     "Shoot.",
+    "It didn't take three bullets.",
+    "Just one.",
     "And Chris fell to the ground.",
-    "The gun fell out of their hand.",
     "The mistake could never be fixed, so why keep trying?",
     "All is lost. Chris has died.",
     "...",
