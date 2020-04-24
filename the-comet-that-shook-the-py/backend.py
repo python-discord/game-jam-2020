@@ -47,7 +47,7 @@ def _get_fact_template(filename=None, count=1) -> List[str]:
 
     filename = os.path.join('assets', filename[0])
     with open(filename, 'rt', encoding='utf8') as file:
-        template = file.readlines()
+        template = file.read().rstrip().splitlines()
 
     return template
 
@@ -82,12 +82,24 @@ def start_new_game():
     fact_template = _get_fact_template()
     clue_list = _get_puzzle_clues(solution_list, fact_template)
 
-    return solution_list, shuffled_list, clue_list
+    return solution_list, shuffled_list, clue_list, fact_template
 
 
 if __name__ == '__main__':
-    A, B, C = start_new_game()
+    A, B, C, D = start_new_game()
 
-    print(A)
-    print(B)
-    print(C)
+    print("\n-=*Solution*=-")
+    for i, v in enumerate(A):
+        print(f'{i}: {v}')
+
+    print("\n-=*Shuffled Assets*=-")
+    for i, v in enumerate(B):
+        print(f'{i}: {v}')
+
+    print("\n-=*Clues*=-")
+    for i, v in enumerate(C):
+        print(f'{i}: {v}')
+
+    print("\n-=*Empty Template*=-")
+    for i, v in enumerate(D):
+        print(f'{i}: {v}')
