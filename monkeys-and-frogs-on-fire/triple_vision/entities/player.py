@@ -54,7 +54,7 @@ class Player(LivingEntity, MovingSprite):
         self.path_finder = PathFinder()
         self.path = None
 
-        self.health_bar: HealthBar = None
+        self.mana_bar: HealthBar = None
 
         self.left_pressed = False
         self.right_pressed = False
@@ -103,7 +103,7 @@ class Player(LivingEntity, MovingSprite):
         ])
         self.curr_color = 'red'
 
-        self.health_bar = HealthBar(
+        self.mana_bar = HealthBar(
             self.view,
             fill_part_filename="assets/healthbar/mana_fill_part.png",
             fill_part_width=44.0,
@@ -111,6 +111,7 @@ class Player(LivingEntity, MovingSprite):
             center_x=420,
             center_y=18,
             scale=1,
+            auto_filling_speed=1.0
         )
 
         center = tuple()
@@ -164,6 +165,7 @@ class Player(LivingEntity, MovingSprite):
         bullet.play_activate_sound()
         self.view.game_manager.player_projectiles.append(bullet)
         self.last_shot = time.time()
+        self.mana_bar.remove_filling_part()
         self.state = States.ATTACKING_RANGED
 
     def kill(self):
@@ -197,8 +199,8 @@ class Player(LivingEntity, MovingSprite):
         super().on_update(delta_time)
 
     def update_health_bar(self, delta_time):
-        self.health_bar.on_update(delta_time)
+        self.mana_bar.on_update(delta_time)
 
     def draw(self):
         super().draw()
-        self.health_bar.draw()
+        self.mana_bar.draw()
