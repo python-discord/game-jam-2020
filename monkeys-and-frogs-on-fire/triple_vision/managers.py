@@ -299,7 +299,7 @@ class CursorManager:
         elif self.player.state == States.AIMING_BLOCKED:
             self.curr_cursor = "blocked"
         elif self.player.state == States.IDLE:
-            # TODO
+            # TODO maybe?
             pass
 
     def draw(self):
