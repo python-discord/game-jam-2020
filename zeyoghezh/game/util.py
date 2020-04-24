@@ -35,11 +35,13 @@ def get_attack_triangle_points(planet_coords, other_coords, planet_radius):
 
 
 def random_location_in_planet(coords, radius):
+    if radius < 2:
+        return coords
     dist_from_center = random.random() * radius
     rise = int(random.random() * dist_from_center) * random.choice([1, -1])
     run = int(dist_from_center - abs(rise)) * random.choice([1, -1])
-    assert rise < radius
-    assert run < radius
+    assert abs(rise) <= radius
+    assert abs(run) <= radius
     return (coords[0] + run, coords[1] + rise)
 
 

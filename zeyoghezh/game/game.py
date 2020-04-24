@@ -10,7 +10,8 @@ from .util import (
 from .planet import Planet
 from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
-    BACKGROUND_MUSIC_VOLUME, STORY_LINES
+    BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER,
+    BASE_TIME_MULTIPLIER
 )
 import sys
 
@@ -25,8 +26,8 @@ logger = logging.getLogger()
 
 def get_new_lithium_location():
     return (
-        random.randint(int(SCREEN_SIZE[0]/6), int(9*SCREEN_SIZE[0]/10)),
-        random.randint(int(SCREEN_SIZE[1]/10), int(9*SCREEN_SIZE[1]/10)),
+        random.randint(int(SCREEN_SIZE[0]/10), int(9*SCREEN_SIZE[0]/10)),
+        random.randint(int(SCREEN_SIZE[1]/8), int(9*SCREEN_SIZE[1]/10)),
     )
 
 
@@ -39,7 +40,7 @@ class Game(arcade.Window):
         self.lithium_score_location = (SCREEN_SIZE[0]/3, SCREEN_SIZE[1]/20)
         self.theme = None
         self.background = None
-        self.background_music = None
+        self.background_music = arcade.Sound(BACKGROUND_MUSIC)
 
         self.abscond_button = None
 
@@ -66,7 +67,11 @@ class Game(arcade.Window):
         self.story_iter = (line for line in STORY_LINES)
         self.background = arcade.load_texture(
             BACKGROUND_IMAGE)
-        self.background_music = arcade.Sound(BACKGROUND_MUSIC, streaming=True)
+        try:
+            self.background_music.stop()
+        except NameError:
+            # Soloud not installed
+            pass
         self.background_music.play(BACKGROUND_MUSIC_VOLUME)
         planets = [Planet(planet_name) for planet_name in ALL_PLANETS]
         self.setup_theme()
@@ -171,9 +176,6 @@ class Game(arcade.Window):
             *self.banner_location,
             color=arcade.color.GREEN, font_size=24)
 
-        if self.game_over_time:
-            pass  # TODO restart game or whatever
-
     @log_exceptions
     def on_mouse_press(self, x, y, button, modifiers):
         if self.game_over_time:
@@ -190,7 +192,7 @@ class Game(arcade.Window):
 
     def clicked_lithium(self):
         planet_avg_health = self.avg_planet_health()
-        self.lithium_count += planet_avg_health * 1.5
+        self.lithium_count += planet_avg_health * LITHIUM_MULTIPLIER
         self.lithium_location = get_new_lithium_location()
         self.player_has_clicked_lithium = True
 
@@ -201,10 +203,13 @@ class Game(arcade.Window):
 
     def on_update(self, delta_time):
         if self.game_over_time:
-            if time.time() - self.game_over_time > 3:
+            game_over_delta_time = (
+                BASE_TIME_MULTIPLIER * (time.time() - self.game_over_time)
+            )
+            if game_over_delta_time > 3:
                 self.setup()
                 return
-        time_multiplier = delta_time / 0.0168
+        time_multiplier = BASE_TIME_MULTIPLIER * delta_time / 0.0168
         if self.player_in_tutorial:
             time_multiplier /= 6
         logger.debug("\nNew Round\n")
@@ -222,6 +227,14 @@ class Game(arcade.Window):
                                      self.player_in_tutorial,
                                      should_not_triangulate)
          for planet in self.planets]
+
+        try:
+            if self.background_music.get_stream_position() == 0.0:
+                self.background_music.play(BACKGROUND_MUSIC_VOLUME)
+        except AttributeError:
+            # Soloud not installed
+            pass
+
         self.run_assertions()
 
     def update_banner(self):
@@ -233,7 +246,7 @@ class Game(arcade.Window):
         now = time.time()
         if self.last_banner_change is None:
             self.set_banner_text("This is the story of Ze, Yogh, and Ezh.")
-        delta_time = now - self.last_banner_change
+        delta_time = BASE_TIME_MULTIPLIER * (now - self.last_banner_change)
         if not self.player_has_clicked_lithium and delta_time > 3:
             self.set_banner_text(
                 "See the circles? Click on their intersection.")
@@ -250,7 +263,7 @@ class Game(arcade.Window):
             self.set_banner_text(
                 "You've healed them with lithium. Keep them alive."
             )
-            delta_time = now - self.last_banner_change
+            delta_time = BASE_TIME_MULTIPLIER * (now - self.last_banner_change)
             if delta_time > 2:
                 self.player_in_tutorial = False
 
@@ -259,7 +272,7 @@ class Game(arcade.Window):
             return
         now = time.time()
         self.last_banner_change = self.last_banner_change or now-5
-        delta_time = now - self.last_banner_change
+        delta_time = BASE_TIME_MULTIPLIER * (now - self.last_banner_change)
         if delta_time < 3:
             return
         next_story_part = next(self.story_iter, self.banner_text)

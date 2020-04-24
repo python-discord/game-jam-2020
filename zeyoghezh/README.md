@@ -1,3 +1,5 @@
+WARNING: This game includes references to suicide.
+
 # The story of З, Ȝ, and Ʒ
 
 This is the story of three planets: Ze, Yogh, and Ezh.

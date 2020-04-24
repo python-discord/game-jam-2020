@@ -9,7 +9,7 @@ from .config import (
     PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
     PLANET_COLORS, PLANET_SPRITES, TRIANGULATION_START_LIKELIHOOD,
     TRIANGULATION_END_LIKELIHOOD, ATTACK_SOUND, ATTACK_PLAYS_SOUND_CHANCE,
-    SOUND_VOLUME
+    SOUND_VOLUME, BOTTOM_BORDER_Y
 )
 
 logger = logging.getLogger()
@@ -55,15 +55,7 @@ class Planet(arcade.Sprite):
 
     def move(self, time_multiplier, delta_x=None, delta_y=None):
         # I have no idea why this needs to be 4 and not 2
-        planet_radius = self.width / 4
-        if self.center_y > SCREEN_SIZE[1] - planet_radius:
-            self.speed_y = -abs(self.speed_y) - (random.random() / 100)
-        if self.center_y < planet_radius:
-            self.speed_y = abs(self.speed_y) + (random.random() / 100)
-        if self.center_x > SCREEN_SIZE[0] - planet_radius:
-            self.speed_x = -abs(self.speed_x) - (random.random() / 100)
-        if self.center_x < planet_radius:
-            self.speed_x = abs(self.speed_x) + (random.random() / 100)
+        planet_radius = int(self.width / 4)
 
         if delta_x is None:
             delta_x = self.speed_x * PLANET_BASE_SPEED
@@ -73,9 +65,32 @@ class Planet(arcade.Sprite):
         delta_x *= time_multiplier
         delta_y *= time_multiplier
 
-        logger.debug(f"Moving {self.name}. {delta_x=}, {delta_y=}.")
-        self.center_y += delta_y
-        self.center_x += delta_x
+        new_x = self.center_x + delta_x
+        new_y = self.center_y + delta_y
+
+        if new_y >= SCREEN_SIZE[1] - planet_radius:
+            new_y = SCREEN_SIZE[1] - planet_radius
+            self.speed_y = min(-0.1, -random.random())
+        if new_y <= BOTTOM_BORDER_Y + planet_radius:
+            new_y = BOTTOM_BORDER_Y + planet_radius
+            self.speed_y = max(0.1, random.random())
+        if new_x >= SCREEN_SIZE[0] - planet_radius:
+            new_x = SCREEN_SIZE[0] - planet_radius
+            self.speed_x = min(-0.1, -random.random())
+        if new_x <= planet_radius:
+            new_x = planet_radius
+            self.speed_x = max(0.1, random.random())
+
+        adjusted_delta_x = new_x - self.center_x
+        adjusted_delta_y = new_y - self.center_y
+
+        logger.debug(
+            f"Moving {self.name}. {self.center_x=}, {self.center_y=}, "
+            f"{planet_radius=}, {delta_x=}, {delta_y=}, "
+            f"{adjusted_delta_x=}, {adjusted_delta_y=}, {self.speed_x=}, "
+            f"{self.speed_y=}")
+        self.center_y += adjusted_delta_y
+        self.center_x += adjusted_delta_x
 
     def try_push_others(self, time_multiplier):
         if not self.can_push_planets:
@@ -96,6 +111,11 @@ class Planet(arcade.Sprite):
             time_multiplier,
             delta_x=unit_push_distance[0]*PUSH_BASE_SPEED,
             delta_y=unit_push_distance[1]*PUSH_BASE_SPEED)
+        self.move(
+            time_multiplier,
+            delta_x=-unit_push_distance[0]*PUSH_BASE_SPEED/3,
+            delta_y=-unit_push_distance[1]*PUSH_BASE_SPEED/3
+        )
 
     def try_attack_others(self, time_multiplier):
         for other in self.others:
@@ -104,7 +124,7 @@ class Planet(arcade.Sprite):
                 self.attack_other(other, time_multiplier)
 
     def attack_other(self, other, time_multiplier):
-        if random.random() > ATTACK_PLAYS_SOUND_CHANCE * time_multiplier:
+        if random.random() < ATTACK_PLAYS_SOUND_CHANCE * time_multiplier:
             self.attack_sound.play(SOUND_VOLUME)
         self.attacked_last_round.append(other)
         distance_between = closest_distance_between_planets(self, other)

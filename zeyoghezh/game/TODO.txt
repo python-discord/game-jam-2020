@@ -1,2 +1,3 @@
-Make sure music repeats.
-Test attack sounds.
+Ensure sounds work
+
+Should we get money over time?
