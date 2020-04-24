@@ -90,7 +90,7 @@ STORY_LINES = (
     "How much you reserve for home or for them is up to you.",
     "You must balance three tasks: ",
     "Collect lithium.",
-    "heal wounded planets.",
+    "Heal wounded planets.",
     "And abscond when all is lost.",
     "Do not wait too long to abscond.",
     "You will need all three planets alive to escape.",
