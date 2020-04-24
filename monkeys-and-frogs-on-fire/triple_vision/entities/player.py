@@ -230,6 +230,7 @@ class PlayerLiveManager:
         self.hearts = arcade.SpriteList()
         self.heart_map = [2, 2, 2]
         self.scaling = scale
+        self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
 
         if not is_filled:
             return
@@ -262,6 +263,13 @@ class PlayerLiveManager:
                 self.heart_map[index] -= 1
             elif heart_pos < self.life_count:
                 self.heart_map[index] += 1
+
+        viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
+        if self.prev_viewport != viewport:
+            for heart in self.hearts:
+                heart.center_x += viewport[0] - self.prev_viewport[0]
+                heart.center_y += viewport[1] - self.prev_viewport[1]
+                self.prev_viewport = viewport
 
     def draw(self):
         self.hearts.draw()
