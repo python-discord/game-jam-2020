@@ -115,8 +115,6 @@ class TextInput:
             self.cursor_sprites.append(self.cursor)
             self.prev_cursor_idx = self.cursor_idx
 
-            print(self.text, self.cursor_idx)
-
             return True
 
         return False
@@ -138,10 +136,7 @@ class TextInput:
 
         elif key == arcade.key.BACKSPACE:
             if len(self.text) > 0:
-                text = list(self.text)
-                text.pop(self.cursor_idx - 1)
-                self.text = ''.join(text)
-
+                self.text = self.text[:self.cursor_idx - 1] + self.text[self.cursor_idx:]
                 self.text_widths.pop(self.cursor_idx - 1)
                 self.cursor_idx -= 1
 
@@ -150,10 +145,7 @@ class TextInput:
         elif key == arcade.key.DELETE:
 
             if self.cursor_idx + 1 < len(self.text):
-                text = list(self.text)
-                text.pop(self.cursor_idx)
-                self.text = ''.join(text)
-
+                self.text = self.text[:self.cursor_idx] + self.text[self.cursor_idx + 1:]
                 self.text_widths.pop(self.cursor_idx)
 
                 changed = True
@@ -165,6 +157,9 @@ class TextInput:
         elif key == arcade.key.RIGHT:
             if self.cursor_idx < len(self.text):
                 self.cursor_idx += 1
+
+        elif key == arcade.key.ENTER:
+            self.on_enter()
 
         if changed:
             self.text_sprites.pop(0)
@@ -179,6 +174,9 @@ class TextInput:
                     italic=self.italic
                 )
             )
+
+    def on_enter(self) -> None:
+        pass
 
     def draw(self) -> None:
         self.shapes.draw()
@@ -201,26 +199,21 @@ class TextInput:
                 self.text_sprites[0].height / 2
 
             if self.cursor_is_active:
-                self.cursor = arcade.create_rectangle_filled(
-                    center_x=center_x,
-                    center_y=center_y,
-                    width=1,
-                    height=self.text_sprites[0].height,
-                    color=self.box_color
-                )
-                self.cursor_sprites.append(self.cursor)
+                color = self.box_color
                 self.cursor_is_active = False
 
             else:
-                self.cursor = arcade.create_rectangle_filled(
-                    center_x=center_x,
-                    center_y=center_y,
-                    width=1,
-                    height=self.text_sprites[0].height,
-                    color=self.cursor_color
-                )
-                self.cursor_sprites.append(self.cursor)
+                color = self.cursor_color
                 self.cursor_is_active = True
+
+            self.cursor = arcade.create_rectangle_filled(
+                center_x=center_x,
+                center_y=center_y,
+                width=1,
+                height=self.text_sprites[0].height,
+                color=color
+            )
+            self.cursor_sprites.append(self.cursor)
 
             self.cursor_blink_delta = 0
 
