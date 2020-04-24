@@ -106,6 +106,10 @@ class Game(arcade.Window):
             self.bullet_list.draw()
             self.Recipe.render()
 
+            # Draw stats
+            arcade.draw_text("Health:"+str(self.player.health)+"/"+str(self.player.max_health), self.view_left+100, self.view_bottom+60, arcade.color.RED, 15, font_name='Arial')
+            arcade.draw_text("Armor:"+str(self.player.armor), self.view_left+100, self.view_bottom+90, arcade.color.BLUE, 15, font_name='Arial')
+            
             if Config.DEBUG:
                 x, y = self.player.position
                 arcade.draw_rectangle_outline(round(x / Config.TILE_SIZE) * Config.TILE_SIZE,
@@ -239,8 +243,9 @@ class Game(arcade.Window):
             if len(hit_list) > 0:
                 bullet.remove_from_sprite_lists()
             if len(enemy_hit_list):
-                self.player.add_kill(enemy_hit_list[0].monster_type)
-                self.Recipe.add_kill(enemy_hit_list[0].monster_type)
+                boon = self.Recipe.add_kill(enemy_hit_list[0].monster_type)
+                if self.player.add_kill(enemy_hit_list[0].monster_type):
+                    getattr(self.player, Config.BOON_LIST[boon])();
                 enemy_hit_list[0].remove_from_sprite_lists()
                 bullet.remove_from_sprite_lists()
 
