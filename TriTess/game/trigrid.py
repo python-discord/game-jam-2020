@@ -40,15 +40,16 @@ class TriGrid:
     def init_pieces(self, grid_type):
         piece_list = arcade.SpriteList()
         if grid_type == "triangular":
-            p1_piece_list = [("pawn", (index, 1, 0), 0) for index in range(3, 8)] + \
-                            [("pawn", (index, 1, 1), 0) for index in range(2, 8)] + \
-                            [("rook", (3, 0, 1), 0), ("rook", (7, 0, 1), 0)] + \
-                            [("knight", (4, 0, 0), 0), ("knight", (7, 0, 0), 0)] + \
-                            [("bishop", (4, 0, 1), 0), ("bishop", (6, 0, 1), 0)] + \
-                            [("king", (5, 0, 0), 0), ("queen", (6, 0, 0), 0)]
-            for name, pos, player in p1_piece_list:
-                cur_piece = trichess_piece.TriPiece.create_piece(name, pos, player, self)
-                self.grid[pos[0]][pos[1]][pos[2]].piece = cur_piece
+            orient = 0
+            p1_piece_list = [("pawn", (index, 1, 0), orient, 0) for index in range(3, 8)] + \
+                            [("pawn", (index, 1, 1), orient, 0) for index in range(2, 8)] + \
+                            [("rook", (3, 0, 1), orient, 0), ("rook", (7, 0, 1), orient, 0)] + \
+                            [("knight", (4, 0, 0), orient, 0), ("knight", (7, 0, 0), orient, 0)] + \
+                            [("bishop", (4, 0, 1), orient, 0), ("bishop", (6, 0, 1), orient, 0)] + \
+                            [("king", (5, 0, 0), orient, 0), ("queen", (6, 0, 0), orient, 0)]
+            for name, pos, orientation, player in p1_piece_list:
+                cur_piece = trichess_piece.TriPiece.create_piece(self, name, pos, orientation, player)
+                self.get_cell(*pos).piece = cur_piece
                 piece_list.append(cur_piece)
 
             return piece_list

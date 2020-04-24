@@ -51,6 +51,7 @@ class TriTess(arcade.Window):
         self.cur_player = 0
         self.cur_cell = None
         self.cur_valid_moves = None
+        self.cur_valid_attacks = None
 
         arcade.set_background_color(arcade.color.WHITE)
 
@@ -76,24 +77,40 @@ class TriTess(arcade.Window):
             if button == arcade.MOUSE_BUTTON_LEFT:
                 self.trigrid.clear_highlights()
                 self.cur_cell = self.trigrid.get_cell(x, y, r)
-                if self.cur_cell.piece is not None:
+                if self.cur_cell.piece is not None and self.cur_cell.piece.player == self.cur_player:
                     self.cur_valid_moves = self.cur_cell.piece.list_valid_moves()
                     for move in self.cur_valid_moves:
                         self.trigrid.get_cell(*move).set_highlight("movable")
+
+                    self.cur_valid_attacks = self.cur_cell.piece.list_valid_attacks()
+                    for attack in self.cur_valid_attacks:
+                        self.trigrid.get_cell(*attack).set_highlight("attackable")
+
                 else:
                     self.cur_cell = None
                     self.cur_valid_moves = None
+                    self.cur_valid_attacks = None
                     self.trigrid.clear_highlights()
 
             elif button == arcade.MOUSE_BUTTON_RIGHT:
                 if self.cur_cell is not None:
-                    if (x, y, r) in self.cur_valid_moves:
+                    selected_cell = self.trigrid.get_cell(x, y, r)
+                    if selected_cell.piece is not None and self.cur_cell.piece.player != selected_cell.piece.player:
+                        if (x, y, r) in self.cur_valid_attacks:
+                            selected_cell.piece.clear_spatial_hashes()
+                            selected_cell.piece = self.cur_cell.piece
+                            self.cur_cell.piece.move(x, y, r)
+                            self.cur_player = self.cur_player + 1 % 3
+
+                    elif (x, y, r) in self.cur_valid_moves:
                         self.trigrid.get_cell(x, y, r).piece = self.cur_cell.piece
                         self.cur_cell.piece.move(x, y, r)
-                        self.cur_cell = None
-                        self.cur_valid_moves = None
-                        self.trigrid.clear_highlights()
                         self.cur_player = self.cur_player + 1 % 3
+
+                    self.cur_cell = None
+                    self.cur_valid_moves = None
+                    self.cur_valid_attacks = None
+                    self.trigrid.clear_highlights()
 
             self.on_draw()
 
