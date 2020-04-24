@@ -6,7 +6,6 @@ from triple_vision import Settings as s
 from triple_vision.networking import client, get_status
 from triple_vision.text_input import TextInput
 from triple_vision.triple_vision import TripleVision
-from triple_vision.views.main_view import MainView
 
 
 class LoginButton(arcade.TextButton):
@@ -170,7 +169,6 @@ class AuthView(arcade.View):
         self.password.on_update(delta_time)
 
 
-
 class LoginView(AuthView):
 
     def __init__(self) -> None:
@@ -212,7 +210,7 @@ class RegisterView(AuthView):
 
         print('Register:', self.username.text, self.password.text)
         client.register(self.username.text, self.password.text)
-        
+
         if get_status('register') == Status.SUCCESS:
             self.window.show_view(LoginView())
         else:
