@@ -61,3 +61,5 @@ class MainMenu(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
         if self.settings_button.pressed(x, y):
             self.main.window.show_view(self.main.settings)
+        elif self.select_song_button.pressed(x, y):
+            self.main.window.show_view(self.main.song_selection)

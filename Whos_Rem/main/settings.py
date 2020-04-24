@@ -61,7 +61,7 @@ class Settings(arcade.View):
             self.brightness_slide.update_slide(x, y)
             self.volume_slide.update_slide(x, y)
 
-    def on_mouse_press(self, x, y, button, modifiers):  # Click options / volume & brightness slider
+    def on_mouse_press(self, x, y, button, modifiers):
         self.mouse_pressing = True
         self.brightness_slide.pressing = self.brightness_slide.hit_box(x, y)
         self.volume_slide.pressing = self.volume_slide.hit_box(x, y)
@@ -76,7 +76,7 @@ class Settings(arcade.View):
         if self.return_button.pressed(x, y):
             self.main.window.show_view(self.main.menu)
 
-    def on_mouse_release(self, x, y, button, modifiers):  # Release for sliders
+    def on_mouse_release(self, x, y, button, modifiers):
         self.mouse_pressing = False
         self.brightness_slide.pressing = False
         self.volume_slide.pressing = False
