@@ -317,7 +317,6 @@ class CursorManager:
             self.prev_viewport = viewport
 
         self._curr_cursor.color = self.colors.get(self.player.curr_color)
-        print(self._curr_cursor.color)
 
     def draw(self):
         if self._curr_cursor is not None:
