@@ -44,10 +44,10 @@ VOLUME_MOVER_IMAGE = ":resources:images/items/gold_4.png"
 PUSH_SOUND = ":resources:sounds/upgrade1.wav"
 # Music made by missingfragment#1983
 BACKGROUND_MUSIC = "./game/music.ogg"
-ATTACK_PLAYS_SOUND_CHANCE = 0.05
+ATTACK_PLAYS_SOUND_CHANCE = 0.5
 
-BACKGROUND_MUSIC_VOLUME = 0.01
-SOUND_VOLUME = 0.005
+BACKGROUND_MUSIC_VOLUME = 0.03
+SOUND_VOLUME = 0.01
 
 
 SCREEN_TITLE = "Zeyoghezh"

@@ -125,7 +125,7 @@ class Planet(arcade.Sprite):
 
     def attack_other(self, other, time_multiplier):
         if random.random() < ATTACK_PLAYS_SOUND_CHANCE * time_multiplier:
-            self.attack_sound.play(SOUND_VOLUME)
+            self.attack_sound.play(self.parent.master_volume * SOUND_VOLUME)
         self.attacked_last_round.append(other)
         distance_between = closest_distance_between_planets(self, other)
         damage = self.base_damage * time_multiplier
