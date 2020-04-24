@@ -1,4 +1,15 @@
+![alt text](https://arcade.academy/resources/images/items/coinSilver.png "Ze")![alt text](https://arcade.academy/resources/images/items/coinGold.png "Yogh")![alt text](https://arcade.academy/resources/images/items/coinBronze.png "Ezh")
+
 WARNING: This game includes references to suicide.
+
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
+[Setup](#how-to-start)
+
+[How to play](#how-to-play)
+
+[Cheatsheet](#the-planets)
+
 
 # The story of З, Ȝ, and Ʒ
 
@@ -58,7 +69,7 @@ When you feel that it is time, hit the "Abscond" button.
 
 If even one planet is destroyed, you can never go home.
 
-
+# The planets
 Ze ![alt text](https://arcade.academy/resources/images/items/coinSilver.png "Ze")
 * Our mines hold a treasure of Mercury.
 * We are Warrors.
@@ -83,7 +94,11 @@ Ezh ![alt text](https://arcade.academy/resources/images/items/coinBronze.png "Ez
 * We are **strong** against Yogh<img src="https://arcade.academy/resources/images/items/coinGold.png" alt="drawing" width="50"/>Our arrows fly faster than their blasts, and pushing us away only strengthens us.
 * We are *weak* against Ze<img src="https://arcade.academy/resources/images/items/coinSilver.png" alt="drawing" width="50"/>Our arrows do little damage and they need only get near us to crush us.
 
+# Credits
+Created by [Makusu2#2222](https://github.com/makusu2)
 
 Music made by missingfragment#1983
 
 Space background from https://pixabay.com/photos/milky-way-starry-sky-night-sky-star-2695569/
+
+Shameless advertisement for my passion project, a Discord bot: [about.makubot.net](http://about.makubot.net) | [invite.makubot.net](http://invite.makubot.net)
