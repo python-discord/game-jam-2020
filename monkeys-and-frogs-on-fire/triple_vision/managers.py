@@ -270,6 +270,11 @@ class CursorManager:
             "ranged": arcade.Sprite("assets/crosshairs/ranged.png"),
             "blocked": arcade.Sprite("assets/crosshairs/blocked.png"),
         }
+        self.colors = {
+            "red": (255, 51, 51),
+            "green": (0, 204, 0),
+            "blue": (0, 128, 255),
+        }
         self._curr_cursor: arcade.Sprite = self.cursors["ranged"]
         self.window.set_mouse_visible(False)
 
@@ -310,6 +315,9 @@ class CursorManager:
             self._curr_cursor.center_x += viewport[0] - self.prev_viewport[0]
             self._curr_cursor.center_y += viewport[1] - self.prev_viewport[1]
             self.prev_viewport = viewport
+
+        self._curr_cursor.color = self.colors.get(self.player.curr_color)
+        print(self._curr_cursor.color)
 
     def draw(self):
         if self._curr_cursor is not None:
