@@ -1,14 +1,13 @@
 from pathlib import Path
 
 import arcade
-from screeninfo import get_monitors
+import pyautogui
 from .Display import Button, Slider
 from .Display import ColourBlend as cb
 
 
 class Settings(arcade.View):
-    width = 1920  # get_monitors()[0].width
-    height = 1080  # get_monitors()[0].height
+    width, height = pyautogui.size()
 
     mouse_pressing = False
 

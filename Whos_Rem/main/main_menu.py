@@ -2,13 +2,13 @@ from pathlib import Path
 import time
 
 import arcade
+import pyautogui
 from .Display import Button
 from .Display import ColourBlend as cb
 
 
 class MainMenu(arcade.View):
-    width = 1920  # get_monitors()[0].width
-    height = 1080  # get_monitors()[0].height
+    width, height = pyautogui.size()
 
     mouse_x = 0
     mouse_y = 0
