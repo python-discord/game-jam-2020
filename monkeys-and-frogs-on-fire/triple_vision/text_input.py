@@ -184,7 +184,7 @@ class TextInput:
 
         elif key == arcade.key.DELETE:
 
-            if self.cursor_idx + 1 < len(self.text):
+            if self.cursor_idx < len(self.text):
                 self.text = self.text[:self.cursor_idx] + self.text[self.cursor_idx + 1:]
                 self.text_widths.pop(self.cursor_idx)
 
