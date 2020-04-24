@@ -33,19 +33,25 @@ def get_new_game():
     solution_list = get_r1_attrs() + get_r2_attrs() + get_r3_attrs()
     return solution_list
 
+def get_fact_templates(files=None):
+
+    if not files:
+        files = _get_count_files_starting_with('f1')
+
+    templates = []
+
+    for filename in files:
+        with open(f'assets/{filename}', 'rt', encoding='utf8') as file:
+            template_ = [line for line in file.read().splitlines() if line.strip()]
+            templates.append(template_)
+
+    return templates
 
 def get_puzzle_clues(solution_list, fact_templates):
     if not solution_list or not fact_templates:
         raise TypeError("Missing input for function get_puzzle_clues!")
 
     return [fact.format(*solution_list) for fact in fact_templates]
-
-
-def get_fact_template():
-    # need some storage for these and choose one group at random
-    # instead of a list of 9 Nones :)
-    template_list = [None] * 9
-    return template_list
 
 
 def check_results(result, solution_list):
@@ -56,9 +62,16 @@ def start_new_game():
     solution_list = get_new_game()
     shuffled_list = solution_list[:]
     random.shuffle(shuffled_list)
-    fact_templates = get_fact_template()
+    fact_templates = get_fact_templates()
+    fact_template = fact_templates[0]
     # real return value
     # return solution_list, shuffled_list, clue_list
-    clue_list = get_puzzle_clues(solution_list, fact_templates)
+    clue_list = get_puzzle_clues(solution_list, fact_template)
 
     return solution_list, shuffled_list, clue_list
+
+a, b, c = start_new_game()
+
+print(a)
+print(b)
+print(c)
