@@ -6,7 +6,6 @@ import arcade
 from triple_vision import Tile
 
 
-
 def load_texture_pair(filename: str) -> Tuple[arcade.Texture, arcade.Texture]:
     return (
         arcade.load_texture(filename),
