@@ -220,12 +220,10 @@ class PlayerLiveManager:
     ) -> None:
 
         self.view = view
-        self.camera = self.view.camera
-        self.player = self.view.player
-        self.life_count = self.player.hp
         self.margin = 30
         self.hearts = arcade.SpriteList()
         self.heart_map = [2, 2, 2]
+        self.half_heart_value = self.view.player.hp / 6
         self.scaling = scale
         self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
 
@@ -236,39 +234,37 @@ class PlayerLiveManager:
             self.hearts.append(
                 arcade.Sprite(
                     "assets/hearts/heart_2.png",
-                    center_x=i * (100 + self.camera.viewport_left + self.margin),
-                    center_y=100 + self.camera.viewport_bottom,
+                    center_x=i * (100 + self.view.camera.viewport_left + self.margin),
+                    center_y=100 + self.view.camera.viewport_bottom,
                     scale=self.scaling
                 )
             )
 
-    def update_hearts(self):
-        for i in range(3):
-            current_heart = self.hearts.sprite_list[i]
-            self.hearts.sprite_list[i] = arcade.Sprite(
-                f"assets/hearts/heart_{i}.png",
-                center_x=current_heart.center_x,
-                center_y=current_heart.center_y,
-                scale=self.scaling
-            )
-
     def update(self):
-        # hearts = round(self.life_count / 3, 1)
-        for index, h in enumerate(self.heart_map):
-            heart_pos = h * (index + 1)
-            if heart_pos > self.life_count:
-                self.heart_map[index] -= 1
-            elif heart_pos < self.life_count:
-                self.heart_map[index] += 1
+        viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
 
-        viewport = (self.camera.viewport_left, self.camera.viewport_bottom)
         if self.prev_viewport != viewport:
             for heart in self.hearts:
                 heart.center_x += viewport[0] - self.prev_viewport[0]
                 heart.center_y += viewport[1] - self.prev_viewport[1]
-                self.prev_viewport = viewport
 
-        self.update_hearts()
+            self.prev_viewport = viewport
+
+        for idx, heart_val in enumerate(self.heart_map):
+
+            if (
+                (idx + 1) * heart_val < self.view.player.hp // self.half_heart_value and
+                heart_val > 0
+            ):
+                self.heart_map[idx] -= 1
+
+                self.hearts.pop(idx)
+                self.hearts.insert(idx, arcade.Sprite(
+                    f"assets/hearts/heart_{self.heart_map[idx]}.png",
+                    center_x=idx * (100 + self.view.camera.viewport_left + self.margin),
+                    center_y=100 + self.view.camera.viewport_bottom,
+                    scale=self.scaling
+                ))
 
     def draw(self):
         self.hearts.draw()
