@@ -4,7 +4,7 @@ SCREEN_SIZE = (800, 600)
 BOTTOM_BORDER_Y = int(SCREEN_SIZE[1] / 8)
 TRIANGULATION_START_LIKELIHOOD = 0.02
 TRIANGULATION_END_LIKELIHOOD = 0.05
-LITHIUM_MULTIPLIER = 2
+LITHIUM_MULTIPLIER = 1.8
 
 BASE_TIME_MULTIPLIER = 1  # TODO change to 1 when this is over
 
@@ -39,13 +39,15 @@ ATTACK_SOUND = {
     "ezh": ":resources:sounds/explosion1.wav"
 }
 BACKGROUND_IMAGE = "./game/space.jpg"
+VOLUME_IMAGE = ":resources:images/space_shooter/laserBlue01.png"
+VOLUME_MOVER_IMAGE = ":resources:images/items/gold_4.png"
 PUSH_SOUND = ":resources:sounds/upgrade1.wav"
 # Music made by missingfragment#1983
 BACKGROUND_MUSIC = "./game/music.ogg"
-ATTACK_PLAYS_SOUND_CHANCE = 0.02
+ATTACK_PLAYS_SOUND_CHANCE = 1
 
-BACKGROUND_MUSIC_VOLUME = 0.5
-SOUND_VOLUME = 0.5
+BACKGROUND_MUSIC_VOLUME = 0.03
+SOUND_VOLUME = 0.01
 
 
 SCREEN_TITLE = "Zeyoghezh"
@@ -246,5 +248,4 @@ STORY_LINES = (
     "All is lost. Chris has died.",
     "...",
     "And then the game restarted."
-    # TODO add more or cycle
 )

@@ -1,6 +1,7 @@
 import random
 import arcade
 import logging
+import itertools
 import time
 from arcade.gui import Theme, TextButton
 from .util import (
@@ -11,7 +12,7 @@ from .planet import Planet
 from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
     BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER,
-    BASE_TIME_MULTIPLIER
+    BASE_TIME_MULTIPLIER, VOLUME_IMAGE, VOLUME_MOVER_IMAGE
 )
 import sys
 
@@ -42,7 +43,11 @@ class Game(arcade.Window):
         self.background = None
         self.background_music = arcade.Sound(BACKGROUND_MUSIC)
 
+        self.master_volume = 0.5
+
         self.abscond_button = None
+        self.volume_meter = None
+        self.volume_mover = None
 
         self.player_in_tutorial = True
         self.game_over_time = None
@@ -52,6 +57,8 @@ class Game(arcade.Window):
         self.banner_location = (SCREEN_SIZE[0]/100, SCREEN_SIZE[1]/2)
         self.last_banner_change = None
         self.story_iter = None
+
+        self.volume_location = (7*SCREEN_SIZE[0]/8, SCREEN_SIZE[1]/13)
 
         self.banner_background_color = arcade.make_transparent_color(
             arcade.color.BLUE, 100)
@@ -64,7 +71,7 @@ class Game(arcade.Window):
         self.player_has_healed_planet = False
         self.banner_text = ""
         self.last_banner_change = None
-        self.story_iter = (line for line in STORY_LINES)
+        self.story_iter = itertools.cycle(line for line in STORY_LINES)
         self.background = arcade.load_texture(
             BACKGROUND_IMAGE)
         try:
@@ -72,7 +79,8 @@ class Game(arcade.Window):
         except NameError:
             # Soloud not installed
             pass
-        self.background_music.play(BACKGROUND_MUSIC_VOLUME)
+        self.background_music.play(
+            BACKGROUND_MUSIC_VOLUME * self.master_volume)
         planets = [Planet(planet_name) for planet_name in ALL_PLANETS]
         self.setup_theme()
         self.abscond_button = TextButton(
@@ -81,6 +89,24 @@ class Game(arcade.Window):
         self.abscond_button.on_press = self.abscond_press
         self.abscond_button.on_release = self.abscond_release
         self.button_list.append(self.abscond_button)
+
+        self.volume_meter = arcade.Sprite(VOLUME_IMAGE)
+        self.volume_meter.center_x = self.volume_location[0]
+        self.volume_meter.center_y = self.volume_location[1]
+        self.volume_meter.width *= 3
+        self.volume_meter_leftmost = (
+            self.volume_meter.center_x - (self.volume_meter.width / 2))
+        self.volume_meter_rightmost = (
+            self.volume_meter.center_x + (self.volume_meter.width / 2))
+        self.volume_meter_bottommost = (
+            self.volume_meter.center_y - 10)
+        self.volume_meter_topmost = (
+            self.volume_meter.center_y + 10)
+        self.volume_mover = arcade.Sprite(VOLUME_MOVER_IMAGE)
+        self.volume_mover.center_x = self.volume_meter.center_x
+        self.volume_mover.center_y = self.volume_meter.center_y
+        self.volume_mover.scale /= 3
+
         for planet in planets:
             self.planets.append(planet)
             others = [other for other in planets if other != planet]
@@ -164,6 +190,9 @@ class Game(arcade.Window):
 
         self.abscond_button.draw()
 
+        self.volume_meter.draw()
+        self.volume_mover.draw()
+
         arcade.draw_rectangle_filled(
             center_x=SCREEN_SIZE[0]/2,
             center_y=20+self.banner_location[1],
@@ -174,7 +203,23 @@ class Game(arcade.Window):
         arcade.draw_text(
             self.banner_text,
             *self.banner_location,
-            color=arcade.color.GREEN, font_size=24)
+            color=arcade.color.GREEN, font_size=22)
+
+    def check_volume_press(self, x, y):
+        if (
+            self.volume_meter_leftmost < x < self.volume_meter_rightmost
+            and self.volume_meter_bottommost < y < self.volume_meter_topmost
+        ):
+            self.master_volume = (
+                (x - self.volume_meter_leftmost)
+                / (self.volume_meter_rightmost - self.volume_meter_leftmost))
+            self.background_music.set_volume(
+                BACKGROUND_MUSIC_VOLUME * self.master_volume)
+            self.volume_mover.center_x = x
+
+    @log_exceptions
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        self.check_volume_press(x, y)
 
     @log_exceptions
     def on_mouse_press(self, x, y, button, modifiers):
@@ -188,7 +233,10 @@ class Game(arcade.Window):
                 self.lithium_count -= 1
                 planet.get_healed(0.1)
                 self.player_has_healed_planet = True
+
         self.abscond_button.check_mouse_press(x, y)
+
+        self.check_volume_press(x, y)
 
     def clicked_lithium(self):
         planet_avg_health = self.avg_planet_health()
@@ -213,6 +261,8 @@ class Game(arcade.Window):
         if self.player_in_tutorial:
             time_multiplier /= 6
         logger.debug("\nNew Round\n")
+        if not self.player_in_tutorial:
+            self.lithium_count += delta_time / 100
         self.run_assertions()
         self.update_banner()
         self.planets.update()
@@ -230,7 +280,8 @@ class Game(arcade.Window):
 
         try:
             if self.background_music.get_stream_position() == 0.0:
-                self.background_music.play(BACKGROUND_MUSIC_VOLUME)
+                self.background_music.play(
+                    self.master_volume * BACKGROUND_MUSIC_VOLUME)
         except AttributeError:
             # Soloud not installed
             pass
