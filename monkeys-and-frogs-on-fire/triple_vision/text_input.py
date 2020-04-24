@@ -124,18 +124,22 @@ class TextInput:
 
         self._active = value
 
+    def draw_cursor(self, center_x: float, center_y: float, color: Tuple[int, int, int, int]) -> None:
+        self.cursor_sprites.remove(self.cursor)
+
+        self.cursor = arcade.create_rectangle_filled(
+            center_x=center_x,
+            center_y=center_y,
+            width=1,
+            height=self.text_sprites[0].height,
+            color=color
+        )
+
+        self.cursor_sprites.append(self.cursor)
+
     def move_cursor(self) -> bool:
         if self.prev_cursor_idx != self.cursor_idx:
-            self.cursor_sprites.remove(self.cursor)
-
-            self.cursor = arcade.create_rectangle_filled(
-                *self.cursor_pos,
-                width=1,
-                height=self.text_sprites[0].height,
-                color=self.cursor_color
-            )
-
-            self.cursor_sprites.append(self.cursor)
+            self.draw_cursor(*self.cursor_pos, self.cursor_color)
             self.prev_cursor_idx = self.cursor_idx
 
             return True
@@ -229,7 +233,6 @@ class TextInput:
         self.cursor_blink_delta += delta_time
 
         if self.cursor_blink_delta > 0.5:
-            self.cursor_sprites.remove(self.cursor)
 
             if self.cursor_is_active:
                 color = self.box_color
@@ -239,14 +242,7 @@ class TextInput:
                 color = self.cursor_color
                 self.cursor_is_active = True
 
-            self.cursor = arcade.create_rectangle_filled(
-                *self.cursor_pos,
-                width=1,
-                height=self.text_sprites[0].height,
-                color=color
-            )
-            self.cursor_sprites.append(self.cursor)
-
+            self.draw_cursor(*self.cursor_pos, color)
             self.cursor_blink_delta = 0
 
 
