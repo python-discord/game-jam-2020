@@ -2,7 +2,306 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="63776806-3d5a-441e-b12d-5bde49560864" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/../Hatchlings/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/../Hatchlings/.idea/workspace.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Egg/Egg1.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Egg/Egg1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Egg/Egg2.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/Burger.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/Burger32.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/GameController.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/GameController32.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/GameController32.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/Heart.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/WontEat.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/ZSleep.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/blank_heart.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/blank_heart16.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/blank_heart32.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/full_heart32.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/heart_light.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/heart_light16.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/hidefheart.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/hidefheart_blank.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/hidefheart_blank.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/mood_happy.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/mood_neutral.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/mood_ok.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Asperite Files/mood_unhappy.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Burger.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/Burger32.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/GameController.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/GameController32.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/ZSleep.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/blank_heart.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/blank_heart16.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/blank_heart32.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/full_heart32.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/heart_light.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/heart_light16.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/hidefheart.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/hidefheart_blank.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/mood_happy.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/mood_neutral.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/mood_ok.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/mood_unhappy.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/FoodGameAndStats/wont_eat.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/GameOver/Asperite/GAMEOVER.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/GameOver/Asperite/Saturn.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/GameOver/Asperite/stars.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/GameOver/GAMEOVER.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/GameOver/Saturn.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/GameOver/StarAnimation/stars1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/GameOver/StarAnimation/stars2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/GameOver/StarAnimation/stars3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/GameOver/StarAnimation/stars4.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/GameOver/StarAnimation/stars5.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Alien/Alien_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Alien/Alien_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Alien/Asperite/Alien_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Alien/Asperite/Alien_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/BabyTamogotchi_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/DuckAdultTamogotchi_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/DuckTeenTamogotchi_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/DuckYoungAdultTamogotchi_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/KidTamogotchi32_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/MouseAdultTamogotchi_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/MouseYoungAdultTamogotchi_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/SeaCreatureAdult_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/SeaCreatureYoungAdult_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/Toddler Tamogotchi 1.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/Toddler Tamogotchi 2.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/Toddler Tamogotchi V2-1.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi32_full_1.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi32_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi32_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi32_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi32_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi32_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi32_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi32_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi_full_1.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi_full_2.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi_sick.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi_sickmove-export.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Asperite Files/ToddlerTamogotchi_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Adult/Asperite/DuckAdultTamogotchi_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Adult/Asperite/DuckAdultTamogotchi_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Adult/DuckAdultTamogotchi_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Adult/DuckAdultTamogotchi_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Adult/DuckAdultTamogotchi_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Adult/DuckAdultTamogotchi_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Adult/DuckAdultTamogotchi_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Adult/DuckAdultTamogotchi_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckBabyTamogotchi_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckBabyTamogotchi_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckBabyTamogotchi_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckBabyTamogotchi_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckBabyTamogotchi_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckBabyTamogotchi_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckToddlerTamogotchi32_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckToddlerTamogotchi32_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckToddlerTamogotchi32_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckToddlerTamogotchi32_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckToddlerTamogotchi32_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/AsperiteFiles/DuckToddlerTamogotchi32_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Baby/DuckBabyTamogotchi_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Baby/DuckBabyTamogotchi_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Baby/DuckBabyTamogotchi_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Baby/DuckBabyTamogotchi_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Baby/DuckBabyTamogotchi_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Baby/DuckBabyTamogotchi_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/Asperite/DuckKidTamogotchi_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/Asperite/DuckKidTamogotchi_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/Asperite/DuckKidTamogotchi_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/Asperite/DuckKidTamogotchi_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/Asperite/DuckKidTamogotchi_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/Asperite/DuckKidTamogotchi_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/DuckKidTamogotchi_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/DuckKidTamogotchi_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/DuckKidTamogotchi_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/DuckKidTamogotchi_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/DuckKidTamogotchi_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Kid/DuckKidTamogotchi_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Toddler/DuckToddlerTamogotchi32_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Toddler/DuckToddlerTamogotchi32_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Toddler/DuckToddlerTamogotchi32_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Toddler/DuckToddlerTamogotchi32_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Toddler/DuckToddlerTamogotchi32_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/Toddler/DuckToddlerTamogotchi32_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/Asperite/DuckYoungAdultTamogotchi_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/Asperite/DuckYoungAdultTamogotchi_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/Asperite/DuckYoungAdultTamogotchi_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/Asperite/DuckYoungAdultTamogotchi_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/Asperite/DuckYoungAdultTamogotchi_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/DuckYoungAdultTamogotchi_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/DuckYoungAdultTamogotchi_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/DuckYoungAdultTamogotchi_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/DuckYoungAdultTamogotchi_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/DuckYoungAdultTamogotchi_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Duck/YoungAdult/DuckYoungAdultTamogotchi_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/Asperite/MouseAdult_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/Asperite/MouseAdult_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/Asperite/MouseAdult_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/Asperite/MouseAdult_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/Asperite/MouseAdult_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/Asperite/MouseAdult_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/MouseAdult_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/MouseAdult_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/MouseAdult_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/MouseAdult_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/MouseAdult_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Adult/MouseAdult_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Asperite/MouseBabyTamogotchi_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Asperite/MouseBabyTamogotchi_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Asperite/MouseBabyTamogotchi_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Asperite/MouseBabyTamogotchi_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Asperite/MouseBabyTamogotchi_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Baby/MouseBabyTamogotchi_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Baby/MouseBabyTamogotchi_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Baby/MouseBabyTamogotchi_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Baby/MouseBabyTamogotchi_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Baby/MouseBabyTamogotchi_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Baby/MouseBabyTamogotchi_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/Asperite/KidTamogotchi32_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/Asperite/KidTamogotchi32_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/Asperite/KidTamogotchi32_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/Asperite/KidTamogotchi32_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/Asperite/KidTamogotchi_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/Asperite/KidTamogotchi_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/KidTamogotchi_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/KidTamogotchi_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/KidTamogotchi_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/KidTamogotchi_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/KidTamogotchi_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Kid/KidTamogotchi_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Toddler/MouseToddlerTamogotchi32_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Toddler/MouseToddlerTamogotchi32_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Toddler/MouseToddlerTamogotchi32_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Toddler/MouseToddlerTamogotchi32_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Toddler/MouseToddlerTamogotchi32_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/Toddler/MouseToddlerTamogotchi32_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/Asperite/MouseYoungAdultMove_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/Asperite/MouseYoungAdult_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/Asperite/MouseYoungAdult_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/Asperite/MouseYoungAdult_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/Asperite/MouseYoungAdult_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/Asperite/MouseYoungAdult_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/Asperite/MouseYoungAdult_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/MouseYoungAdult_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/MouseYoungAdult_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/MouseYoungAdult_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/MouseYoungAdult_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/MouseYoungAdult_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/Mouse/YoungAdult/MouseYoungAdult_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/Asperite/SeaCreatureAdult_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/Asperite/SeaCreatureAdult_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/Asperite/SeaCreatureAdult_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/Asperite/SeaCreatureAdult_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/Asperite/SeaCreatureAdult_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/Asperite/SeaCreatureAdult_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/SeaCreatureAdult_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/SeaCreatureAdult_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/SeaCreatureAdult_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/SeaCreatureAdult_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/SeaCreatureAdult_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Adult/SeaCreatureAdult_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaBabyTamogotchi_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaBabyTamogotchi_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaBabyTamogotchi_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaBabyTamogotchi_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaBabyTamogotchi_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaBabyTamogotchi_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaToddlerTamogotchi32_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaToddlerTamogotchi32_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaToddlerTamogotchi32_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaToddlerTamogotchi32_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaToddlerTamogotchi32_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/AsperiteFiles/SeaToddlerTamogotchi32_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Baby/SeaBabyTamogotchi_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Baby/SeaBabyTamogotchi_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Baby/SeaBabyTamogotchi_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Baby/SeaBabyTamogotchi_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Baby/SeaBabyTamogotchi_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Baby/SeaBabyTamogotchi_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Toddler/SeaToddlerTamogotchi32_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Toddler/SeaToddlerTamogotchi32_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Toddler/SeaToddlerTamogotchi32_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Toddler/SeaToddlerTamogotchi32_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Toddler/SeaToddlerTamogotchi32_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/Toddler/SeaToddlerTamogotchi32_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/Asperite/SeaCreatureYoungAdult_full_left.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/Asperite/SeaCreatureYoungAdult_full_right.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/Asperite/SeaCreatureYoungAdult_move.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/Asperite/SeaCreatureYoungAdult_norm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/Asperite/SeaCreatureYoungAdult_sickmove.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/Asperite/SeaCreatureYoungAdult_sicknorm.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/SeaCreatureYoungAdult_full_left.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/SeaCreatureYoungAdult_full_right.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/SeaCreatureYoungAdult_move.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/SeaCreatureYoungAdult_norm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/SeaCreatureYoungAdult_sickmove.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Animation/Tamogotchis/SeaCreature/YoungAdult/SeaCreatureYoungAdult_sicknorm.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Button.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/MainView.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/PetCharacter.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sound/HatchlingAttention.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sound/HatchlingWaste.wav" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/Buttons/Asperite/Home.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/Buttons/Asperite/Hunger.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/Buttons/Asperite/Mood.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/Buttons/Asperite/Reset.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/Buttons/Asperite/Start.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/Buttons/Home.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/Buttons/Hunger.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/Buttons/Mood.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/Buttons/Reset.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/Buttons/Start.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/SplashScreen.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/SplashScreen.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/asperite/duck.aseprite" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/attention.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/attention.png.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/discipline.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/discipline.png.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/duck.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/duck.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/duck.png.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/eat.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/eat.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/eat.png.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/game.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/game.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/lightbulb.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/lightbulb.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/medicine.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/medicine.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/medicine.png.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/needs_attention.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/needs_attention.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/needs_attention.png.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/poop.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/poop.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/poop.png.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/scale.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/scale.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/Sprites/select_menu_options/scale.png.kra" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/SuperView.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/activate" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/activate.csh" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/activate.fish" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/easy_install" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/easy_install-3.7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/pip" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/pip3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/pip3.7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/python" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/python3" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/bin/python3.7" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/main.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/HatchlingGame/pyvenv.cfg" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../Hatchlings2/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -11,9 +310,9 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="FileEditorManager">
-    <leaf>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/venv/main.py">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/HatchlingGame/main.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="300">
               <caret line="20" selection-start-line="20" selection-end-line="20" />
@@ -25,37 +324,37 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/venv/Button.py">
+        <entry file="file://$PROJECT_DIR$/HatchlingGame/Button.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="888">
+            <state relative-caret-position="2100">
               <caret line="140" selection-start-line="140" selection-end-line="140" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/venv/MainView.py">
+        <entry file="file://$PROJECT_DIR$/HatchlingGame/MainView.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="78">
+            <state relative-caret-position="13950">
               <caret line="936" column="26" lean-forward="true" selection-start-line="936" selection-start-column="26" selection-end-line="936" selection-end-column="26" />
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/venv/PetCharacter.py">
+        <entry file="file://$PROJECT_DIR$/HatchlingGame/PetCharacter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1819">
+            <state relative-caret-position="10335">
               <caret line="693" selection-start-line="693" selection-end-line="693" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/venv/SuperView.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/HatchlingGame/SuperView.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="259">
-              <caret line="219" column="26" lean-forward="true" selection-start-line="219" selection-start-column="26" selection-end-line="219" selection-end-column="26" />
+            <state relative-caret-position="528">
+              <caret line="236" column="31" lean-forward="true" selection-start-line="236" selection-start-column="31" selection-end-line="236" selection-end-column="31" />
             </state>
           </provider>
         </entry>
@@ -109,13 +408,13 @@
         <subPane>
           <expand>
             <path>
-              <item name="Hatchlings2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Hatchlings2" type="462c0819:PsiDirectoryNode" />
+              <item name="Hatchlings" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Hatchlings" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
-              <item name="Hatchlings2" type="b2602c69:ProjectViewProjectNode" />
-              <item name="Hatchlings2" type="462c0819:PsiDirectoryNode" />
-              <item name="venv" type="462c0819:PsiDirectoryNode" />
+              <item name="Hatchlings" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Hatchlings" type="462c0819:PsiDirectoryNode" />
+              <item name="HatchlingGame" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -125,6 +424,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
@@ -139,7 +439,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.main (1)">
     <configuration name="SuperView" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="Hatchlings2" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -153,6 +453,27 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/venv/SuperView.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="Hatchlings2" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/HatchlingGame" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/HatchlingGame/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -184,6 +505,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main (1)" />
         <item itemvalue="Python.main" />
         <item itemvalue="Python.SuperView" />
       </list>
@@ -203,63 +525,64 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="2221" y="-56" width="1139" height="1057" extended-state="0" />
+    <frame x="1440" y="-56" width="1920" height="1057" extended-state="6" />
+    <editor active="true" />
     <layout>
-      <window_info id="Favorites" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24776386" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24749868" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Version Control" />
-      <window_info anchor="bottom" id="Python Console" />
-      <window_info anchor="bottom" id="Terminal" />
-      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32953367" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="bottom" id="Version Control" order="7" />
+      <window_info anchor="bottom" id="Terminal" order="8" />
+      <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" />
+      <window_info anchor="bottom" id="Python Console" order="10" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
     </layout>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/venv/main.py">
+    <entry file="file://$PROJECT_DIR$/HatchlingGame/Button.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2100">
+          <caret line="140" selection-start-line="140" selection-end-line="140" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HatchlingGame/MainView.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="13950">
+          <caret line="936" column="26" lean-forward="true" selection-start-line="936" selection-start-column="26" selection-end-line="936" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HatchlingGame/PetCharacter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="10335">
+          <caret line="693" selection-start-line="693" selection-end-line="693" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HatchlingGame/SuperView.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="528">
+          <caret line="236" column="31" lean-forward="true" selection-start-line="236" selection-start-column="31" selection-end-line="236" selection-end-column="31" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/HatchlingGame/main.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="300">
           <caret line="20" selection-start-line="20" selection-end-line="20" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/Button.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="888">
-          <caret line="140" selection-start-line="140" selection-end-line="140" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/MainView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="78">
-          <caret line="936" column="26" lean-forward="true" selection-start-line="936" selection-start-column="26" selection-end-line="936" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/PetCharacter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1819">
-          <caret line="693" selection-start-line="693" selection-end-line="693" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/venv/SuperView.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="259">
-          <caret line="219" column="26" lean-forward="true" selection-start-line="219" selection-start-column="26" selection-end-line="219" selection-end-column="26" />
         </state>
       </provider>
     </entry>
