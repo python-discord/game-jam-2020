@@ -174,7 +174,7 @@ STORY_LINES = (
     "They met someone like them.",
     "...this is getting confusing.",
     "Let's give this person a name.",
-    "Chris."
+    "Chris.",
     "Chris met a girl. She was a cute girl.",
     "It wasn't romantic. Maybe Chris wanted it to be.",
     "It was a little before the winter holidays.",
