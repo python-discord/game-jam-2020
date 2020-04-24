@@ -15,6 +15,7 @@ from triple_vision.sound import SoundManager
 
 
 class States(Enum):
+    # TODO save player states by current weapon and update cursor
     IDLE = 0
     # MOVING = 1
     ATTACKING_RANGED = 2
