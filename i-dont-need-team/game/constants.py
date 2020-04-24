@@ -1,6 +1,6 @@
 # Every block that is in board size
-BLOCK_WIDTH = 30
-BLOCK_HEIGHT = 30
+BLOCK_WIDTH = 50
+BLOCK_HEIGHT = 50
 
 # How much blocks in board
 BLOCKS_AMOUNT_Y = 15 + 1  # One here and below is additional frame block
