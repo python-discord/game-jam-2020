@@ -2,17 +2,9 @@ import math
 from typing import Tuple
 
 import arcade
-from frost.client.events import EventStatus
 
 from triple_vision import Tile
 
-
-def get_status(name):
-    status = None
-    while status is None:
-        status = EventStatus.get_status(name)
-
-    return status
 
 
 def load_texture_pair(filename: str) -> Tuple[arcade.Texture, arcade.Texture]:

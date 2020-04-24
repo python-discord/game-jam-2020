@@ -37,6 +37,8 @@ class TripleVision(arcade.View):
 
         self.physics_engine = None
 
+        arcade.set_background_color(arcade.color.BLACK)
+
     def on_show(self) -> None:
         self.bullet_list = arcade.SpriteList()
 

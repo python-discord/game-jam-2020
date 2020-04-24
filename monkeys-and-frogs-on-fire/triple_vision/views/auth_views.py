@@ -1,7 +1,13 @@
 import arcade
 
+from frost.client import Status
+
 from triple_vision import Settings as s
+from triple_vision.networking import client, get_status
 from triple_vision.text_input import TextInput
+from triple_vision.triple_vision import TripleVision
+from triple_vision.views.main_view import MainView
+
 
 class LoginButton(arcade.TextButton):
 
@@ -171,7 +177,15 @@ class LoginView(AuthView):
         super().__init__('Login')
 
     def login(self) -> None:
+        self.window.button_list.clear()
+
         print('Login:', self.username.text, self.password.text)
+        client.login(self.username.text, self.password.text)
+
+        if get_status('login') == Status.SUCCESS:
+            self.window.show_view(TripleVision())
+        else:
+            self.window.show_view(LoginView())
 
     def register(self) -> None:
         self.window.button_list.clear()
@@ -194,7 +208,15 @@ class RegisterView(AuthView):
         self.window.show_view(LoginView())
 
     def register(self) -> None:
+        self.window.button_list.clear()
+
         print('Register:', self.username.text, self.password.text)
+        client.register(self.username.text, self.password.text)
+        
+        if get_status('register') == Status.SUCCESS:
+            self.window.show_view(LoginView())
+        else:
+            self.window.show_view(RegisterView())
 
     def on_show(self) -> None:
         super().on_show()
