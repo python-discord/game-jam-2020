@@ -18,6 +18,7 @@ class Tile:
 class SoundSettings:
     FADE_FREQUENCY = 0.1
     FADE_AMOUNT = 0.05
+    DEFAULT_VOLUME = 1.0
 
 
 class Direction(IntEnum):

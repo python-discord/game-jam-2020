@@ -11,6 +11,7 @@ from triple_vision.entities import (
     StationaryEnemy
 )
 from triple_vision.managers import CardManager, GameManager
+from triple_vision.sound import SoundManager
 from triple_vision.map import Map
 
 
@@ -170,3 +171,4 @@ class TripleVision(arcade.View):
         self.map.on_update(delta_time)
         self.camera.update()
         self.player.update_health_bar(delta_time)
+        SoundManager.update(self.slow_down)
