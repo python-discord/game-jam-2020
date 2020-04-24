@@ -62,7 +62,7 @@ class TextInput:
             )
         )
 
-        self.text_sprites = arcade.SpriteList()
+        self.text_sprites = arcade.SpriteList(is_static=True, use_spatial_hash=True)
         self.text_sprites.append(
             arcade.draw_text(
                 text='',
