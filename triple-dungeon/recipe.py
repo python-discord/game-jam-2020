@@ -47,7 +47,7 @@ class ActiveRecipe(arcade.SpriteList):
         if self.pos == len(self.cycle_recipes):
             self.pos = 0
 
-    def add_kill(self, monster_type):
+    def add_kill(self, monster_type) -> int:
         for sprite in self.sprite_list:
             if monster_type in "ghost":
                 r, g, b = sprite.color
@@ -56,7 +56,7 @@ class ActiveRecipe(arcade.SpriteList):
                 g = darken(g, .5)
                 b = darken(b, .5)
                 sprite.color = (r, g, b)
-                return
+        return self.pos
 
     def set_ghosts(self) -> None:
         self.active = Recipe.GHOSTS
@@ -65,7 +65,6 @@ class ActiveRecipe(arcade.SpriteList):
         self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/ghost/ghost1.png"))
         self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/ghost/ghost1.png"))
             
-
     def set_frogs(self) -> None:
         self.active = Recipe.FROGS
         self.sprite_list = []
