@@ -16,7 +16,7 @@ from submission.gameConstants import WINDOW_HEIGHT, WINDOW_WIDTH, WINDOW_TITLE
 
 
 def main() -> None:
-    """ Main method """
+    """ Main """
     window = arcade.Window(WINDOW_WIDTH, WINDOW_HEIGHT, WINDOW_TITLE)
     print('Window created')
     menu_view = MenuView()
