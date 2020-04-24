@@ -88,7 +88,7 @@ class TripleVision(arcade.View):
             x + self.camera.viewport_left,
             y + self.camera.viewport_bottom
         )
-        self.cursor_manager.on_mouse_motion(x, y)
+        self.cursor_manager.process_mouse_motion(x, y)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int) -> None:
         if not self.player.is_alive:
