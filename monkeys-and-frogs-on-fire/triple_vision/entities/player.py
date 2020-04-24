@@ -234,8 +234,8 @@ class PlayerLiveManager:
             self.hearts.append(
                 arcade.Sprite(
                     "assets/hearts/heart_2.png",
-                    center_x=i * (100 + self.view.camera.viewport_left + self.margin),
-                    center_y=100 + self.view.camera.viewport_bottom,
+                    center_x=(i + 1) * 100 + self.view.camera.viewport_left + self.margin,
+                    center_y=30 + self.view.camera.viewport_bottom,
                     scale=self.scaling
                 )
             )
@@ -250,6 +250,12 @@ class PlayerLiveManager:
 
             self.prev_viewport = viewport
 
+        switch = {
+            0: 2,
+            1: 1,
+            2: 0
+        }
+
         for idx, heart_val in enumerate(self.heart_map):
 
             if (
@@ -258,11 +264,11 @@ class PlayerLiveManager:
             ):
                 self.heart_map[idx] -= 1
 
-                self.hearts.pop(idx)
-                self.hearts.insert(idx, arcade.Sprite(
+                self.hearts.pop(switch[idx])
+                self.hearts.insert(switch[idx], arcade.Sprite(
                     f"assets/hearts/heart_{self.heart_map[idx]}.png",
-                    center_x=idx * (100 + self.view.camera.viewport_left + self.margin),
-                    center_y=100 + self.view.camera.viewport_bottom,
+                    center_x=(switch[idx] + 1) * 100 + self.view.camera.viewport_left + self.margin,
+                    center_y=30 + self.view.camera.viewport_bottom,
                     scale=self.scaling
                 ))
 
