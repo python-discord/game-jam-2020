@@ -42,7 +42,7 @@ BACKGROUND_IMAGE = "./game/space.jpg"
 PUSH_SOUND = ":resources:sounds/upgrade1.wav"
 # Music made by missingfragment#1983
 BACKGROUND_MUSIC = "./game/music.ogg"
-ATTACK_PLAYS_SOUND_CHANCE = 0.05
+ATTACK_PLAYS_SOUND_CHANCE = 0.02
 
 BACKGROUND_MUSIC_VOLUME = 0.5
 SOUND_VOLUME = 1  # TODO use
