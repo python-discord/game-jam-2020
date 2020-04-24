@@ -1,8 +1,8 @@
 from typing import Any, Dict
 
 from frost.ext import Cog
-from frost.server import auth_required, Status
-from frost.server.database import managed_session
+from frost.server import auth_required, logger, Status
+from frost.server.database import managed_session, User
 
 from server.models import Score
 
@@ -19,15 +19,18 @@ class Scores(Cog, route='scores'):
         score = data['score']
 
         with managed_session() as session:
-            score = Score(score=score, user_id=id_)
-            session.add(score)
+            s = Score(score=score, user_id=id_)
+            session.add(s)
 
-        kwargs['client_send']({
-            'headers': {
-                'path': 'scores/post_new',
-                'status': Status.SUCCESS.value
-            }
-        })
+            kwargs['client_send']({
+                'headers': {
+                    'path': 'scores/post_new',
+                    'status': Status.SUCCESS.value
+                }
+            })
+
+            user = session.query(User).filter(User.id == id_).first()
+            logger.info(f'User "{user.username}" sent a new score of {score}')
 
     @auth_required
     def get_top(
@@ -52,3 +55,6 @@ class Scores(Cog, route='scores'):
                     } for score in scores
                 ]
             })
+
+            user = session.query(User).filter(User.id == id_).first()
+            logger.info(f'User "{user.username}" was sent the top ten scores')
