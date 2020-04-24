@@ -7,12 +7,13 @@ import PIL
 import LevelGenerator
 import Maths
 
-from Textures import Textures
+import Textures
 
 from Engine import Engine
 from Entity import Entity, Texs, Tex
 from Projectile import Projectile
 from Mob import Mob
+from Player import Player
 from Ball import Ball
 from Tile import Tile
 
@@ -34,14 +35,6 @@ class Level:
         self.width = WIDTH // TILE_SIZE
         self.height = HEIGHT // TILE_SIZE
 
-        self.movespeed = 1
-        self.jump_height = 4
-        self.jumping = False
-
-        self.curr_jump_height = 0
-        self.min_jump_height = 8
-        self.max_jump_height = 64
-
         # for i in range(100):
         #     ball = Ball(Texs.BALL, 128 + 128 * random.random(), 128 + 128 * random.random())
         #     ball.change_x = random.randint(-8, 8)
@@ -49,10 +42,6 @@ class Level:
         #     self.add_entity_to_list(ball, self.entities)
 
         # print(f"{self.left} {self.right} {self.bottom} {self.top}")
-
-        self.enemy = Mob(Texs.BALL, 128, 128)
-        self.add_entity_to_list(self.enemy, self.entities)
-        self.enemy.flying = True
 
         self.idle_texture = arcade.load_texture("Salami/spritesheet.png", TILE_SIZE * 4, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE)
         self.idle_texture_mirrored = arcade.load_texture("Salami/spritesheet.png", TILE_SIZE * 4, TILE_SIZE * 2, TILE_SIZE, TILE_SIZE, mirrored=True)
@@ -63,15 +52,27 @@ class Level:
         self.walk_frame_speed = 12
         self.player_dir = True
 
-        self.player = Mob(Texs.BALL, 64, 64)
+        self.player = Player(Textures.SPRITESHEET[4 + 3 * 16], 64, 64, self.keyboard)
         self.add_entity_to_list(self.player, self.entities)
 
         level_gen_x = self.player.center_x // TILE_SIZE // ROOM_WIDTH
         level_gen_y = self.player.center_y // TILE_SIZE // ROOM_HEIGHT
 
         LevelGenerator.generateLevel(self, int(level_gen_x), int(level_gen_y))
+
+        # rooms = [(0, 0, 1), (1, 1, 1), (2, 2, 1), (3, 3, 1)]
+        # for i, room in enumerate(rooms):
+        #     LevelGenerator.generateRoom(self,
+        #         room[0] * ROOM_WIDTH + room[0],
+        #         room[1] * ROOM_HEIGHT + room[1], room[2])
+
+        for i in range(10):
+            tile = Tile(Textures.SPRITESHEET[2], random.randint(0, 15) * TILE_SIZE, 16)
+            tile.is_solid = False
+            self.add_tile(tile)
+            print(tile.width, tile.height)
         
-        self.ball = Ball(Texs.BALL, self.player.center_x, self.player.center_y)
+        self.ball = Ball(Textures.SPRITESHEET[0], self.player.center_x, self.player.center_y)
         self.ball.change_x = 2
         self.add_entity_to_list(self.ball, self.entities)
 
@@ -83,51 +84,12 @@ class Level:
 
     def update(self, delta):
 
-        if self.keyboard.is_pressed("dash"):
-            level_gen_x = self.player.center_x // TILE_SIZE // ROOM_WIDTH
-            level_gen_y = self.player.center_y // TILE_SIZE // ROOM_HEIGHT
+        # e = Entity(Texs.ROCK_TILE, 0, 0)
 
-            LevelGenerator.generateLevel(self, int(level_gen_x), int(level_gen_y))
+        # self.add_entity_to_list(e, self.entities)
 
-        if self.keyboard.is_pressed("attack"):
-            self.ball.center_x = self.player.center_x
-            self.ball.center_y = self.player.center_y
-            self.ball.change_x = self.player.change_x * 8
-            self.ball.change_y = self.player.change_y * 8
-
-        if self.keyboard.is_pressed("jump"):
-            if self.physics_engine.can_jump(1):
-                self.physics_engine.jump(self.jump_height)
-                self.jumping = True
-            elif self.physics_engine.can_jump(-1):
-                self.jumping = False
-                self.curr_jump_height = 0
-                
-            if self.curr_jump_height > self.max_jump_height:
-                self.jumping = False
-                self.curr_jump_height = 0
-
-        elif (self.curr_jump_height >= self.min_jump_height):
-            self.jumping = False
-            self.curr_jump_height = 0
-        
-        if self.jumping:
-            self.player.change_y = self.jump_height
-            self.curr_jump_height += self.jump_height
-
-        speed_mult = 3
-        if self.keyboard.is_pressed("sprint"):
-            speed_mult = 1
-
-        if self.keyboard.is_pressed("left"):
-            self.player.change_x = -self.movespeed * speed_mult
-        elif self.keyboard.is_pressed("right"):
-            self.player.change_x = self.movespeed * speed_mult
-        else:
-            if self.player.change_x > 0:
-                self.player.change_x -= 1
-            elif self.player.change_x < 0:
-                self.player.change_x += 1
+        # e.level = None
+        # self.entities.remove(e)
 
         self.walk_count += 1
         if self.walk_count >= len(self.walking_textures) * self.walk_frame_speed:     
@@ -152,33 +114,46 @@ class Level:
 
     def draw(self):
         
-        self.tile_list.draw(filter=gl.GL_NEAREST)
         self.entities.draw(filter=gl.GL_NEAREST)
+        self.tile_list.draw(filter=gl.GL_NEAREST)
 
         # self.player.draw_hit_box(arcade.color.BLUE)
 
     def add_entity_to_list(self, entity, list):
-        entity.set_hit_box(SQUARE_HIT_BOX)
+        # entity.set_hit_box(SQUARE_HIT_BOX)
         entity.set_level(self)
         list.append(entity)
 
     def add_tile(self, tile):
         tile.set_hit_box(SQUARE_HIT_BOX)
         tile.set_level(self)
-        self.set_tile(tile.center_x // TILE_SIZE, tile.center_y // TILE_SIZE, tile)
+        self._set_tile(int(tile.center_x / TILE_SIZE), int(tile.center_y / TILE_SIZE), tile)
 
-    def set_tile(self, x, y, tile):
-        if x < 0 or y < 0 or x >= self.width or y >= self.height:
-            return
-        if self.tiles[(x, y)]:
+    def _set_tile(self, x: int, y: int, tile):
+        # if x < 0 or y < 0 or x >= self.width or y >= self.height:
+        #     return
+        if self.tiles.get((x, y)):
             self.tile_list.remove(self.tiles[(x, y)])
         self.tile_list.append(tile)
         self.tiles[(x, y)] = tile
+    
+    def remove_tile(self, x: int, y: int):
+        if self.tiles.get((x, y)):
+            self.tile_list.remove(self.tiles[(x, y)])
+            self.tiles.pop((x, y))
 
-    def get_tiles(self, x, y, width, height):
-        if x < 0 or y < 0 or x >= self.width or y >= self.height:
-            return None
+    def get_tile(self, x: int, y: int):
+        # if x < 0 or y < 0 or x >= self.width or y >= self.height:
+        #     return None
         if self.tiles.get((x, y)):
             return self.tiles.get((x, y))
         return None
+
+    def get_tiles(self, x0: int, y0: int, x1: int, y1: int):
+        list = []
+        for x in range(x0, x1 + 1):
+            for y in range(y0, y1 + 1):
+                if self.get_tile(x, y):
+                    list.append(self.get_tile(x, y))
+        return list
 
