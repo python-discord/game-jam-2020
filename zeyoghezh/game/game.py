@@ -254,13 +254,10 @@ class Game(arcade.Window):
 
     def on_update(self, delta_time):
         if self.game_over_time:
-            if self.absconded:
-                # Don't restart if they absconded
-                return
             game_over_delta_time = (
                 BASE_TIME_MULTIPLIER * (time.time() - self.game_over_time)
             )
-            if game_over_delta_time > 3:
+            if game_over_delta_time > 3 and not self.absconded:
                 self.setup()
                 return
         time_multiplier = BASE_TIME_MULTIPLIER * delta_time / 0.0168
