@@ -213,6 +213,8 @@ class Game(arcade.Window):
         if self.player_in_tutorial:
             time_multiplier /= 6
         logger.debug("\nNew Round\n")
+        if not self.player_in_tutorial:
+            self.lithium_count += delta_time / 100
         self.run_assertions()
         self.update_banner()
         self.planets.update()

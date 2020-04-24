@@ -1,7 +1,1 @@
-Ensure sounds work
-
-Should we get money over time?
-
-Balance (make lithium worth less)
-
 Add a volume setter
