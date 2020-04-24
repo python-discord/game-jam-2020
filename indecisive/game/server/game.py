@@ -34,6 +34,7 @@ class Game:
                 if data["actionType"] == "moveUnit":
                     pass
                 elif data["actionType"] == "createUnit":
+                    print(f":O {data}")
                     self.send_queue.put({"type": "newUnit", "data": data["data"]})
                 self.next_turn()
 

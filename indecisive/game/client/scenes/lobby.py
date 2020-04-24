@@ -147,4 +147,4 @@ class Lobby(Base):
             self.send_queue.put({"type": "nameChange", "newName": self.name})
 
     def start_game(self):
-        self.display.change_scenes("game", self.network_thread, self.receive_queue, self.send_queue, self.player_id)
+        self.display.change_scenes("game", self.network_thread, self.receive_queue, self.send_queue, self.players, self.player_id)

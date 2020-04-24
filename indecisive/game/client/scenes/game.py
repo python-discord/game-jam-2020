@@ -7,6 +7,7 @@ import json
 
 COLOURS = [(200, 100, 100), (100, 200, 100), (100, 100, 200)]
 CITIES = ["assets/red_city.png", "assets/green_city.png", "assets/blue_city.png"]
+ICONS = ["assets/red_icon.png", "assets/green_icon.png", "assets/blue_icon.png"]
 
 
 class Game(Base):
@@ -28,8 +29,8 @@ class Game(Base):
         self.unit_sprites = arcade.SpriteList()
         self.square = 38
         self.x_buffer = 13
-        self.y_buffer_top = 50
-        self.y_buffer_bottom = 251
+        self.y_buffer_top = 70
+        self.y_buffer_bottom = 231
 
         # game tracking
         self.turn = 0
@@ -45,15 +46,16 @@ class Game(Base):
         self.current_ui = [arcade.SpriteList(), []]
         self.empty_ui = [arcade.SpriteList(), []]
         self.selectors = [arcade.SpriteList(), [lambda: None, lambda: None, lambda: None, lambda: None]]
-        self.setup_ui()
+        self.top_ui = [arcade.SpriteList(), []]
 
         with open("data/units.json") as file:
             self.unit_types = json.load(file)
 
-    def reset(self, network_thread: multiprocessing.Process, receive: multiprocessing.Queue, send: multiprocessing.Queue, player_id) \
+    def reset(self, network_thread: multiprocessing.Process, receive: multiprocessing.Queue, send: multiprocessing.Queue, players, player_id) \
             -> None:
         print("Game view!")
         self.player_id = player_id
+        self.players = players
         self.network_thread = network_thread
         self.receive_queue = receive
         self.send_queue = send
@@ -74,6 +76,9 @@ class Game(Base):
 
             self.ui_background.draw()
             self.current_ui[0].draw()
+            self.top_ui[0].draw()
+            for text in self.top_ui[1]:
+                arcade.draw_text(**text)
 
     def update(self, delta_time: float) -> None:
         self.sceneTime += delta_time
@@ -111,6 +116,7 @@ class Game(Base):
         print(self.world)
         self.dim = self.world["dim"]
         self.setup_world()
+        self.setup_ui()
         self.initialised = True
 
     # WORLD
@@ -171,6 +177,7 @@ class Game(Base):
 
     # UI
     def setup_ui(self):
+        # MAIN UI
         self.ui_background = arcade.create_rectangle_filled(640, 95, 1280, 190, color=(150, 150, 150))
 
         create_unit = arcade.Sprite(
@@ -179,6 +186,7 @@ class Game(Base):
             center_x=200,
             center_y=50
         )
+
         # selectors
         for selector_number in range(4):
             self.selectors[0].append(arcade.Sprite(
@@ -187,12 +195,34 @@ class Game(Base):
                 center_y=-100
             ))
             self.selectors[1][selector_number] = lambda: None
+
         # city UI
         self.city_ui[0].append(create_unit)
         self.city_ui[1] = [self.create_unit]
 
+        # TOP BAR UI
+        player_icon = arcade.Sprite(
+            ICONS[self.player_id],
+            scale=1.3157,
+            center_x=25,
+            center_y=695
+        )
+        self.top_ui[0].append(player_icon)
+        self.top_ui[1].append({
+            "text": self.players[self.player_id]["name"],
+            "start_x": 70, "start_y": 675,
+            "color": (0, 0, 0),
+            "font_size": 30
+        })
+        self.top_ui[1].append({
+            "text": f"Current turn: {self.players[self.turn]['name']}",
+            "start_x": 800, "start_y": 675,
+            "color": (0, 0, 0),
+            "font_size": 30
+        })
+
     def mouse_release(self, x: float, y: float, button: int, modifiers: int) -> None:
-        selected = self.is_xy_occupied(x, y)
+        selected = self.map_sprite_clicked(x, y)
         if selected is False:
             for ui_num, ui in enumerate(self.current_ui[0]):
                 if ui.collides_with_point((x, y)) is True:
@@ -210,17 +240,17 @@ class Game(Base):
         self.update_ui()
 
     def create_unit(self, city):
-        action_maker = self.action_maker(self.client_create_unit, {"owner": self.player_id, "type": "basic"})
+        action_maker = self.action_maker_maker(self.client_create_unit, {"owner": self.player_id, "type": "basic"})
         self.move_selectors_all_block(city["loc"], action_maker)
 
-    @staticmethod
-    def action_maker(action, arg: dict):
+    def action_maker_maker(self, action, arg: dict, hide_ui=True):
 
         def _action_maker(**kwargs):
-            arg.update(kwargs)
-
             def _action():
-                action(arg)
+                unit = {**arg, **kwargs}
+                action(unit)
+                if hide_ui is True:
+                    self.hide_selectors()
             return _action
 
         return _action_maker
@@ -252,32 +282,43 @@ class Game(Base):
     def move_selectors_all_block(self, pos, action_maker):
         for selector_number in range(4):
             new_pos = self._selectors_new_position(pos, selector_number)
-            if self.is_xy_occupied(*new_pos) is False:
+            if self.is_xy_occupied(new_pos) is False:
                 self.set_xy_centre(self.selectors[0][selector_number], new_pos)
                 self.selectors[1][selector_number] = action_maker(loc=new_pos)
 
     @staticmethod
     def _selectors_new_position(pos, index):
-        pos = pos.copy()
+        new_pos = pos.copy()
         if index == 0:
-            pos[0] += 1
+            new_pos[0] += 1
         elif index == 1:
-            pos[1] -= 1
+            new_pos[1] -= 1
         elif index == 2:
-            pos[0] -= 1
+            new_pos[0] -= 1
         elif index == 3:
-            pos[1] += 1
+            new_pos[1] += 1
         else:
             raise IndexError(f"There are only four Cardinal directions (0-3) yet {index} was given")
-        return pos
+        return new_pos
 
-    def is_xy_occupied(self, x, y):
+    def map_sprite_clicked(self, x, y):
         for unit_num, unit in enumerate(self.unit_sprites):
             if unit.collides_with_point((x, y)) is True:
                 return ["units", unit_num]
         else:
             for city_num, city in enumerate(self.city_sprites):
                 if city.collides_with_point((x, y)):
+                    return ["cities", city_num]
+            else:
+                return False
+
+    def is_xy_occupied(self, pos):
+        for unit_num, unit in enumerate(self.world["units"]):
+            if unit["loc"] == pos:
+                return ["units", unit_num]
+        else:
+            for city_num, city in enumerate(self.world["cities"]):
+                if city["loc"] == pos:
                     return ["cities", city_num]
             else:
                 return False
