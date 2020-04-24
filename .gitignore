@@ -134,3 +134,6 @@ dmypy.json
 # IDEs
 .idea/
 .vscode/
+/monkeys-and-frogs-on-fire/.frost
+/monkeys-and-frogs-on-fire/pyfrost.sqlite3
+/game-jam-2020.iml

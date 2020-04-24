@@ -1,17 +1,10 @@
 import math
 import time
-from enum import Enum
 from typing import Optional
 
 import arcade
 
 from triple_vision.utils import get_change_vector, is_in_radius_positions
-
-
-class States(Enum):
-    IDLE = 0
-    MOVING = 1
-    ATTACKING = 2
 
 
 class MovingSprite(arcade.Sprite):
@@ -22,6 +15,9 @@ class MovingSprite(arcade.Sprite):
         self.speed_multiplier = 1
         self.target = None
         self.rotate = rotate
+
+    def is_moving(self) -> bool:
+        return any((self.change_x, self.change_y))
 
     def calc_change_vector(self, x: float, y: float) -> None:
         self.change_x, self.change_y, angle = get_change_vector(
