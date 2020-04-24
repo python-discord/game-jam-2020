@@ -259,11 +259,12 @@ class SoundtrackManager:
 
 
 class CursorManager:
-    def __init__(self, window: arcade.Window, player):
-        self.window = window
+    def __init__(self, view: arcade.View, player):
+        self.view = view
+        self.window = view.window
         self.player = player
 
-        self._curr_cursor = None
+        self._curr_cursor: arcade.Sprite = None
         self.cursors = {
             "moving": arcade.Sprite("assets/crosshairs/moving.png"),  # TODO Add seperate crosshair
             "ranged": arcade.Sprite("assets/crosshairs/ranged.png"),
@@ -278,6 +279,17 @@ class CursorManager:
         return self._curr_cursor
 
     curr_cursor = property(get_curr_cursor, set_curr_cursor)
+
+    def on_mouse_motion(self, x, y):
+        if self._curr_cursor is None:
+            return
+        self._curr_cursor.center_x = x
+        self._curr_cursor.center_y = y
+
+    def process_mouse_motion(self, x, y):
+        if not arcade.get_sprites_at_exact_point((x, y), self.view.collision_list):
+            return
+        self.curr_cursor = "blocked"
 
     def update(self):
         if self.player.state == States.ATTACKING_RANGED:
