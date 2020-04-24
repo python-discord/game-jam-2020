@@ -1,11 +1,11 @@
 import itertools
-from typing import List, Optional, Tuple
+from typing import Optional, Tuple, List
 
 import arcade
 
 from triple_vision import Settings as s, SoundSettings as ss
 from triple_vision.entities import DamageIndicator
-from triple_vision.sound import Sound
+from triple_vision.sound import SoundTrack
 
 
 class GameManager:
@@ -190,16 +190,16 @@ class CardManager:
         self.cards.update()
 
 
-class SoundManager:
+class SoundtrackManager:
     def __init__(self, sounds: List[arcade.Sound] = []) -> None:
         self._sounds = sounds
         self._sounds_cycle = itertools.cycle(self._sounds)
-        self.curr_sound: Sound = None
+        self.curr_sound: SoundTrack = None
         self.tick_delta = 0.0
         self.playing = False
 
     def add_sound(self, sound_name: str, faded: bool = False, max_volume: float = 1.0) -> None:
-        self._sounds.append(Sound(sound_name, is_faded=faded, max_volume=max_volume))
+        self._sounds.append(SoundTrack(sound_name, is_faded=faded, max_volume=max_volume))
         self.update_cycle()
 
     def remove_sound(self, sound_name: str):
@@ -209,7 +209,7 @@ class SoundManager:
     def play_external_sound(
         self, sound_name: str = None, faded: bool = False, max_volume: float = 1.0
     ) -> None:
-        self.curr_sound = Sound(sound_name, is_faded=faded, max_volume=max_volume)
+        self.curr_sound = SoundTrack(sound_name, is_faded=faded, max_volume=max_volume)
         self.playing = False
 
     def play_sound_from_list(self, index):
@@ -229,10 +229,10 @@ class SoundManager:
     @staticmethod
     def load_sound(
         file_name: str, is_faded: bool = False, max_volume: float = 1.0
-    ) -> Optional[Sound]:
+    ) -> Optional[SoundTrack]:
 
         try:
-            sound = Sound(file_name, is_faded=is_faded, max_volume=max_volume)
+            sound = SoundTrack(file_name, is_faded=is_faded, max_volume=max_volume)
             return sound
         except Exception as e:
             print(f'Unable to load sound file: "{file_name}". Exception: {e}')

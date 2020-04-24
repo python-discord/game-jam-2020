@@ -1,11 +1,12 @@
-import itertools
 import random
+import itertools
 from pathlib import Path
 from typing import Any, Optional, Tuple
 
 import arcade
 
 from triple_vision import Direction, Settings as s
+from triple_vision.sound import SoundManager
 from triple_vision.utils import (
     get_change_vector,
     load_texture_pair,
@@ -234,25 +235,29 @@ class LivingEntity(AnimatedEntity):
 
 
 class SoundEntity(arcade.Sprite):
-    assets_path = Path("assets/audio/sounds/")
-
     def __init__(
             self,
             *args,
-            activate_sounds: tuple,
-            hit_sounds: tuple,
+            activate_sounds: Tuple[str],
+            hit_sounds: Tuple[str],
             **kwargs
     ) -> None:
+        """
+        activate_sounds and hit_sounds are both tuple of strings where string represent sound asset
+        activate_sounds, example for weapon, will play the weapon is shoot
+        hit_sounds, example for weapon, should play when weapon hits something.
+        """
         super().__init__(*args, **kwargs)
-        self._activate_sounds = self.load_sounds(activate_sounds)
-        self._hit_sounds = self.load_sounds(hit_sounds)
+        self._activate_sounds = activate_sounds
+        self._hit_sounds = hit_sounds
+        self.load_sounds()
 
-    @classmethod
-    def load_sounds(cls, sounds: Tuple[str]):
-        return [arcade.load_sound(str(cls.assets_path / sound)) for sound in sounds]
+    def load_sounds(self):
+        for sound in itertools.chain(self._activate_sounds, self._hit_sounds):
+            SoundManager.add_sound(sound)
 
     def play_activate_sound(self) -> None:
-        arcade.play_sound(random.choice(self._activate_sounds))
+        SoundManager.play_sound(random.choice(self._activate_sounds))
 
     def play_hit_sound(self) -> None:
-        arcade.play_sound(random.choice(self._hit_sounds))
+        SoundManager.play_sound(random.choice(self._hit_sounds))
