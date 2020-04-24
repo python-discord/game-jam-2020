@@ -39,6 +39,8 @@ ATTACK_SOUND = {
     "ezh": ":resources:sounds/explosion1.wav"
 }
 BACKGROUND_IMAGE = "./game/space.jpg"
+VOLUME_IMAGE = ":resources:images/space_shooter/laserBlue01.png"
+VOLUME_MOVER_IMAGE = ":resources:images/items/gold_4.png"
 PUSH_SOUND = ":resources:sounds/upgrade1.wav"
 # Music made by missingfragment#1983
 BACKGROUND_MUSIC = "./game/music.ogg"
@@ -246,5 +248,4 @@ STORY_LINES = (
     "All is lost. Chris has died.",
     "...",
     "And then the game restarted."
-    # TODO add more or cycle
 )

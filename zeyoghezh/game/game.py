@@ -11,7 +11,7 @@ from .planet import Planet
 from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
     BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER,
-    BASE_TIME_MULTIPLIER
+    BASE_TIME_MULTIPLIER, VOLUME_IMAGE, VOLUME_MOVER_IMAGE
 )
 import sys
 
@@ -43,6 +43,8 @@ class Game(arcade.Window):
         self.background_music = arcade.Sound(BACKGROUND_MUSIC)
 
         self.abscond_button = None
+        self.volume_meter = None
+        self.volume_mover = None
 
         self.player_in_tutorial = True
         self.game_over_time = None
@@ -52,6 +54,8 @@ class Game(arcade.Window):
         self.banner_location = (SCREEN_SIZE[0]/100, SCREEN_SIZE[1]/2)
         self.last_banner_change = None
         self.story_iter = None
+
+        self.volume_location = (7*SCREEN_SIZE[0]/8, SCREEN_SIZE[1]/13)
 
         self.banner_background_color = arcade.make_transparent_color(
             arcade.color.BLUE, 100)
@@ -81,6 +85,16 @@ class Game(arcade.Window):
         self.abscond_button.on_press = self.abscond_press
         self.abscond_button.on_release = self.abscond_release
         self.button_list.append(self.abscond_button)
+
+        self.volume_meter = arcade.Sprite(VOLUME_IMAGE)
+        self.volume_meter.center_x = self.volume_location[0]
+        self.volume_meter.center_y = self.volume_location[1]
+        self.volume_meter.width *= 3
+        self.volume_mover = arcade.Sprite(VOLUME_MOVER_IMAGE)
+        self.volume_mover.center_x = self.volume_location[0]
+        self.volume_mover.center_y = self.volume_location[1]
+        self.volume_mover.scale /= 3
+
         for planet in planets:
             self.planets.append(planet)
             others = [other for other in planets if other != planet]
@@ -163,6 +177,9 @@ class Game(arcade.Window):
             color=arcade.color.WHITE, font_size=24)
 
         self.abscond_button.draw()
+
+        self.volume_meter.draw()
+        self.volume_mover.draw()
 
         arcade.draw_rectangle_filled(
             center_x=SCREEN_SIZE[0]/2,
