@@ -37,7 +37,7 @@ class TripleVision(arcade.View):
 
         self.physics_engine = None
 
-    def setup(self) -> None:
+    def on_show(self) -> None:
         self.bullet_list = arcade.SpriteList()
 
         self.player = Player(self, 'm')
