@@ -3,58 +3,58 @@
  <tileset firstgid="1" name="my_tiles" tilewidth="288" tileheight="254" tilecount="19" columns="0">
   <grid orientation="orthogonal" width="1" height="1"/>
   <tile id="4">
-   <image width="96" height="96" source="C:/Users/reedm/Desktop/kenney_simplifiedplatformer/PNG/Tiles/platformPack_tile001.png"/>
+   <image width="96" height="96" source="../images/tiles/platformPack_tile001.png"/>
   </tile>
   <tile id="5">
-   <image width="96" height="96" source="C:/Users/reedm/Desktop/kenney_simplifiedplatformer/PNG/Tiles/platformPack_tile004.png"/>
+   <image width="96" height="96" source="../images/tiles/platformPack_tile004.png"/>
   </tile>
   <tile id="6">
-   <image width="96" height="96" source="C:/Users/reedm/Desktop/kenney_simplifiedplatformer/PNG/Tiles/platformPack_tile040.png"/>
+   <image width="96" height="96" source="../images/tiles/platformPack_tile040.png"/>
   </tile>
   <tile id="8">
    <image width="96" height="96" source="../images/items/coin_4.png"/>
   </tile>
   <tile id="10">
-   <image width="106" height="254" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/treePine.png"/>
+   <image width="106" height="254" source="../images/backgrounds/treePine.png"/>
   </tile>
   <tile id="11">
-   <image width="104" height="77" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/fence.png"/>
+   <image width="104" height="77" source="../images/backgrounds/fence.png"/>
   </tile>
   <tile id="12">
-   <image width="203" height="121" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/cloud1.png"/>
+   <image width="203" height="121" source="../images/backgrounds/cloud1.png"/>
   </tile>
   <tile id="13">
-   <image width="196" height="156" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/cloud2.png"/>
+   <image width="196" height="156" source="../images/backgrounds/cloud2.png"/>
   </tile>
   <tile id="14">
-   <image width="216" height="139" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/cloud3.png"/>
+   <image width="216" height="139" source="../images/backgrounds/cloud3.png"/>
   </tile>
   <tile id="15">
-   <image width="250" height="146" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/cloud4.png"/>
+   <image width="250" height="146" source="../images/backgrounds/cloud4.png"/>
   </tile>
   <tile id="16">
-   <image width="203" height="121" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/cloud5.png"/>
+   <image width="203" height="121" source="../images/backgrounds/cloud5.png"/>
   </tile>
   <tile id="17">
-   <image width="196" height="156" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/cloud6.png"/>
+   <image width="196" height="156" source="../images/backgrounds/cloud6.png"/>
   </tile>
   <tile id="18">
-   <image width="216" height="139" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/cloud7.png"/>
+   <image width="216" height="139" source="../images/backgrounds/cloud7.png"/>
   </tile>
   <tile id="19">
-   <image width="250" height="146" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/cloud8.png"/>
+   <image width="250" height="146" source="../images/backgrounds/cloud8.png"/>
   </tile>
   <tile id="20">
-   <image width="120" height="60" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/bush1.png"/>
+   <image width="120" height="60" source="../images/backgrounds/bush1.png"/>
   </tile>
   <tile id="21">
-   <image width="53" height="44" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/bush2.png"/>
+   <image width="53" height="44" source="../images/backgrounds/bush2.png"/>
   </tile>
   <tile id="22">
-   <image width="59" height="52" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/bush3.png"/>
+   <image width="59" height="52" source="../images/backgrounds/bush3.png"/>
   </tile>
   <tile id="23">
-   <image width="50" height="46" source="C:/Users/reedm/Desktop/background-elements-redux/PNG/Default/bush4.png"/>
+   <image width="50" height="46" source="../images/backgrounds/bush4.png"/>
   </tile>
   <tile id="26">
    <image width="288" height="252" source="../images/shops/shop.png"/>
