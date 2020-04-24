@@ -264,16 +264,18 @@ class CursorManager:
         self.window = view.window
         self.player = player
 
-        self._curr_cursor: arcade.Sprite = None
         self.cursors = {
             "moving": arcade.Sprite("assets/crosshairs/moving.png"),
             "ranged": arcade.Sprite("assets/crosshairs/ranged.png"),
             "blocked": arcade.Sprite("assets/crosshairs/blocked.png"),
         }
+        self._curr_cursor: arcade.Sprite = self.cursors["ranged"]
         self.window.set_mouse_visible(False)
 
     def set_curr_cursor(self, value):
+        last_position = self._curr_cursor.center_x, self._curr_cursor.center_y
         self._curr_cursor = self.cursors.get(value, None)
+        self._curr_cursor.center_x, self._curr_cursor.center_y = last_position[0],  last_position[1]
 
     def get_curr_cursor(self):
         return self._curr_cursor
@@ -290,11 +292,8 @@ class CursorManager:
         self.update_cursor_position(x, y)
 
     def update(self):
-        if (
-            self.player.state == States.MOVING
-            or self.player.state == States.ATTACKING_RANGED
-            and self.player.is_moving()
-        ):
+        # TODO save player states by current weapon and update cursor
+        if self.player.is_moving():
             self.curr_cursor = "moving"
         elif self.player.state == States.ATTACKING_RANGED:
             self.curr_cursor = "ranged"
