@@ -1,5 +1,8 @@
 import arcade
 from pyglet import gl
+from Math import Maths
+from StartMenu import StartMenuView
+from Button import Button
 
 # help-phosphorus
 # game-development
@@ -22,147 +25,11 @@ TOP_VIEWPORT_MARGIN = 0
 CAMERA_FOLLOW_SPEED = 0.2
 
 
-class Maths():
-
-    @classmethod
-    def lerp(cls, v1: float, v2: float, u: float):
-        return v1 + ((v2 - v1) * u)
-
-    @classmethod
-    def clamp(cls, x: float, lowerlimit: float, upperlimit: float):
-        if x < lowerlimit:
-            x = lowerlimit
-        if x > upperlimit:
-            x = upperlimit
-        return x
-
-    @classmethod
-    def smoothstep(cls, edge0: float, edge1: float, x: float):
-        x = Maths.clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0)
-        return x * x * x * (x * (x * 6 - 15) + 10)
-
-    @classmethod
-    def lowlimit(cls, x, lowerlimit):
-        if x < lowerlimit:
-            x = lowerlimit
-        return x
-
-    @classmethod
-    def maxlimit(cls, x, upperlimit):
-        if x > upperlimit:
-            x = upperlimit
-        return x
-
-
-class StartMenuView(arcade.View):
-    def __init__(self):
-        super().__init__()
-
-        self.wnidow = None
-
-        self.hover_color = [0, 0, 0, 100]
-        self.click_color = [0, 0, 0, 150]
-
-        self.hovering = None
-        self.clicking = None
-
-        self.draw_play_button_hover = None
-
-        self.play_bottom = None
-        self.play_left = None
-
-        self.title_text = None
-        self.play_button = None
-
-        self.old_screen_center_x = None
-        self.old_screen_center_y = None
-        self.screen_center_x = None
-        self.screen_center_y = None
-
-    def on_show(self):
-
-        self.window = arcade.get_window()
-
-        self.draw_play_button_hover = False
-
-        self.hovering = False
-        self.clicking = False
-
-        self.old_screen_center_x = int(self.window.get_size()[0] / 2)
-        self.old_screen_center_y = int(self.window.get_size()[1] / 2)
-        self.screen_center_x = int(self.window.get_size()[0] / 2)
-        self.screen_center_y = int(self.window.get_size()[1] / 2)
-
-        game_title_text = 'Three of a Kind'
-        self.title_text = arcade.draw_text(game_title_text, self.screen_center_x, self.screen_center_y + 150,
-                                                  anchor_x='center',
-                                                  anchor_y='center', color=arcade.csscolor.WHITE, font_size=64)
-        play_text = 'Play'
-        self.play_button = play_text_sprite = arcade.draw_text(play_text, self.screen_center_x, self.screen_center_y, anchor_x='center',
-                                            anchor_y='center', color=arcade.csscolor.WHITE, font_size=64)
-
-        arcade.set_background_color([66, 245, 212, 255])
-
-        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
-
-    def on_mouse_motion(self, x, y, dx, dy):
-        if self.play_left + 134 + 50 >= x >= self.play_left - 50 and self.play_bottom + 80 + 25 >= y >= self.play_bottom - 25:
-            self.draw_play_button_hover = True
-            self.hovering = True
-        else:
-            self.draw_play_button_hover = False
-            self.hovering = False
-
-    def on_mouse_press(self, x, y, button, modifiers):
-        if self.play_left + 134 + 50 >= x >= self.play_left - 50 and self.play_bottom + 80 + 25 >= y >= self.play_bottom - 25:
-            self.draw_play_button_hover = True
-            self.clicking = True
-        else:
-            self.draw_play_button_hover = False
-            self.clicking = False
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        if self.play_left + 134 + 50 >= x >= self.play_left - 50 and self.play_bottom + 80 + 25 >= y >= self.play_bottom - 25:
-            game = MyGame()
-            self.window.show_view(game)
-
-    def on_draw(self):
-        arcade.start_render()
-
-        screen_width, screen_height = self.window.get_size()
-        self.screen_center_x = int(screen_width / 2)
-        self.screen_center_y = int(screen_height / 2)
-
-        if self.old_screen_center_x != self.screen_center_x or self.old_screen_center_y !=  self.screen_center_y:
-            game_title_text = 'Three of a Kind'
-            self.title_text = arcade.draw_text(game_title_text, self.screen_center_x, self.screen_center_y + 150,
-                                               anchor_x='center',
-                                               anchor_y='center', color=arcade.csscolor.WHITE, font_size=64)
-            play_text = 'Play'
-            self.play_button = play_text_sprite = arcade.draw_text(play_text, self.screen_center_x,
-                                                                   self.screen_center_y, anchor_x='center',
-                                                                   anchor_y='center', color=arcade.csscolor.WHITE,
-                                                                   font_size=64)
-
-        self.old_screen_center_x = self.screen_center_x
-        self.old_screen_center_y = self.screen_center_y
-
-        if self.draw_play_button_hover:
-            if self.clicking:
-                arcade.draw_rectangle_filled(self.screen_center_x, self.screen_center_y, 234, 130, self.click_color)
-            elif self.hovering:
-                arcade.draw_rectangle_filled(self.screen_center_x, self.screen_center_y, 234, 130, self.hover_color)
-
-        self.play_bottom = self.play_button.bottom
-        self.play_left = self.play_button.left
-
-        self.title_text.draw()
-        self.play_button.draw()
-
-
 class MyGame(arcade.View):
     def __init__(self):
         super().__init__()
+
+        self.window = None
 
         self.player_list = None
         self.background_list = None
@@ -186,7 +53,25 @@ class MyGame(arcade.View):
 
         self.draw_shop_tip = False
 
+        self.should_be_in_menu = None
+
+        self.old_screen_center_x = None
+        self.old_screen_center_y = None
+        self.screen_center_x = None
+        self.screen_center_y = None
+        self.screen_width = None
+        self.screen_height = None
+
+        self.quit_button = None
+        self.quit_button_box = None
+        self.quit_button_color = None
+
+        self.pause_background = None
+
     def on_show(self):
+
+        self.window = arcade.get_window()
+
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
@@ -215,12 +100,30 @@ class MyGame(arcade.View):
         self.wall_list = arcade.tilemap.process_layer(my_map, platforms_layer_name)
         self.coin_list = arcade.tilemap.process_layer(my_map, coins_layer_name)
 
+        self.screen_width, self.screen_height = self.window.get_size()
+        self.old_screen_center_x = int(self.screen_width / 2)
+        self.old_screen_center_y = int(self.screen_height / 2)
+        self.screen_center_x = int(self.screen_width / 2)
+        self.screen_center_y = int(self.screen_height / 2)
+
+        self.should_be_in_menu = False
+
+        self.quit_button_color = [54, 155, 227, 255]
+        self.quit_button = arcade.draw_text('Quit', self.screen_center_x, self.screen_center_y, arcade.csscolor.BLACK, 32, anchor_x='center', anchor_y='center')
+        self.quit_button_box = arcade.create_rectangle_filled(0, 0, 170, 90, self.quit_button_color)
+
+        self.pause_background = arcade.load_texture('images/backgrounds/pause_background.png')
+
         arcade.set_background_color(arcade.csscolor.LIGHT_BLUE)
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, self.wall_list, GRAVITY)
 
     def on_draw(self):
         arcade.start_render()
+
+        self.screen_width, self.screen_height = self.window.get_size()
+        self.screen_center_x = int(self.screen_width / 2)
+        self.screen_center_y = int(self.screen_height / 2)
 
         self.background_list.draw(filter=gl.GL_NEAREST)
         self.wall_list.draw(filter=gl.GL_NEAREST)
@@ -235,17 +138,81 @@ class MyGame(arcade.View):
         coin_text = f'Coins: {self.coin_counter}'
         arcade.draw_text(coin_text, self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 50, arcade.csscolor.BLACK, 32)
 
+        if self.should_be_in_menu:
+            l, w, b, h = arcade.get_viewport()
+            sw, sh = arcade.get_window().get_size()
+            arcade.set_viewport(0, sw, 0,
+                                sh)
+            arcade.draw_lrwh_rectangle_textured(0, 0, sw, sh, self.pause_background)
+            self.quit_button_box = arcade.create_rectangle_filled(w / 2,
+                                                h / 2, width=300, height=50,
+                                                                  color=self.quit_button_color)
+            self.quit_button = arcade.draw_text('Quit', w / 2,
+                                                h / 2, arcade.csscolor.BLACK,
+                                                32, anchor_x='center', anchor_y='center')
+            self.quit_button_box.draw()
+            self.quit_button.draw()
+
+        self.old_screen_center_x = int(self.screen_width / 2)
+        self.old_screen_center_y = int(self.screen_height / 2)
+
+    def on_mouse_motion(self, x, y, dx, dy):
+        if self.should_be_in_menu:
+            l, w, b, h = arcade.get_viewport()
+            left = w / 2 - 150
+            right = w / 2 + 150
+            top = h / 2 + 25
+            bottom = h / 2 - 25
+
+            if bottom <= y <= top and left <= x <= right:
+                self.quit_button_color = [54, 138, 199, 255]
+            else:
+                self.quit_button_color = [54, 155, 227, 255]
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if self.should_be_in_menu:
+            l, w, b, h = arcade.get_viewport()
+            left = w / 2 - 150
+            right = w / 2 + 150
+            top = h / 2 + 25
+            bottom = h / 2 - 25
+
+            if bottom <= y <= top and left <= x <= right:
+                print('Pressing')
+                self.quit_button_color = [46, 114, 163, 255]
+            else:
+                self.quit_button_color = [54, 155, 227, 255]
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        if self.should_be_in_menu:
+            l, w, b, h = arcade.get_viewport()
+            left = w / 2 - 150
+            right = w / 2 + 150
+            top = h / 2 + 25
+            bottom = h / 2 - 25
+
+            if bottom <= y <= top and left <= x <= right:
+                print('Pressing')
+                self.window.close()
+
     def on_key_press(self, key, modifiers):
-        if key == arcade.key.A:
-            self.left_pressed = True
+        if not self.should_be_in_menu:
+            if key == arcade.key.A:
+                self.left_pressed = True
 
-        if key == arcade.key.D:
-            self.right_pressed = True
+            if key == arcade.key.D:
+                self.right_pressed = True
 
-        if key == arcade.key.W:
-            if self.physics_engine.can_jump():
-                self.player_sprite.change_y = PLAYER_JUMP_SPEED
-                arcade.play_sound(self.jump_sound)
+            if key == arcade.key.W:
+                if self.physics_engine.can_jump():
+                    self.player_sprite.change_y = PLAYER_JUMP_SPEED
+                    arcade.play_sound(self.jump_sound)
+
+        if key == arcade.key.ESCAPE:
+            if self.should_be_in_menu:
+                self.should_be_in_menu = False
+            else:
+                self.should_be_in_menu = True
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.A:
@@ -255,7 +222,6 @@ class MyGame(arcade.View):
             self.right_pressed = False
 
     def on_update(self, delta_time):
-
         self.physics_engine.update()
 
         coin_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
@@ -267,21 +233,23 @@ class MyGame(arcade.View):
 
         self.player_sprite.change_x = 0
 
-        if self.left_pressed and not self.right_pressed:
-            self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
+        if not self.should_be_in_menu:
+            if self.left_pressed and not self.right_pressed:
+                self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
 
-        if self.right_pressed and not self.left_pressed:
-            self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
+            if self.right_pressed and not self.left_pressed:
+                self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
-        if self.player_sprite.left <= 600.0:
-            self.draw_shop_tip = True
-        else:
-            self.draw_shop_tip = False
+            if self.player_sprite.left <= 600.0:
+                self.draw_shop_tip = True
+            else:
+                self.draw_shop_tip = False
 
         self.view_left = int(arcade.lerp(self.view_left, self.player_sprite.center_x - SCREEN_WIDTH / 2, CAMERA_FOLLOW_SPEED))
         self.view_bottom = int(arcade.lerp(self.view_bottom, self.player_sprite.center_y - SCREEN_HEIGHT / 2, CAMERA_FOLLOW_SPEED))
 
-        arcade.set_viewport(self.view_left, self.view_left + SCREEN_WIDTH, self.view_bottom, self.view_bottom + SCREEN_HEIGHT)
+        if not self.should_be_in_menu:
+            arcade.set_viewport(self.view_left, self.view_left + SCREEN_WIDTH, self.view_bottom, self.view_bottom + SCREEN_HEIGHT)
 
 
 def main():
