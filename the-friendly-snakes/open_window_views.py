@@ -2,7 +2,6 @@ import arcade
 from pyglet import gl
 from Math import Maths
 from StartMenu import StartMenuView
-from Button import Button
 
 # help-phosphorus
 # game-development
@@ -178,7 +177,6 @@ class MyGame(arcade.View):
             bottom = h / 2 - 25
 
             if bottom <= y <= top and left <= x <= right:
-                print('Pressing')
                 self.quit_button_color = [46, 114, 163, 255]
             else:
                 self.quit_button_color = [54, 155, 227, 255]
@@ -192,7 +190,6 @@ class MyGame(arcade.View):
             bottom = h / 2 - 25
 
             if bottom <= y <= top and left <= x <= right:
-                print('Pressing')
                 self.window.close()
 
     def on_key_press(self, key, modifiers):
