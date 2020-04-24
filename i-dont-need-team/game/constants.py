@@ -24,3 +24,11 @@ class Blocks(Enum):
     wall = 2
     trap = 3
     water = 4
+
+TEXTURES_AND_COLORS = {
+    0: (141, 182, 0),
+    1: "./game/resources/frame.png",
+    2: "./game/resources/wall.png",
+    3: "./game/resources/trap.png",
+    4: (0, 105, 148)
+}
