@@ -190,6 +190,11 @@ class TextInput:
             self.center_x - self.width / 2 < x < self.center_x + self.width / 2 and
             self.center_y - self.height / 2 < y < self.center_y + self.height / 2
         ):
+            for idx, text_sprite in enumerate(self.text_sprites):
+                if text_sprite.left <= x <= text_sprite.right:
+                    self.cursor_idx = idx
+                    break
+
             self.active = True
 
         else:
