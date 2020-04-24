@@ -137,8 +137,6 @@ class TextInput:
         self.cursor_sprites.append(self.cursor)
 
     def draw_text_at_cursor(self, text: str) -> None:
-        self.text = self.text[:self.cursor_idx] + text + self.text[self.cursor_idx:]
-
         start_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
             sum(text_sprite.width for text_sprite in self.text_sprites[:self.cursor_idx])
 
@@ -154,10 +152,19 @@ class TextInput:
             italic=self.italic
         )
 
+        if (
+            sum(sprite.width for sprite in self.text_sprites) + text_sprite.width >
+            self.width - self.horizontal_margin * 2
+        ):
+            return
+
+        self.text = self.text[:self.cursor_idx] + text + self.text[self.cursor_idx:]
+
         for sprite in self.text_sprites[self.cursor_idx:]:
             sprite.center_x += text_sprite.width
 
         self.text_sprites.insert(self.cursor_idx, text_sprite)
+        self.cursor_idx += 1
 
         # Prevent the use of the same instance
         arcade.text.draw_text_cache.clear()
@@ -197,7 +204,6 @@ class TextInput:
                 key -= 32
 
             self.draw_text_at_cursor(chr(key))
-            self.cursor_idx += 1
 
         elif key == arcade.key.BACKSPACE:
             if len(self.text) > 0:
