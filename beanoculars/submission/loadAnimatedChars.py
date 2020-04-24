@@ -197,7 +197,6 @@ class AnimatedDamage(arcade.Sprite):
         for i in range(self.numberFrames):
             texture_pair = load_dmg_texture(f"{main_path}_f{i + 1}.png")
             self.basic_textures.append(texture_pair)
-            print(self.basic_textures)
 
         self.texture = self.basic_textures[0]
 
