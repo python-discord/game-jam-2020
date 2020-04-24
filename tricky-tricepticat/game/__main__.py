@@ -16,6 +16,9 @@ import arcade
 import PIL
 from pyglet import gl
 
+# Local application
+from game.utils import pathfinding
+
 UPDATES_PER_FRAME = 3
 
 PLAYER_MOVEMENT_SPEED = 150
@@ -126,6 +129,49 @@ class Ship(arcade.Sprite):
         self.health = 100
 
         self.scale = SHIP_SCALING
+
+
+class EnemyShip(Ship):
+    '''
+    Enemy Ship
+    '''
+    def __init__(self, filename):
+        super().__init__(filename)
+        self.name = 'Ship'
+
+        self.health = 100
+
+        self.scale = SHIP_SCALING
+
+        self.speed = 3
+
+        self.SAIL_SPEED_FACTOR = 0.5
+
+        self.target = (0, 0)
+
+    def move_to(self, target, delta_time):
+        self.change_x = 0
+        self.change_y = 0
+
+        self.target = target
+        # target = (x, y)
+
+        dx = target[0] - self.center_x
+        dy = target[1] - self.center_y
+
+        self.angle = degrees(atan2(dy, dx)) % 360 + 90
+
+        self.change_y = self.speed*dy*delta_time
+        self.change_x = self.speed*dx*delta_time
+
+        print(f"MOVING:{dy, dx, self.angle, self.change_x, self.change_y}")
+
+    def on_update(self, delta_time):
+
+        self.center_x += self.change_x*self.SAIL_SPEED_FACTOR
+        self.center_y += self.change_y*self.SAIL_SPEED_FACTOR
+
+        print(self.center_x, self.center_y)
 
 
 class Pirate(arcade.Sprite):
@@ -251,6 +297,8 @@ class Enemy_SpriteSheet(arcade.Sprite):
         super().__init__()
         self.character_face_direction = LEFT_FACING
 
+        self.movement_speed = 10
+
         self.health = 100
 
         self.is_idle = False
@@ -307,6 +355,12 @@ class Enemy_SpriteSheet(arcade.Sprite):
 
         if self.health <= 0:
             self.kill()
+
+        self.center_x += self.change_x*delta_time*self.movement_speed
+        self.center_y += self.change_y*delta_time*self.movement_speed
+
+        self.change_x = 0
+        self.change_y = 0
 
     def update_animation(self, delta_time):
         # Figure out if we need to flip face left or right
@@ -385,10 +439,17 @@ class Enemy_SpriteSheet(arcade.Sprite):
 
             self.cur_run_texture += 1
 
+    def move_to(self, target):
+        pass
+        # atan2()
+
 
 class ShipView(arcade.View):
     def __init__(self):
         super().__init__()
+
+        self.matrix = pathfinding.layer_to_grid(
+            path['maps'] / 'test_map_islands.csv')
 
         arcade.set_background_color(arcade.color.AMAZON)
 
@@ -398,15 +459,26 @@ class ShipView(arcade.View):
         self.up_pressed = False
         self.down_pressed = False
 
-        self.ship_sprite = Ship(path['img']/'ship'/'ship.png')
+        self.enemy_list = arcade.SpriteList()
+
+        self.player_ship = Ship(path['img'] / 'ship' / 'ship.png')
+        self.enemy_ship = EnemyShip(path['img'] / 'enemy_ship' / 'ship.png')
 
         for i in (50, 25, 0):
-            self.ship_sprite.append_texture(
-                arcade.load_texture(path['img'] / 'ship' / f'ship_{i}.png'))
+            self.player_ship.append_texture(
+                arcade.load_texture(
+                    path['img'] / 'ship' / f'ship_{i}.png'))
+
+            self.enemy_ship.append_texture(
+                arcade.load_texture(
+                    path['img'] / 'enemy_ship' / f'ship_{i}.png'))
 
         self.cannonballs = arcade.SpriteList()
 
-        self.ship_sprite.set_position(800, 800)
+        self.player_ship.set_position(800, 800)
+        self.enemy_ship.set_position(1600, 1200)
+
+        self.enemy_list.append(self.enemy_ship)
 
         self.layer_shift_count = 0
         self.seafoam_shift_count = 64
@@ -415,8 +487,24 @@ class ShipView(arcade.View):
         self.map_layers = [arcade.process_layer(
             self.map, layer.name) for layer in self.map.layers]
 
+        # Use spatial hashing with the static layers
+        for layer in range(len(self.map_layers)):
+            if self.map_layers[layer] in (2, 3):
+                layer.use_spatial_hash = True
+                layer.spatial_hash = arcade.sprite_list._SpatialHash(
+                    cell_size=128
+                )
+                layer._recalculate_spatial_hashes()
+
         self.physics_engine = arcade.PhysicsEngineSimple(
-            self.ship_sprite, self.map_layers[2])
+            self.player_ship, self.map_layers[2])
+
+        self.enemy_engines = [arcade.PhysicsEngineSimple(
+            enemy, self.map_layers[2]) for enemy in self.enemy_list]
+
+        for enemy in self.enemy_list:
+            self.physics_engine = arcade.PhysicsEngineSimple(
+                self.player_ship, self.map_layers[2])
 
         # Used to keep track of our scrolling
         self.view_bottom = 0
@@ -424,7 +512,7 @@ class ShipView(arcade.View):
 
         # self.player_view = PlayerView()
 
-        self.ship_sprite.target_angle = 0
+        self.player_ship.target_angle = 0
 
         self.SAIL_SPEED_FACTOR = 0
 
@@ -451,6 +539,9 @@ class ShipView(arcade.View):
         self.collision_time = 0
         self.time_diff = 20
 
+        self.enemy_path = []
+        self.path_position = 0
+
     def scroll(self):
         # --- Manage Scrolling ---
 
@@ -461,16 +552,16 @@ class ShipView(arcade.View):
             self.viewport_scale = 3.0
 
         left = int(
-            self.ship_sprite._get_position()[0] -
+            self.player_ship._get_position()[0] -
             SCREEN_WIDTH / 2 * self.viewport_scale)
         right = int(
-            self.ship_sprite._get_position()[0] +
+            self.player_ship._get_position()[0] +
             SCREEN_WIDTH / 2 * self.viewport_scale)
         bottom = int(
-            self.ship_sprite._get_position()[1] -
+            self.player_ship._get_position()[1] -
             SCREEN_HEIGHT / 2 * self.viewport_scale)
         top = int(
-            self.ship_sprite._get_position()[1] +
+            self.player_ship._get_position()[1] +
             SCREEN_HEIGHT / 2 * self.viewport_scale)
 
         if left < 75:
@@ -494,35 +585,47 @@ class ShipView(arcade.View):
                 int(top)
             )
 
-    def on_show(self):
-        print("Switched to ShipView")
-        # print(self.window.get_viewport())
+    def ship_controls(self, delta_time):
+        # Calculate speed based on the keys pressed
+        # self.player_ship.change_x = 0
+        # self.player_ship.change_y = 0
 
-    def play_audio(self):
-        for audio in self.audio_list:
-            # Have to stop and play before audio ends or the audio
-            # cannot be played again
-            if audio.get_stream_position() >= audio.get_length()-0.5:
-                volume = audio.get_volume()
-                audio.stop()
-                audio.play(volume=volume)
+        if self.SAIL_SPEED_FACTOR < 0:
+            self.SAIL_SPEED_FACTOR = 0
 
-    def on_draw(self):
-        arcade.start_render()
+        if self.SAIL_SPEED_FACTOR > 1:
+            self.SAIL_SPEED_FACTOR = 1
 
-        for layer in self.map_layers:
-            layer.draw(filter=gl.GL_NEAREST)
+        self.player_ship.change_y = (
+            self.SAIL_SPEED_FACTOR * SHIP_MOVEMENT_SPEED * sin(radians(
+                self.player_ship.angle % 360 - 90)
+            ) * delta_time
+        )
 
-        self.cannonballs.draw()
+        self.player_ship.change_x = (
+            self.SAIL_SPEED_FACTOR * SHIP_MOVEMENT_SPEED * cos(radians(
+                self.player_ship.angle % 360 - 90)
+            ) * delta_time
+        )
 
-        self.ship_sprite.draw()
+        self.player_ship.change_angle = 0
 
-    def on_update(self, delta_time):
+        if self.up_pressed and not self.down_pressed:
+            self.SAIL_SPEED_FACTOR += 0.01
 
-        self.cannonballs.update()
+        elif self.down_pressed and not self.up_pressed:
+            self.SAIL_SPEED_FACTOR -= 0.005
 
-        self.scroll()
+        if self.left_pressed and not self.right_pressed:
+            self.player_ship.change_angle = 1
 
+        elif self.right_pressed and not self.left_pressed:
+            self.player_ship.change_angle = -1
+
+    def animate_layers(self):
+        """
+        Animate the ocean waves and sea foam layers.
+        """
         self.map_layers[0].move(1, 0)
         if self.seafoam_shift_count > 0:
             self.map_layers[1].move(0.25, 0.25)
@@ -540,97 +643,162 @@ class ShipView(arcade.View):
         if self.seafoam_shift_count == -64:
             self.seafoam_shift_count = 64
 
-
-        # Calculate speed based on the keys pressed
-        # self.ship_sprite.change_x = 0
-        # self.ship_sprite.change_y = 0
-
-        if self.SAIL_SPEED_FACTOR < 0:
-            self.SAIL_SPEED_FACTOR = 0
-
-        if self.SAIL_SPEED_FACTOR > 1:
-            self.SAIL_SPEED_FACTOR = 1
-
-        self.ship_sprite.change_y = (
-            self.SAIL_SPEED_FACTOR * SHIP_MOVEMENT_SPEED * sin(radians(
-                self.ship_sprite.angle % 360 - 90)
-            ) * delta_time
-        )
-
-        self.ship_sprite.change_x = (
-            self.SAIL_SPEED_FACTOR * SHIP_MOVEMENT_SPEED * cos(radians(
-                self.ship_sprite.angle % 360 - 90)
-            ) * delta_time
-        )
-
-        self.ship_sprite.change_angle = 0
-
-        if self.up_pressed and not self.down_pressed:
-            self.SAIL_SPEED_FACTOR += 0.01
-
-        elif self.down_pressed and not self.up_pressed:
-            self.SAIL_SPEED_FACTOR -= 0.005
-
-        if self.left_pressed and not self.right_pressed:
-            self.ship_sprite.change_angle = 1
-
-        elif self.right_pressed and not self.left_pressed:
-            self.ship_sprite.change_angle = -1
-
-        # self.ship_sprite.on_update(delta_time)
-
-        # print(self.get_viewport())
-        width, height = arcade.get_viewport()[1], arcade.get_viewport()[3]
-
-        if self.ship_sprite.left < 0:
-            self.ship_sprite.left = 0
-        elif self.ship_sprite.right > width - 1:
-            self.ship_sprite.right = width - 1
-
-        if self.ship_sprite.bottom < 0:
-            self.ship_sprite.bottom = 0
-        elif self.ship_sprite.top > height - 1:
-            self.ship_sprite.top = height - 1
-
-        '''
-        Handle wall collision damage
-        '''
+    def ship_collision(self):
+        """
+        Handle wall collision damage.
+        """
         collided_walls = self.physics_engine.update()
         wall_collision = len(collided_walls) > 0
 
-        # print(f"{self.ship_sprite.health, collided_walls}")
-        speed = sqrt(self.ship_sprite.change_x**2 + self.ship_sprite.change_y**2)
+        # print(f"{self.player_ship.health, collided_walls}")
+        speed = sqrt(
+            self.player_ship.change_x**2
+            + self.player_ship.change_y**2
+        )
 
         if wall_collision:
             self.collision_time = time.time()
         else:
             self.time_diff = time.time() - self.collision_time
 
-        print((time.time(), self.collision_time, self.time_diff))
+        # print((time.time(), self.collision_time, self.time_diff))
 
         if wall_collision and speed > 0.1 and self.time_diff > 0.5:
-            self.ship_sprite.health -= 10
+            self.player_ship.health -= 10
 
-        if int(self.ship_sprite.health) in range(25, 51):
-            self.ship_sprite.set_texture(1)
-            self.ship_sprite.change_y *= 0.5
-            self.ship_sprite.change_x *= 0.5
+        if int(self.player_ship.health) in range(25, 51):
+            self.player_ship.set_texture(1)
+            self.player_ship.change_y *= 0.5
+            self.player_ship.change_x *= 0.5
 
-        elif int(self.ship_sprite.health) in range(1, 25):
-            self.ship_sprite.set_texture(2)
-            self.ship_sprite.change_y *= 0.25
-            self.ship_sprite.change_x *= 0.25
+        elif int(self.player_ship.health) in range(1, 25):
+            self.player_ship.set_texture(2)
+            self.player_ship.change_y *= 0.25
+            self.player_ship.change_x *= 0.25
 
         self.time_diff = time.time() - self.collision_time
 
         # Death condition
-        if int(self.ship_sprite.health) <= 0:
-            self.ship_sprite.set_texture(3)
+        if int(self.player_ship.health) <= 0:
+            self.player_ship.set_texture(3)
             self.SAIL_SPEED_FACTOR = 0
+
+    def on_show(self):
+        print("Switched to ShipView")
+        # print(self.window.get_viewport())
+
+    def play_audio(self):
+        """
+        Loop ambient and music audio.
+        """
+        for audio in self.audio_list:
+            # Have to stop and play before audio ends or the audio
+            # cannot be played again
+            if audio.get_stream_position() >= audio.get_length()-0.5:
+                volume = audio.get_volume()
+                audio.stop()
+                audio.play(volume=volume)
+
+    def enemy_pathfinding(self, delta_time):
+        for enemy in self.enemy_list:
+
+            if len(self.enemy_path)-1 < self.path_position:
+                self.path_position = 1
+
+                self.enemy_path = pathfinding.find_path(
+                    self.matrix,
+                    enemy.center_x, enemy.center_y,
+                    self.player_ship.center_x, self.player_ship.center_y
+                )
+
+            print(self.enemy_path, self.path_position)
+
+            if len(self.enemy_path) > 1:
+
+                path_x, path_y = self.enemy_path[self.path_position]
+                if (
+                        int(enemy.center_x) not in range(
+                            path_x-32, path_x+32)and
+                        int(enemy.center_y) not in range(
+                            path_y-32, path_y+32)
+                ):
+                    print(f"Moving to node {self.path_position}")
+                    enemy.move_to(self.enemy_path[self.path_position], delta_time)
+
+                else:
+                    print(f"At node {self.path_position}")
+                    self.path_position += 1
+
+            else:
+                enemy.change_x, enemy.change_y = 0, 0
+                self.enemy_path = pathfinding.find_path(
+                    self.matrix,
+                    enemy.center_x, enemy.center_y,
+                    self.player_ship.center_x, self.player_ship.center_y
+                )
+
+    def on_draw(self):
+        arcade.start_render()
+
+        for layer in self.map_layers:
+            layer.draw(filter=gl.GL_NEAREST)
+
+        self.cannonballs.draw()
+
+        self.player_ship.draw()
+
+        self.enemy_ship.draw()
+
+        for point in self.enemy_path:
+            arcade.draw_point(point[0], point[1], arcade.color.RED, 30)
+
+        arcade.draw_line(self.enemy_ship.center_x, self.enemy_ship.center_y, self.enemy_ship.target[0], self.enemy_ship.target[1], arcade.color.RED, 5)
+
+    def on_update(self, delta_time):
+
+        # Update cannonball position
+        self.cannonballs.update()
+
+        # TODO: Need to figure out these values
+        max_height = 10000
+        max_width = 10000
+
+        for cannonball in self.cannonballs:
+            if (cannonball._get_right() < 0
+                    or cannonball._get_top() < 0
+                    or cannonball._get_bottom() > max_height
+                    or cannonball._get_left() > max_width):
+                cannonball.kill()
+
+        # Scroll viewport with ship movement
+        self.scroll()
+
+        # Detect user input and change speed
+        self.ship_controls(delta_time)
+
+        # Animate ocean and sea foam layers
+        self.animate_layers()
+
+        # Engine update and collision detection
+        self.ship_collision()
 
         self.play_audio()
 
-        # print((self.time_diff, speed, wall_collision, wall_collision and speed > 1 and self.time_diff > 2))
+        self.enemy_pathfinding(delta_time)
+
+        self.enemy_list.on_update(delta_time)
+
+        width, height = arcade.get_viewport()[1], arcade.get_viewport()[3]
+
+        if self.player_ship.left < 0:
+            self.player_ship.left = 0
+        elif self.player_ship.right > width - 1:
+            self.player_ship.right = width - 1
+
+        if self.player_ship.bottom < 0:
+            self.player_ship.bottom = 0
+        elif self.player_ship.top > height - 1:
+            self.player_ship.top = height - 1
 
     def on_key_press(self, key, key_modifiers):
         """
@@ -648,30 +816,38 @@ class ShipView(arcade.View):
         elif key == arcade.key.D:
             self.right_pressed = True
         if key == arcade.key.Q:
-            cannonball = arcade.Sprite(path['img'] / 'ship' / 'cannonBall.png', 1)
+            cannonball = arcade.Sprite(
+                path['img'] / 'ship' / 'cannonBall.png', 1)
 
-            start_x, start_y = self.ship_sprite._get_position()
+            start_x, start_y = self.player_ship._get_position()
             cannonball.set_position(start_x, start_y)
 
-            cannonball.change_x = cos(radians(self.ship_sprite.angle)) * CANNONBALL_SPEED
-            cannonball.change_y = sin(radians(self.ship_sprite.angle)) * CANNONBALL_SPEED
+            cannonball.change_x = cos(radians(
+                self.player_ship.angle)) * CANNONBALL_SPEED
 
-            print(self.ship_sprite.angle%360)
+            cannonball.change_y = sin(radians(
+                self.player_ship.angle)) * CANNONBALL_SPEED
+
+            print(self.player_ship.angle % 360)
 
             self.cannonballs.append(cannonball)
 
             # TODO: Add collision detection to remove sprites and cause damage
 
         if key == arcade.key.E:
-            cannonball = arcade.Sprite(path['img'] / 'ship' / 'cannonBall.png', 1)
+            cannonball = arcade.Sprite(
+                path['img'] / 'ship' / 'cannonBall.png', 1)
 
-            start_x, start_y = self.ship_sprite._get_position()
+            start_x, start_y = self.player_ship._get_position()
             cannonball.set_position(start_x, start_y)
 
-            cannonball.change_x = cos(radians(self.ship_sprite.angle+180)) * CANNONBALL_SPEED
-            cannonball.change_y = sin(radians(self.ship_sprite.angle+180)) * CANNONBALL_SPEED
+            cannonball.change_x = cos(radians(
+                self.player_ship.angle+180)) * CANNONBALL_SPEED
 
-            print(self.ship_sprite.angle%360)
+            cannonball.change_y = sin(radians(
+                self.player_ship.angle+180)) * CANNONBALL_SPEED
+
+            print(self.player_ship.angle % 360)
 
             self.cannonballs.append(cannonball)
 
@@ -704,7 +880,11 @@ class PlayerView(arcade.View):
 
         self.formation = 0
 
+        self.paused = False
+
         self.mouse_position = (0,0)
+
+        self.cursor = arcade.Sprite(path['img'] / 'cursor' / 'sword.png')
 
         arcade.set_background_color(arcade.color.AMAZON)
 
@@ -716,13 +896,16 @@ class PlayerView(arcade.View):
 
         self.player_sprites = arcade.SpriteList()
 
-        self.player_sprite = Pirate('captain')
+
 
         # for i in ('brawn', 'bald'):
         #     self.player_sprites.append(Pirate(i))
         self.player_sprites.append(Pirate('brawn'))
-        self.player_sprites.append(self.player_sprite)
+        self.player_sprites.append(Pirate('captain'))
         self.player_sprites.append(Pirate('bald'))
+
+        self.selected_character = 0
+        self.player_sprite = self.player_sprites[self.selected_character]
 
         self.player_sprites[0].set_position(200, 200)
         self.player_sprites[2].set_position(200, 200)
@@ -743,6 +926,12 @@ class PlayerView(arcade.View):
 
         self.map_layers = [arcade.process_layer(
             self.map, layer.name) for layer in self.map.layers]
+
+        # Use spatial hashing with the static layers
+        for layer in self.map_layers:
+            layer.use_spatial_hash = True
+            layer.spatial_hash = arcade.sprite_list._SpatialHash(cell_size=128)
+            layer._recalculate_spatial_hashes()
 
         self.physics_engines = []
 
@@ -809,6 +998,11 @@ class PlayerView(arcade.View):
             bottom = 0
             top = SCREEN_HEIGHT*self.viewport_scale
 
+        self.view_left = left
+        self.view_right = right
+        self.view_bottom = bottom
+        self.view_top = top
+
         if True:
             arcade.set_viewport(
                 left,
@@ -832,9 +1026,14 @@ class PlayerView(arcade.View):
 
         self.level_sprites.draw(filter=gl.GL_NEAREST)
 
+        self.cursor.draw()
+
         # arcade.draw_line(self.mouse_position[0]*self.viewport_scale, self.mouse_position[1]*self.viewport_scale, self.player_sprite.center_x, self.player_sprite.center_y, arcade.color.RED, 1)
 
     def on_update(self, delta_time):
+
+        if self.paused:
+            return
 
         self.scroll()
 
@@ -897,10 +1096,10 @@ class PlayerView(arcade.View):
         # self.level_sprites.update()
 
         self.enemy_list.on_update(delta_time)
-
+        self.view_left
         '''Handle positioning the player's weapon'''
-        dx = (self.mouse_position[0]*self.viewport_scale+arcade.get_viewport()[0])-self.player_sprite.center_x
-        dy = (self.mouse_position[1]*self.viewport_scale+arcade.get_viewport()[2])-self.player_sprite.center_y
+        dx = (self.mouse_position[0]*self.viewport_scale+self.view_left)-self.player_sprite.center_x
+        dy = (self.mouse_position[1]*self.viewport_scale+self.view_bottom)-self.player_sprite.center_y
         angle = atan2(dy, dx)
         self.player_sprite.weapon.center_x = self.player_sprite.center_x+25*cos(angle)
         self.player_sprite.weapon.center_y = self.player_sprite.center_y+25*sin(angle)
@@ -908,7 +1107,8 @@ class PlayerView(arcade.View):
 
         self.player_sprite.weapon.update_animation()
 
-
+        if self.selected_character > 2:
+            self.selected_character = 0
 
         player_stab = (
             self.player_sprite.weapon.is_stab and
@@ -933,6 +1133,15 @@ class PlayerView(arcade.View):
                 enemy.is_hit = True
                 enemy.health -= 10
         # print(self.player_sprite.weapon.collides_with_list(self.enemy_list))
+
+        x, y = self.mouse_position
+        self.cursor._set_left(x*self.viewport_scale+self.view_left)
+        self.cursor._set_top(y*self.viewport_scale+self.view_bottom)
+        self.cursor.scale = self.viewport_scale
+
+        for enemy in self.enemy_list:
+            if arcade.get_distance_between_sprites(self.player_sprite, enemy) < 100:
+                enemy.move_to(self.player_sprite)
 
     def on_key_press(self, key, key_modifiers):
         """
@@ -965,6 +1174,12 @@ class PlayerView(arcade.View):
         if key == arcade.key.F11:
             self.window.set_fullscreen(not self.window.fullscreen)
             self.window.set_vsync(not self.window.vsync)
+
+        if key == arcade.key.ESCAPE:
+            self.paused = not self.paused
+
+        if key == arcade.key.LALT:
+            self.selected_character += 1
 
     def on_key_release(self, key, key_modifiers):
         """
@@ -1085,11 +1300,11 @@ def main():
     """ Main method """
     # window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    # ship_view = ShipView()
-    player_view = PlayerView()
+    ship_view = ShipView()
+    # player_view = PlayerView()
 
-    # window.show_view(ship_view)
-    window.show_view(player_view)
+    window.show_view(ship_view)
+    # window.show_view(player_view)
 
     arcade.run()
 
