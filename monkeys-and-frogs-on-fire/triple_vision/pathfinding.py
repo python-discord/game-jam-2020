@@ -1,5 +1,4 @@
 from __future__ import annotations
-from timeit import default_timer as timer
 
 from typing import Optional, Tuple, Iterator
 
@@ -53,25 +52,11 @@ class Node:
         )
 
 
-def speed_test(func):
-    def wrapper(*args, **kwargs):
-        start = timer()
-        maybe_return = func(*args, **kwargs)
-        took = timer() - start
-        if took > 0.1:
-            print(f"!!!!!!!!!!!!!!!!!!{func.__name__} took {took} seconds.")
-        else:
-            print(f"{func.__name__} took {took} seconds.")
-        return maybe_return
-    return wrapper
-
-
 class PathFinder:
 
     def __init__(self, max_tries: int = 300) -> None:
         self.max_tries = max_tries
 
-    @speed_test
     def find(
         self,
         start_pos: Tuple[int, int],
