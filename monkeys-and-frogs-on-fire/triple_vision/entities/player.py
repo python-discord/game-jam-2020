@@ -214,18 +214,15 @@ class PlayerLiveManager:
     def __init__(
         self,
         view,
-        *args,
         life_count: int = 10,
         is_filled: bool = True,
         scale: float = 1,
-        **kwargs
     ) -> None:
 
-        super().__init__(*args, scale=scale, **kwargs)
         self.view = view
         self.camera = self.view.camera
         self.player = self.view.player
-        self.life_count = life_count
+        self.life_count = self.player.hp
         self.margin = 30
         self.hearts = arcade.SpriteList()
         self.heart_map = [2, 2, 2]
@@ -239,8 +236,8 @@ class PlayerLiveManager:
             self.hearts.append(
                 arcade.Sprite(
                     "assets/hearts/heart_2.png",
-                    center_x=100 + i * self.margin,
-                    center_y=100,
+                    center_x=i * (100 + self.camera.viewport_left + self.margin),
+                    center_y=100 + self.camera.viewport_bottom,
                     scale=self.scaling
                 )
             )
@@ -264,12 +261,14 @@ class PlayerLiveManager:
             elif heart_pos < self.life_count:
                 self.heart_map[index] += 1
 
-        viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
+        viewport = (self.camera.viewport_left, self.camera.viewport_bottom)
         if self.prev_viewport != viewport:
             for heart in self.hearts:
                 heart.center_x += viewport[0] - self.prev_viewport[0]
                 heart.center_y += viewport[1] - self.prev_viewport[1]
                 self.prev_viewport = viewport
+
+        self.update_hearts()
 
     def draw(self):
         self.hearts.draw()
