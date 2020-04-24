@@ -174,7 +174,7 @@ class Game(arcade.Window):
         arcade.draw_text(
             self.banner_text,
             *self.banner_location,
-            color=arcade.color.GREEN, font_size=24)
+            color=arcade.color.GREEN, font_size=22)
 
     @log_exceptions
     def on_mouse_press(self, x, y, button, modifiers):
