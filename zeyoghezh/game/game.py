@@ -1,6 +1,7 @@
 import random
 import arcade
 import logging
+import itertools
 import time
 from arcade.gui import Theme, TextButton
 from .util import (
@@ -70,7 +71,7 @@ class Game(arcade.Window):
         self.player_has_healed_planet = False
         self.banner_text = ""
         self.last_banner_change = None
-        self.story_iter = (line for line in STORY_LINES)
+        self.story_iter = itertools.cycle(line for line in STORY_LINES)
         self.background = arcade.load_texture(
             BACKGROUND_IMAGE)
         try:
