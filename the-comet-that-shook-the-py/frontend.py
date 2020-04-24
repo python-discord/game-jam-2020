@@ -26,6 +26,9 @@ class TileSprite(arcade.Sprite):
         # TODO figure out the right scaling setup for these values
         self.width = TILE_WIDTH
         self.height = TILE_HEIGHT
+        self.set_bounds()
+
+    def set_bounds(self):
         self.boundary_left = (self.center_x - (self.width // 2))
         self.boundary_right = self.center_x + (self.width // 2)
         self.boundary_bottom = self.center_y - (self.height // 2)
@@ -110,6 +113,7 @@ class MyGame(arcade.Window):
         """
         Called when a user releases a mouse button.
         """
+        self.dragging_sprite.set_bounds()
         self.dragging_sprite = None
 
 
