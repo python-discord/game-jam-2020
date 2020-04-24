@@ -29,20 +29,34 @@ class TileSprite(arcade.Sprite):
         self.set_bounds()
 
     def set_bounds(self):
-        self.boundary_left = (self.center_x - (self.width // 2))
+        self.boundary_left = self.center_x - (self.width // 2)
         self.boundary_right = self.center_x + (self.width // 2)
         self.boundary_bottom = self.center_y - (self.height // 2)
         self.boundary_top = self.center_y + (self.height // 2)
 
+    def reset(self):
+        """Resets the sprite back to its original starting position"""
+        self.center_x = self.starting_x
+        self.center_y = self.starting_y
+
 
 class SubmissionGrid(arcade.Sprite):
-
     def __init__(self):
-        super().__init__('assets/grid.png')
+        super().__init__("assets/grid.png")
         self.width = WINDOW_HEIGHT * (2 / 3)
         self.height = WINDOW_HEIGHT * (2 / 3)
         self.center_y = WINDOW_HEIGHT * (2 / 3) - (1 / 27 * WINDOW_HEIGHT)
         self.center_x = WINDOW_HEIGHT * 1 / 3 + WINDOW_HEIGHT * 1 / 27
+
+    def check_if_point_is_inside(self, point: Tuple[float, float]) -> Optional[Tuple[float, float]]:
+        """
+        Checks whether the provided point is within the octothorpe, if so, returns the coordinate of the subsection
+        which that octothorpe belongs in
+        :param point: the point to check the bounds of
+        :return: None, or a point which is the centre of the octothorpe section which the provided point is in
+        """
+        # TODO implement
+        pass
 
 
 class MyGame(arcade.Window):
@@ -65,16 +79,19 @@ class MyGame(arcade.Window):
     def setup(self):
         """
         Set the game up for play. Call this to reset the game.
-        :return:
         """
         self.main_sprites = arcade.SpriteList()
         self.main_sprites.append(SubmissionGrid())
         self.tile_sprites = arcade.SpriteList()
         for x, y in self.get_boneyard_starting_positions():
-            tile_sprite = TileSprite('assets/R3_watermelon_0.png', int(x), int(y))
+            # TODO interface this with the backend
+            tile_sprite = TileSprite("assets/R3_watermelon_0.png", int(x), int(y))
             self.tile_sprites.append(tile_sprite)
 
     def get_boneyard_starting_positions(self):
+        """
+        yields the positions where tiles should be placed in the starting boneyard
+        """
         for i in range(9):
             left_edge_padding = 1 / 27 * WINDOW_WIDTH
             tile_and_padding = ((TILE_WIDTH * i) + TILE_PADDING_H * i) // 2
@@ -94,8 +111,9 @@ class MyGame(arcade.Window):
 
     def on_mouse_motion(self, x, y, dx, dy):
         """ Called to update our objects. Happens approximately 60 times per second."""
-        self.dragging_sprite.center_x = x
-        self.dragging_sprite.center_y = y
+        if self.dragging_sprite is not None:
+            self.dragging_sprite.center_x = x
+            self.dragging_sprite.center_y = y
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -104,22 +122,24 @@ class MyGame(arcade.Window):
         tile_sprite: TileSprite
         for tile_sprite in self.tile_sprites:
             if check_bounds(
-                    (x, y),
-                    (tile_sprite.boundary_left, tile_sprite.boundary_bottom),
-                    (tile_sprite.boundary_right, tile_sprite.boundary_top)):
+                (x, y),
+                (tile_sprite.boundary_left, tile_sprite.boundary_bottom),
+                (tile_sprite.boundary_right, tile_sprite.boundary_top),
+            ):
                 self.dragging_sprite = tile_sprite
 
     def on_mouse_release(self, x, y, button, modifiers):
         """
         Called when a user releases a mouse button.
         """
-        self.dragging_sprite.set_bounds()
-        self.dragging_sprite = None
+        if self.dragging_sprite is not None:
+            self.dragging_sprite.reset()
+            self.dragging_sprite = None
 
 
-def check_bounds(point: Tuple[float, float],
-                 bottom_left: Tuple[float, float],
-                 top_right: Tuple[float, float]) -> bool:
+def check_bounds(
+    point: Tuple[float, float], bottom_left: Tuple[float, float], top_right: Tuple[float, float],
+) -> bool:
     """
     Check if a given point is within the bounds of 4 sides
     :param top_right: the top right of the bounding rectangle
@@ -129,5 +149,4 @@ def check_bounds(point: Tuple[float, float],
     """
     if bottom_left == top_right:
         raise ValueError("Bottom left and top right can't be the same")
-    return (bottom_left[0] < point[0] < top_right[0]) \
-           and (bottom_left[1] < point[1] < top_right[1])
+    return (bottom_left[0] < point[0] < top_right[0]) and (bottom_left[1] < point[1] < top_right[1])
