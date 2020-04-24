@@ -34,6 +34,7 @@ class Keyboard:
         self.add_key("dash", arcade.key.K)
         self.add_key("zoom_out", arcade.key.MINUS)
         self.add_key("zoom_in", arcade.key.EQUAL)
+        self.add_key("fullscreen", arcade.key.F10)
 
     def on_key_press(self, key: int, modifiers: int):
         if self.key_codes_list.get(key):
