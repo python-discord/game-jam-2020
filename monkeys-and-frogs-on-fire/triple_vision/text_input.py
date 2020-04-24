@@ -14,7 +14,6 @@ class TextInput:
         box_color: Tuple[int, int, int, int] = arcade.color.WHITE,
         border_color: Tuple[int, int, int, int] = arcade.color.BLACK,
         border_width: float = 1,
-        text: str = '',
         text_color: Tuple[int, int, int, int] = arcade.color.BLACK,
         bold: bool = False,
         italic: bool = False,
@@ -33,7 +32,7 @@ class TextInput:
         self.border_color = border_color
         self.border_width = border_width
 
-        self.text = text
+        self.text = ''
         self.text_color = text_color
         self.bold = bold
         self.italic = italic
@@ -83,7 +82,7 @@ class TextInput:
             center_y=center_y - (height / 2) + vertical_margin + self.text_sprites[0].height / 2,
             width=1,
             height=self.text_sprites[0].height,
-            color=cursor_color
+            color=self.box_color
         )
         self.cursor_sprites.append(self.cursor)
 
@@ -93,6 +92,34 @@ class TextInput:
 
         self.cursor_is_active = True
         self.cursor_blink_delta = 0
+
+        self._active = True
+
+    @property
+    def active(self) -> bool:
+        return self._active
+
+    @active.setter
+    def active(self, value: bool) -> None:
+        if not value:
+            self.cursor_sprites.remove(self.cursor)
+
+            center_x = self.center_x - (self.width / 2) + self.horizontal_margin + \
+                sum(self.text_widths[:self.cursor_idx]) + 1
+
+            center_y = self.center_y - (self.height / 2) + self.vertical_margin + \
+                self.text_sprites[0].height / 2
+
+            self.cursor = arcade.create_rectangle_filled(
+                center_x=center_x,
+                center_y=center_y,
+                width=1,
+                height=self.text_sprites[0].height,
+                color=self.box_color
+            )
+            self.cursor_sprites.append(self.cursor)
+
+        self._active = value
 
     def move_cursor(self) -> bool:
         if self.prev_cursor_idx != self.cursor_idx:
@@ -119,7 +146,20 @@ class TextInput:
 
         return False
 
+    def process_mouse_press(self, x, y, button, modifiers) -> None:
+        if (
+            self.center_x - self.width / 2 < x < self.center_x + self.width / 2 and
+            self.center_y - self.height / 2 < y < self.center_y + self.height / 2
+        ):
+            self.active = True
+
+        else:
+            self.active = False
+
     def process_key_press(self, key, modifiers) -> None:
+        if not self.active:
+            return
+
         changed = False
 
         if 32 <= key <= 126:
@@ -184,6 +224,9 @@ class TextInput:
         self.cursor_sprites.draw()
 
     def on_update(self, delta_time: float = 1/60) -> None:
+        if not self.active:
+            return
+
         if self.move_cursor():
             return
 
@@ -235,6 +278,9 @@ if __name__ == "__main__":
                 WINDOW_SIZE[1] / 2,
                 300, 25
             )
+
+        def on_mouse_press(self, x, y, button, modifiers) -> None:
+            self.text_input.process_mouse_press(x, y, button, modifiers)
 
         def on_key_press(self, key, modifiers) -> None:
             self.text_input.process_key_press(key, modifiers)
