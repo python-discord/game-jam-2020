@@ -111,7 +111,7 @@ class Player(LivingEntity, MovingSprite):
             center_x=420,
             center_y=18,
             scale=1,
-            auto_filling_speed=1.0
+            auto_filling_speed=1.5
         )
 
         center = tuple()
