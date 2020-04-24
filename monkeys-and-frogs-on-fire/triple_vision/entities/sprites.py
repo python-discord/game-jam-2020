@@ -157,6 +157,9 @@ class HealthBar(arcade.Sprite):
             self.view.camera.viewport_bottom,
         )
 
+    def __len__(self):
+        return len(self.fill_part_list)
+
     def remove_filling_part(self):
         if len(self.fill_part_list) == 0:
             return
