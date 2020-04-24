@@ -10,8 +10,6 @@ class Settings(arcade.View):
     width = 1920  # get_monitors()[0].width
     height = 1080  # get_monitors()[0].height
 
-    mouse_x = 0
-    mouse_y = 0
     mouse_pressing = False
 
     brightness_slide = Slider(int(width * 0.1), int(height * 0.57), int(width * 0.3), int(height * 0.01),
@@ -59,11 +57,9 @@ class Settings(arcade.View):
         self.draw_text()
 
     def on_mouse_motion(self, x, y, dx, dy):
-        self.mouse_x = x
-        self.mouse_y = y
         if self.mouse_pressing:
-            self.brightness_slide.update_slide(self.mouse_x, self.mouse_y)
-            self.volume_slide.update_slide(self.mouse_x, self.mouse_y)
+            self.brightness_slide.update_slide(x, y)
+            self.volume_slide.update_slide(x, y)
 
     def on_mouse_press(self, x, y, button, modifiers):  # Click options / volume & brightness slider
         self.mouse_pressing = True

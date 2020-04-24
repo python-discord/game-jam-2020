@@ -1,7 +1,7 @@
 import arcade
 from screeninfo import get_monitors
 from .Display import ColourBlend as cb
-from .Settings import Settings
+from .settings import Settings
 
 
 class Shape:
