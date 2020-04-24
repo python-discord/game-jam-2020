@@ -14,10 +14,10 @@ class Tex:
 
 class Texs:
     
-    ROCK_TILE = Tex("Salami/spritesheet.png", 0, 0, TILE_SIZE)
+    ROCK_TILE = Tex("Salami/spritesheet.png", TILE_SIZE, 0, TILE_SIZE)
     PLAYER = Tex("Salami/spritesheet.png", 0, TILE_SIZE * 3, TILE_SIZE)
 
-    BALL = Tex("Salami/spritesheet.png", TILE_SIZE * 2, 0, TILE_SIZE)
+    BALL = Tex("Salami/spritesheet.png", TILE_SIZE, TILE_SIZE * 5, TILE_SIZE)
 
     @staticmethod
     def load_textures(filename, image_x, image_y, image_size, times, mirrored: bool=False):
@@ -33,8 +33,10 @@ class Texs:
 
 class Entity(arcade.Sprite):
 
-    def __init__(self, tex: Tex, x: float, y: float):
-        super().__init__(tex.filename, 1, tex.image_x, tex.image_y, tex.image_size, tex.image_size)
+    def __init__(self, texture, x: float, y: float):
+        super().__init__()
+
+        self.texture = texture
 
         self.x = x
         self.y = y
@@ -42,7 +44,16 @@ class Entity(arcade.Sprite):
         self.left = x
         self.bottom = y
 
+        self.is_solid = False
         self.flying = False
+
+        
+        # self.set_hit_box([
+        #     [-self.width, -TILE_SIZE_D2],
+        #     [-TILE_SIZE_D2, TILE_SIZE_D2],
+        #     [TILE_SIZE_D2, TILE_SIZE_D2],
+        #     [TILE_SIZE_D2, -TILE_SIZE_D2]
+        # ])
 
     def set_level(self, level):
         self.level = level
