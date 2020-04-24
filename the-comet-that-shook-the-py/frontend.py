@@ -96,21 +96,19 @@ class MyGame(arcade.Window):
         """
         Called when the user presses a mouse button.
         """
-        # TODO add code that detects whether a mouseclick is within the bounds of a sprite
-
-    def on_mouse_release(self, x, y, button, modifiers):
-        """
-        Called when a user releases a mouse button.
-        """
         tile_sprite: TileSprite
         for tile_sprite in self.tile_sprites:
-
             if check_bounds(
                     (x, y),
                     (tile_sprite.boundary_left, tile_sprite.boundary_bottom),
                     (tile_sprite.boundary_right, tile_sprite.boundary_top)):
                 print(
                     f'{x, y} is within the bounds of {(tile_sprite.boundary_left, tile_sprite.boundary_bottom)} and {(tile_sprite.boundary_right, tile_sprite.boundary_top)}')
+
+    def on_mouse_release(self, x, y, button, modifiers):
+        """
+        Called when a user releases a mouse button.
+        """
 
 
 def check_bounds(point: Tuple[float, float],
@@ -123,8 +121,7 @@ def check_bounds(point: Tuple[float, float],
     :param point: x/y coords of a point to check
     :return: True/False
     """
-    return False
-    # if bottom_left == top_right:
-    #     raise ValueError("Bottom left and top right can't be the same")
-    # return point[0] > bottom_left[0] and point[1] > bottom_left[1] and point[0] < top_right[0] and point[1] > top_right[
-    #     1]
+    if bottom_left == top_right:
+        raise ValueError("Bottom left and top right can't be the same")
+    return (bottom_left[0] < point[0] < top_right[0]) \
+           and (bottom_left[1] < point[1] < top_right[1])
