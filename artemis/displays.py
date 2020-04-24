@@ -2,7 +2,7 @@
 from __future__ import annotations
 import arcade
 
-from constants import ASSETS, HEIGHT, SCALING, TOP
+from constants import ASSETS, HEIGHT, SCALING, TOP, SPEED
 import game
 from ui import IconButton
 
@@ -40,7 +40,7 @@ class Box(arcade.Sprite):
 
     def update(self):
         """Update x with viewport scrolling."""
-        self.center_x += self.game.player.speed
+        self.center_x += SPEED
 
 
 class BoxGem(arcade.Sprite):

@@ -1,35 +1,32 @@
-"""The core game functionality."""
+"""Multiplayer game functionality."""
 import arcade
 
-from constants import BACKGROUND, FONT, HEIGHT, SCALING, SIDE, TOP, WIDTH
+from constants import (
+    BACKGROUND, FONT, HEIGHT, SCALING, SIDE, TOP, WIDTH, SPEED, GRAVITY
+)
 from displays import Box, PausePlay
 from engine import BiDirectionalPhysicsEnginePlatformer
 from player import Player
-from scores import add_award, add_score, add_time, get_hiscore
 from sprites import Block, Gem, RandomBlock
 from ui import View
 import views
 
-import multiplayer
 
-
-class Game(View):
-    """A single run of the game."""
+class MultiplayerGame(View):
+    """A single run of a multiplayer game."""
 
     reset_viewport = False
 
-    def __init__(self):
+    def __init__(self, players: int):
         """Create sprites and set up counters etc."""
         super().__init__()
         arcade.set_viewport(0, WIDTH, 0, HEIGHT)
         arcade.set_background_color(BACKGROUND)
 
         self.left = 0
-        self.score = 0
-        self.time = 0
+        self.time_left = 90
+        self.scores = [0 for _ in range(players)]
         self.randomblocks = 2
-        self.matches = {'r': 0, 'b': 0, 'y': 0}
-        self.hiscore = get_hiscore()
         self.paused = False
         self.pause_screen = None
         self.blocks = arcade.SpriteList()
@@ -37,9 +34,12 @@ class Game(View):
         self.boxes = arcade.SpriteList()
         self.others = arcade.SpriteList()
         self.spikes = arcade.SpriteList()
+        self.players = arcade.SpriteList()
 
         # sprites
-        self.player = Player(self)
+        for n in range(players):
+            player = Player(self, n)
+            self.players.append(player)
 
         size = int(128 * SCALING)
         for x in range(-SIDE, WIDTH + SIDE, size):
@@ -57,10 +57,19 @@ class Game(View):
         self.pauseplay = PausePlay(0, HEIGHT - 40, self)
         self.buttons.append(self.pauseplay)
 
-        self.engine = BiDirectionalPhysicsEnginePlatformer(
-            self.player, self.blocks, 1
-        )
-        self.player.engine = self.engine
+        self.engines = []
+        for player in self.players:
+            blocks = arcade.SpriteList()
+            for block in self.blocks:
+                blocks.append(block)
+            for other in self.players:
+                if other != player:
+                    blocks.append(other)
+            engine = BiDirectionalPhysicsEnginePlatformer(
+                player, blocks, GRAVITY
+            )
+            self.engines.append(engine)
+            player.engine = engine
 
         self.sprite_lists = [
             self.blocks, self.gems, self.boxes, self.others, self.spikes
@@ -71,23 +80,20 @@ class Game(View):
         arcade.start_render()
         self.pauseplay.center_x = self.left + WIDTH - 40
         super().on_draw()
-        arcade.draw_text(
-            text=f'High Score: {self.hiscore:03d}',
-            start_x=self.left + WIDTH - 100,
-            start_y=HEIGHT - (TOP - self.blocks[0].height // 2) // 2 + 15,
-            color=arcade.color.WHITE, font_size=20, anchor_x='right',
-            anchor_y='center', font_name=FONT.format(type='b')
-        )
-        arcade.draw_text(
-            text=f'Score: {self.score:03d}',
-            start_x=self.left + WIDTH - 100,
-            start_y=HEIGHT - (TOP - self.blocks[0].height // 2) // 2 - 15,
-            color=arcade.color.WHITE, font_size=20, anchor_x='right',
-            anchor_y='center', font_name=FONT.format(type='b')
-        )
+        initial_offset = 30 * (len(self.players) - 1.5)
+        y = HEIGHT - (TOP - self.blocks[0].height // 2) // 2 + initial_offset
+        for n, score in enumerate(self.scores):
+            arcade.draw_text(
+                text=f'Player {n + 1}: {score:03d}',
+                start_x=self.left + WIDTH - 100,
+                start_y=y,
+                color=arcade.color.WHITE, font_size=20, anchor_x='right',
+                anchor_y='center', font_name=FONT.format(type='b')
+            )
+            y -= 30
         for sprite_list in self.sprite_lists:
             sprite_list.draw()
-        self.player.draw()
+        self.players.draw()
         if self.paused:
             arcade.draw_lrtb_rectangle_filled(
                 left=self.left, right=WIDTH + self.left, top=HEIGHT, bottom=0,
@@ -102,16 +108,19 @@ class Game(View):
         """Move sprites and update counters."""
         super().on_update(timedelta)
         if not self.paused:
-            self.time += timedelta
+            self.time_left -= timedelta
+            if self.time_left < 0:
+                self.game_over('Time up!')
+                return
             for sprite_list in self.sprite_lists:
                 sprite_list.update()
-            self.player.update()
+            for player in self.players:
+                player.update()
             if self.randomblocks < 6:
                 progress = self.left / WIDTH
                 if 2 + progress / 3 < self.randomblocks:
                     self.randomblocks += 1
                     RandomBlock(self)
-            self.engine.update()
             self.scroll()
 
     def gem_added(self):
@@ -129,7 +138,7 @@ class Game(View):
             if counts[colour] >= 3:
                 all_three = colour
         if all_three:
-            self.score += 1
+            # self.score += 1
             self.remove_three(all_three)
             return
         over = False
@@ -147,28 +156,14 @@ class Game(View):
     def remove_three(self, colour: str):
         """Once notified that there are three of some colour, remove them."""
         removed = 0
-        pinks = 0
-        done = False
         for box in self.boxes:
             if box.colour == colour:
                 box.remove_gem()
                 removed += 1
                 if removed == 3:
-                    done = True
+                    return
             if box.colour == 'p':
                 pinks += 1
-        if pinks == 2:
-            add_award(2)
-        if removed == 0:
-            add_award(0)
-        else:
-            # only if it actually had some colour in it
-            self.matches[colour] += 1
-            if all(self.matches.values()):
-                add_award(3)
-        if done:
-            add_award(4)
-            return
         for box in self.boxes:
             if box.colour == 'w':
                 box.remove_gem()
@@ -176,26 +171,24 @@ class Game(View):
                 if removed == 3:
                     return
 
-    def save(self):
-        """Save the player's score and time spent playing."""
-        if self.score == 69:
-            add_award(5)
-        add_score(self.score)
-        add_time(self.time)
-
     def game_over(self, message: str):
         """Display the game over view with some explanatory message."""
-        self.save()
         self.window.show_view(views.GameOver(message))
 
     def scroll(self):
         """Scroll the viewport."""
-        self.left += self.player.speed
+        self.left += SPEED
         arcade.set_viewport(self.left, WIDTH + self.left, 0, HEIGHT)
-        if self.left > self.player.right:
-            self.game_over('Got Stuck')
+        for player in self.players:
+            if self.left > player.right:
+                pass    # kill
 
-    def on_key_press(self, _key: int, _modifiers: int):
+    def on_key_press(self, key: int, _modifiers: int):
         """Process key press."""
         if not self.paused:
-            self.player.switch()
+            if key == arcade.key.W:
+                self.players[0].switch()
+            elif key == arcade.key.SPACE and len(self.players) > 1:
+                self.players[1].switch()
+            elif key == arcade.key.UP and len(self.players) > 2:
+                self.players[2].switch()

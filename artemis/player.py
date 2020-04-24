@@ -1,8 +1,10 @@
 """Module for the player sprite."""
 from __future__ import annotations
 import arcade
+from typing import Mapping
+from PIL import Image, ImageDraw
 
-from constants import ASSETS, HEIGHT, SCALING, SPEED, WIDTH
+from constants import ASSETS, HEIGHT, SCALING, SPEED, WIDTH, GRAVITY
 import game
 
 
@@ -10,48 +12,84 @@ class Player(arcade.Sprite):
     """The player sprite."""
 
     TEXTURES = [
-        'jump_0', 'jump_1', 'jump_2', 'jump_3', 'walk_forward_up',
-        'walk_right_0_up', 'walk_right_1_up', 'walk_right_2_up',
-        'walk_right_3_up', 'walk_forward_down', 'walk_right_0_down',
-        'walk_right_1_down', 'walk_right_2_down', 'walk_right_3_down'
+        'jump', 'walk_forward', 'walk_right_0', 'walk_right_1',
+        'walk_right_2', 'walk_right_3', 'walk_right_4', 'walk_right_5',
+        'walk_right_6', 'walk_right_7'
     ]
 
-    def __init__(self, game: game.Game, x: int = WIDTH // 5,
-                 y: int = HEIGHT // 2, speed: int = SPEED,
-                 image: str = ASSETS + 'player_{}.png'):
+    def __init__(self, game: game.Game, n: int=0, x: int = WIDTH // 5,
+                 y: int = HEIGHT // 2, speed: int = SPEED):
         """Set up counters and load textures."""
-        super().__init__(
-            image.format('jump_0'), center_x=x, center_y=y,
-            scale=SCALING * 0.25
-        )
-        self.image = image
-        self.textures = []
+        self.image = ASSETS + f'player_{n}_{{}}.png'
+        super().__init__(center_x=x, center_y=y)
+        self.player = n
+        self.textures = {}
         for texture in Player.TEXTURES:
-            self.textures.append(arcade.load_texture(
-                image.format(texture)
-            ))
-        self.scale = SCALING * 0.25
+            if texture == 'jump':
+                self.textures.update(self.load_rotations(texture))
+            else:
+                self.textures.update(self.load_flipped_pair(texture))
+        self.texture = self.textures['walk_forward_up']
         self.game = game
         self.speed = speed
         self.time_since_change = 0
         self.num = 0
         self.last_x = -1
+        self.engine = None    # will be overwritten by game
+
+    def resize(self, old: Image.Image) -> Image.Image:
+        """Resize an image for a texture."""
+        pixel_size = 2
+        old_w, old_h = old.size
+        new_w = old_w * pixel_size
+        new_h = old_h * pixel_size
+        new = Image.new('RGBA', (new_w, new_h), color=(0, 0, 0, 0))
+        draw = ImageDraw.Draw(new)
+        for x in range(old_w):
+            for y in range(old_h):
+                col = old.getpixel((x, y))
+                draw.rectangle([
+                    x * pixel_size, y * pixel_size, (x + 1) * pixel_size,
+                    (y + 1) * pixel_size
+                ], col, col)
+        return new
+
+    def load_rotations(self, name: str) -> Mapping[str, arcade.Texture]:
+        """Load the four rotations by 90 degrees of an image."""
+        file = self.image.format(name)
+        im = self.resize(Image.open(file))
+        textures = {}
+        for n in range(4):
+            n_name = f'{name}_{n}'
+            textures[n_name] = arcade.Texture(f'{file}{n}', im.rotate(n * 90))
+        return textures
+
+    def load_flipped_pair(self, name: str) -> Mapping[str, arcade.Texture]:
+        """Load the vertically flipped versions of an image."""
+        file = self.image.format(name)
+        im = self.resize(Image.open(file))
+        return {
+            f'{name}_up': arcade.Texture(file + 'up', im),
+            f'{name}_down': arcade.Texture(
+                file + 'down', im.transpose(Image.FLIP_TOP_BOTTOM)
+            )
+        }
 
     def switch(self):
         """If allowed, switch gravity."""
-        if self.game.engine.can_jump():
-            self.game.engine.gravity_constant *= -1
+        if self.engine.can_jump():
+            self.engine.gravity_constant *= -1
 
-    def update(self, timedelta: float):
+    def update(self):
         """Move the player and change the texture."""
-        direction = ['up', 'down'][self.game.engine.gravity_constant < 0]
+        direction = ['up', 'down'][self.engine.gravity_constant < 0]
         if abs(self.center_x - self.last_x) < 1:
             name = f'walk_forward_{direction}'
-        elif self.game.engine.can_jump():
+        elif self.engine.can_jump():
             name = f'walk_right_{self.num}_{direction}'
         else:
             name = f'jump_{self.num}'
-        self.texture = self.textures[Player.TEXTURES.index(name)]
+        self.texture = self.textures[name]
 
         self.last_x = self.center_x
 
@@ -71,10 +109,12 @@ class Player(arcade.Sprite):
 
         self.change_x = self.speed
         if self.center_x < self.game.left + WIDTH // 5:
-            self.change_x *= 1.5
+            self.change_x *= 1.1
+        self.engine.update()
+        self.change_x = 0
 
-        self.time_since_change += timedelta
-        if self.time_since_change > 0.1:
+        self.time_since_change += 1
+        if self.time_since_change > 6:
             self.time_since_change = 0
             self.num += 1
             self.num %= 4

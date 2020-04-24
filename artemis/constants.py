@@ -10,7 +10,7 @@ BLOCKS_TOP = 5
 TOP = int(BLOCKS_TOP * SCALING * 128)
 
 SPEED = 20 * SCALING
-GRAVITY = 10 * SCALING
+GRAVITY = 1
 
 ASSETS = 'assets/'
 FONT = ASSETS + 'ubuntu_{type}.ttf'
