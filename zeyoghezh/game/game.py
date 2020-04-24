@@ -13,6 +13,8 @@ from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
     BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER, LITHIUM_SOUND,
     BASE_TIME_MULTIPLIER, VOLUME_IMAGE, VOLUME_MOVER_IMAGE, LITHIUM_VOLUME,
+    HEAL_VOLUME, GAME_OVER_VOLUME, ABSCOND_VOLUME, HEAL_SOUND,
+    GAME_OVER_SOUND, ABSCOND_SOUND
 )
 import sys
 
@@ -43,6 +45,9 @@ class Game(arcade.Window):
         self.background = None
         self.background_music = arcade.Sound(BACKGROUND_MUSIC)
         self.lithium_sound = arcade.Sound(LITHIUM_SOUND)
+        self.heal_sound = arcade.Sound(HEAL_SOUND)
+        self.abscond_sound = arcade.Sound(ABSCOND_SOUND)
+        self.game_over_sound = arcade.Sound(GAME_OVER_SOUND)
 
         self.master_volume = 0.5
 
@@ -138,10 +143,12 @@ class Game(arcade.Window):
         self.abscond_button.pressed = True
 
     def abscond_release(self):
-        if self.abscond_button.pressed:
-            self.abscond_button.pressed = False
-            self.absconded = True
-            self.game_over(f"Absconded with {self.lithium_count:.2f} lithium!")
+        if not self.abscond_button.pressed:
+            return
+        self.abscond_button.pressed = False
+        self.absconded = True
+        self.abscond_sound.play(self.master_volume * ABSCOND_VOLUME)
+        self.game_over(f"Absconded with {self.lithium_count:.2f} lithium!")
 
     def set_button_textures(self):
         normal = ":resources:gui_themes/Fantasy/Buttons/Normal.png"
@@ -236,6 +243,7 @@ class Game(arcade.Window):
                 logger.info(f"Healing {planet.name}")
                 self.lithium_count -= 1
                 planet.get_healed(0.1)
+                self.heal_sound.play(self.master_volume * HEAL_VOLUME)
                 self.player_has_healed_planet = True
 
         self.abscond_button.check_mouse_press(x, y)
@@ -352,6 +360,8 @@ class Game(arcade.Window):
     def game_over(self, reason):
         if self.game_over_time:
             return
+        if not self.absconded:
+            self.game_over_sound.play(self.master_volume * GAME_OVER_VOLUME)
         self.banner_text = reason
         logger.info(f"Game over! {reason}")
         for planet in self.planets:
