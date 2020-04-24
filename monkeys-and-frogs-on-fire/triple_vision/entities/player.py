@@ -16,7 +16,7 @@ from triple_vision.sound import SoundManager
 
 class States(Enum):
     IDLE = 0
-    MOVING = 1
+    # MOVING = 1
     ATTACKING_RANGED = 2
     ATTACKING_MELEE = 3
     AIMING_BLOCKED = 4
@@ -191,7 +191,7 @@ class Player(LivingEntity, MovingSprite):
         )
         if not arcade.get_sprites_at_exact_point(dest, self.view.collision_list):
             self.move_to(dest[0], dest[1] + s.PLAYER_CENTER_Y_COMPENSATION)
-            self.state = States.MOVING
+            # self.state = States.MOVING
 
         super().on_update(delta_time)
 
