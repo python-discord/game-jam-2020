@@ -266,7 +266,7 @@ class CursorManager:
 
         self._curr_cursor: arcade.Sprite = None
         self.cursors = {
-            "moving": arcade.Sprite("assets/crosshairs/moving.png"),  # TODO Add seperate crosshair
+            "moving": arcade.Sprite("assets/crosshairs/moving.png"),
             "ranged": arcade.Sprite("assets/crosshairs/ranged.png"),
             "blocked": arcade.Sprite("assets/crosshairs/blocked.png")
         }
@@ -280,16 +280,14 @@ class CursorManager:
 
     curr_cursor = property(get_curr_cursor, set_curr_cursor)
 
-    def on_mouse_motion(self, x, y):
-        if self._curr_cursor is None:
-            return
-        self._curr_cursor.center_x = x
-        self._curr_cursor.center_y = y
+    def update_cursor_position(self, x, y):
+        self._curr_cursor.center_x = x + self.view.camera.viewport_left
+        self._curr_cursor.center_y = y + self.view.camera.viewport_bottom
 
     def process_mouse_motion(self, x, y):
-        if not arcade.get_sprites_at_exact_point((x, y), self.view.collision_list):
-            return
-        self.curr_cursor = "blocked"
+        if arcade.get_sprites_at_exact_point((x, y), self.view.collision_list):
+            self.curr_cursor = "blocked"
+        self.update_cursor_position(x, y)
 
     def update(self):
         if self.player.state == States.ATTACKING_RANGED:
