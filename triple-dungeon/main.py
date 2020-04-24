@@ -57,7 +57,6 @@ class Game(arcade.Window):
         # Used to keep track of our scrolling
         self.view_bottom = self.view_left = 0
         self.Recipe = []
-        self.enemies_in_range = []
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -80,12 +79,11 @@ class Game(arcade.Window):
         level = random.choice(self.dungeon.levelList)
         self.player.center_x, self.player.center_y = level.center()
         self.player.cur_recipe = self.Recipe.active
-        self.player.monster_collisions = arcade.PhysicsEngineSimple(self.player, self.dungeon.getWalls())
+        self.player.collisions = arcade.PhysicsEngineSimple(self.player, self.dungeon.getWalls())
 
         # Set up monsters
         self.Mobs = MobHandler()
         self.enemy_list = self.Mobs.setup(Config.MONSTER_COUNT, Config.MONSTER_COUNT, self.player, self.dungeon)
-        self.active_enemies = self.Mobs.active_enemies
 
         # Setup viewport
         self.view_bottom = self.player.center_x - (0.5 * Config.SCREEN_WIDTH) + 300
@@ -103,9 +101,8 @@ class Game(arcade.Window):
 
             # Draw our sprites
             self.dungeon.render()
-            self.player.draw()
             self.Mobs.render()
-            self.active_enemies.draw()
+            #self.active_enemies.draw()
             self.bullet_list.draw()
             self.Recipe.render()
 
@@ -237,7 +234,7 @@ class Game(arcade.Window):
 
             # Collision Checks
             hit_list = arcade.check_for_collision_with_list(bullet, self.dungeon.getWalls())
-            enemy_hit_list = arcade.check_for_collision_with_list(bullet, self.active_enemies)
+            enemy_hit_list = arcade.check_for_collision_with_list(bullet, self.enemy_list)
             # If it did, get rid of the bullet
             if len(hit_list) > 0:
                 bullet.remove_from_sprite_lists()
