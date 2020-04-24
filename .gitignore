@@ -134,3 +134,9 @@ dmypy.json
 # IDEs
 .idea/
 .vscode/
+
+# Databases
+*.sqlite3
+
+# PyFrost
+.frost
