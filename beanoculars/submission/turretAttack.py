@@ -17,6 +17,15 @@ def turretAttack(turret: arcade.sprite, entity_list: arcade.sprite_list, delta_t
     elif turret.cooldown >= T_COOLDOWN:
         turret.cooldown = 0
 
+        if arcade.get_distance_between_sprites(turret, turret.target) >= 32 * T_RANGE:
+            turret.target = None
+            return True
+
+        if turret.target.health <= 0:
+            turret.target.kill()
+            turret.target = None
+            return True
+
         if turret.e_type - 9 == turret.target.e_type:
             turret.target.health -= turret.dmg * DMG_MULTIPLIER
             if turret.e_type == T_SPRAY:
