@@ -256,3 +256,39 @@ class SoundtrackManager:
 
         self.curr_sound.set_volume(self.curr_sound.get_volume() + ss.FADE_AMOUNT)
         self.tick_delta = 0.0
+
+
+class CursorManager:
+    def __init__(self, window: arcade.Window, player):
+        self.window = window
+        self.player = player
+
+        self._curr_cursor = None
+        self.cursors = {
+            "moving": arcade.Sprite("assets/crosshairs/moving.png"),  # TODO Add seperate crosshair
+            "ranged": arcade.Sprite("assets/crosshairs/ranged.png"),
+            "blocked": arcade.Sprite("assets/crosshairs/blocked.png")
+        }
+        self.window.set_mouse_visible(False)
+
+    def set_curr_cursor(self, value):
+        self._curr_cursor = self.cursors.get(value, None)
+
+    def get_curr_cursor(self):
+        return self._curr_cursor
+
+    curr_cursor = property(get_curr_cursor, set_curr_cursor)
+
+    def update(self):
+        if self.player.state == States.ATTACKING_RANGED:
+            self.curr_cursor = "ranged"
+        elif self.player.state == States.MOVING:
+            self.curr_cursor = "moving"
+        elif self.player.state == States.AIMING_BLOCKED:
+            self.curr_cursor = "blocked"
+        elif self.player.state == States.IDLE:
+            # TODO
+            pass
+
+    def draw(self):
+        self._curr_cursor.draw()
