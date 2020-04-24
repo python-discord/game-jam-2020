@@ -1,9 +1,11 @@
 from collections import deque
+import json
 import arcade
 from pyglet.gl import GL_NEAREST
 from entities import Splash
 from lane import Lane
 from patterns import PatternGenerator
+from score_screen import Score
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
@@ -32,6 +34,7 @@ class MyGame(arcade.Window):
         self.background = None
         self.sky_list = None
         self.splash_list = None
+        self.score_list = None
 
         # Set up the Lanes
         self.lane_up = None
@@ -49,8 +52,11 @@ class MyGame(arcade.Window):
         self.frame = 0
         self.fps = 0
         self.combo = 0
-        self.stage = [100000, 50000, 10000]
+        self.life = 5
+        self.stage = [60000, 20000, 2500]
+        self.music = None
         self.obstacle_queue = deque([[], [], [], [], []])
+        self.score_screen = None
 
     def setup(self):
 
@@ -60,6 +66,7 @@ class MyGame(arcade.Window):
         self.obstacle_list = arcade.SpriteList()
         self.char_list = arcade.SpriteList()
         self.splash_list = arcade.SpriteList()
+        self.score_list = arcade.SpriteList()
 
         # Set up lane 1
         q_run_textures = []
@@ -129,11 +136,19 @@ class MyGame(arcade.Window):
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
         self.time = 0
         self.fps = 0
+        self.score_screen = Score(SCREEN_WIDTH, SCREEN_HEIGHT)
+
+        # Play the music
+
+        if self.music:
+            self.music.stop()
+        self.music = arcade.Sound("../ressources/Loyalty_Freak_Music_-_04_-_It_feels_good_to_be_alive_too.mp3")
 
     def draw_game(self):
         """
         Function to draw the game (on_draw)
         """
+        arcade.start_render()
 
         # Draw all the sprites (order determine Z axis)
         self.sky_list.draw(filter=GL_NEAREST)
@@ -142,32 +157,37 @@ class MyGame(arcade.Window):
         self.obstacle_list.draw(filter=GL_NEAREST)
         self.char_list.draw(filter=GL_NEAREST)
         self.splash_list.draw(filter=GL_NEAREST)
-
-        # Put the text on the screen.
-        output = f"Score: {self.score}"
-        arcade.draw_text(output, 700, 550, arcade.color.BLACK, 14)
-        fps = f"FPS: {self.fps}"
-        arcade.draw_text(fps, 700, 565, arcade.color.BLACK, 14)
-        combo = f"COMBO: {self.combo}"
-        arcade.draw_text(combo, 700, 535, arcade.color.BLACK, 14)
+        if self.game_state == EnumGameState.game:
+            # Put the text on the screen.
+            output = f"Score: {self.score}"
+            arcade.draw_text(output, 700, 550, arcade.color.BLACK, 14)
+            fps = f"FPS: {self.fps}"
+            arcade.draw_text(fps, 700, 565, arcade.color.BLACK, 14)
+            combo = f"COMBO: {self.combo}"
+            arcade.draw_text(combo, 700, 535, arcade.color.BLACK, 14)
+        elif self.game_state == EnumGameState.game_over:
+            self.score_screen.draw_score_screen()
+            output = f"Score: {self.score}"
+            arcade.draw_text(output, 700, 550, arcade.color.BLACK, 14)
 
     def draw_title_screen(self):
         arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
                                       self.title_screen.width,
                                       self.title_screen.height,
                                       self.title_screen, 0)
-
     def on_draw(self):
         """
         Function to render the game.
         """
         # This command has to happen before we start drawing
-        arcade.start_render()
 
         if self.game_state == EnumGameState.title:
             self.draw_title_screen()
         elif self.game_state == EnumGameState.game:
             self.draw_game()
+        elif self.game_state == EnumGameState.game_over:
+            self.draw_game()
+
 
     def on_key_press(self, key, modifiers):
         """
@@ -176,14 +196,18 @@ class MyGame(arcade.Window):
         if self.game_state == EnumGameState.title:
             self.game_state = EnumGameState.game
             self.setup()
+            self.music.play(1.0)
 
-        elif self.game_state == 1:
+        elif self.game_state == EnumGameState.game:
             if key == arcade.key.A or key == arcade.key.Q:
                 self.key_action(self.lane_up)
             elif key == arcade.key.Z or key == arcade.key.W:
                 self.key_action(self.lane_middle)
             elif key == arcade.key.E:
                 self.key_action(self.lane_down)
+
+        elif self.game_state == EnumGameState.game_over:
+            self.score_screen.update_player_name(chr(key))
 
     def key_action(self, lane):
         result = lane.action(self.obstacle_list)
@@ -193,35 +217,13 @@ class MyGame(arcade.Window):
 
         if result.name == "miss":
             self.combo = 0
+            self.life -= 1
         else:
             self.combo += 1
             self.score += result.value * self.combo
 
-    def on_key_release(self, key, modifiers):
-        """
-        Called when the user releases a key.
-        """
-        if key == arcade.key.A or key == arcade.key.Q:
-            pass
-        elif key == arcade.key.Z or key == arcade.key.W:
-            pass
-        elif key == arcade.key.E:
-            pass
-
     def on_update(self, delta_time):
         """ Movement and game logic """
-        self.time += delta_time
-        self.frame += 1
-        if self.time >= 1:
-            self.fps = self.frame
-            self.frame = 0
-            self.time = 0
-
-            # Generation of obstacles
-            if not self.obstacle_queue:
-                self.obstacle_queue.append(self.pattern.generate_pattern())
-            for obstacle in self.obstacle_queue.popleft():
-                self.obstacle_list.append(obstacle)
 
         # Update Physic Engine
         self.lane_up.physics_engine.update()
@@ -235,22 +237,48 @@ class MyGame(arcade.Window):
         self.obstacle_list.update()
         self.char_list.update()
         self.splash_list.update()
-        for item in self.splash_list:
-            item.update_age(delta_time)
-        # Score points and remove obstacles
-        for obstacle in self.obstacle_list:
-            if obstacle.center_x < 0:
-                if obstacle.hit == False:
-                    self.score -= 50
-                    self.combo = 0
-                obstacle.remove_from_sprite_lists()
 
-        # Increase speed at each level of difficulty
-        if self.stage and self.score > self.stage[-1]:
-            self.lane_up.difficulty += 3
-            self.lane_middle.difficulty += 3
-            self.lane_down.difficulty += 3
-            self.stage.pop()
+        if self.game_state == EnumGameState.game:
+            self.time += delta_time
+            self.frame += 1
+            if self.time >= 1:
+                self.fps = self.frame
+                self.frame = 0
+                self.time = 0
+
+                # Generation of obstacles
+                if not self.obstacle_queue:
+                    self.obstacle_queue.append(self.pattern.generate_pattern())
+                for obstacle in self.obstacle_queue.popleft():
+                    self.obstacle_list.append(obstacle)
+
+            for item in self.splash_list:
+                item.update_age(delta_time)
+            # Score points and remove obstacles
+            for obstacle in self.obstacle_list:
+                if obstacle.center_x < 0:
+                    if obstacle.hit is False:
+                        self.score -= 50
+                        self.combo = 0
+                        self.life -= 1
+                    obstacle.remove_from_sprite_lists()
+
+            # Increase speed at each level of difficulty
+            if self.stage and self.score > self.stage[-1]:
+                self.lane_up.difficulty += 3
+                self.lane_middle.difficulty += 3
+                self.lane_down.difficulty += 3
+                self.stage.pop()
+
+            if self.life <= 0:
+                self.game_state = EnumGameState.game_over
+                self.floor_list = arcade.SpriteList()
+                self.obstacle_list = arcade.SpriteList()
+                self.char_list = arcade.SpriteList()
+                self.splash_list = arcade.SpriteList()
+                self.score_screen.load_score(self.score)
+
+
 def main():
     """ Main method """
     window = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, "3 Keys on the Run")
