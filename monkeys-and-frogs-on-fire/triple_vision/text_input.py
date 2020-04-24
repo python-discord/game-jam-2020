@@ -90,9 +90,52 @@ class TextInput:
         self.cursor_idx = 0
 
         self.cursor_is_active = False
-        self.cursor_blink_delta = 0
+        self._cursor_blink_delta = 0
 
         self._active = False
+
+        self._current_key_pressed = None
+        self._key_hold_delta = 0
+        self._key_processed = False
+        self._should_process_key = False
+
+        self.KEY_SHIFTS = {
+            arcade.key.GRAVE: arcade.key.ASCIITILDE,
+            arcade.key.KEY_2: arcade.key.AT,
+            arcade.key.KEY_6: arcade.key.ASCIICIRCUM,
+            arcade.key.KEY_7: arcade.key.AMPERSAND,
+            arcade.key.KEY_8: arcade.key.ASTERISK,
+            arcade.key.KEY_9: arcade.key.PARENLEFT,
+            arcade.key.KEY_0: arcade.key.PARENRIGHT,
+            arcade.key.MINUS: arcade.key.UNDERSCORE,
+            arcade.key.EQUAL: arcade.key.PLUS,
+            arcade.key.BRACKETLEFT: arcade.key.BRACELEFT,
+            arcade.key.BRACKETRIGHT: arcade.key.BRACERIGHT,
+            arcade.key.BACKSLASH: arcade.key.BAR,
+            arcade.key.SEMICOLON: arcade.key.COLON,
+            arcade.key.APOSTROPHE: arcade.key.DOUBLEQUOTE,
+            arcade.key.COMMA: arcade.key.LESS,
+            arcade.key.PERIOD: arcade.key.GREATER,
+            arcade.key.SLASH: arcade.key.QUESTION
+        }
+
+        self.KEY_NUMS = {
+            arcade.key.NUM_1: arcade.key.KEY_1,
+            arcade.key.NUM_2: arcade.key.KEY_2,
+            arcade.key.NUM_3: arcade.key.KEY_3,
+            arcade.key.NUM_4: arcade.key.KEY_4,
+            arcade.key.NUM_5: arcade.key.KEY_5,
+            arcade.key.NUM_6: arcade.key.KEY_6,
+            arcade.key.NUM_7: arcade.key.KEY_7,
+            arcade.key.NUM_8: arcade.key.KEY_8,
+            arcade.key.NUM_9: arcade.key.KEY_9,
+            arcade.key.NUM_0: arcade.key.KEY_0,
+            arcade.key.NUM_DIVIDE: arcade.key.SLASH,
+            arcade.key.NUM_MULTIPLY: arcade.key.ASTERISK,
+            arcade.key.NUM_SUBTRACT: arcade.key.MINUS,
+            arcade.key.NUM_ADD: arcade.key.PLUS,
+            arcade.key.NUM_DECIMAL: arcade.key.PERIOD
+        }
 
     @property
     def cursor_pos(self) -> Tuple[float, float]:
@@ -204,11 +247,25 @@ class TextInput:
         if not self.active:
             return
 
-        if 32 <= key <= 126:
+        self._current_key_pressed = (key, modifiers)
+        self.process_key(key, modifiers)
+
+    def process_key(self, key, modifiers) -> None:
+        if arcade.key.SPACE <= key <= arcade.key.ASCIITILDE:
             if modifiers & 1 == arcade.key.MOD_SHIFT:
-                key -= 32
+                key_shift = self.KEY_SHIFTS.get(key)
+
+                if key_shift is not None:
+                    key = key_shift
+                elif 97 <= key <= 122:
+                    key -= 32
+                else:
+                    key -= 16
 
             self.draw_text_at_cursor(chr(key))
+
+        elif arcade.key.NUM_MULTIPLY <= key <= arcade.key.NUM_9:
+            self.draw_text_at_cursor(chr(self.KEY_NUMS[key]))
 
         elif key == arcade.key.BACKSPACE:
             if len(self.text) > 0:
@@ -231,6 +288,9 @@ class TextInput:
         elif key == arcade.key.ENTER:
             self.on_enter(self.text)
 
+    def process_key_release(self, key, modifiers) -> None:
+        self._current_key_pressed = None
+
     def on_enter(self, text) -> None:
         pass
 
@@ -246,9 +306,10 @@ class TextInput:
         if self.move_cursor():
             return
 
-        self.cursor_blink_delta += delta_time
+        self._cursor_blink_delta += delta_time
+        self._key_hold_delta += delta_time
 
-        if self.cursor_blink_delta > 0.5:
+        if self._cursor_blink_delta > 0.5:
 
             if self.cursor_is_active:
                 color = self.box_color
@@ -259,7 +320,18 @@ class TextInput:
                 self.cursor_is_active = True
 
             self.draw_cursor(*self.cursor_pos, color)
-            self.cursor_blink_delta = 0
+            self._cursor_blink_delta = 0
+
+        if self._current_key_pressed is not None:
+
+            if self._key_hold_delta > 0.25:
+
+                if self._key_hold_delta > 0.3:
+                    self.process_key(*self._current_key_pressed)
+                    self._key_hold_delta = 0.25
+
+        else:
+            self._key_hold_delta = 0
 
 
 if __name__ == "__main__":
@@ -285,6 +357,9 @@ if __name__ == "__main__":
 
         def on_key_press(self, key, modifiers) -> None:
             self.text_input.process_key_press(key, modifiers)
+
+        def on_key_release(self, key, modifiers) -> None:
+            self.text_input.process_key_release(key, modifiers)
 
         def on_draw(self) -> None:
             arcade.start_render()
