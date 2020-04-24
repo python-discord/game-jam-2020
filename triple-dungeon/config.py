@@ -34,10 +34,14 @@ class Config(object):
     # The number of pixels across the level
     LEVEL_SIZE = 10 * TILE_SCALING * TILE_WIDTH
 
-    # Movement speed of player, in pixels per frame
+    # Movement speeds, in pixels per frame
     PLAYER_MOVEMENT_SPEED = 14
-
     MONSTER_MOVEMENT_SPEED = 11
+
+    # Boon constants
+    BOON_LIST = ["heal", "harden"]
+    HEAL_AMOUNT = 20
+    ARMOR_AMOUNT = 1
 
     # How many pixels to keep as a minimum margin between the characters and the edge of the screen.
     LEFT_VIEWPORT_MARGIN = 700
@@ -46,7 +50,7 @@ class Config(object):
     TOP_VIEWPORT_MARGIN = 350
 
     # All debug statements and renderings should use this
-    DEBUG = False
+    DEBUG = True
 
     # Monster Count to be spawned
     MONSTER_COUNT = 8
