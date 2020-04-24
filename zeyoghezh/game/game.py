@@ -51,6 +51,7 @@ class Game(arcade.Window):
 
         self.player_in_tutorial = True
         self.game_over_time = None
+        self.absconded = None
         self.player_has_clicked_lithium = False
         self.player_has_healed_planet = False
         self.banner_text = None
@@ -65,6 +66,7 @@ class Game(arcade.Window):
 
     def setup(self):
         self.planets = arcade.SpriteList()
+        self.absconded = None
         self.game_over_time = None
         self.lithium_count = 0
         self.player_has_clicked_lithium = False
@@ -137,6 +139,7 @@ class Game(arcade.Window):
     def abscond_release(self):
         if self.abscond_button.pressed:
             self.abscond_button.pressed = False
+            self.absconded = True
             self.game_over(f"Absconded with {self.lithium_count:.2f} lithium!")
 
     def set_button_textures(self):
@@ -251,6 +254,9 @@ class Game(arcade.Window):
 
     def on_update(self, delta_time):
         if self.game_over_time:
+            if self.absconded:
+                # Don't restart if they absconded
+                return
             game_over_delta_time = (
                 BASE_TIME_MULTIPLIER * (time.time() - self.game_over_time)
             )
