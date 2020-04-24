@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import arcade
 from screeninfo import get_monitors
 from .Display import Button, Slider
@@ -24,6 +26,15 @@ class Settings(arcade.View):
     right_key_button = Button(width * 0.75, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
                              activation=lambda self: setattr(self, "binding_key", "right"), name="right_button")
 
+    return_button_image = arcade.Sprite(
+        filename=Path().cwd() / Path("main/Resources/settings/return_button.png"),
+        scale=int(min(width, height)*0.15) / 512,
+        center_x=int(width*0.075),
+        center_y=int(height * 0.9),)
+
+    return_button = Button(width*0.03, height*0.86, width*0.09, height*0.08,
+                           activation=lambda: None, draw_func=lambda: None, name="menu button")
+
     binding_key = None
     key_binds = {"left": arcade.key.A, "center": arcade.key.S, "right": arcade.key.D}
 
@@ -41,6 +52,9 @@ class Settings(arcade.View):
         self.left_key_button.draw(self.brightness)
         self.center_key_button.draw(self.brightness)
         self.right_key_button.draw(self.brightness)
+
+        self.return_button_image.alpha = int(255*self.brightness)
+        self.return_button_image.draw()
 
         self.draw_text()
 
@@ -62,6 +76,9 @@ class Settings(arcade.View):
             self.center_key_button(self)
         elif self.right_key_button.pressed(x, y):
             self.right_key_button(self)
+
+        if self.return_button.pressed(x, y):
+            self.main.window.show_view(self.main.menu)
 
     def on_mouse_release(self, x, y, button, modifiers):  # Release for sliders
         self.mouse_pressing = False
@@ -139,10 +156,3 @@ class Settings(arcade.View):
     @property
     def brightness(self):
         return self.brightness_slide()
-
-
-if __name__ == "__main__":
-    window = arcade.Window(Settings.width, Settings.height, "SETTINGS")
-    settings_view = Settings()
-    window.show_view(settings_view)
-    arcade.run()

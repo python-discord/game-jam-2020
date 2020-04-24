@@ -12,7 +12,7 @@ class Button:
         self.name = name
 
         if draw_func is None:
-            self.draw = lambda brightness: arcade.draw_lrtb_rectangle_filled(self.x, self.x + self.height,
+            self.draw = lambda brightness: arcade.draw_lrtb_rectangle_filled(self.x, self.x + self.width,
                                                                              self.y + self.height, self.y,
                                                                              cb.brightness(self.colour, brightness))
         else:
