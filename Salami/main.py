@@ -7,6 +7,8 @@ import Level
 import Keyboard
 import Camera
 import Maths
+import Textures
+import Graphics
 
 # For viewing memory usage
 import psutil
@@ -27,6 +29,7 @@ class PyGameJam2020(arcade.Window):
 
         self.debug_text = ""
         self.debug = True
+        self.debug_text_list = Graphics.create_text_list(self.debug_text, 12, 12)
 
         self.process = psutil.Process(os.getpid())
 
@@ -64,9 +67,11 @@ class PyGameJam2020(arcade.Window):
             self.time += delta
 
             if self.time >= 1:
-                
-                self.debug_text = f"FPS: {self.frames} | Using: {self.process.memory_info().rss / 1000000} MB"
-                # print(self.debug_text)
+                self.debug_text = f"FPS: {self.frames} | Using: {round(self.process.memory_info().rss / 1000000, 2)} MB"
+                # self.debug_text_list = Graphics.create_text_list(self.debug_text, 12, 12)
+                Graphics.empty_text_list(self.debug_text_list)
+                Graphics.add_to_text_list(self.debug_text, self.debug_text_list, 12, 12)
+                print(self.debug_text)
                 self.time -= 1
                 self.frames = 0
 
@@ -80,8 +85,9 @@ class PyGameJam2020(arcade.Window):
 
         # self.text_input.draw()
 
-        # if self.debug:
-            # self.camera.reset_viewport()
+        if self.debug:
+            self.camera.reset_viewport()
+            self.debug_text_list.draw(filter=gl.GL_NEAREST)
             # arcade.draw_text(self.debug_text, 12, 12, arcade.color.WHITE)
 
     def on_key_press(self, key, modifiers):
