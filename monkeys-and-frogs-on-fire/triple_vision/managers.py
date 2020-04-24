@@ -5,6 +5,7 @@ import arcade
 
 from triple_vision import Settings as s, SoundSettings as ss
 from triple_vision.entities import DamageIndicator, States
+from triple_vision.networking import client
 from triple_vision.sound import SoundTrack
 
 
@@ -63,8 +64,8 @@ class GameManager:
         self.damage_indicators.on_update(delta_time)
 
         if not self.view.player.is_alive and not self.prev_sent:
-            # send score to server
-            pass
+            client.new_score(self.points)
+            self.prev_sent = True
 
     def enemy_killed(self, enemy) -> None:
         self.points += enemy.kill_value

@@ -64,6 +64,9 @@ class AuthView(arcade.View):
     def __init__(self, view_text) -> None:
         super().__init__()
 
+        self.username_text = None
+        self.password_text = None
+
         self.username = None
         self.password = None
 
@@ -74,7 +77,9 @@ class AuthView(arcade.View):
         self.login_button = None
         self.register_button = None
 
-        arcade.set_background_color((168, 20, 40, 255))
+        self.background = arcade.load_texture('assets/background.png')
+
+        # arcade.set_background_color((168, 20, 40, 255))
 
     def login(self) -> None:
         pass
@@ -83,30 +88,47 @@ class AuthView(arcade.View):
         pass
 
     def on_show(self) -> None:
+        self.username_text = arcade.draw_text(
+            text='Username:',
+            start_x=s.WINDOW_SIZE[0] / 4 - 120,
+            start_y=s.WINDOW_SIZE[1] / 2 + 40,
+            color=arcade.color.WHITE,
+            font_size=18,
+            anchor_y='center'
+        )
+        self.password_text = arcade.draw_text(
+            text='Password:',
+            start_x=s.WINDOW_SIZE[0] / 4 - 120,
+            start_y=s.WINDOW_SIZE[1] / 2 - 40,
+            color=arcade.color.WHITE,
+            font_size=18,
+            anchor_y='center'
+        )
+
         self.username = AuthTextInput(
             self,
             center_x=s.WINDOW_SIZE[0] / 2,
             center_y=s.WINDOW_SIZE[1] / 2 + 40,
             width=s.WINDOW_SIZE[0] / 2,
-            height=42,
+            height=36,
             font_size=18,
-            border_width=3
+            border_width=5
         )
         self.password = AuthTextInput(
             self,
             center_x=s.WINDOW_SIZE[0] / 2,
             center_y=s.WINDOW_SIZE[1] / 2 - 40,
             width=s.WINDOW_SIZE[0] / 2,
-            height=42,
+            height=36,
             font_size=18,
-            border_width=3
+            border_width=5
         )
 
         self.game_title = arcade.draw_text(
             text='Triple Vision',
             start_x=s.WINDOW_SIZE[0] / 2,
             start_y=s.WINDOW_SIZE[1] / 8 * 7,
-            color=arcade.color.BLACK,
+            color=arcade.color.WHITE,
             font_size=42,
             align='center',
             anchor_x='center',
@@ -116,7 +138,7 @@ class AuthView(arcade.View):
             text=self.view_raw_text,
             start_x=s.WINDOW_SIZE[0] / 2,
             start_y=s.WINDOW_SIZE[1] / 4 * 3,
-            color=arcade.color.BLACK,
+            color=arcade.color.WHITE,
             font_size=32,
             align='center',
             anchor_x='center',
@@ -130,6 +152,7 @@ class AuthView(arcade.View):
             center_y=s.WINDOW_SIZE[1] / 2 - 120,
             width=100,
             height=60,
+            font_color=arcade.color.BLACK
         )
         self.register_button = RegisterButton(
             self,
@@ -137,6 +160,7 @@ class AuthView(arcade.View):
             center_y=s.WINDOW_SIZE[1] / 2 - 120,
             width=100,
             height=60,
+            font_color=arcade.color.BLACK
         )
 
         self.window.button_list.extend([
@@ -158,6 +182,17 @@ class AuthView(arcade.View):
 
     def on_draw(self) -> None:
         arcade.start_render()
+
+        arcade.draw_lrwh_rectangle_textured(
+            bottom_left_x=0,
+            bottom_left_y=0,
+            width=s.WINDOW_SIZE[0],
+            height=s.WINDOW_SIZE[1],
+            texture=self.background
+        )
+
+        self.username_text.draw()
+        self.password_text.draw()
 
         self.username.draw()
         self.password.draw()
@@ -181,7 +216,6 @@ class LoginView(AuthView):
     def login(self) -> None:
         self.window.button_list.clear()
 
-        print('Login:', self.username.text, self.password.text)
         client.login(self.username.text, self.password.text)
 
         if get_status('login') == Status.SUCCESS:
@@ -212,7 +246,6 @@ class RegisterView(AuthView):
     def register(self) -> None:
         self.window.button_list.clear()
 
-        print('Register:', self.username.text, self.password.text)
         client.register(self.username.text, self.password.text)
 
         if get_status('register') == Status.SUCCESS:
