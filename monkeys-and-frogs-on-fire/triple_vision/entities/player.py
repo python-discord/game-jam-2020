@@ -55,6 +55,7 @@ class Player(LivingEntity, MovingSprite):
         self.path = None
 
         self.mana_bar: HealthBar = None
+        self.health_bar: PlayerLiveManager = None
 
         self.left_pressed = False
         self.right_pressed = False
@@ -113,6 +114,7 @@ class Player(LivingEntity, MovingSprite):
             scale=1,
             auto_filling_speed=1.5
         )
+        self.health_bar = PlayerLiveManager(self.view, self.hp)
 
         center = tuple()
 
@@ -120,8 +122,8 @@ class Player(LivingEntity, MovingSprite):
             center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
 
             if (
-                len(arcade.get_sprites_at_point(center, self.view.collision_list)) == 0 and
-                len(arcade.get_sprites_at_point(center, self.view.map.sprites)) > 0
+                    len(arcade.get_sprites_at_point(center, self.view.collision_list)) == 0 and
+                    len(arcade.get_sprites_at_point(center, self.view.map.sprites)) > 0
             ):
                 break
 
@@ -198,9 +200,60 @@ class Player(LivingEntity, MovingSprite):
 
         super().on_update(delta_time)
 
-    def update_health_bar(self, delta_time):
+    def update_health_bars(self, delta_time):
         self.mana_bar.on_update(delta_time)
+        self.health_bar.update()
 
     def draw(self):
         super().draw()
         self.mana_bar.draw()
+        self.health_bar.draw()
+
+
+class PlayerLiveManager:
+    def __init__(
+            self,
+            view,
+            *args,
+            life_count: int = 10,
+            is_filled: bool = True,
+            scale: float = 1,
+            **kwargs
+    ) -> None:
+
+        super().__init__(*args, scale=scale, **kwargs)
+        self.view = view
+        self.camera = self.view.camera
+        self.player = self.view.player
+        self.life_count = life_count
+        self.margin = 30
+        self.hearts = arcade.SpriteList()
+        self.heart_map = [2, 2, 2]
+
+        if not is_filled:
+            return
+
+        for i in range(3):
+            self.hearts.append(
+                arcade.Sprite(
+                    "assets/hearts/heart_2.png",
+                    center_x=100 + i * self.margin,
+                    center_y=100
+                )
+            )
+
+    def update_hearts(self):
+        for i in range(3):
+            self.hearts.sprite_list[i] = arcade.Sprite(f"assets/hearts/heart_{i}.png")
+
+    def update(self):
+        # hearts = round(self.life_count / 3, 1)
+        for index, h in enumerate(self.heart_map):
+            heart_pos = h * (index + 1)
+            if heart_pos > self.life_count:
+                self.heart_map[index] -= 1
+            elif heart_pos < self.life_count:
+                self.heart_map[index] += 1
+
+    def draw(self):
+        self.hearts.draw()
