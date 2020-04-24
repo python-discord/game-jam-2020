@@ -34,6 +34,7 @@ class BaseEnemy(LivingEntity):
 
         self.hp = enemy.value if hp < 1 else hp
         self.being_pushed = False
+        self.kill_value = kill_value
 
     def kill(self) -> None:
         self.ctx.enemy_killed(self)
