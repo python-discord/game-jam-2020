@@ -1,7 +1,6 @@
 import arcade
 import numpy as np
 from . import trichess_piece
-import matplotlib.pyplot as plt
 
 EVEN_GRID_COLOR = arcade.color.JASMINE
 ODD_GRID_COLOR = arcade.color.LIGHT_PASTEL_PURPLE
@@ -72,22 +71,16 @@ class TriGrid:
     def toggle_cell(self, x, y, r):
         self.grid[x][y][r].toggle()
 
-    def get_grid_neighbor(self, coord_x, coord_y):
-        x, y, r = self.get_grid_position(coord_x, coord_y)
-        if r == 0:
-            neighbor_list = [(x, y - 1, not r), (x - 1, y, not r), (x, y, not r)]
-        else:
-            neighbor_list = [(x, y + 1, not r), (x + 1, y, not r), (x, y, not r)]
-
-        neighbor_list = [cell for cell in neighbor_list if self.is_valid_cell(*cell)]
-        return neighbor_list
-
     def is_valid_cell(self, x, y, r):
         return (x, y, r) in self.grid_map
 
+    def get_player_at_cell(self, x, y, r):
+        sel_cell = self.get_cell(x,y, r)
+        return None if sel_cell.piece is None else sel_cell.piece.player
+
     def clear_highlights(self):
-        for grid_x, grid_y, grid_r in self.grid_map:
-            self.grid[grid_x][grid_y][grid_r].set_highlight(None)
+        for pos in self.grid_map:
+            self.get_cell(*pos).set_highlight(None)
 
     def on_draw(self, grid_coord=False):
         self.update_shape_list()

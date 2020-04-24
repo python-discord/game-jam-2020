@@ -13,6 +13,8 @@ See array_backed_grid_buffered.py
 If Python and Arcade are installed, this example can be run from the command line with:
 python -m arcade.examples.array_backed_grid
 """
+import os
+
 import arcade
 
 # Set how many rows and columns we will have
@@ -34,6 +36,8 @@ SCREEN_HEIGHT = SCREEN_WIDTH
 CELL_WIDTH = int(SCREEN_WIDTH/BOARD_SIZE)
 
 SCREEN_TITLE = "TriTess Grid example"
+data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
+chess_thump = arcade.Sound(os.path.join(data_dir, "chess_thump.mp3"))
 
 
 class TriTess(arcade.Window):
@@ -98,13 +102,15 @@ class TriTess(arcade.Window):
                     if selected_cell.piece is not None and self.cur_cell.piece.player != selected_cell.piece.player:
                         if (x, y, r) in self.cur_valid_attacks:
                             selected_cell.piece.clear_spatial_hashes()
+                            chess_thump.play()
                             selected_cell.piece = self.cur_cell.piece
-                            self.cur_cell.piece.move(x, y, r)
+                            self.cur_cell.piece.set_pos(x, y, r)
                             self.cur_player = self.cur_player + 1 % 3
 
                     elif (x, y, r) in self.cur_valid_moves:
                         self.trigrid.get_cell(x, y, r).piece = self.cur_cell.piece
-                        self.cur_cell.piece.move(x, y, r)
+                        chess_thump.play()
+                        self.cur_cell.piece.set_pos(x, y, r)
                         self.cur_player = self.cur_player + 1 % 3
 
                     self.cur_cell = None

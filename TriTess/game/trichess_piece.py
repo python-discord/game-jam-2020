@@ -29,7 +29,7 @@ class TriPiece(arcade.Sprite):
         """
         self.orientation = orientation
         self.trigrid = trigrid
-        self.grid_x, self.grid_y, self.grid_r = pos
+        self.pos = pos
         sprite_image = os.path.join(data_dir, f'sprite_{piece_name}{player}.png')
         scale = (self.trigrid.cell_width / np.sqrt(3)) / DEFAULT_SPRITE_SIZE
         center_x, center_y = self.get_coord_from_pos()
@@ -39,11 +39,23 @@ class TriPiece(arcade.Sprite):
         self.player = player
 
     def get_coord_from_pos(self):
-        x, y = self.trigrid.grid[self.grid_x][self.grid_y][self.grid_r].center_coord
+        x, y = self.trigrid.get_cell(*self.pos).center_coord
         return x, y
 
     def list_valid_moves(self):
         return []
+
+    def is_blocked(self, pos):
+        if self.trigrid.is_valid_cell(*pos):
+            pos_piece = self.trigrid.get_cell(*pos).piece
+            if pos_piece is None:
+                return False
+            elif pos_piece.player == self.player:
+                return True
+            else:
+                return True
+        else:
+            return True
 
     def list_valid_attacks(self):
         return []
@@ -56,12 +68,12 @@ class TriPiece(arcade.Sprite):
         :param pos: the initial position to calc the neighbor from if None then use the
         :return:
         """
-        pos = (self.grid_x, self.grid_y, self.grid_r) if pos is None else pos
+        pos = self.pos if pos is None else pos
         normed_move = self.orientation - move + 5 % 6
         return MOVE_DICT[normed_move](*pos)
 
-    def move(self, grid_x, grid_y, grid_r):
-        self.grid_x, self.grid_y, self.grid_r = grid_x, grid_y, grid_r
+    def set_pos(self, x, y, r):
+        self.pos = (x, y, r)
         self.center_x, self.center_y = self.get_coord_from_pos()
 
     @staticmethod
@@ -76,9 +88,10 @@ class Pawn(TriPiece):
         super().__init__(trigrid, self.piece_name, pos, orientation, player)
 
     def list_valid_moves(self):
-        pos = self.get_neighbor_pos(0)
-        pos2 = self.get_neighbor_pos(0, pos)
-        return [pos, pos2]
+        possible_moves = [self.get_neighbor_pos(0)]
+        possible_moves.append(self.get_neighbor_pos(0, possible_moves[0]))
+        valid_moves = [self.trigrid.is_valid_cell(pos) for pos in possible_moves if self.trigrid.get_cell(*pos).piece is None]
+        return valid_moves
 
     def list_valid_attacks(self):
         return [self.get_neighbor_pos(5), self.get_neighbor_pos(1)]
@@ -90,12 +103,62 @@ class Rook(TriPiece):
     def __init__(self, trigrid, pos, orientation, player):
         super().__init__(trigrid, self.piece_name, pos, orientation, player)
 
+    def list_valid_moves(self):
+        valid_moves = []
+
+        rook_direction_list = [lambda r: 1 if r else 2,
+                               lambda r: 5 if r else 4,
+                               lambda r: 1 if r else 0,
+                               lambda r: 3 if r else 4,
+                               lambda r: 3 if r else 2,
+                               lambda r: 5 if r else 0]
+
+        for rook_direction in rook_direction_list:
+            cur_pos = self.pos
+            while True:
+                next_pos = self.get_neighbor_pos(rook_direction(cur_pos[2]), cur_pos)
+                if self.trigrid.is_valid_cell(*next_pos):
+                    break
+                player_at_next_cell = self.trigrid.get_player_at_cell(*next_pos)
+                if player_at_next_cell == self.player:
+                    break
+                valid_moves.append(next_pos)
+                if player_at_next_cell is not None:
+                    break
+                cur_pos = next_pos
+        return valid_moves
+
+    def list_valid_attacks(self):
+        return self.list_valid_moves()
+
 
 class Bishop(TriPiece):
     piece_name = "bishop"
 
     def __init__(self, trigrid, pos, orientation, player):
         super().__init__(trigrid, self.piece_name, pos, orientation, player)
+
+    def list_valid_moves(self):
+        valid_moves = []
+
+        bishop_direction_list = [0, 1, 2, 3, 4, 5]
+        for bishop_direction in bishop_direction_list:
+            cur_pos = self.pos
+            while True:
+                next_pos = self.get_neighbor_pos(bishop_direction, cur_pos)
+                if self.trigrid.is_valid_cell(*next_pos):
+                    break
+                player_at_next_cell = self.trigrid.get_player_at_cell(*next_pos)
+                if player_at_next_cell == self.player:
+                    break
+                valid_moves.append(next_pos)
+                if player_at_next_cell is not None:
+                    break
+                cur_pos = next_pos
+        return valid_moves
+
+    def list_valid_attacks(self):
+        return self.list_valid_moves()
 
 
 class UKnight(TriPiece):
@@ -111,6 +174,36 @@ class Knight(TriPiece):
     def __init__(self, trigrid, pos, orientation, player):
         super().__init__(trigrid, self.piece_name, pos, orientation, player)
 
+    def list_valid_moves(self):
+        possible_moves = []
+        if self.pos[2]:
+            tmp = self.get_neighbor_pos(0, self.get_neighbor_pos(0))
+            possible_moves.append(self.get_neighbor_pos(1, tmp))
+            possible_moves.append(self.get_neighbor_pos(5, tmp))
+            tmp = self.get_neighbor_pos(2, self.get_neighbor_pos(2))
+            possible_moves.append(self.get_neighbor_pos(1, tmp))
+            possible_moves.append(self.get_neighbor_pos(3, tmp))
+            tmp = self.get_neighbor_pos(4, self.get_neighbor_pos(4))
+            possible_moves.append(self.get_neighbor_pos(3, tmp))
+            possible_moves.append(self.get_neighbor_pos(5, tmp))
+        else:
+            tmp = self.get_neighbor_pos(0, self.get_neighbor_pos(0))
+            possible_moves.append(self.get_neighbor_pos(2, tmp))
+            possible_moves.append(self.get_neighbor_pos(4, tmp))
+            tmp = self.get_neighbor_pos(2, self.get_neighbor_pos(2))
+            possible_moves.append(self.get_neighbor_pos(0, tmp))
+            possible_moves.append(self.get_neighbor_pos(4, tmp))
+            tmp = self.get_neighbor_pos(4, self.get_neighbor_pos(4))
+            possible_moves.append(self.get_neighbor_pos(0, tmp))
+            possible_moves.append(self.get_neighbor_pos(2, tmp))
+
+        possible_moves = [self.get_neighbor_pos(direction) for direction in range(6)]
+        valid_moves = [pos for pos in possible_moves if not self.is_blocked(pos)]
+        return valid_moves
+
+    def list_valid_attacks(self):
+        return self.list_valid_moves()
+
 
 class Queen(TriPiece):
     piece_name = "queen"
@@ -118,12 +211,62 @@ class Queen(TriPiece):
     def __init__(self, trigrid, pos, orientation, player):
         super().__init__(trigrid, self.piece_name, pos, orientation, player)
 
+    def list_valid_moves(self):
+        valid_moves = []
+        bishop_direction_list = [0, 1, 2, 3, 4, 5]
+        for bishop_direction in bishop_direction_list:
+            cur_pos = self.pos
+            while True:
+                next_pos = self.get_neighbor_pos(bishop_direction, cur_pos)
+                if self.trigrid.is_valid_cell(*next_pos):
+                    break
+                player_at_next_cell = self.trigrid.get_player_at_cell(*next_pos)
+                if player_at_next_cell == self.player:
+                    break
+                valid_moves.append(next_pos)
+                if player_at_next_cell is not None:
+                    break
+                cur_pos = next_pos
+
+        rook_direction_list = [lambda r: 1 if r else 2,
+                               lambda r: 5 if r else 4,
+                               lambda r: 1 if r else 0,
+                               lambda r: 3 if r else 4,
+                               lambda r: 3 if r else 2,
+                               lambda r: 5 if r else 0]
+
+        for rook_direction in rook_direction_list:
+            cur_pos = self.pos
+            while True:
+                next_pos = self.get_neighbor_pos(rook_direction(cur_pos[2]), cur_pos)
+                if self.trigrid.is_valid_cell(*next_pos):
+                    break
+                player_at_next_cell = self.trigrid.get_player_at_cell(*next_pos)
+                if player_at_next_cell == self.player:
+                    break
+                valid_moves.append(next_pos)
+                if player_at_next_cell is not None:
+                    break
+                cur_pos = next_pos
+            return valid_moves
+
+    def list_valid_attacks(self):
+        return self.list_valid_moves()
+
 
 class King(TriPiece):
     piece_name = "king"
 
     def __init__(self, trigrid, pos, orientation, player):
         super().__init__(trigrid, self.piece_name, pos, orientation, player)
+
+    def list_valid_moves(self):
+        possible_moves = [self.get_neighbor_pos(direction) for direction in range(6)]
+        valid_moves = [pos for pos in possible_moves if not self.is_blocked(pos)]
+        return valid_moves
+
+    def list_valid_attacks(self):
+        return self.list_valid_moves()
 
 
 PIECE_DICT = {"pawn": Pawn,
