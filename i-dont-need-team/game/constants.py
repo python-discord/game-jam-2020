@@ -3,7 +3,7 @@ BLOCK_WIDTH = 30
 BLOCK_HEIGHT = 30
 
 # How much blocks in board
-BLOCKS_AMOUNT_Y = 15 + 1 # One here and below is additional frame block
+BLOCKS_AMOUNT_Y = 15 + 1  # One here and below is additional frame block
 BLOCKS_AMOUNT_X = 15 + 1
 
 # Calculate screen size based on these stats
