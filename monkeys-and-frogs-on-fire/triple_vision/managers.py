@@ -268,7 +268,7 @@ class CursorManager:
         self.cursors = {
             "moving": arcade.Sprite("assets/crosshairs/moving.png"),
             "ranged": arcade.Sprite("assets/crosshairs/ranged.png"),
-            "blocked": arcade.Sprite("assets/crosshairs/blocked.png")
+            "blocked": arcade.Sprite("assets/crosshairs/blocked.png"),
         }
         self.window.set_mouse_visible(False)
 
@@ -290,15 +290,19 @@ class CursorManager:
         self.update_cursor_position(x, y)
 
     def update(self):
-        if self.player.state == States.ATTACKING_RANGED:
-            self.curr_cursor = "ranged"
-        elif self.player.state == States.MOVING:
+        if (
+            self.player.state == States.MOVING
+            or self.player.state == States.ATTACKING_RANGED
+            and self.player.is_moving()
+        ):
             self.curr_cursor = "moving"
+        elif self.player.state == States.ATTACKING_RANGED:
+            self.curr_cursor = "ranged"
         elif self.player.state == States.AIMING_BLOCKED:
             self.curr_cursor = "blocked"
         elif self.player.state == States.IDLE:
-            # TODO maybe?
-            pass
+            self.curr_cursor = "ranged"
 
     def draw(self):
-        self._curr_cursor.draw()
+        if self._curr_cursor is not None:
+            self._curr_cursor.draw()
