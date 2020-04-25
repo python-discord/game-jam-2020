@@ -202,3 +202,20 @@ class HealthBar(arcade.Sprite):
     def draw(self):
         self.fill_part_list.draw()
         super().draw()
+
+class PotionEffect:
+    def __init__(self, heal=0, speed=0, strength=0):
+        self.heal = heal
+        self.speed = speed
+        self.strength = strength
+
+
+class Potion:
+    def __init__(self, player, effect: PotionEffect):
+        self.player = player
+        self.effect = effect
+
+    def activate(self):
+        self.player.force += self.effect.strength
+        self.player.hp += self.effect.heal
+        self.player.speed += self.effect.speed
