@@ -38,7 +38,7 @@ class PyGameJam2020(arcade.Window):
         self.text_input = TextInput()
 
         self.camera = Camera.Camera(WIDTH, HEIGHT)
-        self.camera.zoom(4)
+        self.camera.zoom(1)
         self.keyboard = Keyboard.Keyboard()
 
         self.set_min_size(WIDTH, HEIGHT)
@@ -51,8 +51,6 @@ class PyGameJam2020(arcade.Window):
     def setup(self):
         
         self.level = Level.Level(self.camera, self.keyboard)
-
-        print(Textures.SPRITESHEET[2].height)
 
     def on_update(self, delta):
 
@@ -78,6 +76,9 @@ class PyGameJam2020(arcade.Window):
 
                 Graphics.empty_text_list(self.debug_text_list)
                 Graphics.add_to_text_list(self.debug_text, self.debug_text_list, 12, 12)
+                player_pos = (f"<{self.level.player.left}, {self.level.player.bottom}>"
+                    f" <{self.level.player.center_x // 16}, {self.level.player.center_y // 16}>")
+                Graphics.add_to_text_list(player_pos, self.debug_text_list, 12, 24)
                 
                 self.time -= 1
                 self.frames = 0
@@ -93,14 +94,17 @@ class PyGameJam2020(arcade.Window):
         # self.text_input.draw()
 
         if self.debug:
-            self.camera.reset_viewport()
             self.debug_text_list.draw(filter=gl.GL_NEAREST)
             # arcade.draw_text(self.debug_text, 12, 12, arcade.color.WHITE)
 
     def on_key_press(self, key, modifiers):
         self.keyboard.on_key_press(key, modifiers)
+
         if self.keyboard.is_pressed("fullscreen"):
             self.set_fullscreen(not self.fullscreen)
+
+        if self.keyboard.is_pressed("esc") and self.fullscreen:
+            self.set_fullscreen(False)
     
     def on_key_release(self, key, modifiers):
         self.keyboard.on_key_release(key, modifiers)
@@ -115,7 +119,7 @@ class PyGameJam2020(arcade.Window):
 
     def on_resize(self, width: float, height: float):
         self.camera.resize(width, height)
-        
+
         # scale_x = width / self.prev_size[0]
         # scale_y = height / self.prev_size[1]
         # scale = min(scale_x, scale_y)
