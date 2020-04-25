@@ -1,0 +1,7 @@
+Clarify that the triangulation should be flickery
+
+Add a restart button when they abscond
+
+Redo spawn if any are in attack range of each other
+
+Make it easier
