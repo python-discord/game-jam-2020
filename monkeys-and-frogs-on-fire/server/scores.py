@@ -51,7 +51,8 @@ class Scores(Cog, route='scores'):
                     {
                         'score': score.score,
                         'username': session.query(User).filter(User.id == score.user_id).first().username,
-                        'user_id': score.user_id
+                        'user_id': score.user_id,
+                        'timestamp': str(score.timestamp)
                     } for score in scores
                 ]
             })

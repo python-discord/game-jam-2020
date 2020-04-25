@@ -38,7 +38,8 @@ class ScoreNode:
         height: float,
         text_color: Tuple[int, int, int, int] = arcade.color.BLACK,
         display_color: Tuple[int, int, int, int] = arcade.color.WHITE,
-        outline_color: Tuple[int, int, int, int] = arcade.color.BLACK
+        outline_color: Tuple[int, int, int, int] = arcade.color.BLACK,
+        outline_width: float = 1
     ) -> None:
         self.username = username
         self.score = score
@@ -53,8 +54,9 @@ class ScoreNode:
         self.text_color = text_color
         self.display_color = display_color
         self.outline_color = outline_color
+        self.outline_width = outline_width
 
-        self.display = arcade.draw_rectangle_filled(
+        self.display = arcade.create_rectangle_filled(
             center_x=center_x,
             center_y=center_y,
             width=width,
@@ -62,24 +64,25 @@ class ScoreNode:
             color=display_color
         )
 
-        self.display_outline = arcade.draw_rectangle_outline(
+        self.display_outline = arcade.create_rectangle_outline(
             center_x=center_x,
             center_y=center_y,
             width=width,
             height=height,
-            color=outline_color
+            color=outline_color,
+            border_width=outline_width
         )
 
         self.username_text = arcade.draw_text(
             text=username,
-            start_x=center_x - width / 2 + 10,
+            start_x=center_x - width / 2 + 20,
             start_y=center_y,
             color=text_color,
             anchor_y='center'
         )
 
         self.score_text = arcade.draw_text(
-            text=username,
+            text=str(score),
             start_x=center_x,
             start_y=center_y,
             color=text_color,
@@ -88,11 +91,13 @@ class ScoreNode:
 
         self.timestamp_text = arcade.draw_text(
             text=self.timestamp,
-            start_x=center_x + width / 2 - 40,
+            start_x=center_x + width / 2 - 200,
             start_y=center_y,
             color=text_color,
             anchor_y='center'
         )
+
+        arcade.text.draw_text_cache.clear()
 
     def draw(self) -> None:
         self.display.draw()
@@ -147,18 +152,20 @@ class LeaderboardView(arcade.View):
         client.get_top_scores()
         get_status('get_top_scores')
 
-        self.scores = Memory.get_top_scores
+        self.scores = Memory.scores
 
-        for idx, score in enumerate(self.scores, 1):
+        for idx, score in enumerate(self.scores, -1):
             self.score_nodes.append(
                 ScoreNode(
                     username=score['username'],
                     score=score['score'],
                     timestamp=score['timestamp'],
                     center_x=s.WINDOW_SIZE[0] / 2,
-                    center_y=idx * 120,
+                    center_y=s.WINDOW_SIZE[1] - (len(self.scores) - idx) * 120,
                     width=s.WINDOW_SIZE[0] / 8 * 7,
-                    height=100
+                    height=100,
+                    outline_width=3,
+                    display_color=(240, 240, 240, 255)
                 )
             )
 
