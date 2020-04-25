@@ -26,6 +26,12 @@ class TriGrid:
                     for r in [False, True]:
                         if board_init_config.is_valid_hex2_cell(grid_x, grid_y, r):
                             grid_map[(grid_x, grid_y, r)] = TriCell(grid_x, grid_y, r, self.cell_width)
+        elif grid_type == "trichess3":
+            for grid_x in range(board_init_config.trichess3_board_size):
+                for grid_y in range(board_init_config.trichess3_board_size - grid_x):
+                    for r in [False, True]:
+                        if board_init_config.is_valid_trichess3_cell(grid_x, grid_y, r):
+                            grid_map[(grid_x, grid_y, r)] = TriCell(grid_x, grid_y, r, self.cell_width)
 
         return grid_map
 
@@ -98,8 +104,9 @@ class TriGrid:
         if grid_coord:
             for grid_x, grid_y, grid_r in self.grid_map:
                 (x, y) = self.get_cell(grid_x, grid_y, grid_r).center_coord
-                x -= 20
-                arcade.draw_text(f'{grid_x, grid_y, int(grid_r)}', float(x), float(y), color=arcade.color.BLACK, font_size=12)
+                x -= 17
+                y -= 5
+                arcade.draw_text(f'{grid_x}, {grid_y}, {int(grid_r)}', float(x), float(y), color=arcade.color.BLACK, font_size=10)
 
     def get_cell(self, grid_x, grid_y, grid_r):
         return self.grid_map[(grid_x, grid_y, grid_r)]

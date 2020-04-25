@@ -21,10 +21,10 @@ import arcade
 from TriTess.game import trigrid
 
 
-BOARD_SIZE = 12
+BOARD_SIZE = 18
 
 # This sets the WIDTH of each grid location
-WIDTH = 50
+WIDTH = 40
 
 # This sets the margin between each cell
 # and on the edges of the screen.
@@ -50,7 +50,7 @@ class TriTess(arcade.Window):
         """
 
         super().__init__(width, height, title)
-        self.trigrid = trigrid.TriGrid(BOARD_SIZE, CELL_WIDTH, 'hex2')
+        self.trigrid = trigrid.TriGrid(BOARD_SIZE, CELL_WIDTH, 'trichess3')
         self.cur_player = 0
         self.cur_cell = None
         self.cur_valid_moves = None
@@ -97,7 +97,7 @@ class TriTess(arcade.Window):
                     new_cell = self.trigrid.get_cell(*pos)
                     if new_cell.piece is not None and self.cur_cell.piece.player != new_cell.piece.player:
                         if pos in self.cur_valid_attacks:
-                            new_cell.piece.clear_spatial_hashes()
+                            new_cell.piece.remove_from_sprite_lists()
                             new_cell.piece = None
                             self.cur_cell.piece.move_to(*pos)
                             self.cur_player = (self.cur_player + 1) % self.trigrid.num_players
