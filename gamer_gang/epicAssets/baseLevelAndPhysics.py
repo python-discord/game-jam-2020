@@ -1,11 +1,9 @@
-import time
 import itertools
 from pathlib import Path
 import pytiled_parser
 from gamer_gang.epicAssets.entities import *
 from gamer_gang.epicAssets.terrainStuff import *
 from gamer_gang.dumbConstants import *
-
 
 def getNames(name):
     name = name.split(sep='on')
@@ -61,10 +59,11 @@ class BaseLevel(arcade.View):
         self.makeLevel()
 
     def makeLevel(self):
-        self.map = arcade.tilemap.read_tmx(str(Path(__file__).parent) + f'/levels/level{self.ln}/level_{self.ln}.tmx')
+        self.map = arcade.tilemap.read_tmx(str(Path(__file__).parent) + f'/levels/level_{self.ln}.tmx')
         self.frames = 0
         self.totalTime = 0
         self.ground = arcade.SpriteList()
+        self.sands = arcade.SpriteList()
         self.deco = arcade.SpriteList()
         self.boxes = arcade.SpriteList()
         self.BEES = arcade.SpriteList()
@@ -72,7 +71,7 @@ class BaseLevel(arcade.View):
         self.players = []
         self.bodies = []
         self.shapes = []
-        self.backgroundImage = arcade.Sprite(str(Path(__file__).parent) + "/levels/level1/blueBackground.png",
+        self.backgroundImage = arcade.Sprite(str(Path(__file__).parent) + "/levels/blueBackground.png",
                                              center_x=self.map.map_size.width * self.map.tile_size.width / 2,
                                              center_y=self.map.map_size.height * self.map.tile_size.height / 2)
         self.deco = arcade.SpriteList()
@@ -81,7 +80,7 @@ class BaseLevel(arcade.View):
 
         ground_list = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/Ground", self.map))
         for i in ground_list:
-            self.ground.append(makeLand(self.space, BoxOfSmth, i.textures, 1, i.center_x, i.center_y))
+            self.ground.append(makeLand(self.space, i.textures, 1, i.center_x, i.center_y))
 
         pName = 1
         for i in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/Players", self.map)):
@@ -93,12 +92,14 @@ class BaseLevel(arcade.View):
             pName += 1
 
         for b in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/boxes", self.map)):
-            box = makeBox(1, self.space, b.textures, b.hit_box, b.scale, b.center_x, b.center_y)
-            self.boxes.append(box)
+            self.boxes.append(makeBox(1, self.space, b.textures, b.hit_box, b.scale, b.center_x, b.center_y))
+
+        for s in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/sands", self.map)):
+            self.sands.append(makeLand(self.space, s.textures, s.scale, s.center_x, s.center_y))
 
         for b in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/bees", self.map)):
-            textures = [arcade.load_texture(str(Path(__file__).parent) + f'/images/beeImages/bee{i}.png')
-                        for i in range(1, 3)]
+            textures = {"f1": [arcade.load_texture(f"images/beeImages/bee{i}.png") for i in range(1, 3)],
+                        "f2": [arcade.load_texture(f"images/beeImages/bee{i}.png", mirrored=True) for i in range(1, 3)]}
             self.BEES.append(BeeSprite(textures, b.scale, b.center_x, b.center_y))
 
         for s in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/stars", self.map)):
@@ -115,13 +116,20 @@ class BaseLevel(arcade.View):
         self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Trees", self.map)))
         self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Plants", self.map)))
         self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Signs", self.map)))
-        self.background = arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Ocean", self.map))
+        try:
+            self.bkg = arcade.SpriteList()
+            self.bkg.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Ocean", self.map)))
+        except AttributeError:
+            pass
+
+        self.xCam = round(self.players[0].center_x) + random.randint(-SCREEN_WIDTH, SCREEN_WIDTH)
+        self.yCam = round(self.players[0].center_y) + random.randint(-SCREEN_HEIGHT, SCREEN_HEIGHT)
 
     def on_draw(self):
         arcade.start_render()
 
         self.backgroundImage.draw()
-        self.background.draw()
+        self.bkg.draw()
         self.deco.draw()
         self.exit.draw()
         self.spikes.draw()
@@ -129,6 +137,7 @@ class BaseLevel(arcade.View):
         self.ground.draw()
         self.boxes.draw()
         self.jumpPads.draw()
+        self.sands.draw()
         self.stars.draw()
         if self.collectedStars != self.neededStars:
             arcade.draw_text(f'stars collected: {self.collectedStars} out of {self.neededStars}',
@@ -171,34 +180,18 @@ class BaseLevel(arcade.View):
         elif key == arcade.key.UP or key == arcade.key.W or key == arcade.key.DOWN:
             self.userInputs[2] = 0
 
-    def cameraShift(self):
-        needChange = False
-        left_boundary = self.leftView + SCREEN_MARGIN
-        if self.players[self.controlled].left < left_boundary:
-            self.leftView -= left_boundary - self.players[self.controlled].left
-            needChange = True
+    def cameraShift(self, t):
+        self.xCam = round(self.xCam * (1 - t) + self.players[self.controlled].pymunk_shape.body.position.x * t)
+        self.xCam = self.xCam if self.xCam >= SCREEN_WIDTH / 2 else SCREEN_WIDTH / 2
+        if not self.xCam <= self.map.map_size.width * self.map.tile_size.width - SCREEN_WIDTH / 2:
+            self.xCam = self.map.map_size.width * self.map.tile_size.width - SCREEN_WIDTH / 2
 
-        right_boundary = self.leftView + SCREEN_WIDTH - SCREEN_MARGIN
-        if self.players[self.controlled].right > right_boundary:
-            self.leftView += self.players[self.controlled].right - right_boundary
-            needChange = True
-
-        top_boundary = self.bottomView + SCREEN_HEIGHT - SCREEN_MARGIN
-        if self.players[self.controlled].top > top_boundary:
-            self.bottomView += self.players[self.controlled].top - top_boundary
-            needChange = True
-
-        bottom_boundary = self.bottomView + SCREEN_MARGIN
-        if self.players[self.controlled].bottom < bottom_boundary:
-            self.bottomView -= bottom_boundary - self.players[self.controlled].bottom
-            needChange = True
-
-        self.leftView = round(self.leftView)
-        self.bottomView = round(self.bottomView) if self.bottomView > 0 else 0
-
-        if needChange:
-            arcade.set_viewport(self.leftView, SCREEN_WIDTH + self.leftView,
-                                self.bottomView, SCREEN_HEIGHT + self.bottomView)
+        self.yCam = round(self.yCam * (1 - t) + self.players[self.controlled].pymunk_shape.body.position.y * t)
+        self.yCam = self.yCam if self.yCam >= SCREEN_HEIGHT / 2 else SCREEN_HEIGHT / 2
+        if not self.yCam <= self.map.map_size.height * self.map.tile_size.height - SCREEN_HEIGHT / 2:
+            self.yCam = self.map.map_size.height * self.map.tile_size.height - SCREEN_HEIGHT / 2
+        arcade.set_viewport(self.xCam - SCREEN_WIDTH / 2, self.xCam + SCREEN_WIDTH / 2,
+                            self.yCam - SCREEN_HEIGHT / 2, self.yCam + SCREEN_HEIGHT / 2)
 
     def stackCheck(self):
         if self.timeAfterSplit < 0.5:  # don't join right after the user tells the blocks to split
@@ -297,13 +290,19 @@ class BaseLevel(arcade.View):
                 if p.pymunk_shape.body.velocity.x < -300:
                     p.pymunk_shape.body.velocity = pymunk.Vec2d((-150, p.pymunk_shape.body.velocity.y))
 
+        for j in self.jumpPads:  # move the boxes (if jump pad detected)
+            for b in arcade.check_for_collision_with_list(j, self.boxes):
+                if b.can_jump:
+                    b.pymunk_shape.body.velocity += pymunk.Vec2d((0, 600))
+                    b.can_jump = False
+
     def entityInteractionCheck(self):
         for p in self.players:
             if p is None:
                 continue
 
             if arcade.check_for_collision_with_list(p, self.spikes):  # if you touch a spike, you DIE
-                self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
+                # self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
                 self.window.sfx['spike'].play()
                 self.window.deathCause = 'a spike that looks awfully like a GD spike'
                 continue
@@ -347,18 +346,18 @@ class BaseLevel(arcade.View):
     def on_update(self, dt):
         self.frames += 1
         self.timeAfterSplit += dt
-        """if self.totalTime == 0:
+        if self.totalTime == 0:
             self.window.sfx["level music"].play(volume=0.5)
         if self.window.sfx["level music"].get_length() < self.totalTime:
             self.totalTime = 0
         else:
-            self.totalTime += dt"""
+            self.totalTime += dt
 
         for _ in range(10):  # if the steps are smaller the game's more accurate
             self.space.step(1 / 600.0)
 
         self.movement()  # move all the players (well, the characters)
-        self.cameraShift()  # shift camera
+        self.cameraShift(dt)  # shift camera
         self.stackCheck()  # join into stacks if detected
         self.entityInteractionCheck()  # check for interaction with any enemies, bad stuff, etc.
 
@@ -396,12 +395,40 @@ class BaseLevel(arcade.View):
                     self.space.remove(b.pymunk_shape, b.pymunk_shape.body)
                     b.kill()
 
-            if self.collectedStars == self.neededStars:
-                self.exit[0].texture = self.exit[0].textures[1]
+                if arcade.check_for_collision_with_list(b, self.ground) and abs(b.pymunk_shape.body.velocity.y) < 3:
+                    b.can_jump = True
+
+            spriteListPlayers = arcade.SpriteList()
+            for p in self.players:
+                spriteListPlayers.append(p)
+
+            newSands = arcade.SpriteList()
+            for s in self.sands:
+                s.center_x = s.pymunk_shape.body.position.x
+                s.center_y = s.pymunk_shape.body.position.y
+                s.center_y -= 32
+                metBoxes = arcade.check_for_collision_with_list(s, self.boxes)
+                metBoxes.extend(arcade.check_for_collision_with_list(s, self.ground))
+                metBoxes.extend(arcade.check_for_collision_with_list(s, spriteListPlayers))
+                collided = [True for char in self.sands if arcade.check_for_collision(s, char) and s != char]
+                if not metBoxes and not collided:
+                    print(s.textures)
+                    newSands.append(makeLand(self.space, s.textures, 1, s.center_x, s.center_y))
+                    self.space.remove(s.pymunk_shape, s.pymunk_shape.body)
+                    s.kill()
+                else:
+                    s.center_y += 32
+                if s.center_y <= 0:
+                    self.space.remove(s.pymunk_shape, s.pymunk_shape.body)
+                    s.kill()
+            self.sands.extend(newSands)
 
             self.BEES.update_animation(dt)
             for b in self.BEES:
                 b.update(self.players)
+
+            if self.collectedStars == self.neededStars:
+                self.exit[0].texture = self.exit[0].textures[1]
 
             for s in self.stars:
                 s.update(self.frames)
@@ -414,7 +441,7 @@ class BaseLevel(arcade.View):
 
 if __name__ == '__main__':
     testGame = arcade.Window(1000, 600, 'test')
-    testGame.level = BaseLevel(1)
+    testGame.level = BaseLevel(2)
     testGame.game_over = False
     filePath = str(Path(__file__).parent.parent)
     testGame.sfx = {"jump": arcade.load_sound(filePath + "/epicAssets/sounds/jump.wav"),

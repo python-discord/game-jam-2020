@@ -30,40 +30,39 @@ class Player(arcade.Sprite):
             if self.textureList[:rnTexture] + self.textureList[rnTexture + 1:]:
                 self.texture = random.choice(self.textureList[:rnTexture] + self.textureList[rnTexture + 1:])
 
-
 class BeeSprite(arcade.Sprite):
     def __init__(self, textures, scale, x, y):
         super().__init__()
+        self.state = "f1"
+        self.duration = 0
 
         self.textures = textures
-        self.texture = self.textures[0]
-        self.animState = True
-
+        self.texture = self.textures[self.state][0]
         self.scale = scale
 
         self.og_x, self.og_y = self.center_x, self.center_y = x, y
 
-    def update(self, players):
+    def update(self,players):
         dists = []
         for p in players:
             if p is not None:
                 dists.append(math.sqrt((self.center_x - p.center_x) ** 2 + (self.center_y - p.center_y) ** 2))
             else:
                 dists.append(float('inf'))
-
+        angle = 0
         if min(dists) < 32 * 8:
             tar = dists.index(min(dists))
             angle = math.atan2((players[tar].center_y - self.center_y), (players[tar].center_x - self.center_x))
             self.center_x += math.cos(angle)
             self.center_y += math.sin(angle)
         else:
-            angle = math.atan2((self.og_y - self.center_y), (self.og_x - self.center_x))
-            self.center_x += math.cos(angle)
-            self.center_y += math.sin(angle)
-
-    def update_animation(self, delta_time: float = 1/60):
-        self.texture = self.textures[not self.animState]
-        self.animState = not self.animState
+            if abs(self.center_y - self.og_y) > 1 and abs(self.center_x - self.og_x) > 1:
+                angle = math.atan2((self.og_y - self.center_y), (self.og_x - self.center_x))
+                self.center_x += math.cos(angle)
+                self.center_y += math.sin(angle)
+        self.state = "f1" if math.cos(angle) <= 0 else "f2"
+        self.texture = self.textures[self.state][math.floor(self.duration / 3)]
+        self.duration = self.duration + 1 if self.duration + 1 < 6 else 0
 
 class StarSprite(arcade.Sprite):
     def __init__(self, textures, scale, x, y, hitbox):

@@ -17,7 +17,7 @@ class ActualGame(arcade.Window):
                     "lost": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/levelLost.wav"),
                     "win": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/levelPass.wav"),
                     "spike": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/spike.wav"),
-                    "level music": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/background.wav"),
+                    "level music": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/bkg.wav"),
                     "menu music": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/menu.wav")}
 
     def setup(self):
