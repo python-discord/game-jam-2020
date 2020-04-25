@@ -10,6 +10,7 @@ class Score:
         self.score_dict = {}
         self.index = -1
         self.char_count = 0
+        self.restart_timer = -1
 
     def load_score(self, player_score):
         with open(self.path) as file:
@@ -27,7 +28,8 @@ class Score:
             self.score_dict = new_score
 
             self.index = list(self.score_dict.keys()).index(str(player_score))
-
+        else:
+            self.restart_timer = 0
 
     def draw_score_screen(self):
 
@@ -49,9 +51,17 @@ class Score:
                                  self.height - (self.height // 10)*count,
                                  arcade.color.RED_DEVIL,
                                  30)
+        if self.restart_timer >= 0:
+            arcade.draw_text("Press any key to restart the game",
+                             self.width // 2 - 62 * len(value),
+                             self.height // 9,
+                             arcade.color.RED_ORANGE,
+                             30)
 
-    def update_player_name(self, char: str):
-        if self.index >= 0 and self.char_count < 3:
+    def score_input(self, char: str):
+        if self.restart_timer > 1.5:
+            return True
+        elif self.index >= 0 and self.char_count < 3:
 
             score = list(self.score_dict.keys())[self.index]
             name = list(self.score_dict.values())[self.index]
@@ -67,6 +77,11 @@ class Score:
                 new_score[str(score)] = self.score_dict[str(score)]
             self.score_dict = new_score
             self.char_count += 1
+
             if self.char_count == 3:
                 with open("score.json", "w") as file:
                     json.dump(self.score_dict, file)
+                self.restart_timer = 0
+            return False
+
+        return False

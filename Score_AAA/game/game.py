@@ -132,11 +132,17 @@ class MyGame(arcade.Window):
 
         # Set up the rest
         self.pattern = PatternGenerator([self.lane_up, self.lane_middle, self.lane_down])
-        self.score = 0
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
-        self.time = 0
-        self.fps = 0
         self.score_screen = Score(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.score = 0
+        self.time = 0
+        self.frame = 0
+        self.fps = 0
+        self.combo = 0
+        self.life = 5
+        self.stage = [60000, 20000, 2500]
+        self.music = None
+        self.obstacle_queue = deque([[], [], [], [], []])
 
         # Play the music
 
@@ -196,7 +202,7 @@ class MyGame(arcade.Window):
         if self.game_state == EnumGameState.title:
             self.game_state = EnumGameState.game
             self.setup()
-            self.music.play(1.0)
+            self.music.play(0.5)
 
         elif self.game_state == EnumGameState.game:
             if key == arcade.key.A or key == arcade.key.Q:
@@ -207,7 +213,9 @@ class MyGame(arcade.Window):
                 self.key_action(self.lane_down)
 
         elif self.game_state == EnumGameState.game_over:
-            self.score_screen.update_player_name(chr(key))
+            if self.score_screen.score_input(chr(key)):
+                self.setup()
+                self.game_state = EnumGameState.game
 
     def key_action(self, lane):
         result = lane.action(self.obstacle_list)
@@ -254,6 +262,7 @@ class MyGame(arcade.Window):
 
             for item in self.splash_list:
                 item.update_age(delta_time)
+
             # Score points and remove obstacles
             for obstacle in self.obstacle_list:
                 if obstacle.center_x < 0:
@@ -270,6 +279,7 @@ class MyGame(arcade.Window):
                 self.lane_down.difficulty += 3
                 self.stage.pop()
 
+            # Launch Game Over
             if self.life <= 0:
                 self.game_state = EnumGameState.game_over
                 self.floor_list = arcade.SpriteList()
@@ -277,6 +287,9 @@ class MyGame(arcade.Window):
                 self.char_list = arcade.SpriteList()
                 self.splash_list = arcade.SpriteList()
                 self.score_screen.load_score(self.score)
+
+        if self.score_screen.restart_timer >= 0:
+            self.score_screen.restart_timer += delta_time
 
 
 def main():
