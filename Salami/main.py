@@ -58,13 +58,13 @@ class PyGameJam2020(arcade.Window):
 
         self.camera.scroll_to(self.level.player.center_x, self.level.player.center_y)
 
-        # self.text_input.x = self.level.player.center_x
-        # self.text_input.y = self.level.player.center_y + 8
+        self.text_input.x = self.level.player.center_x
+        self.text_input.y = self.level.player.center_y + 8
 
         if self.keyboard.is_pressed("zoom_in"):
-            self.camera.zoom(0.95)
+            self.camera.zoom(0.98)
         elif self.keyboard.is_pressed("zoom_out"):
-            self.camera.zoom(1/0.95)
+            self.camera.zoom(1/0.98)
 
         if self.debug:
             
@@ -76,7 +76,7 @@ class PyGameJam2020(arcade.Window):
 
                 Graphics.empty_text_list(self.debug_text_list)
                 Graphics.add_to_text_list(self.debug_text, self.debug_text_list, 12, 12)
-                player_pos = (f"<{self.level.player.left}, {self.level.player.bottom}>"
+                player_pos = (f"<{round(self.level.player.left, 2)}, {round(self.level.player.bottom, 2)}>"
                     f" <{self.level.player.center_x // 16}, {self.level.player.center_y // 16}>")
                 Graphics.add_to_text_list(player_pos, self.debug_text_list, 12, 24)
                 
@@ -92,6 +92,8 @@ class PyGameJam2020(arcade.Window):
         self.level.draw()
 
         # self.text_input.draw()
+
+        self.camera.reset_viewport()
 
         if self.debug:
             self.debug_text_list.draw(filter=gl.GL_NEAREST)
