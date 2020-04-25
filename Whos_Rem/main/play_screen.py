@@ -220,7 +220,7 @@ class GameScreen(arcade.View, PauseScreen):
         self.background_sprite.alpha = 160
         self.background_sprite.draw()
 
-        # If un pausing render
+        # If un pausing render  todo finish
         if count_down is not None:
             count_down.draw()
 
