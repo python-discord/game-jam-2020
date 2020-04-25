@@ -40,7 +40,7 @@ class LaserProjectile(Projectile):
             throwback_force=8,
             activate_sounds=self.activate_sounds,
             hit_sounds=self.hit_sounds,
-            lifetime=3,
+            lifetime=2,
             moving_speed=moving_speed,
             filename=f'assets/lasers/{color}_laser.png',
             **kwargs
@@ -61,7 +61,7 @@ class ChargedLaserProjectile(Projectile):
         """
 
         dmg = random.randrange(60 + int(charge), 70 + math.ceil(charge))
-        lifetime = 3 - round(charge/50, 2)
+        lifetime = 2 - round(charge/50, 2)
         moving_speed = 5.0 + round(charge/10, 2)
         throwback_force = 8 + charge//10
 
