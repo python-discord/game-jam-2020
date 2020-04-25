@@ -18,7 +18,8 @@ class Enemies(enum.Enum):
     Value is default enemy health
     """
     big_demon = 1024
-    imp = 512
+    chort = 100
+    imp = 300
 
 
 class BaseEnemy(LivingEntity):
