@@ -1,6 +1,6 @@
 import arcade
 import numpy as np
-from . import trichess_piece
+from . import trichess_piece, board_init_config
 
 EVEN_GRID_COLOR = arcade.color.JASMINE
 ODD_GRID_COLOR = arcade.color.LIGHT_PASTEL_PURPLE
@@ -9,44 +9,53 @@ MOVABLE_GRID_COLOR = arcade.color.ASPARAGUS
 
 
 class TriGrid:
-    def __init__(self, board_size, cell_width, grid_type='triangular'):
+    def __init__(self, board_size, cell_width, grid_type='hex2'):
         self.board_size = board_size
         self.cell_width = cell_width
         self.shape_list = None
-        self.grid, self.grid_map = self.init_grid(grid_type)
+        self.grid_map = self.init_grid(grid_type)
         self.piece_list = self.init_pieces(grid_type)
         self.on_draw()
 
     def init_grid(self, grid_type):
-        grid = []
-        grid_index = 0
         grid_map = {}
-        if grid_type == "triangular":
-            for row in range(self.board_size):
-                tmp_row = []
-                for col in range(self.board_size - row):
-                    tmp_col = [TriCell(row, col, False, self.cell_width)]
-                    grid_map[(row, col, False)] = grid_index
-                    grid_index += 1
-                    if col + row != self.board_size - 1:
-                        tmp_col.append(TriCell(row, col, True, self.cell_width))
-                        grid_map[(row, col, True)] = grid_index
-                        grid_index += 1
-                    tmp_row.append(tmp_col)
-                grid.append(tmp_row)
-        return grid, grid_map
+        if grid_type == "hex2":
+            for row in range(board_init_config.hex2_board_size):
+                for col in range(board_init_config.hex2_board_size - row):
+                    for r in [False, True]:
+                        if board_init_config.is_valid_hex2_cell(row, col, r):
+                            grid_map[(row, col, r)] = TriCell(row, col, r, self.cell_width)
+
+        return grid_map
 
     def init_pieces(self, grid_type):
         piece_list = arcade.SpriteList()
-        if grid_type == "triangular":
-            orient = 0
-            p1_piece_list = [("pawn", (index, 1, 0), orient, 0) for index in range(3, 8)] + \
-                            [("pawn", (index, 1, 1), orient, 0) for index in range(2, 8)] + \
-                            [("rook", (3, 0, 1), orient, 0), ("rook", (7, 0, 1), orient, 0)] + \
-                            [("knight", (4, 0, 0), orient, 0), ("knight", (7, 0, 0), orient, 0)] + \
-                            [("bishop", (4, 0, 1), orient, 0), ("bishop", (6, 0, 1), orient, 0)] + \
-                            [("king", (5, 0, 0), orient, 0), ("queen", (6, 0, 0), orient, 0)]
-            for name, pos, orientation, player in p1_piece_list:
+        if grid_type == "hex2":
+
+            for name, pos, orientation, player in board_init_config.hex2_player1_init:
+                cur_piece = trichess_piece.TriPiece.create_piece(self, name, pos, orientation, player)
+                self.get_cell(*pos).piece = cur_piece
+                piece_list.append(cur_piece)
+
+            for name, pos, orientation, player in board_init_config.hex2_player2_init:
+                cur_piece = trichess_piece.TriPiece.create_piece(self, name, pos, orientation, player)
+                self.get_cell(*pos).piece = cur_piece
+                piece_list.append(cur_piece)
+
+            return piece_list
+
+        elif grid_type == "trichess3":
+            for name, pos, orientation, player in board_init_config.trichess3_player1_init:
+                cur_piece = trichess_piece.TriPiece.create_piece(self, name, pos, orientation, player)
+                self.get_cell(*pos).piece = cur_piece
+                piece_list.append(cur_piece)
+
+            for name, pos, orientation, player in board_init_config.trichess3_player2_init:
+                cur_piece = trichess_piece.TriPiece.create_piece(self, name, pos, orientation, player)
+                self.get_cell(*pos).piece = cur_piece
+                piece_list.append(cur_piece)
+
+            for name, pos, orientation, player in board_init_config.trichess3_player3_init:
                 cur_piece = trichess_piece.TriPiece.create_piece(self, name, pos, orientation, player)
                 self.get_cell(*pos).piece = cur_piece
                 piece_list.append(cur_piece)
@@ -55,11 +64,9 @@ class TriGrid:
 
     def update_shape_list(self):
         self.shape_list = arcade.ShapeElementList()
-        for grid_row in self.grid:
-            for grid_col in grid_row:
-                for cell in grid_col:
-                    current_cell = cell.create_cell_poly()
-                    self.shape_list.append(current_cell)
+        for grid_posm, cell in self.grid_map.items():
+            current_cell = cell.create_cell_poly()
+            self.shape_list.append(current_cell)
 
     def get_grid_position(self, coord_x, coord_y):
         x = (coord_x - coord_y * 0.5) / self.cell_width
@@ -69,13 +76,13 @@ class TriGrid:
         return int(x), int(y), r
 
     def toggle_cell(self, x, y, r):
-        self.grid[x][y][r].toggle()
+        self.grid_map[(x, y, r)].toggle()
 
     def is_valid_cell(self, x, y, r):
         return (x, y, r) in self.grid_map
 
     def get_player_at_cell(self, x, y, r):
-        sel_cell = self.get_cell(x,y, r)
+        sel_cell = self.get_cell(x, y, r)
         return None if sel_cell.piece is None else sel_cell.piece.player
 
     def clear_highlights(self):
@@ -91,10 +98,10 @@ class TriGrid:
             for grid_x, grid_y, grid_r in self.grid_map:
                 (x, y) = self.get_cell(grid_x, grid_y, grid_r).center_coord
                 x -= 20
-                arcade.draw_text(f'{grid_x, grid_y, int(grid_r)}', x, y, color=arcade.color.BLACK, font_size=12)
+                arcade.draw_text(f'{grid_x, grid_y, int(grid_r)}', float(x), float(y), color=arcade.color.BLACK, font_size=12)
 
     def get_cell(self, grid_x, grid_y, grid_r):
-        return self.grid[grid_x][grid_y][grid_r]
+        return self.grid_map[(grid_x, grid_y, grid_r)]
 
 
 class TriCell:
