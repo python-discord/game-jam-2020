@@ -28,5 +28,15 @@
       ],
       "base_attack": 5,
       "base_defense": 15
+    },
+    "settler": {
+      "name": "Settler",
+      "icons": [
+        "assets/RedSettler.png",
+        "assets/GreenSettler.png",
+        "assets/BlueSettler.png"
+      ],
+      "base_attack": 0,
+      "base_defense": 0
     }
 }
