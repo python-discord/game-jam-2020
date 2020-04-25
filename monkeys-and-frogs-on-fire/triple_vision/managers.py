@@ -290,10 +290,7 @@ class CursorManager:
         self._curr_cursor.center_y = y + self.view.camera.viewport_bottom
 
     def process_mouse_motion(self, x, y):
-        if arcade.get_sprites_at_exact_point(
-            (x + self.view.camera.viewport_left, y + self.view.camera.viewport_bottom),
-                self.view.collision_list
-        ):
+        if arcade.get_sprites_at_exact_point((x, y), self.view.collision_list):
             # TODO not working
             self.curr_cursor = "blocked"
         self.set_cursor_position(x, y)
