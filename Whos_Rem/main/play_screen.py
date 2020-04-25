@@ -183,10 +183,19 @@ class GameScreen(arcade.View, PauseScreen):
 
     def on_pause(self):
         self.paused = not self.paused
-        #if not self.paused: todo fix?
-        #    for i in range(3):  # 3 sec time
-        #        self.to_be_rendered = self.count_down[i]
         self.audio._pause()
+
+    @staticmethod
+    def get_points(note_y, key_height):
+        delta = note_y - key_height
+        if delta in range(-5, 5):
+            return 100  # Perfect
+        elif delta in range(-20, -5):
+            return 50   # Good
+        elif delta in range(-50, -20):
+            return 20   # OK
+        else:
+            return -1   # Miss
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
@@ -204,7 +213,7 @@ class GameScreen(arcade.View, PauseScreen):
         self.background.alpha = 200
         self.background.draw()
 
-        # White key note box
+        # White mask note box
         arcade.draw_rectangle_filled(
             self.WIDTH / 2,
             self.HEIGHT / 2,
@@ -224,29 +233,32 @@ class GameScreen(arcade.View, PauseScreen):
         if count_down is not None:
             count_down.draw()
 
-        # Honestly no idea what this was but probably important
+        # White box behind the keys
         arcade.draw_rectangle_filled(
             self.WIDTH / 2,
             self.HEIGHT / 10,
             width=self.WIDTH / 2,
-            height=self.HEIGHT / 4,
+            height=self.note_1.height,
             color=arcade.color.WHITE)
 
         # Renders pressed keys if NOT paused
         if not self.paused and self.started:
             if self.left_button_active:
-                self.note_1.center_x = self.WIDTH / 2 - 105
+                self.note_1.center_x = self.WIDTH / 2 - (self.WIDTH / (200/21))
                 self.note_1.center_y = self.HEIGHT / 10
+                self.note_1.scale = ((self.WIDTH / self.HEIGHT) / (20/3)) * (self.HEIGHT / 600)
                 self.note_1.draw()
 
             if self.middle_button_active:
                 self.note_2.center_x = self.WIDTH / 2
                 self.note_2.center_y = self.HEIGHT / 10
+                self.note_2.scale = ((self.WIDTH / self.HEIGHT) / (20/3)) * (self.HEIGHT / 600)
                 self.note_2.draw()
 
             if self.right_button_active:
-                self.note_3.center_x = self.WIDTH / 2 + 105
+                self.note_3.center_x = self.WIDTH / 2 + (self.WIDTH / (200/21))
                 self.note_3.center_y = self.HEIGHT / 10
+                self.note_3.scale = ((self.WIDTH / self.HEIGHT) / (20/3)) * (self.HEIGHT / 600)
                 self.note_3.draw()
 
         # Audio progress bar
