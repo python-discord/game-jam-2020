@@ -61,11 +61,19 @@ class Level:
         self.ball.change_x = 2
         self.add_entity_to_list(self.ball, self.entities)
 
-        self.engine = Engine(self.entities, self.tile_list, GRAVITY)
+        self.engine = Engine(self.entities, self.tile_list, self, GRAVITY)
         
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player, self.tile_list, GRAVITY)
 
-        self.count = 0
+        self.curr_health = self.player.health
+
+        self.health_bar = arcade.SpriteList()
+        for i in range(3):
+            heart = arcade.Sprite()
+            heart.center_x = self.player.center_x - TILE_SIZE + i * TILE_SIZE
+            heart.center_y = self.player.center_y + TILE_SIZE
+            heart.texture = Textures.get_texture(4, 9)
+            self.health_bar.append(heart)
 
     def update(self, delta):
 
@@ -77,15 +85,27 @@ class Level:
         # self.entities.remove(e)
 
         self.engine.update(delta)
-
-        self.count += 1
+        
+        remainder = self.player.health if self.player.health > 0 else 0
+        for i, health in enumerate(self.health_bar):
+            health.center_x = self.player.center_x - TILE_SIZE + i * TILE_SIZE
+            health.center_y = self.player.center_y + TILE_SIZE
+            if self.player.health < self.curr_health:
+                if remainder >= 3:
+                    health.texture = Textures.get_texture(4, 9)
+                    remainder -= 3
+                else:
+                    health.texture = Textures.get_texture(4 + 3 - remainder, 9)
+                    remainder = 0
+        self.curr_health = self.player.health
 
     def draw(self):
         
         self.entities.draw(filter=gl.GL_NEAREST)
         self.tile_list.draw(filter=gl.GL_NEAREST)
 
-        self.camera.reset_viewport()
+        # self.health_bar.draw(filter=gl.GL_NEAREST)            
+
         # self.player.draw_hit_box(arcade.color.BLUE)
 
     def add_entity_to_list(self, entity, list):
