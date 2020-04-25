@@ -20,6 +20,7 @@ class Enemies(enum.Enum):
     big_demon = 1024
     chort = 100
     imp = 300
+    wogol = 512
 
 
 class BaseEnemy(LivingEntity):

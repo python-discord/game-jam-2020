@@ -59,7 +59,7 @@ class TripleVision(arcade.View):
         self.charge = 0.0
         self.charging = False
 
-        for _ in range(10):
+        for _ in range(3):
             self.game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.big_demon,
@@ -78,6 +78,23 @@ class TripleVision(arcade.View):
             )
 
         self.physics_engine = SlowModeSupportEngine(self.player, self.collision_list)
+
+        for _ in range(15):
+            self.game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.chort,
+                self.player,
+                Tile.SCALED * 10,
+                moving_speed=1
+            )
+        for _ in range(5):
+            self.game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.wogol,
+                self.player,
+                Tile.SCALED * 10,
+                moving_speed=1
+            )
 
     def on_key_press(self, key, modifiers) -> None:
         if key == arcade.key.ESCAPE:
