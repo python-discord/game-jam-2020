@@ -88,7 +88,7 @@ class Game(arcade.Window):
         self.story_iter = None
 
         self.volume_location = (7*SCREEN_SIZE[0]/8, SCREEN_SIZE[1]/13)
-        self.restart_location = (7*SCREEN_SIZE[0]/10, SCREEN_SIZE[1]/13)
+        self.restart_location = (29*SCREEN_SIZE[0]/40, SCREEN_SIZE[1]/13)
 
         self.banner_background_color = arcade.make_transparent_color(
             arcade.color.BLUE, 100)
