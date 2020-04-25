@@ -7,6 +7,7 @@ from PIL import Image, ImageDraw
 from constants import ASSETS, HEIGHT, SCALING, SPEED, TOP, WIDTH
 import displays
 import game
+import multiplayer
 
 
 class Player(arcade.Sprite):
@@ -18,9 +19,10 @@ class Player(arcade.Sprite):
         'walk_right_6', 'walk_right_7'
     ]
 
-    def __init__(self, game: game.Game, player_num: int = 0,
-                 x: int = WIDTH // 5, y: int = HEIGHT // 2,
-                 speed: int = SPEED):
+    def __init__(self,
+                 master: typing.Union[multiplayer.MultiplayerGame, game.Game],
+                 player_num: int = 0, x: int = WIDTH // 5,
+                 y: int = HEIGHT // 2, speed: int = SPEED):
         """Set up counters and load textures."""
         self.image = ASSETS + f'player_{player_num}_{{name}}.png'
         super().__init__(center_x=x, center_y=y)
@@ -32,17 +34,21 @@ class Player(arcade.Sprite):
             else:
                 self.textures.update(self.load_flipped_pair(texture))
         self.texture = self.textures['walk_forward_up']
-        self.game = game
+        self.game = master
         self.speed = speed
         self.time_since_change = 0
         self.num = 0
         self.last_x = -1
         self.boxes = arcade.SpriteList()
-        start_x = player_num * (WIDTH / 4)
         y = HEIGHT - TOP // 2 + 8
+        start_x = player_num * (WIDTH / 4)
         for n in range(5):
-            x = start_x + (n + 0.6) * 210 * SCALING
-            self.boxes.append(displays.Box(x, y, self))
+            if isinstance(self.game, game.Game):
+                scale = 0.5 * SCALING
+            else:
+                scale = 0.4 * SCALING
+            x = start_x + (n + 0.6) * scale * 500
+            self.boxes.append(displays.Box(x, y, self, scale))
         self.score = 0
         self.engine = None
         self.blocks = None

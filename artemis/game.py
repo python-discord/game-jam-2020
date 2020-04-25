@@ -1,10 +1,11 @@
 """The core game functionality."""
+from __future__ import annotations
 import arcade
 
 from constants import BACKGROUND, FONT, HEIGHT, SCALING, SIDE, TOP, WIDTH
-from displays import PausePlay
+import displays
 from engine import PhysicsEngine
-from player import Player
+import player
 from scores import add_award, add_score, add_time, get_hiscore
 from sprites import Block, Gem, RandomBlock
 from ui import View
@@ -36,7 +37,7 @@ class Game(View):
         self.spikes = arcade.SpriteList()
 
         # sprites
-        self.player = Player(self)
+        self.player = player.Player(self)
 
         size = int(128 * SCALING)
         for x in range(-SIDE, WIDTH + SIDE, size):
@@ -48,7 +49,7 @@ class Game(View):
         for _ in range(2):
             RandomBlock(self)
 
-        self.pauseplay = PausePlay(0, HEIGHT - 40, self)
+        self.pauseplay = displays.PausePlay(0, HEIGHT - 40, self)
         self.buttons.append(self.pauseplay)
 
         self.engine = PhysicsEngine(self.player, self.blocks, 1)
@@ -112,7 +113,7 @@ class Game(View):
         add_score(self.player.score)
         add_time(self.time)
 
-    def game_over(self, message: str, _player: Player = None):
+    def game_over(self, message: str, _player: player.Player = None):
         """Display the game over view with some explanatory message."""
         self.save()
         self.window.show_view(

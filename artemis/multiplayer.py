@@ -1,12 +1,13 @@
 """Multiplayer game functionality."""
+from __future__ import annotations
 import arcade
 
 from constants import (
     BACKGROUND, FONT, GRAVITY, HEIGHT, SCALING, SIDE, SPEED, TOP, WIDTH
 )
-from displays import PausePlay
+import displays
 from engine import PhysicsEngine
-from player import Player
+import player
 from sprites import Block, Gem, RandomBlock
 from ui import View
 import views
@@ -35,9 +36,9 @@ class MultiplayerGame(View):
         self.players = arcade.SpriteList()
 
         # sprites
+        import player
         for n in range(players):
-            player = Player(self, n)
-            self.players.append(player)
+            self.players.append(player.Player(self, n))
 
         size = int(128 * SCALING)
         for x in range(-SIDE, WIDTH + SIDE, size):
@@ -49,7 +50,7 @@ class MultiplayerGame(View):
         for _ in range(2):
             RandomBlock(self)
 
-        self.pauseplay = PausePlay(0, HEIGHT - 40, self)
+        self.pauseplay = displays.PausePlay(0, HEIGHT - 40, self)
         self.buttons.append(self.pauseplay)
 
         self.engines = []
@@ -75,7 +76,7 @@ class MultiplayerGame(View):
         self.pauseplay.center_x = self.left + WIDTH - 40
         super().on_draw()
         for n, player in enumerate(self.players):
-            center_x = (n + 0.5) * (WIDTH / 4) + self.left
+            center_x = n * (WIDTH / 4) + self.left + 136.5
             arcade.draw_text(
                 text=f'Player {n + 1}',
                 start_x=center_x,
@@ -143,7 +144,7 @@ class MultiplayerGame(View):
             lambda: MultiplayerGame(len(self.players))
         ))
 
-    def game_over(self, message: str, player: Player):
+    def game_over(self, message: str, player: displays.Player):
         """Kill the player and show some explanatory message."""
         player.score = 0
         for box in player.boxes:

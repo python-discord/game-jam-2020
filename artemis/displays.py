@@ -11,10 +11,10 @@ from ui import IconButton
 class Box(arcade.Sprite):
     """Display for an inventory slot."""
 
-    def __init__(self, x: int, y: int, player: player.Player,
+    def __init__(self, x: int, y: int, player: player.Player, scale: float,
                  image: str = ASSETS + 'box.png'):
         """Set up box."""
-        super().__init__(image, SCALING * 0.4, center_x=x, center_y=y)
+        super().__init__(image, scale, center_x=x, center_y=y)
         self.alpha = 50
         self.colour = None
         self.gem = None
