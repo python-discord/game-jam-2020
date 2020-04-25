@@ -164,7 +164,6 @@ class Player(Mob):
         self.refreshIndex = 0
         self.prev = Enums.IDLE
         self.texture = next(self.map[self.prev])
-        self.kill_list = []
         self.cur_recipe = None
         self.speed = 14
 
