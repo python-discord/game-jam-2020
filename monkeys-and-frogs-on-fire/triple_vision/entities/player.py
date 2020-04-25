@@ -66,8 +66,6 @@ class Player(LivingEntity, MovingSprite):
         self.up_pressed = False
         self.down_pressed = False
 
-        self.melee_weapon = None
-
         self.colors = {
             "red": (255, 20, 20),
             "green": (0, 204, 0),
@@ -143,11 +141,6 @@ class Player(LivingEntity, MovingSprite):
             auto_filling_speed=2
         )
         self.health_bar = PlayerLiveManager(self.view, self.hp)
-
-        self.melee_weapon = Melee(
-            100, 20, filename="assets/dungeon/frames/weapon_katana.png",
-            center_x=self.center_x, center_y=self.center_y
-        )
 
         while True:
             center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
@@ -273,7 +266,6 @@ class Player(LivingEntity, MovingSprite):
         super().draw()
         self.mana_bar.draw()
         self.health_bar.draw()
-        self.melee_weapon.draw()
 
 
 class PlayerLiveManager:
