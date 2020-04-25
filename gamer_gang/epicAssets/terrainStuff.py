@@ -7,19 +7,8 @@ class Ground(arcade.Sprite):
         super().__init__()
         self.pymunk_shape = pymunk_shape
 
-        self.allTextures = textures
-        self.texture = self.allTextures[0]
-        self.scale = scale
-
-        self.center_x, self.center_y = x, y
-
-class BadSpike(arcade.Sprite):
-    def __init__(self, pymunk_shape, textures, scale, x, y):
-        super().__init__()
-        self.pymunk_shape = pymunk_shape
-
-        self.allTextures = textures
-        self.texture = self.allTextures[0]
+        self.textures = textures
+        self.texture = self.textures[0]
         self.scale = scale
 
         self.center_x, self.center_y = x, y

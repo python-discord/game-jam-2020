@@ -68,6 +68,7 @@ class BaseLevel(arcade.View):
         self.boxes = arcade.SpriteList()
         self.BEES = arcade.SpriteList()
         self.stars = arcade.SpriteList()
+        self.msg = None
         self.players = []
         self.bodies = []
         self.shapes = []
@@ -94,13 +95,20 @@ class BaseLevel(arcade.View):
         for b in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/boxes", self.map)):
             self.boxes.append(makeBox(1, self.space, b.textures, b.hit_box, b.scale, b.center_x, b.center_y))
 
-        for s in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/sands", self.map)):
-            self.sands.append(makeLand(self.space, s.textures, s.scale, s.center_x, s.center_y))
+        try:
+            for s in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/sands", self.map)):
+                self.sands.append(makeLand(self.space, s.textures, s.scale, s.center_x, s.center_y))
+        except AttributeError:
+            pass
 
-        for b in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/bees", self.map)):
-            textures = {"f1": [arcade.load_texture(f"images/beeImages/bee{i}.png") for i in range(1, 3)],
-                        "f2": [arcade.load_texture(f"images/beeImages/bee{i}.png", mirrored=True) for i in range(1, 3)]}
-            self.BEES.append(BeeSprite(textures, b.scale, b.center_x, b.center_y))
+        try:
+            for b in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/bees", self.map)):
+                textures = {"f1": [arcade.load_texture(f"images/beeImages/bee{i}.png") for i in range(1, 3)],
+                            "f2": [arcade.load_texture(f"images/beeImages/bee{i}.png", mirrored=True)
+                                   for i in range(1, 3)]}
+                self.BEES.append(BeeSprite(textures, b.scale, b.center_x, b.center_y))
+        except AttributeError:
+            pass
 
         for s in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/stars", self.map)):
             self.stars.append(StarSprite(s.textures, 1, s.center_x, s.center_y, s.hit_box))
@@ -139,12 +147,15 @@ class BaseLevel(arcade.View):
         self.jumpPads.draw()
         self.sands.draw()
         self.stars.draw()
+        if self.msg is not None: self.msg.draw()
+
         if self.collectedStars != self.neededStars:
             arcade.draw_text(f'stars collected: {self.collectedStars} out of {self.neededStars}',
-                             self.leftView + 5, self.bottomView + 573, font_size=20, color=arcade.color.BLACK)
+                             self.xCam - SCREEN_WIDTH / 2 + 10, self.yCam + SCREEN_HEIGHT / 2 - 30,
+                             font_size=20, color=arcade.color.BLACK)
         else:
-            arcade.draw_text(f'exit unlocked!',
-                             self.leftView + 5, self.bottomView + 573, font_size=20, color=arcade.color.BLACK)
+            arcade.draw_text(f'exit unlocked!', self.xCam - SCREEN_WIDTH / 2 + 10, self.yCam + SCREEN_HEIGHT / 2 - 30,
+                             font_size=20, color=arcade.color.BLACK)
 
         for p in self.players:
             if p is not None:
@@ -190,6 +201,7 @@ class BaseLevel(arcade.View):
         self.yCam = self.yCam if self.yCam >= SCREEN_HEIGHT / 2 else SCREEN_HEIGHT / 2
         if not self.yCam <= self.map.map_size.height * self.map.tile_size.height - SCREEN_HEIGHT / 2:
             self.yCam = self.map.map_size.height * self.map.tile_size.height - SCREEN_HEIGHT / 2
+
         arcade.set_viewport(self.xCam - SCREEN_WIDTH / 2, self.xCam + SCREEN_WIDTH / 2,
                             self.yCam - SCREEN_HEIGHT / 2, self.yCam + SCREEN_HEIGHT / 2)
 
@@ -340,7 +352,6 @@ class BaseLevel(arcade.View):
                 if left:
                     self.controlled = left[0]
                 else:
-                    self.window.sfx['win'].play()
                     self.window.show_view(self.window.menuView)
 
     def on_update(self, dt):
@@ -353,8 +364,7 @@ class BaseLevel(arcade.View):
         else:
             self.totalTime += dt
 
-        for _ in range(10):  # if the steps are smaller the game's more accurate
-            self.space.step(1 / 600.0)
+        self.space.step(dt)
 
         self.movement()  # move all the players (well, the characters)
         self.cameraShift(dt)  # shift camera
@@ -428,6 +438,8 @@ class BaseLevel(arcade.View):
                 b.update(self.players)
 
             if self.collectedStars == self.neededStars:
+                self.window.sfx["win"].play()
+                self.msg = MessagePop(arcade.load_texture("images/doorUnlocked.png"))
                 self.exit[0].texture = self.exit[0].textures[1]
 
             for s in self.stars:
@@ -435,13 +447,18 @@ class BaseLevel(arcade.View):
                 if s.alpha == 0:
                     s.kill()
 
+            if self.msg is not None:
+                self.msg.update(self.xCam, self.yCam)
+                if self.msg.alpha == 0:
+                    self.msg.kill()
+
         else:
             self.window.show_view(self.window.gameOver)
 
 
 if __name__ == '__main__':
     testGame = arcade.Window(1000, 600, 'test')
-    testGame.level = BaseLevel(2)
+    testGame.level = BaseLevel(1)
     testGame.game_over = False
     filePath = str(Path(__file__).parent.parent)
     testGame.sfx = {"jump": arcade.load_sound(filePath + "/epicAssets/sounds/jump.wav"),
