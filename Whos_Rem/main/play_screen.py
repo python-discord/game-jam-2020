@@ -4,6 +4,7 @@ import json
 import time
 import os
 import vlc
+from . import perspective_objects
 
 
 class Audio:
@@ -185,6 +186,15 @@ class GameScreen(arcade.View, PauseScreen):
             image_width=self.WIDTH)
 
     def setup(self, _track):
+        """
+        This Adds the background image, Keys 1 -> 3 sprites, and countdown sprites,
+        this also setups the audio system and gets that ready as well as the pause-
+        page and loads key binds.
+
+        :param _track:
+        :return:
+        """
+
         arcade.schedule(self.on_note_change, 1 / 16)
         self.audio._setup(_track)
         self.pause_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
@@ -213,6 +223,11 @@ class GameScreen(arcade.View, PauseScreen):
             arcade.Sprite(filename=f"{self.BASE_DIR}/main/Resources/game_play/3.png", scale=1))
 
     def on_note_change(self, td):
+        """ This is the function that cycles through each note array, this is a 3 dimension list,
+            Normally this should render at 16 fps to update (on a 4/4 song) This can be 64 fps if
+            vlc is being weird?
+        """
+
         self.active = self.audio.player.is_playing()
         if self.active:
             self.left, self.center, self.right = self.audio.get_notes(next(self.audio.frame_count))
