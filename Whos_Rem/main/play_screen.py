@@ -4,7 +4,11 @@ import json
 import time
 import os
 import vlc
+from datetime import timedelta
 from .perspective_objects import ShapeManager
+
+
+TESTING = True
 
 
 class Audio:
@@ -59,11 +63,12 @@ class Audio:
     @classmethod
     def get_notes(cls, frame):
         section, frame = divmod(frame, cls.FPS)
+        print(section, frame, "Track time:", timedelta(milliseconds=cls.player.get_time()),)
         return cls.notes[section][frame]
 
 
 class PauseScreen:
-    sprite_list = arcade.SpriteList()
+    pause_sprite_list = arcade.SpriteList()
     BASE_DIR = None
     WIDTH = None
     HEIGHT = None
@@ -76,31 +81,84 @@ class PauseScreen:
 
     @classmethod
     def pause_menu(cls):
-        cls.sprite_list.append(  # Game Paused text
+        cls.pause_sprite_list.append(  # Game Paused text
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Game-Paused.png",
                           center_x=cls.WIDTH / 2,
                           center_y=cls.HEIGHT / 1.25,
                           scale=1))
 
-        cls.sprite_list.append(  # Main Menu text
+        cls.pause_sprite_list.append(  # Main Menu text
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Main-Menu.png",
                           center_x=cls.WIDTH / 2,
                           center_y=cls.HEIGHT / 1.75,
                           scale=1))
 
-        cls.sprite_list.append(  # settings text
+        cls.pause_sprite_list.append(  # settings text
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Settings.png",
                           center_x=cls.WIDTH / 2,
                           center_y=cls.HEIGHT / 2.5,
                           scale=1))
 
-        cls.sprite_list.append(  # settings text
+        cls.pause_sprite_list.append(  # settings text
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Press-SPACE-to-unpause.png",
                           center_x=cls.WIDTH / 2,
                           center_y=cls.HEIGHT / 4.75,
                           scale=0.75))
 
-        return cls.sprite_list
+        return cls.pause_sprite_list
+
+
+class ScoreScreen:
+    score_sprite_list = arcade.SpriteList()
+    BASE_DIR = None
+    WIDTH = None
+    HEIGHT = None
+
+    @classmethod
+    def score_setup(cls, base_dir, width, height):
+        cls.BASE_DIR = base_dir
+        cls.WIDTH = width
+        cls.HEIGHT = height
+
+    @classmethod
+    def score_menu(cls):
+        cls.score_sprite_list.append(  # Game ended
+            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Your-score.png",
+                          center_x=cls.WIDTH / 2,
+                          center_y=cls.HEIGHT / 1.25,
+                          scale=1))
+
+        cls.score_sprite_list.append(
+            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Main-Menu.png",
+                          center_x=cls.WIDTH / 2,
+                          center_y=cls.HEIGHT / 1.75,
+                          scale=1))
+
+        cls.score_sprite_list.append(
+            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Total-score.png",
+                          center_x=cls.WIDTH / 2.75,
+                          center_y=cls.HEIGHT / 2.5,
+                          scale=0.5))
+
+        cls.score_sprite_list.append(
+            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Total-notes.png",
+                          center_x=cls.WIDTH / 2.75,
+                          center_y=cls.HEIGHT / 3.25,
+                          scale=0.50))
+
+        cls.score_sprite_list.append(
+            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Notes-hit.png",
+                          center_x=cls.WIDTH / 2.75,
+                          center_y=cls.HEIGHT / 4.0,
+                          scale=0.50))
+
+        cls.score_sprite_list.append(
+            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Notes-missed.png",
+                          center_x=cls.WIDTH / 2.75,
+                          center_y=cls.HEIGHT / 5.0,
+                          scale=0.50))
+
+        return cls.score_sprite_list
 
 
 class GameLogic:
@@ -145,7 +203,7 @@ class GameLogic:
         return total_points, combos
 
 
-class GameScreen(arcade.View, PauseScreen):
+class GameScreen(arcade.View, PauseScreen, ScoreScreen):
     """ Main audio playing screen. """
 
     # settings
@@ -166,6 +224,7 @@ class GameScreen(arcade.View, PauseScreen):
     count_down = []
     to_be_rendered = None
     notes_list = []
+    ended = False
 
     # Game Data
     score = 0
@@ -199,6 +258,7 @@ class GameScreen(arcade.View, PauseScreen):
         arcade.schedule(self.on_note_change, 1 / 16)
         self.audio._setup(_track)
         self.pause_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
+        self.score_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
         self.key_binds = self.settings.key_binds
         self.background = arcade.Sprite(
             filename=f"{self.BASE_DIR}/main/Resources/background.png",
@@ -232,17 +292,23 @@ class GameScreen(arcade.View, PauseScreen):
         self.active = self.audio.player.is_playing()
         if self.active:
             self.left, self.center, self.right = self.audio.get_notes(next(self.audio.frame_count))
+
+            if TESTING:
+                self.left_button_active = self.left
+                self.middle_button_active = self.center
+                self.right_button_active = self.right
+
             if self.left:
                 self.notes_list.append(ShapeManager.create_shape(-1))
             elif self.center:
                 self.notes_list.append(ShapeManager.create_shape(0))
             elif self.right:
                 self.notes_list.append(ShapeManager.create_shape(1))
-            print(len(self.notes_list))
 
     def on_start(self):
         self.started = True
         self.audio._play()
+        time.sleep(0.03)
 
     def on_pause(self):
         self.paused = not self.paused
@@ -263,7 +329,7 @@ class GameScreen(arcade.View, PauseScreen):
             self.combo = (self.combo + combos) if combos != -1 else 0
 
         if not self.audio.player.is_playing() and self.started and not self.paused:
-            pass  # todo make a end screen
+            self.ended = True
 
     def on_draw(self, time_delta=None, count_down=None):
         """ In charge of rendering the notes at current time. """
@@ -336,7 +402,7 @@ class GameScreen(arcade.View, PauseScreen):
                          end_x=lower_x + 300,
                          end_y=height,
                          line_width=width,
-                         color=arcade.color.CRIMSON)
+                         color=arcade.color.BLACK)
         # Filled
         arcade.draw_line(start_x=lower_x + 5,
                          start_y=lower_y,
@@ -353,6 +419,11 @@ class GameScreen(arcade.View, PauseScreen):
             self.background.alpha = 255
             self.background.draw()
             self.pause_menu().draw()
+
+        if self.ended:
+            self.background.alpha = 255
+            self.background.draw()
+            self.score_menu().draw()
 
     def on_key_press(self, symbol: int, modifiers: int):
         """ This is only for registering if keys are pressed and to change the relevant buttons """
@@ -385,6 +456,3 @@ class GameScreen(arcade.View, PauseScreen):
 
         elif symbol == self.key_binds['right']:
             self.right_button_active = False
-
-
-

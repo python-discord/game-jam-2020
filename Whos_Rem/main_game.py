@@ -13,7 +13,7 @@ class Main:
             1000,
             600,
             title="3 Strings",
-            fullscreen=False, update_rate=1/30)
+            fullscreen=False, update_rate=1/64)
         self.play_screen = GameScreen(self)
 
     @property
