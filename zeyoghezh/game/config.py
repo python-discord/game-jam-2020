@@ -2,9 +2,8 @@ import arcade
 
 SCREEN_SIZE = (800, 600)
 BOTTOM_BORDER_Y = int(SCREEN_SIZE[1] / 8)
-TRIANGULATION_START_LIKELIHOOD = 0.02
-TRIANGULATION_END_LIKELIHOOD = 0.05
-LITHIUM_MULTIPLIER = 1
+TRIANGULATION_START_LIKELIHOOD = 1e-2
+LITHIUM_MULTIPLIER = 1.4
 
 BASE_TIME_MULTIPLIER = 1  # TODO change to 1 when this is over
 
@@ -49,6 +48,8 @@ LITHIUM_SOUND = ":resources:sounds/jump5.wav"
 HEAL_SOUND = ":resources:sounds/secret2.wav"
 ABSCOND_SOUND = ":resources:sounds/jump1.wav"
 GAME_OVER_SOUND = ":resources:sounds/lose2.wav"
+RESTART_IMAGE = ":resources:images/tiles/signLeft.png"
+RESTART_SOUND = ":resources:sounds/upgrade2.wav"
 
 LITHIUM_VOLUME = 0.03
 BACKGROUND_MUSIC_VOLUME = 0.03
@@ -56,7 +57,12 @@ SOUND_VOLUME = 0.01
 HEAL_VOLUME = 0.03
 ABSCOND_VOLUME = 0.04
 GAME_OVER_VOLUME = 0.04
+RESTART_VOLUME = 0.04
 
+TRIANGULATION_FADE_IN_TIME = 0.2
+TRIANGULATION_FADE_OUT_TIME = 0.5  # Does not include fade in time
+TRIANGULATION_FADE_TOTAL_TIME = (
+    TRIANGULATION_FADE_IN_TIME + TRIANGULATION_FADE_OUT_TIME)
 
 SCREEN_TITLE = "Zeyoghezh"
 ALL_PLANETS = ("ze", "yogh", "ezh")

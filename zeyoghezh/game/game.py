@@ -13,8 +13,8 @@ from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
     BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER, LITHIUM_SOUND,
     BASE_TIME_MULTIPLIER, VOLUME_IMAGE, VOLUME_MOVER_IMAGE, LITHIUM_VOLUME,
-    HEAL_VOLUME, GAME_OVER_VOLUME, ABSCOND_VOLUME, HEAL_SOUND,
-    GAME_OVER_SOUND, ABSCOND_SOUND
+    HEAL_VOLUME, GAME_OVER_VOLUME, ABSCOND_VOLUME, HEAL_SOUND, RESTART_VOLUME,
+    GAME_OVER_SOUND, ABSCOND_SOUND, RESTART_IMAGE, RESTART_SOUND
 )
 import sys
 
@@ -34,11 +34,31 @@ def get_new_lithium_location():
     )
 
 
+def get_spawn_locations():
+    positions = [[0] * 2] * 3
+    for i in range(len(positions)):
+        while True:
+            positions[i] = [
+                random.random()*SCREEN_SIZE[0],
+                random.random()*SCREEN_SIZE[1]
+            ]
+            distances_to_others = [
+                get_distance(*other_position, *positions[i])
+                for other_position in positions[:i]]
+            if all([distance_to_others > 300
+                    for distance_to_others in distances_to_others]):
+                logger.debug(
+                    f"Got {positions[i]=} for {i=}. {distances_to_others=}.")
+                break
+    return positions
+
+
 class Game(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_SIZE[0], SCREEN_SIZE[1], SCREEN_TITLE)
         self.planets = None
         self.lithium_location = get_new_lithium_location()
+        self.last_lithium_change = time.time()
         self.lithium_count = 0
         self.lithium_score_location = (SCREEN_SIZE[0]/3, SCREEN_SIZE[1]/20)
         self.theme = None
@@ -48,10 +68,12 @@ class Game(arcade.Window):
         self.heal_sound = arcade.Sound(HEAL_SOUND)
         self.abscond_sound = arcade.Sound(ABSCOND_SOUND)
         self.game_over_sound = arcade.Sound(GAME_OVER_SOUND)
+        self.restart_sound = arcade.Sound(RESTART_SOUND)
 
         self.master_volume = 0.5
 
         self.abscond_button = None
+        self.restart_button = None
         self.volume_meter = None
         self.volume_mover = None
 
@@ -66,13 +88,14 @@ class Game(arcade.Window):
         self.story_iter = None
 
         self.volume_location = (7*SCREEN_SIZE[0]/8, SCREEN_SIZE[1]/13)
+        self.restart_location = (29*SCREEN_SIZE[0]/40, SCREEN_SIZE[1]/13)
 
         self.banner_background_color = arcade.make_transparent_color(
             arcade.color.BLUE, 100)
 
     def setup(self):
         self.planets = arcade.SpriteList()
-        self.absconded = None
+        self.absconded = False
         self.game_over_time = None
         self.lithium_count = 0
         self.player_has_clicked_lithium = False
@@ -94,6 +117,10 @@ class Game(arcade.Window):
         self.abscond_button = TextButton(
             SCREEN_SIZE[0]/6, SCREEN_SIZE[1]/15, 200, 50,
             "Abscond", theme=self.theme)
+        self.restart_button = arcade.Sprite(RESTART_IMAGE)
+        self.restart_button.center_x = self.restart_location[0]
+        self.restart_button.center_y = self.restart_location[1]
+        self.restart_button.scale /= 2
         self.abscond_button.on_press = self.abscond_press
         self.abscond_button.on_release = self.abscond_release
         self.button_list.append(self.abscond_button)
@@ -115,14 +142,15 @@ class Game(arcade.Window):
         self.volume_mover.center_y = self.volume_meter.center_y
         self.volume_mover.scale /= 3
 
-        for planet in planets:
+        spawn_locations = get_spawn_locations()
+        for planet, spawn_location in zip(planets, spawn_locations):
             self.planets.append(planet)
             others = [other for other in planets if other != planet]
             planet.setup(
                 parent=self,
                 others=others,
-                center_x=random.random()*SCREEN_SIZE[0],
-                center_y=random.random()*SCREEN_SIZE[1],
+                center_x=spawn_location[0],
+                center_y=spawn_location[1],
                 start_speed_x=random.random(),
                 start_speed_y=random.random()
             )
@@ -191,8 +219,7 @@ class Game(arcade.Window):
             planet.attacked_last_round = []
             planet.pushed_last_round = []
 
-            if planet.is_triangulating:
-                planet.draw_triangulation_circle()
+            planet.draw_triangulation_circle()
         self.planets.draw()
         lithium_count_text = f"Lithium count: {self.lithium_count:.2f}"
         arcade.draw_text(
@@ -200,6 +227,9 @@ class Game(arcade.Window):
             color=arcade.color.WHITE, font_size=24)
 
         self.abscond_button.draw()
+
+        if self.game_over_time:
+            self.restart_button.draw()
 
         self.volume_meter.draw()
         self.volume_mover.draw()
@@ -235,6 +265,9 @@ class Game(arcade.Window):
     @log_exceptions
     def on_mouse_press(self, x, y, button, modifiers):
         if self.game_over_time:
+            if self.restart_button.collides_with_point((x, y)):
+                self.restart_sound.play(self.master_volume * RESTART_VOLUME)
+                self.setup()
             return
         if get_distance(x, y, *self.lithium_location) < 10:
             self.clicked_lithium()
@@ -255,6 +288,7 @@ class Game(arcade.Window):
         planet_avg_health = self.avg_planet_health()
         self.lithium_count += planet_avg_health * LITHIUM_MULTIPLIER
         self.lithium_location = get_new_lithium_location()
+        self.last_lithium_change = time.time()
         self.player_has_clicked_lithium = True
 
     def avg_planet_health(self):
@@ -267,7 +301,7 @@ class Game(arcade.Window):
             game_over_delta_time = (
                 BASE_TIME_MULTIPLIER * (time.time() - self.game_over_time)
             )
-            if game_over_delta_time > 3 and not self.absconded:
+            if game_over_delta_time > 6 and not self.absconded:
                 self.setup()
                 return
         time_multiplier = BASE_TIME_MULTIPLIER * delta_time / 0.0168
@@ -313,7 +347,7 @@ class Game(arcade.Window):
         delta_time = BASE_TIME_MULTIPLIER * (now - self.last_banner_change)
         if not self.player_has_clicked_lithium and delta_time > 3:
             self.set_banner_text(
-                "See the circles? Click on their intersection.")
+                "See the flickering circles? Click on their intersection.")
         if (self.player_has_clicked_lithium
                 and not self.player_has_healed_planet
                 and not self.lithium_count > 2
