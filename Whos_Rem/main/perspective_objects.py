@@ -1,12 +1,12 @@
 import arcade
-from screeninfo import get_monitors
+import pyautogui
 from .display import ColourBlend as cb
 from .settings import Settings
 
 
 class Shape:
 
-    screen_width_center = 1920  # get_monitors()[0].width
+    screen_width_center = pyautogui.size().width
 
     def __init__(self, x, y, scale_size, dims, dist, colour, speed):
         """
