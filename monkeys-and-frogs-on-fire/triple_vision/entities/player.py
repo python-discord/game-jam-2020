@@ -16,7 +16,6 @@ from triple_vision.entities.abilities import Abilities
 
 
 class States(Enum):
-    # TODO save player states by current weapon and update cursor
     IDLE = 0
     # MOVING = 1
     ATTACKING_RANGED = 2
@@ -134,7 +133,7 @@ class Player(LivingEntity, MovingSprite):
             self.view,
             fill_part_filename="assets/healthbar/mana_fill_part.png",
             fill_part_width=44.0,
-            filename="assets/healthbar/mana_bar_border.png",
+            filename="assets/healthbar/mana_bar_border_white.png",
             center_x=420,
             center_y=18,
             scale=1,
@@ -205,6 +204,7 @@ class Player(LivingEntity, MovingSprite):
         else:
             # TODO empty mana sound
             pass
+
     def kill(self):
         self.is_alive = False
         super().kill()
