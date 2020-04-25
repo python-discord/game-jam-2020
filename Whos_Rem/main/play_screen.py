@@ -121,19 +121,26 @@ class GameLogic:
         return delta not in range(-50, 50)
 
     @classmethod
-    def get_data(cls, keys_list, key_data, notes):
+    def get_data(cls,
+                 keys_list: ("pressed keys", list, tuple),
+                 key_data: ("Key sprites", list, tuple),
+                 notes: ("note objects", list, tuple)):
         total_points, combos = 0, 0
         for loc, key in enumerate(keys_list):
             if key:
-                points = cls.get_points(notes[loc], key_data[loc])
-                if points != -1:
-                    total_points += points
-                    combos += 1
+                if notes[loc] is not None:
+                    points = cls.get_points(notes[loc], key_data[loc])
+                    if points != -1:
+                        total_points += points
+                        combos += 1
+                    else:
+                        combos = -1
                 else:
                     combos = -1
             else:
-                if cls.check_miss(notes[loc], key_data[loc]):
-                    combos = -1
+                if notes[loc] is not None:
+                    if cls.check_miss(notes[loc], key_data[loc]):
+                        combos = -1
         return total_points, combos
 
 
@@ -154,9 +161,16 @@ class GameScreen(arcade.View, PauseScreen):
     left = center = right = False   # notes
 
     background = None
-    note_1, note_2, note_3 = None, None, None
+    key_1, key_2, key_3 = None, None, None
     count_down = []
     to_be_rendered = None
+
+    # Game Data
+    score = 0
+    combo = 0
+    notes_hit = 0
+    notes_missed = 0
+    notes_total = 0
 
     def __init__(self, main_):
         super().__init__()
@@ -181,13 +195,13 @@ class GameScreen(arcade.View, PauseScreen):
             image_height=self.HEIGHT * 14/5,
             image_width=self.WIDTH)
 
-        self.note_1 = arcade.Sprite(
+        self.key_1 = arcade.Sprite(
             filename=f"{self.BASE_DIR}/main/Resources/game_play/note_key.png",
             scale=(self.WIDTH / self.HEIGHT) / (20/3))
-        self.note_2 = arcade.Sprite(
+        self.key_2 = arcade.Sprite(
             filename=f"{self.BASE_DIR}/main/Resources/game_play/note_key.png",
             scale=(self.WIDTH / self.HEIGHT) / (20/3))
-        self.note_3 = arcade.Sprite(
+        self.key_3 = arcade.Sprite(
             filename=f"{self.BASE_DIR}/main/Resources/game_play/note_key.png",
             scale=(self.WIDTH / self.HEIGHT) / (20/3))
 
@@ -222,7 +236,16 @@ class GameScreen(arcade.View, PauseScreen):
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
-        pass
+        points_to_add, combos = GameLogic.get_data(
+            (self.left_button_active, self.middle_button_active, self.right_button_active),
+            (self.key_1, self.key_2, self.key_3),
+            ()  # todo get jamie to help with note handling
+        )
+        self.score += points_to_add
+        self.combo = (self.combo + combos) if combos != -1 else 0
+
+        if not self.audio.player.is_playing() and self.started and not self.paused:
+            pass  # todo make a end screen
 
     def on_draw(self, time_delta=None, count_down=None):
         """ In charge of rendering the notes at current time. """
@@ -261,28 +284,28 @@ class GameScreen(arcade.View, PauseScreen):
             self.WIDTH / 2,
             self.HEIGHT / 10,
             width=self.WIDTH / 2,
-            height=self.note_1.height,
+            height=self.key_1.height,
             color=arcade.color.WHITE)
 
         # Renders pressed keys if NOT paused
         if not self.paused and self.started:
             if self.left_button_active:
-                self.note_1.center_x = self.WIDTH / 2 - (self.WIDTH / (200/21))
-                self.note_1.center_y = self.HEIGHT / 10
-                self.note_1.scale = ((self.WIDTH / self.HEIGHT) / (20/3)) * (self.HEIGHT / 600)
-                self.note_1.draw()
+                self.key_1.center_x = self.WIDTH / 2 - (self.WIDTH / (200 / 21))
+                self.key_1.center_y = self.HEIGHT / 10
+                self.key_1.scale = ((self.WIDTH / self.HEIGHT) / (20 / 3)) * (self.HEIGHT / 600)
+                self.key_1.draw()
 
             if self.middle_button_active:
-                self.note_2.center_x = self.WIDTH / 2
-                self.note_2.center_y = self.HEIGHT / 10
-                self.note_2.scale = ((self.WIDTH / self.HEIGHT) / (20/3)) * (self.HEIGHT / 600)
-                self.note_2.draw()
+                self.key_2.center_x = self.WIDTH / 2
+                self.key_2.center_y = self.HEIGHT / 10
+                self.key_2.scale = ((self.WIDTH / self.HEIGHT) / (20 / 3)) * (self.HEIGHT / 600)
+                self.key_2.draw()
 
             if self.right_button_active:
-                self.note_3.center_x = self.WIDTH / 2 + (self.WIDTH / (200/21))
-                self.note_3.center_y = self.HEIGHT / 10
-                self.note_3.scale = ((self.WIDTH / self.HEIGHT) / (20/3)) * (self.HEIGHT / 600)
-                self.note_3.draw()
+                self.key_3.center_x = self.WIDTH / 2 + (self.WIDTH / (200 / 21))
+                self.key_3.center_y = self.HEIGHT / 10
+                self.key_3.scale = ((self.WIDTH / self.HEIGHT) / (20 / 3)) * (self.HEIGHT / 600)
+                self.key_3.draw()
 
         # Audio progress bar
         pos = self.audio.player.get_position()
