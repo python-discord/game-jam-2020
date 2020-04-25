@@ -5,7 +5,7 @@ from enum import Enum
 import arcade
 
 from triple_vision import Settings as s
-from triple_vision import Tile, Direction
+from triple_vision import Tile
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import HealthBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile
@@ -168,7 +168,7 @@ class Player(LivingEntity, MovingSprite):
             charge=charge,
             center_x=self.center_x,
             center_y=self.center_y,
-            rotate=True
+            rotate=True,
         )
         bullet.color = self.curr_color_to_rgb()
         bullet.move_to(x, y, set_target=False)
@@ -245,7 +245,7 @@ class PlayerLiveManager:
             self.hearts.append(
                 arcade.Sprite(
                     "assets/hearts/heart_2.png",
-                    center_x=(i + 1) * 100 + self.view.camera.viewport_left + self.margin,
+                    center_x=(i + 1) * 60 + self.view.camera.viewport_left - 20,
                     center_y=30 + self.view.camera.viewport_bottom,
                     scale=self.scaling
                 )
@@ -283,7 +283,7 @@ class PlayerLiveManager:
             self.hearts.pop(idx)
             self.hearts.insert(idx, arcade.Sprite(
                 f"assets/hearts/heart_{heart_val}.png",
-                center_x=(idx + 1) * 100 + self.view.camera.viewport_left + self.margin,
+                center_x=(idx + 1) * 60 + self.view.camera.viewport_left - 20,
                 center_y=30 + self.view.camera.viewport_bottom,
                 scale=self.scaling
             ))
