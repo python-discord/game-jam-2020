@@ -188,11 +188,12 @@ class Planet(arcade.Sprite):
             return 0
         time_since_last_triangulation = time.time() - self.last_triangulating
         triangulation_trace = max(
-            0, TRIANGULATION_FADE_TIME - time_since_last_triangulation)
+            0, TRIANGULATION_FADE_TIME - time_since_last_triangulation
+        ) / TRIANGULATION_FADE_TIME
         triangulation_strength = health_normalized * triangulation_trace
         alpha = int(triangulation_strength * 255)
-        print(f"{triangulation_trace=}, {health_normalized=}, "
-              f"{triangulation_strength=}, {alpha=}")
+        logger.debug(f"{triangulation_trace=}, {health_normalized=}, "
+                     f"{triangulation_strength=}, {alpha=}")
         assert 0 <= health_normalized
         assert health_normalized <= 1
         assert 0 <= triangulation_trace
@@ -205,11 +206,11 @@ class Planet(arcade.Sprite):
 
     def update_triangulating(
             self, time_multiplier, in_tutorial, should_not_triangulate):
-        # TODO improve chance logic here
         if should_not_triangulate:
             return
-        start_chance = TRIANGULATION_START_LIKELIHOOD * time_multiplier
-        if in_tutorial:
-            start_chance = (start_chance*99 + 1) / 100
+        adjusted_time_multiplier = (
+            time_multiplier * 6 if in_tutorial else time_multiplier)
+        start_chance = 1 - (
+            (1 - TRIANGULATION_START_LIKELIHOOD) ** adjusted_time_multiplier)
         if random.random() < start_chance:
             self.last_triangulating = time.time()
