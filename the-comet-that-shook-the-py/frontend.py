@@ -227,6 +227,7 @@ class MyGame(arcade.Window):
         """
         Called when a user releases a mouse button.
         """
+
         if self.dragging_sprite is None:
             return
 
@@ -238,6 +239,7 @@ class MyGame(arcade.Window):
 
         if not grid_cell.accept_tile(self.dragging_sprite):
             self.dragging_sprite.reset()
+
             self.dragging_sprite = None
             return
 
