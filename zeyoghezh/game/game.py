@@ -301,7 +301,7 @@ class Game(arcade.Window):
             game_over_delta_time = (
                 BASE_TIME_MULTIPLIER * (time.time() - self.game_over_time)
             )
-            if game_over_delta_time > 3 and not self.absconded:
+            if game_over_delta_time > 6 and not self.absconded:
                 self.setup()
                 return
         time_multiplier = BASE_TIME_MULTIPLIER * delta_time / 0.0168
