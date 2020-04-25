@@ -11,7 +11,6 @@ from triple_vision.entities.sprites import HealthBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile, Melee
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
-from triple_vision.sound import SoundManager
 
 
 class States(Enum):

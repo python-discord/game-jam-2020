@@ -1,5 +1,4 @@
 import arcade
-
 from frost.client import Status
 
 from triple_vision import Settings as s

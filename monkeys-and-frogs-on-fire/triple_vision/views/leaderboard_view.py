@@ -2,7 +2,6 @@ from datetime import datetime
 from typing import Any, Tuple
 
 import arcade
-
 from frost.client.objects import Memory
 
 from triple_vision import Settings as s
