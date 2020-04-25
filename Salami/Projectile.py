@@ -4,7 +4,7 @@ from Entity import Entity
 
 class Projectile(Mob):
 
-    def __init__(self, tex, x, y, dx, dy):
+    def __init__(self, tex, x, y, dx = 0, dy = 0):
         super().__init__(tex, x, y)
 
         self.change_x = dx
@@ -21,7 +21,7 @@ class Projectile(Mob):
         super().update()
     
     def collided(self, entity, dx, dy):
-        self.change_x = 0
-        self.change_y = 0
-        self.flying = True
-        # self.removed = True
+        # self.change_x = 0
+        # self.change_y = 0
+        # self.flying = True
+        self.removed = True
