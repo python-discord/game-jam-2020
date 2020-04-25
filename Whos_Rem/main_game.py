@@ -3,11 +3,11 @@ from main import *
 
 
 class Main:
-
     def __init__(self):
         self.settings = Settings(self)
         self.menu = MainMenu(self)
         self.song_selection = SongSelection(self)
+        self.play_screen = GameScreen(self)
         self.window = arcade.Window(self.menu.width, self.menu.height,
                                     title="3 Strings", fullscreen=True, update_rate=1/60)
 

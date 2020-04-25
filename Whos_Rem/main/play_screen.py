@@ -4,26 +4,27 @@ import json
 import time
 import os
 import vlc
-from screeninfo import get_monitors
-from .settings import Settings
+
 
 class Audio:
     BASE_DIR = os.getcwd()
-    WIDTH = 1000  # get_monitors()[0].width
-    HEIGHT = 600  # get_monitors()[0].height
     FPS = 16
 
-    settings = Settings()
-    volume = settings.volume * 0.1
+    settings = None
+    volume = None
 
     track = None
     music = None
     notes = []
     frame_count = itertools.count(1, 1)
-    background_sprite = None
     active = False
     vlc_instance = None
     player = None
+
+    def __init__(self, main_):
+        self.main = main_
+        self.settings = self.main.settings
+        self.volume = self.volume * 0.1
 
     @classmethod
     def _setup(cls, _track: dict):
@@ -37,12 +38,6 @@ class Audio:
 
         with open(f"{cls.BASE_DIR}/tracks/{cls.track['path']}.json", 'r') as file:
             cls.notes = json.load(file)
-
-        cls.background_sprite = arcade.Sprite(
-            filename=f"{cls.BASE_DIR}/Resources/game_play/Notes-Background.png",
-            scale=1,
-            image_height=cls.HEIGHT,
-            image_width=cls.WIDTH)
 
     @classmethod
     def _play(cls):
@@ -107,11 +102,12 @@ class PauseScreen:
         return cls.sprite_list
 
 
-class GameScreen(arcade.View, Audio, PauseScreen):
+class GameScreen(arcade.View, PauseScreen):
     """ Main audio playing screen. """
 
     # settings
     no_fail = True  # no matter how many times u miss you're not gonna loose
+    BASE_DIR = os.getcwd()
 
     # setup
     key_binds = None
@@ -127,9 +123,20 @@ class GameScreen(arcade.View, Audio, PauseScreen):
     count_down = []
     to_be_rendered = None
 
+    def __init__(self, main_):
+        super().__init__()
+        self.audio = Audio(main_=main_)
+        self.main = main_
+        self.settings = main_.settings
+        self.background_sprite = arcade.Sprite(
+            filename=f"{self.BASE_DIR}/Resources/game_play/Notes-Background.png",
+            scale=1,
+            image_height=self.HEIGHT,
+            image_width=self.WIDTH)
+
     def setup(self, _track):
         arcade.schedule(self.on_note_change, 1 / 16)
-        self._setup(_track)
+        self.audio._setup(_track)
         self.pause_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
         self.key_binds = self.settings.key_binds
         self.background = arcade.Sprite(
@@ -160,9 +167,9 @@ class GameScreen(arcade.View, Audio, PauseScreen):
         arcade.draw_rectangle_filled(x, y, width=width, height=height, color=arcade.color.CRIMSON)
 
     def on_note_change(self, td):
-        self.active = self.player.is_playing()
+        self.active = self.audio.player.is_playing()
         if self.active:
-            self.left, self.center, self.right = self.get_notes(next(self.frame_count))
+            self.left, self.center, self.right = self.audio.get_notes(next(self.audio.frame_count))
 
         elif not self.paused and not self.active and self.started:
             pass
@@ -171,14 +178,14 @@ class GameScreen(arcade.View, Audio, PauseScreen):
 
     def on_start(self):
         self.started = True
-        self._play()
+        self.audio._play()
 
     def on_pause(self):
         self.paused = not self.paused
         #if not self.paused: todo fix?
         #    for i in range(3):  # 3 sec time
         #        self.to_be_rendered = self.count_down[i]
-        self._pause()
+        self.audio._pause()
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
@@ -242,7 +249,7 @@ class GameScreen(arcade.View, Audio, PauseScreen):
                 self.note_3.draw()
 
         # Audio progress bar
-        pos = self.player.get_position()
+        pos = self.audio.player.get_position()
         lower_x, lower_y = self.WIDTH / 1.1 + self.WIDTH / 150, self.HEIGHT / 20
         height, width = self.HEIGHT - self.HEIGHT / 7, self.WIDTH / 18
 
