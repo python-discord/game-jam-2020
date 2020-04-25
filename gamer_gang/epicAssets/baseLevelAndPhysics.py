@@ -310,13 +310,13 @@ class Level(arcade.View):
                 continue
 
             if arcade.check_for_collision_with_list(p, self.spikes):  # if you touch a spike, you DIE
-                # self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
+                self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
                 self.window.sfx['spike'].play()
                 self.window.deathCause = 'a spike that looks awfully like a GD spike'
                 continue
 
             if arcade.check_for_collision_with_list(p, self.BEES):
-                # self.window.game_over = True
+                self.window.game_over = True
                 self.window.sfx['sting'].play()
                 self.window.deathCause = 'BEEEEEEEEES that most definitely don\'t like jazz'
                 continue
@@ -347,13 +347,14 @@ class Level(arcade.View):
                 if left:
                     self.controlled = left[0]
                 else:
+                    self.window.sfx['win'].play()
                     self.window.show_view(self.window.menuView)
 
     def on_update(self, dt):
         self.frames += 1
         self.timeAfterSplit += dt
         if self.totalTime == 0:
-            self.window.sfx["level music"].play(volume=0.5)
+            self.window.sfx["level music"].play(volume=0.3)
         if self.window.sfx["level music"].get_length() < self.totalTime:
             self.totalTime = 0
         else:
@@ -401,12 +402,10 @@ class Level(arcade.View):
                     self.space.remove(b.pymunk_shape, b.pymunk_shape.body)
                     b.kill()
 
-                if arcade.check_for_collision_with_list(b, self.ground) and abs(b.pymunk_shape.body.velocity.y) < 3:
-                    b.can_jump = True
-
             spriteListPlayers = arcade.SpriteList()
             for p in self.players:
-                spriteListPlayers.append(p)
+                if p is not None:
+                    spriteListPlayers.append(p)
 
             newSands = arcade.SpriteList()
             for s in self.sands:
@@ -418,7 +417,6 @@ class Level(arcade.View):
                 metBoxes.extend(arcade.check_for_collision_with_list(s, spriteListPlayers))
                 collided = [True for char in self.sands if arcade.check_for_collision(s, char) and s != char]
                 if not metBoxes and not collided:
-                    print(s.textures)
                     newSands.append(makeLand(self.space, s.textures, 1, s.center_x, s.center_y))
                     self.space.remove(s.pymunk_shape, s.pymunk_shape.body)
                     s.kill()
