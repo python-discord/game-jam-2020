@@ -250,24 +250,24 @@ class PlayerLiveManager:
 
             self.prev_viewport = viewport
 
-        total_hearths = sum(self.heart_map)
-        if total_hearths > 0:
+        total_hearts = sum(self.heart_map)
+        if total_hearts > 0:
             # +1 so we don't loose half hearth on first hit
-            player_hearths = self.view.player.hp // self.half_heart_value + 1
-            if player_hearths < total_hearths:
-                self._update_hearth_map(player_hearths)
-                self._update_hearths_icons()
+            player_hearts = self.view.player.hp // self.half_heart_value + 1
+            if player_hearts < total_hearts:
+                self._update_heart_map(player_hearts)
+                self._update_hearts_icons()
 
-    def _update_hearth_map(self, player_hearths: int):
-        hearth_sum = 0
-        for idx, hearth_value in enumerate(self.heart_map):
-            if hearth_sum + hearth_value > player_hearths:
+    def _update_heart_map(self, player_hearts: int):
+        heart_sum = 0
+        for idx, heart_value in enumerate(self.heart_map):
+            if heart_sum + heart_value > player_hearts:
                 self.heart_map[idx] -= 1
-                self._update_hearth_map(player_hearths)
+                self._update_heart_map(player_hearts)
             else:
-                hearth_sum += hearth_value
+                heart_sum += heart_value
 
-    def _update_hearths_icons(self):
+    def _update_hearts_icons(self):
         for idx, heart_val in enumerate(self.heart_map):
             self.hearts.pop(idx)
             self.hearts.insert(idx, arcade.Sprite(
