@@ -20,6 +20,7 @@ class TripleVision(arcade.View):
         super().__init__()
 
         self.slow_down = False
+        self.time_slow_ability = False
 
         self.map = None
 
@@ -100,6 +101,8 @@ class TripleVision(arcade.View):
         if not self.card_manager.process_mouse_press(x, y, button):
             if button == arcade.MOUSE_BUTTON_LEFT:
                 self.charging = True
+            elif button == arcade.MOUSE_BUTTON_RIGHT:
+                self.player.process_right_mouse_press(x, y)
 
     def on_mouse_release(self, x: float, y: float, button: int, modifiers: int):
         if not self.player.is_alive:
@@ -162,20 +165,31 @@ class TripleVision(arcade.View):
         self.cursor_manager.draw()
 
     def on_update(self, delta_time: float) -> None:
-        if self.slow_down:
+        if self.slow_down or self.time_slow_ability:
             delta_time = delta_time / s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER
 
         if self.charging and self.charge < 100:
-            self.charge += delta_time*60
+            if self.time_slow_ability:
+                self.charge += delta_time * 60 * s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER
+            else:
+                self.charge += delta_time*60
 
         if self.player.is_alive:
-            self.player.on_update(delta_time)
+            if self.time_slow_ability:
+                self.player.on_update(delta_time * s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
+            else:
+                self.player.on_update(delta_time)
 
         self.game_manager.on_update(delta_time)
         self.physics_engine.update()
         self.map.on_update(delta_time)
         self.camera.update()
         self.card_manager.update()
-        self.player.update_health_bar(delta_time)
+
+        if self.time_slow_ability:
+            self.player.update_health_bar(delta_time * s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
+        else:
+            self.player.update_health_bar(delta_time)
+
         SoundManager.update(self.slow_down)
         self.cursor_manager.update()

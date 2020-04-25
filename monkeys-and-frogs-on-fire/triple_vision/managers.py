@@ -59,7 +59,11 @@ class GameManager:
                 self.view.player.hit(spike)
 
         self.enemies.on_update(delta_time)
-        self.player_projectiles.on_update(delta_time)
+
+        if self.view.time_slow_ability:
+            self.player_projectiles.on_update(delta_time * s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
+        else:
+            self.player_projectiles.on_update(delta_time)
         self.enemy_projectiles.on_update(delta_time)
         self.damage_indicators.on_update(delta_time)
 

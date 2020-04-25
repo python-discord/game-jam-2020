@@ -12,6 +12,14 @@ from triple_vision.entities.weapons import ChargedLaserProjectile
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
 from triple_vision.sound import SoundManager
+from triple_vision.entities.abilities import TimeSlow, FloorStomp, Indestructible
+
+
+class Abilities(Enum):
+    # Key are names, values are subclass of BaseAbility
+    blue = TimeSlow()
+    red = FloorStomp()
+    green = Indestructible()
 
 
 class States(Enum):
@@ -61,6 +69,10 @@ class Player(LivingEntity, MovingSprite):
         self.up_pressed = False
         self.down_pressed = False
 
+        self.selected_ability = None
+        self.current_cool_down = 0.0
+        self._ability_duration_left = 0.0
+
     @property
     def curr_color(self):
         return self._curr_color
@@ -72,18 +84,21 @@ class Player(LivingEntity, MovingSprite):
             self.attack_multiplier = 1.5
             self.speed_multiplier = 1.1
             self.dexterity = 0.6
+            self.selected_ability = Abilities.red.value
 
         elif value == 'green':
             self.resistance = 0.5
             self.attack_multiplier = 1.1
             self.speed_multiplier = 1
             self.dexterity = 0.75
+            self.selected_ability = Abilities.green.value
 
         elif value == 'blue':
             self.resistance = 0
             self.attack_multiplier = 1
             self.speed_multiplier = 1.5
             self.dexterity = 0.5
+            self.selected_ability = Abilities.blue.value
 
         else:
             raise ValueError('Color can only be red, green, or blue.')
@@ -102,6 +117,7 @@ class Player(LivingEntity, MovingSprite):
             (-6.0, -3.0)
         ])
         self.curr_color = 'red'
+        self.selected_ability = Abilities.red.value
 
         self.mana_bar = HealthBar(
             self.view,
@@ -172,6 +188,14 @@ class Player(LivingEntity, MovingSprite):
         self.mana_bar.remove_filling_part()
         self.state = States.ATTACKING_RANGED
 
+    def process_right_mouse_press(self, x, y) -> None:
+        if self.current_cool_down == 0:
+            self.current_cool_down = self.selected_ability.base_cool_down
+            self._ability_duration_left = self.selected_ability.duration
+            self.selected_ability.activate(x, y, self.view)
+        else:
+            print(f"On cool-down! {self.current_cool_down}")
+
     def kill(self):
         self.is_alive = False
         super().kill()
@@ -199,6 +223,16 @@ class Player(LivingEntity, MovingSprite):
         if not arcade.get_sprites_at_exact_point(dest, self.view.collision_list):
             self.move_to(dest[0], dest[1] + s.PLAYER_CENTER_Y_COMPENSATION)
             # self.state = States.MOVING
+        if self.current_cool_down > 0:
+            self.current_cool_down -= delta_time
+            self._ability_duration_left -= delta_time
+
+        if self._ability_duration_left < 0:
+            self._ability_duration_left = 0
+            self.selected_ability.deactivate(self.view)
+
+        if self.current_cool_down < 0:
+            self.current_cool_down = 0.0
 
         super().on_update(delta_time)
 
