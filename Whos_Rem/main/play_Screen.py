@@ -5,8 +5,7 @@ import time
 import os
 import vlc
 from screeninfo import get_monitors
-from Settings import Settings
-
+from .settings import Settings
 
 class Audio:
     BASE_DIR = os.getcwd()
@@ -28,7 +27,7 @@ class Audio:
 
     @classmethod
     def _setup(cls, _track: dict):
-        cls.track = track
+        cls.track = _track
 
         path = f"{cls.BASE_DIR}/tracks/{cls.track['path'].upper()}.{cls.track['type']}"
         cls.vlc_instance = vlc.Instance('--input-repeat=-1')
@@ -244,18 +243,23 @@ class GameScreen(arcade.View, Audio, PauseScreen):
 
         # Audio progress bar
         pos = self.player.get_position()
-        cent_x, cent_y = self.WIDTH / 1.1, self.HEIGHT / 2 - self.HEIGHT / 20
+        lower_x, lower_y = self.WIDTH / 1.1 + self.WIDTH / 150, self.HEIGHT / 20
         height, width = self.HEIGHT - self.HEIGHT / 7, self.WIDTH / 18
 
         # Black outline
-        arcade.draw_rectangle_filled(center_x=cent_x,
-                                     center_y=cent_y,
-                                     color=arcade.color.BLACK,
-                                     height=height,
-                                     width=width)
+        arcade.draw_line(start_x=lower_x,
+                         start_y=lower_y,
+                         end_x=lower_x + 300,
+                         end_y=height,
+                         line_width=width,
+                         color=arcade.color.CRIMSON)
         # Filled
-        arcade.draw_line(
-
+        arcade.draw_line(start_x=lower_x + 5,
+                         start_y=lower_y,
+                         end_x=lower_x + 300 - 5,
+                         end_y=height * pos,
+                         line_width=width,
+                         color=arcade.color.CRIMSON)
 
         # Shows Pause menu because i suck?
         if self.paused:
@@ -296,14 +300,4 @@ class GameScreen(arcade.View, Audio, PauseScreen):
             self.right_button_active = False
 
 
-if __name__ == '__main__':
-    track = {'path': 'track_1',
-             'type': 'wav',
-             'name': 'undertale'}
 
-    game = GameScreen()
-    game.setup(_track=track)
-
-    window = arcade.Window(GameScreen.WIDTH, GameScreen.HEIGHT, "SETTINGS TEST")
-    window.show_view(game)
-    arcade.run()
