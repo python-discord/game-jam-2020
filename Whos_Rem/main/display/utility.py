@@ -54,7 +54,7 @@ class ColourBlend:
 
     @staticmethod
     def brightness(colour, brightness, as_int=True):
-        new_colour = [col_part * brightness for col_part in colour]
+        new_colour = [1]    # todo for jamie to fix
         if as_int:
             new_colour = ListFunctions.int_list(new_colour)
 
