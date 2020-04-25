@@ -1,7 +1,7 @@
 """Module for the player sprite."""
 from __future__ import annotations
 import arcade
-from typing import Mapping
+from typing import Mapping, Union
 from PIL import Image, ImageDraw
 
 from constants import ASSETS, HEIGHT, SCALING, SPEED, TOP, WIDTH
@@ -20,7 +20,7 @@ class Player(arcade.Sprite):
     ]
 
     def __init__(self,
-                 master: typing.Union[multiplayer.MultiplayerGame, game.Game],
+                 master: Union[multiplayer.MultiplayerGame, game.Game],
                  player_num: int = 0, x: int = WIDTH // 5,
                  y: int = HEIGHT // 2, speed: int = SPEED):
         """Set up counters and load textures."""

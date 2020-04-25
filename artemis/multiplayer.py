@@ -50,7 +50,11 @@ class MultiplayerGame(View):
         for _ in range(2):
             RandomBlock(self)
 
-        self.pauseplay = displays.PausePlay(0, HEIGHT - 40, self)
+        self.pauseplay = displays.PausePlay(
+            self.left + WIDTH - 10,
+            HEIGHT - (TOP - self.blocks[0].height // 2) // 2 + 15,
+            self
+        )
         self.buttons.append(self.pauseplay)
 
         self.engines = []
@@ -100,10 +104,10 @@ class MultiplayerGame(View):
                 font_name=FONT.format(type='r')
             )
         arcade.draw_text(
-            text=f'{int(self.time_left):03d}',
-            start_x=self.left + WIDTH - 100,
-            start_y=HEIGHT - (TOP - self.blocks[0].height // 2) // 2,
-            color=arcade.color.WHITE, font_size=20, anchor_x='right',
+            text=f'{int(self.time_left):02d}s',
+            start_x=self.left + WIDTH - 35,
+            start_y=HEIGHT - (TOP - self.blocks[0].height // 2) // 2 - 15,
+            color=arcade.color.WHITE, font_size=20, anchor_x='center',
             anchor_y='center', font_name=FONT.format(type='b')
         )
         for sprite_list in self.sprite_lists:
@@ -151,7 +155,7 @@ class MultiplayerGame(View):
             lambda: MultiplayerGame(len(self.players))
         ))
 
-    def game_over(self, message: str, player: displays.Player):
+    def game_over(self, message: str, player: player.Player):
         """Kill the player and show some explanatory message."""
         player.score = 0
         for box in player.boxes:
