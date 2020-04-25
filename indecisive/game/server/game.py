@@ -27,6 +27,7 @@ class Game:
                 break
         self.generate_map()
         self.send_queue.put({"type": "world", "data": self.world})
+        self.send_queue.put({"type": "turn", "data": self.turn})
         while True:
             # main game loop
             data = self.receive_queue.get()
@@ -34,6 +35,7 @@ class Game:
                 if data["actionType"] == "moveUnit":
                     pass
                 elif data["actionType"] == "createUnit":
+                    print(f":O {data}")
                     self.send_queue.put({"type": "newUnit", "data": data["data"]})
                 self.next_turn()
 
