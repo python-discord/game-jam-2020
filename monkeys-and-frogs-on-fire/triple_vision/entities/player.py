@@ -223,7 +223,7 @@ class PlayerLiveManager:
         self.margin = 30
         self.hearts = arcade.SpriteList()
         self.heart_map = [2, 2, 2]
-        self.half_heart_value = self.view.player.hp / 6
+        self.half_heart_value = self.view.player.hp / sum(self.heart_map)
         self.scaling = scale
         self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
 
@@ -234,8 +234,8 @@ class PlayerLiveManager:
             self.hearts.append(
                 arcade.Sprite(
                     "assets/hearts/heart_2.png",
-                    center_x=i * (100 + self.view.camera.viewport_left + self.margin),
-                    center_y=100 + self.view.camera.viewport_bottom,
+                    center_x=(i + 1) * 100 + self.view.camera.viewport_left + self.margin,
+                    center_y=30 + self.view.camera.viewport_bottom,
                     scale=self.scaling
                 )
             )
@@ -250,21 +250,32 @@ class PlayerLiveManager:
 
             self.prev_viewport = viewport
 
-        for idx, heart_val in enumerate(self.heart_map):
+        total_hearths = sum(self.heart_map)
+        if total_hearths > 0:
+            # +1 so we don't loose half hearth on first hit
+            player_hearths = self.view.player.hp // self.half_heart_value + 1
+            if player_hearths < total_hearths:
+                self._update_hearth_map(player_hearths)
+                self._update_hearths_icons()
 
-            if (
-                (idx + 1) * heart_val < self.view.player.hp // self.half_heart_value and
-                heart_val > 0
-            ):
+    def _update_hearth_map(self, player_hearths: int):
+        hearth_sum = 0
+        for idx, hearth_value in enumerate(self.heart_map):
+            if hearth_sum + hearth_value > player_hearths:
                 self.heart_map[idx] -= 1
+                self._update_hearth_map(player_hearths)
+            else:
+                hearth_sum += hearth_value
 
-                self.hearts.pop(idx)
-                self.hearts.insert(idx, arcade.Sprite(
-                    f"assets/hearts/heart_{self.heart_map[idx]}.png",
-                    center_x=idx * (100 + self.view.camera.viewport_left + self.margin),
-                    center_y=100 + self.view.camera.viewport_bottom,
-                    scale=self.scaling
-                ))
+    def _update_hearths_icons(self):
+        for idx, heart_val in enumerate(self.heart_map):
+            self.hearts.pop(idx)
+            self.hearts.insert(idx, arcade.Sprite(
+                f"assets/hearts/heart_{heart_val}.png",
+                center_x=(idx + 1) * 100 + self.view.camera.viewport_left + self.margin,
+                center_y=30 + self.view.camera.viewport_bottom,
+                scale=self.scaling
+            ))
 
     def draw(self):
         self.hearts.draw()
