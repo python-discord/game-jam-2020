@@ -88,9 +88,101 @@ class Room:
 
     # def __eq__(self, object):
     #     return self.x == object.x and self.y == object.y
+class LevelGen:
+    def __init__(self, level):
+        
+        self.x = 0
+        self.y = 0
+
+        self.level = level
+
+        self.generating = False
+        self.curr_generate_speed = 0
+        self.generate_speed = 24
+
+        self.current_room = None
+        self.curr_depth = 0
+        self.rooms = {}
+
+    def startGen(self, x: int, y: int):
+        self.x = x
+        self.y = y
+        self.curr_depth = 24
+        self.generating = True
+        self.current_room = self.rooms.get(x, y)
+        if not self.current_room:
+            self.current_room = self.addRoom(x, y)
+
+    def update(self):
+        if self.generating:
+            if self.curr_generate_speed == 0:
+                self.generateLevelStep()
+                self.curr_generate_speed = self.generate_speed
+        if self.curr_generate_speed > 0:
+            self.curr_generate_speed -= 1
+
+    def generateLevelStep(self):
+        if self.current_room is None:
+                self.current_room = self.addRoom(self.x, self.y)
+                self.current_room.prev_room = self.current_room
+        
+        if self.curr_depth == 0:
+            print(f"Current depth is zero!")
+            return
+        
+        dirs = []
+        for direction in DIRS:
+            if not self.rooms.get((self.current_room.x + direction[0], self.current_room.y + direction[1])):
+                dirs.append(direction)
+        
+        if len(dirs) > 0:
+            rand_dir = random.randrange(len(dirs))
+            new_room = self.addRoom(self.current_room.x + dirs[rand_dir][0], self.current_room.y + dirs[rand_dir][1])
+            new_room.prev_room = self.current_room
+            self.current_room = new_room
+
+            self.curr_depth -= 1
+            if self.curr_depth == 0:
+                self.generating = False
+            self.drawRoom(new_room)
+        else:
+            if self.current_room.prev_room is not None or self.current_room.prev_room != self.current_room:
+                self.current_room = self.current_room.prev_room
+            else:
+                self.generating = False
+                print(f"Stopped generating: No more rooms to put")
+
+    def drawRoom(self, room):
+        room_x = room.x * ROOM_WIDTH
+        room_y = room.y * ROOM_HEIGHT
+
+        for x in range(0, 3):
+            for y in range(0, 3):
+                template = ROOM_TEMPLATES[2]
+                if y == 0:
+                    
+                    template = ROOM_TEMPLATES[0]
+                elif y == 2:
+                    template = ROOM_TEMPLATES[1] 
+
+                drawTemplate(
+                    self.level,
+                    room_x + x * TEMPLATE_WIDTH,
+                    room_y + y * TEMPLATE_HEIGHT,
+                    template)
+        
+    
+    def addRoom(self, x, y):
+        if not self.rooms.get((x, y)):
+            room = Room(x, y)
+            self.rooms[(x, y)] = room
+            print(f"Added room at: {x}, {y}")
+            return room
+
 
 def generateLevel(level, x: int, y: int):
     start_room = Room(x, y)
+    start_room.prev_room = start_room
     level.rooms.append(start_room)
     dirs = []
     depth = 0
@@ -121,9 +213,9 @@ def generateLevel(level, x: int, y: int):
                 break
 
 
-    # for i, room in enumerate(level.rooms):
-    #     if room.prev_room:
-    #         print(room.x, room.y, room.prev_room.x, room.prev_room.y)
+    for i, room in enumerate(level.rooms):
+        # if room.prev_room:
+        print(room.x, room.y, room.prev_room.x, room.prev_room.y)
 
     for i, room in enumerate(level.rooms):
         room_x = room.x * ROOM_WIDTH
@@ -136,6 +228,7 @@ def generateLevel(level, x: int, y: int):
             for y in range(0, 3):
                 template = ROOM_TEMPLATES[2]
                 if y == 0:
+                    
                     template = ROOM_TEMPLATES[0]
                 elif y == 2:
                     template = ROOM_TEMPLATES[1] 

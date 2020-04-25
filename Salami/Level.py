@@ -44,12 +44,12 @@ class Level:
         #     self.add_entity_to_list(ball, self.entities)
 
         self.player = Player(Textures.SPRITESHEET[4 + 3 * 16], 64, 64, self.keyboard)
+        # self.player.flying = False
         self.add_entity_to_list(self.player, self.entities)
 
-        level_gen_x = self.player.center_x // TILE_SIZE // ROOM_WIDTH
-        level_gen_y = self.player.center_y // TILE_SIZE // ROOM_HEIGHT
+        self.level_gen = LevelGenerator.LevelGen(self)
 
-        LevelGenerator.generateLevel(self, int(level_gen_x), int(level_gen_y))
+        self.generate_level(self.player.x, self.player.y)
 
         # rooms = [(0, 0, 1), (1, 1, 1), (2, 2, 1), (3, 3, 1)]
         # for i, room in enumerate(rooms):
@@ -83,6 +83,7 @@ class Level:
 
         # e.level = None
         # self.entities.remove(e)
+        self.level_gen.update()
 
         self.engine.update(delta)
         
@@ -104,17 +105,18 @@ class Level:
         self.entities.draw(filter=gl.GL_NEAREST)
         self.tile_list.draw(filter=gl.GL_NEAREST)
 
-        # self.health_bar.draw(filter=gl.GL_NEAREST)            
+        self.health_bar.draw(filter=gl.GL_NEAREST)
 
-        # self.player.draw_hit_box(arcade.color.BLUE)
+        self.player.draw_hit_box(arcade.color.BLUE)
 
     def add_entity_to_list(self, entity, list):
-        # entity.set_hit_box(SQUARE_HIT_BOX)
+        entity.set_hit_box(SQUARE_HIT_BOX)
         entity.set_level(self)
         list.append(entity)
 
     def add_tile(self, tile):
-        tile.set_hit_box(SQUARE_HIT_BOX)
+        print(f"{tile.left}, {tile.bottom}, {tile.width}")
+        # tile.set_hit_box(SQUARE_HIT_BOX)
         tile.set_level(self)
         self._set_tile(int(tile.center_x // TILE_SIZE), int(tile.center_y // TILE_SIZE), tile)
 
@@ -146,3 +148,10 @@ class Level:
                     list.append(self.get_tile(x, y))
         return list
 
+    def generate_level(self, x, y):
+        level_gen_x = int(x / TILE_SIZE / ROOM_WIDTH)
+        level_gen_y = int(x / TILE_SIZE / ROOM_HEIGHT)
+        
+        # self.level_gen.startGen(level_gen_x, level_gen_y)
+
+        LevelGenerator.generateLevel(self, int(level_gen_x), int(level_gen_y))
