@@ -16,9 +16,11 @@ TILE_PADDING_V = 10
 
 class GridCell:
     def __init__(self, centre: Tuple[float, float], width, height):
+        """Represents a cell within the main grid which the user interacts with"""
         self.bottom_left = centre[0] - width / 2, centre[1] - height / 2
         self.top_right = centre[0] + width / 2, centre[1] + height / 2
         self.centre = centre
+        self.tile_value: Optional[str] = None
 
     def __repr__(self):
         return str(self.centre)
@@ -27,6 +29,7 @@ class GridCell:
 class TileSprite(arcade.Sprite):
     def __init__(self, image_filepath: str, starting_x: int, starting_y: int):
         super().__init__(image_filepath)
+        self.tile_value = image_filepath
         self.starting_x = starting_x
         self.starting_y = starting_y
 
@@ -58,10 +61,12 @@ class SubmissionGrid(arcade.Sprite):
         self.center_y = WINDOW_HEIGHT * (2 / 3) - (1 / 27 * WINDOW_HEIGHT)
         self.center_x = WINDOW_HEIGHT * 1 / 3 + WINDOW_HEIGHT * 1 / 27
         self.cells: List[GridCell] = []
-        self._load_grid()
-        print(self.cells)
+        self._load_cells()
 
-    def _load_grid(self):
+    def _load_cells(self):
+        """
+        Load the positions of all the cells
+        """
         top_left = self.center_x - self.width / 2, self.center_y + self.height / 2
         cell_width = self.width // 3
         cell_height = self.height // 3
@@ -69,10 +74,9 @@ class SubmissionGrid(arcade.Sprite):
             for col_num in range(3):
                 x = top_left[0] + (col_num * cell_width) + cell_width // 2
                 y = top_left[1] - (row_num * cell_height) - cell_height // 2
-                print(x)
                 self.cells.append(GridCell((x, y), cell_width, cell_height))
 
-    def check_if_point_is_inside(self, point: Tuple[float, float]) -> Optional[Tuple[float, float]]:
+    def check_if_point_is_inside(self, point: Tuple[float, float]) -> GridCell:
         """
         Checks whether the provided point is within the octothorpe, if so, returns the coordinate of the subsection
         which that octothorpe belongs in
@@ -81,7 +85,14 @@ class SubmissionGrid(arcade.Sprite):
         """
         for cell in self.cells:
             if check_bounds(point, cell.bottom_left, cell.top_right):
-                return cell.centre
+                return cell
+
+    def extract_value(self) -> List[Optional[str]]:
+        """
+        Extracts the values the player has inserted into the board into a format that can be used to verify the game
+        :return: The list of strings representing the game state to be validated
+        """
+        return [cell.tile_value for cell in self.cells]
 
 
 class MyGame(arcade.Window):
@@ -91,13 +102,9 @@ class MyGame(arcade.Window):
 
     # TODO figure out how to render clues as text
     def __init__(self):
-        """
-        Initializer for MyGame
-        """
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, "2048")
-        self.submission_grid = SubmissionGrid()
+        self.submission_grid: SubmissionGrid = SubmissionGrid()
         self.dragging_sprite: Optional[TileSprite] = None
-        self.main_sprites: Optional[arcade.SpriteList] = None
         self.tile_sprites: Optional[arcade.SpriteList] = None
 
         arcade.set_background_color((100, 100, 100))
@@ -106,7 +113,6 @@ class MyGame(arcade.Window):
         """
         Set the game up for play. Call this to reset the game.
         """
-        self.main_sprites = arcade.SpriteList()
         self.tile_sprites = arcade.SpriteList()
         for x, y in self.get_boneyard_starting_positions():
             # TODO interface this with the backend
@@ -147,9 +153,9 @@ class MyGame(arcade.Window):
         tile_sprite: TileSprite
         for tile_sprite in self.tile_sprites:
             if check_bounds(
-                (x, y),
-                (tile_sprite.boundary_left, tile_sprite.boundary_bottom),
-                (tile_sprite.boundary_right, tile_sprite.boundary_top),
+                    (x, y),
+                    (tile_sprite.boundary_left, tile_sprite.boundary_bottom),
+                    (tile_sprite.boundary_right, tile_sprite.boundary_top),
             ):
                 self.dragging_sprite = tile_sprite
 
@@ -158,19 +164,19 @@ class MyGame(arcade.Window):
         Called when a user releases a mouse button.
         """
         if self.dragging_sprite is not None:
-            print(x, y)
-            print(self.submission_grid.check_if_point_is_inside((x, y)))
-            if (point := self.submission_grid.check_if_point_is_inside((x, y))) is not None:
-                print("stuff")
-                self.dragging_sprite.center_x = point[0]
-                self.dragging_sprite.center_y = point[1]
+            if (cell := self.submission_grid.check_if_point_is_inside((x, y))) is not None:
+                self.dragging_sprite.center_x, self.dragging_sprite.center_y = cell.centre
+                cell.tile_value = self.dragging_sprite.tile_value
+                self.dragging_sprite.set_bounds()
+
             else:
                 self.dragging_sprite.reset()
             self.dragging_sprite = None
 
 
+
 def check_bounds(
-    point: Tuple[float, float], bottom_left: Tuple[float, float], top_right: Tuple[float, float],
+        point: Tuple[float, float], bottom_left: Tuple[float, float], top_right: Tuple[float, float],
 ) -> bool:
     """
     Check if a given point is within the bounds of 4 sides
