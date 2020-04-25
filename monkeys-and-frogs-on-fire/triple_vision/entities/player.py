@@ -5,7 +5,7 @@ from enum import Enum
 import arcade
 
 from triple_vision import Settings as s
-from triple_vision import Tile
+from triple_vision import Tile, Direction
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import HealthBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile
@@ -61,6 +61,12 @@ class Player(LivingEntity, MovingSprite):
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
+
+        self.colors = {
+            "red": (255, 20, 20),
+            "green": (0, 204, 0),
+            "blue": (0, 128, 255),
+        }
 
     @property
     def curr_color(self):
@@ -166,7 +172,7 @@ class Player(LivingEntity, MovingSprite):
             center_y=self.center_y,
             rotate=True
         )
-
+        bullet.color = self.curr_color_to_rgb()
         bullet.move_to(x, y, set_target=False)
         bullet.play_activate_sound()
         self.view.game_manager.player_projectiles.append(bullet)
@@ -207,6 +213,9 @@ class Player(LivingEntity, MovingSprite):
     def update_health_bars(self, delta_time):
         self.mana_bar.on_update(delta_time)
         self.health_bar.update()
+
+    def curr_color_to_rgb(self):
+        return self.colors[self.curr_color]
 
     def draw(self):
         super().draw()
