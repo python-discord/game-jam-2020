@@ -10,13 +10,15 @@ from triple_vision.entities import (
     StationaryEnemy
 )
 from triple_vision.managers import CardManager, GameManager, CursorManager
-from triple_vision.sound import SoundManager
 from triple_vision.map import Map
+from triple_vision.sound import SoundManager
 
 
 class TripleVision(arcade.View):
-    def __init__(self) -> None:
+    def __init__(self, main_view) -> None:
         super().__init__()
+
+        self.main_view = main_view
 
         self.slow_down = False
         self.time_slow_ability = False
@@ -55,7 +57,7 @@ class TripleVision(arcade.View):
         self.charge = 0.0
         self.charging = False
 
-        for _ in range(10):
+        for _ in range(3):
             self.game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.big_demon,
@@ -73,8 +75,30 @@ class TripleVision(arcade.View):
                 0.75
             )
 
+        for _ in range(15):
+            self.game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.chort,
+                self.player,
+                Tile.SCALED * 10,
+                moving_speed=1
+            )
+        for _ in range(5):
+            self.game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.wogol,
+                self.player,
+                Tile.SCALED * 10,
+                moving_speed=1
+            )
+
     def on_key_press(self, key, modifiers) -> None:
-        self.player.process_key_press(key)
+        if key == arcade.key.ESCAPE:
+            arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
+            self.window.set_mouse_visible(True)
+            self.window.show_view(self.main_view)
+        else:
+            self.player.process_key_press(key)
 
     def on_key_release(self, key, modifiers) -> None:
         self.player.process_key_release(key)
@@ -84,7 +108,7 @@ class TripleVision(arcade.View):
             x + self.camera.viewport_left,
             y + self.camera.viewport_bottom
         )
-        self.cursor_manager.process_mouse_motion(x, y)
+        self.cursor_manager.set_cursor_position(x, y)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int) -> None:
         if not self.player.is_alive:
@@ -187,3 +211,4 @@ class TripleVision(arcade.View):
 
         SoundManager.update(self.slow_down or self.time_slow_ability)
         self.cursor_manager.update()
+        self.player.update_health_bars(delta_time)

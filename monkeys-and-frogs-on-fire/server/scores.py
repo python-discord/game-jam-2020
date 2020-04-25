@@ -40,7 +40,7 @@ class Scores(Cog, route='scores'):
         **kwargs: Any
     ) -> None:
         with managed_session() as session:
-            scores = session.query(Score).order_by(Score.score.desc()).limit(10).all()
+            scores = session.query(Score).order_by(Score.score.asc()).limit(10).all()
 
             kwargs['client_send']({
                 'headers': {
@@ -51,7 +51,8 @@ class Scores(Cog, route='scores'):
                     {
                         'score': score.score,
                         'username': session.query(User).filter(User.id == score.user_id).first().username,
-                        'user_id': score.user_id
+                        'user_id': score.user_id,
+                        'timestamp': str(score.timestamp)
                     } for score in scores
                 ]
             })

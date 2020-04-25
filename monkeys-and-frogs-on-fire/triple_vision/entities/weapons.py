@@ -28,8 +28,8 @@ class Projectile(Weapon, TemporarySprite, MovingSprite):
 
 
 class LaserProjectile(Projectile):
-    activate_sounds = ("laser_activate_0.mp3",)
-    hit_sounds = ("laser_hit_0.ogg",)
+    activate_sounds = ("laser_activate_2.wav",)
+    hit_sounds = ("laser_hit_1.wav",)
 
     def __init__(
         self,
@@ -43,7 +43,7 @@ class LaserProjectile(Projectile):
             throwback_force=8,
             activate_sounds=self.activate_sounds,
             hit_sounds=self.hit_sounds,
-            lifetime=3,
+            lifetime=2,
             moving_speed=moving_speed,
             filename=f'assets/lasers/{color}_laser.png',
             **kwargs
@@ -51,8 +51,8 @@ class LaserProjectile(Projectile):
 
 
 class ChargedLaserProjectile(Projectile):
-    activate_sounds = ("laser_activate_0.mp3",)
-    hit_sounds = ("laser_hit_0.ogg",)
+    activate_sounds = ("laser_activate_2.wav",)
+    hit_sounds = ("laser_hit_1.wav",)
 
     def __init__(
         self,
@@ -64,7 +64,7 @@ class ChargedLaserProjectile(Projectile):
         """
 
         dmg = random.randrange(60 + int(charge), 70 + math.ceil(charge))
-        lifetime = 3 - round(charge/50, 2)
+        lifetime = 2 - round(charge/50, 2)
         moving_speed = 5.0 + round(charge/10, 2)
         throwback_force = 8 + charge//10
 
@@ -87,12 +87,13 @@ class Melee(Weapon):
     activate_sounds = ("melee_activate_0.wav", "melee_activate_1.wav", "melee_activate_2.wav")
     hit_sounds = ("melee_hit_0.flac", "melee_hit_1.flac", "melee_hit_2.flac")
 
-    def __init__(self, dmg: float, throwback_force: int) -> None:
+    def __init__(self, dmg: float, throwback_force: int, **kwargs) -> None:
         super().__init__(
             dmg,
             throwback_force,
             activate_sounds=self.activate_sounds,
-            hit_sounds=self.hit_sounds
+            hit_sounds=self.hit_sounds,
+            **kwargs
         )
 
 
