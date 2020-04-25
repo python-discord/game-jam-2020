@@ -59,7 +59,7 @@ class Player(arcade.Sprite):
         """Open and resize an image for a texture."""
         file = self.image.format(name=name)
         old = Image.open(file)
-        pixel_size = 2
+        pixel_size = int(8 * SCALING)
         old_w, old_h = old.size
         new_w = old_w * pixel_size
         new_h = old_h * pixel_size

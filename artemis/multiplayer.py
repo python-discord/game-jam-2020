@@ -7,7 +7,7 @@ from constants import (
 )
 import displays
 from engine import PhysicsEngine
-import player
+import player as player_module
 from sprites import Block, Gem, RandomBlock
 from ui import View
 import views
@@ -36,9 +36,8 @@ class MultiplayerGame(View):
         self.players = arcade.SpriteList()
 
         # sprites
-        import player
         for n in range(players):
-            self.players.append(player.Player(self, n))
+            self.players.append(player_module.Player(self, n))
 
         size = int(128 * SCALING)
         for x in range(-SIDE, WIDTH + SIDE, size):
@@ -122,7 +121,7 @@ class MultiplayerGame(View):
             super().on_draw()
             if not self.pause_screen:
                 self.pause_screen = views.Paused(
-                    self,  lambda: MultiplayerGame(len(self.players))
+                    self, lambda: MultiplayerGame(len(self.players))
                 )
                 self.window.show_view(self.pause_screen)
 
@@ -155,7 +154,7 @@ class MultiplayerGame(View):
             lambda: MultiplayerGame(len(self.players))
         ))
 
-    def game_over(self, message: str, player: player.Player):
+    def game_over(self, message: str, player: player_module.Player):
         """Kill the player and show some explanatory message."""
         player.score = 0
         for box in player.boxes:

@@ -49,9 +49,10 @@ class Paused(View):
     def restart(self):
         """Start a new game."""
         global restarts
-        restarts += 1
-        if restarts == 4:
-            add_award(1)
+        if isinstance(self.game, Game):
+            restarts += 1
+            if restarts == 4:
+                add_award(1)
         self.game.save()
         self.window.show_view(self.create_new())
 
@@ -83,14 +84,16 @@ class About(View):
     def on_show(self):
         """Create back button."""
         super().on_show()
-        self.buttons.append(ViewButton(self, WIDTH / 2, 200, 'home', Menu))
+        self.buttons.append(ViewButton(
+            self, WIDTH / 2, HEIGHT / 2 - 120, 'home', Menu
+        ))
 
     def on_draw(self):
         """Draw text and back button."""
         arcade.start_render()
         super().on_draw()
         arcade.draw_text(
-            'About', WIDTH / 2, HEIGHT - 200,
+            'About', WIDTH / 2, HEIGHT / 2 + 100,
             arcade.color.WHITE, font_size=50, anchor_x='center',
             font_name=FONT.format(type='b')
         )
@@ -176,11 +179,14 @@ class Menu(View):
             self, WIDTH / 2 + 70, HEIGHT / 2 - 50, 'help', Tutorial
         ))
         self.buttons.append(ViewButton(
-            self, WIDTH / 2 - 35, HEIGHT / 2 - 120, 'about', About
+            self, WIDTH / 2 - 70, HEIGHT / 2 - 120, 'about', About
         ))
         self.buttons.append(ViewButton(
-            self, WIDTH / 2 + 35, HEIGHT / 2 - 120,
+            self, WIDTH / 2, HEIGHT / 2 - 120,
             'achievements', Achievements
+        ))
+        self.buttons.append(IconButton(
+            self, WIDTH / 2 + 70, HEIGHT / 2 - 120, 'quit', self.window.close
         ))
 
     def on_draw(self):
@@ -201,7 +207,7 @@ class MultiplayerMenu(View):
         """Create the buttons."""
         super().on_show()
         self.buttons.append(ViewButton(
-            self, WIDTH / 2 - 35, HEIGHT / 2 - 50, 'two_player', 
+            self, WIDTH / 2 - 35, HEIGHT / 2 - 50, 'two_player',
             lambda: MultiplayerGame(2)
         ))
         self.buttons.append(ViewButton(
@@ -243,7 +249,7 @@ class MultiplayerHelpOne(View):
         """Draw text and back button."""
         super().on_draw()
         arcade.draw_text(
-            'Multiplayer', WIDTH / 2, HEIGHT - 200,
+            'Multiplayer', WIDTH / 2, HEIGHT / 2 + 100,
             arcade.color.WHITE, font_size=50, anchor_x='center',
             font_name=FONT.format(type='b')
         )
@@ -266,8 +272,11 @@ class MultiplayerHelpTwo(View):
         self.buttons.append(ViewButton(
             self, WIDTH - 40, HEIGHT - 40, 'next', MultiplayerMenu
         ))
+        x_scale = WIDTH / 1280
+        y_scale = HEIGHT / 640
+        scale = min((x_scale, y_scale))
         self.main = arcade.Sprite(
-            ASSETS + 'multiplayer_help.png',
+            ASSETS + 'multiplayer_help.png', scale=scale,
             center_x=WIDTH / 2, center_y=HEIGHT / 2
         )
 

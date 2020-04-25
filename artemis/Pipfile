@@ -4,8 +4,8 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-arcade = "~=2.3.11"
 Pillow = "~=7.1.1"
+arcade = "*"
 
 [dev-packages]
 flake8 = "~=3.7"

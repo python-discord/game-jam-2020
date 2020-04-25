@@ -1,13 +1,21 @@
 """Game constants."""
+import pyglet
 
-BLOCKS_Y = 20
-BLOCKS_X = 40
-SCALING = 0.25
-HEIGHT = int(BLOCKS_Y * SCALING * 128)
-WIDTH = int(BLOCKS_X * SCALING * 128)
+
+def get_display_size():
+    """Return the resolution of the monitor.
+
+    Wasn't installed with arcade for me...
+    """
+    display = pyglet.canvas.Display()
+    screen = display.get_default_screen()
+    return screen.width, screen.height
+
+
+SCALING = 0.3
+WIDTH, HEIGHT = get_display_size()
 SIDE = WIDTH // 2
-BLOCKS_TOP = 5
-TOP = int(BLOCKS_TOP * SCALING * 128)
+TOP = 5 * SCALING * 128
 
 SPEED = 20 * SCALING
 GRAVITY = 5 * SCALING
@@ -29,7 +37,9 @@ MULTIPLAYER_HELP = (
     'blob, and must get gems before other players, or\n'
     'push their opponents into spikes. You have ninety\n'
     'seconds to get points, however if you die, your\n'
-    'points reset. Be careful!'
+    'points reset. Be careful!\n'
+    'Note: no achievements or high scores can be obtained\n'
+    'in multiplayer mode.'
 )
 
 ACHIEVEMENTS = [
