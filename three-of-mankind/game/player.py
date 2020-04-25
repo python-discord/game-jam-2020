@@ -18,6 +18,7 @@ class Player(Sprite):
         self.jump_count = 0
         self.dash_count = 0
         self.direction = RIGHT
+        self.color_ = 'white'
         # self.anims_right = AnimLoader("assets/player")
         # self.anims_left = AnimLoader("assets/player", mirrored=True)
 

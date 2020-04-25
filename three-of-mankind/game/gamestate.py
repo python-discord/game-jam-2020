@@ -1,3 +1,5 @@
+import logging
+
 import arcade
 
 from .constants import (
@@ -20,7 +22,7 @@ from .constants import (
 from .player import Player
 from .sprite import Sprite
 from .tile_image import tiles
-from .utils import sweep_trace
+from .utils import sweep_trace, is_touching
 
 
 class GameState:
@@ -33,6 +35,12 @@ class GameState:
 
         self.level_geometry = arcade.SpriteList()  # Have collisions
         self.level_objects = arcade.SpriteList()  # Doesn't have collision
+        self.colored_geometry = {
+            'red': arcade.SpriteList(),
+            'green': arcade.SpriteList(),
+            'blue': arcade.SpriteList(),
+            'white': arcade.SpriteList()
+        }
 
         self.player = Player(scale=0.99)
         for tile in (tiles.player_white, tiles.player_red, tiles.player_green, tiles.player_blue):
@@ -49,6 +57,12 @@ class GameState:
     def load_level(self, level_id: int) -> None:
         self.level_objects = arcade.SpriteList()
         self.level_geometry = arcade.SpriteList()
+        self.colored_geometry = {
+            'red': arcade.SpriteList(),
+            'green': arcade.SpriteList(),
+            'blue': arcade.SpriteList(),
+            'white': arcade.SpriteList()
+        }
 
         with open(f"levels/level_{level_id}") as file:
             left, bottom = 0, 0
@@ -65,6 +79,7 @@ class GameState:
 
                         if tile.name.startswith("block"):
                             self.level_geometry.append(sprite)
+                            self.colored_geometry[tile.name.rsplit('_', 1)[-1]].append(sprite)
                         else:
                             self.level_objects.append(sprite)
 
@@ -79,6 +94,13 @@ class GameState:
             self.player.movement_control = GROUND_CONTROL
         else:
             self.player.movement_control = AIR_CONTROL
+
+        colors = {'red', 'green', 'blue'}
+        colors.discard(self.player.color_)
+        for color in colors:
+            if is_touching(self.player, self.colored_geometry[color]):
+                logging.info(f"player touched {color}.")
+
         self.player.update()
         self.engine.update()
         self.level_objects.update()
