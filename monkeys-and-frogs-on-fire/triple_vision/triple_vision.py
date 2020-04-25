@@ -16,7 +16,7 @@ from triple_vision.map import Map
 
 
 class TripleVision(arcade.View):
-    def __init__(self) -> None:
+    def __init__(self, main_view) -> None:
         super().__init__()
 
         self.slow_down = False
@@ -78,7 +78,10 @@ class TripleVision(arcade.View):
         self.physics_engine = SlowModeSupportEngine(self.player, self.collision_list)
 
     def on_key_press(self, key, modifiers) -> None:
-        self.player.process_key_press(key)
+        if key == arcade.key.ESCAPE:
+            self.window.show_view(self.main_view)
+        else:
+            self.player.process_key_press(key)
 
     def on_key_release(self, key, modifiers) -> None:
         self.player.process_key_release(key)

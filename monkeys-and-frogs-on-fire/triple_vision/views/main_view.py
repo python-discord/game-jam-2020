@@ -51,7 +51,7 @@ class MainView(arcade.View):
 
     def play(self) -> None:
         self.window.button_list.clear()
-        self.window.show_view(TripleVision())
+        self.window.show_view(TripleVision(self))
 
     def leaderboard(self) -> None:
         self.window.button_list.clear()
