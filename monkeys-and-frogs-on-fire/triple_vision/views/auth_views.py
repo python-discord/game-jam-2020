@@ -11,7 +11,7 @@ from triple_vision.views.main_view import MainView
 class LoginButton(arcade.TextButton):
 
     def __init__(self, view, *args, **kwargs) -> None:
-        super().__init__(text='Login', *args, **kwargs)
+        super().__init__(text='', *args, **kwargs)
         self.view = view
 
         self.pressed = False
@@ -28,7 +28,7 @@ class LoginButton(arcade.TextButton):
 class RegisterButton(arcade.TextButton):
 
     def __init__(self, view, *args, **kwargs) -> None:
-        super().__init__(text='Register', *args, **kwargs)
+        super().__init__(text='', *args, **kwargs)
         self.view = view
 
         self.pressed = False
@@ -122,15 +122,8 @@ class AuthView(arcade.View):
             border_width=5
         )
 
-        self.game_title = arcade.draw_text(
-            text='Triple Vision',
-            start_x=s.WINDOW_SIZE[0] / 2,
-            start_y=s.WINDOW_SIZE[1] / 8 * 7,
-            color=arcade.color.WHITE,
-            font_size=42,
-            align='center',
-            anchor_x='center',
-            anchor_y='center'
+        self.game_title = arcade.load_texture(
+            'assets/title.png'
         )
         self.view_text = arcade.draw_text(
             text=self.view_raw_text,
@@ -143,14 +136,25 @@ class AuthView(arcade.View):
             anchor_y='center'
         )
 
-        # TODO: Create theme
+        login_button_theme = arcade.Theme()
+        login_button_theme.add_button_textures(
+            clicked='assets/buttons/login_pressed.png',
+            normal='assets/buttons/login_released.png'
+        )
+
+        register_button_theme = arcade.Theme()
+        register_button_theme.add_button_textures(
+            clicked='assets/buttons/register_pressed.png',
+            normal='assets/buttons/register_released.png'
+        )
+
         self.login_button = LoginButton(
             self,
             center_x=s.WINDOW_SIZE[0] / 2 + 60,
             center_y=s.WINDOW_SIZE[1] / 2 - 120,
             width=100,
             height=60,
-            font_color=arcade.color.BLACK
+            theme=login_button_theme
         )
         self.register_button = RegisterButton(
             self,
@@ -158,7 +162,7 @@ class AuthView(arcade.View):
             center_y=s.WINDOW_SIZE[1] / 2 - 120,
             width=100,
             height=60,
-            font_color=arcade.color.BLACK
+            theme=register_button_theme
         )
 
         self.window.button_list.extend([
@@ -189,13 +193,20 @@ class AuthView(arcade.View):
             texture=self.background
         )
 
+        arcade.draw_lrwh_rectangle_textured(
+            bottom_left_x=s.WINDOW_SIZE[0] / 2 - 449,
+            bottom_left_y=s.WINDOW_SIZE[1] / 8 * 7 - 200,
+            width=898,
+            height=400,
+            texture=self.game_title
+        )
+
         self.username_text.draw()
         self.password_text.draw()
 
         self.username.draw()
         self.password.draw()
 
-        self.game_title.draw()
         self.view_text.draw()
 
         self.login_button.draw()

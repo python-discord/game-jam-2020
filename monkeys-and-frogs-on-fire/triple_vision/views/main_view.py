@@ -8,7 +8,7 @@ from triple_vision.views.leaderboard_view import LeaderboardView
 class PlayButton(arcade.TextButton):
 
     def __init__(self, view, *args, **kwargs) -> None:
-        super().__init__(text='Play', *args, **kwargs)
+        super().__init__(text='', *args, **kwargs)
         self.view = view
         self.pressed = False
 
@@ -24,7 +24,7 @@ class PlayButton(arcade.TextButton):
 class LeaderboardButton(arcade.TextButton):
 
     def __init__(self, view, *args, **kwargs) -> None:
-        super().__init__(text='Leaderboard', *args, **kwargs)
+        super().__init__(text='', *args, **kwargs)
         self.view = view
         self.pressed = False
 
@@ -58,35 +58,40 @@ class MainView(arcade.View):
         self.window.show_view(LeaderboardView(self))
 
     def on_show(self) -> None:
+        play_button_theme = arcade.Theme()
+        play_button_theme.add_button_textures(
+            clicked='assets/buttons/play_pressed.png',
+            normal='assets/buttons/play_released.png'
+        )
+
         self.play_button = PlayButton(
             self,
             center_x=s.WINDOW_SIZE[0] / 2,
-            center_y=s.WINDOW_SIZE[1] / 2 + 40,
-            width=160,
-            height=60,
-            font_color=arcade.color.BLACK
+            center_y=s.WINDOW_SIZE[1] / 2 + 50,
+            width=150,
+            height=80,
+            theme=play_button_theme
         )
         self.window.button_list.append(self.play_button)
+
+        leaderboard_button_theme = arcade.Theme()
+        leaderboard_button_theme.add_button_textures(
+            clicked='assets/buttons/leaderboard_pressed.png',
+            normal='assets/buttons/leaderboard_released.png'
+        )
 
         self.leaderboard_button = LeaderboardButton(
             self,
             center_x=s.WINDOW_SIZE[0] / 2,
-            center_y=s.WINDOW_SIZE[1] / 2 - 40,
-            width=160,
-            height=60,
-            font_color=arcade.color.BLACK
+            center_y=s.WINDOW_SIZE[1] / 2 - 50,
+            width=150,
+            height=80,
+            theme=leaderboard_button_theme
         )
         self.window.button_list.append(self.leaderboard_button)
 
-        self.game_title = arcade.draw_text(
-            text='Triple Vision',
-            start_x=s.WINDOW_SIZE[0] / 2,
-            start_y=s.WINDOW_SIZE[1] / 8 * 7,
-            color=arcade.color.WHITE,
-            font_size=42,
-            align='center',
-            anchor_x='center',
-            anchor_y='center'
+        self.game_title = arcade.load_texture(
+            'assets/title.png'
         )
 
     def on_draw(self) -> None:
@@ -100,6 +105,13 @@ class MainView(arcade.View):
             texture=self.background
         )
 
+        arcade.draw_lrwh_rectangle_textured(
+            bottom_left_x=s.WINDOW_SIZE[0] / 2 - 449,
+            bottom_left_y=s.WINDOW_SIZE[1] / 8 * 7 - 200,
+            width=898,
+            height=400,
+            texture=self.game_title
+        )
+
         self.play_button.draw()
         self.leaderboard_button.draw()
-        self.game_title.draw()

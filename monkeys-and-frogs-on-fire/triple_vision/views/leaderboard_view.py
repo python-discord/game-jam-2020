@@ -9,20 +9,50 @@ from triple_vision import Settings as s
 from triple_vision.networking import client, get_status
 
 
-class BackButton(arcade.TextButton):
+class BackButton(arcade.Sprite):
 
-    def __init__(self, view: arcade.View, *args: Any, **kwargs: Any) -> None:
-        super().__init__(text='Back', *args, **kwargs)
+    def __init__(
+        self,
+        view: arcade.View,
+        clicked: str,
+        normal: str,
+        viewport: Tuple[float, float],
+        *args: Any,
+        **kwargs: Any
+    ) -> None:
+        super().__init__(filename=normal, *args, **kwargs)
+
         self.view = view
+
+        self.clicked = arcade.load_texture(clicked)
+        self.normal = arcade.load_texture(normal)
+
+        self.viewport = viewport
+
         self.pressed = False
 
-    def on_press(self):
-        self.pressed = True
+    def check_mouse_press(self, x, y, button, modifiers) -> None:
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            if (
+                self.center_x - self.viewport[0] - self.width / 2 < x <
+                self.center_x - self.viewport[0] + self.width / 2 and
+                self.center_y - self.viewport[1] - self.width / 2 < y <
+                self.center_y - self.viewport[1] + self.width / 2
+            ):
+                self.texture = self.clicked
+                self.pressed = True
 
-    def on_release(self):
-        if self.pressed:
-            self.view.back()
-            self.pressed = False
+    def check_mouse_release(self, x, y, button, modifiers) -> None:
+        if button == arcade.MOUSE_BUTTON_LEFT:
+            if (
+                self.center_x - self.viewport[0] - self.width / 2 < x <
+                self.center_x - self.viewport[0] + self.width / 2 and
+                self.center_y - self.viewport[1] - self.width / 2 < y <
+                self.center_y - self.viewport[1] + self.width / 2
+            ):
+                self.view.back()
+                self.texture = self.normal
+                self.pressed = False
 
 
 class ScoreNode:
@@ -163,23 +193,16 @@ class LeaderboardView(arcade.View):
     def on_show(self) -> None:
         self.back_button = BackButton(
             self,
+            clicked='assets/buttons/back_pressed.png',
+            normal='assets/buttons/back_released.png',
             center_x=60,
             center_y=30,
-            width=120,
-            height=60,
-            font_color=arcade.color.BLACK
+            viewport=self.viewport
         )
         self.window.button_list.append(self.back_button)
 
-        self.game_title = arcade.draw_text(
-            text='Leaderboard',
-            start_x=s.WINDOW_SIZE[0] / 2,
-            start_y=s.WINDOW_SIZE[1] / 8 * 7,
-            color=arcade.color.WHITE,
-            font_size=42,
-            align='center',
-            anchor_x='center',
-            anchor_y='center'
+        self.game_title = arcade.load_texture(
+            'assets/title.png'
         )
 
         client.get_top_scores()
@@ -202,6 +225,12 @@ class LeaderboardView(arcade.View):
                 )
             )
 
+    def on_mouse_press(self, x, y, button, modifiers) -> None:
+        self.back_button.check_mouse_press(x, y, button, modifiers)
+
+    def on_mouse_release(self, x, y, button, modifiers) -> None:
+        self.back_button.check_mouse_release(x, y, button, modifiers)
+
     def on_draw(self) -> None:
         arcade.start_render()
 
@@ -212,14 +241,21 @@ class LeaderboardView(arcade.View):
             texture=self.background
         )
 
-        self.back_button.draw()
-        self.game_title.draw()
+        arcade.draw_lrwh_rectangle_textured(
+            bottom_left_x=s.WINDOW_SIZE[0] / 2 - 449,
+            bottom_left_y=s.WINDOW_SIZE[1] / 8 * 7 - 200,
+            width=898,
+            height=400,
+            texture=self.game_title
+        )
 
         for node in self.score_nodes:
             node.draw()
 
+        self.back_button.draw()
+
     def on_mouse_scroll(self, x: int, y: int, scroll_x: int, scroll_y: int) -> None:
-        self.viewport[1] += scroll_y
+        self.viewport[1] += scroll_y * 10
 
         arcade.set_viewport(
             self.viewport[0],
