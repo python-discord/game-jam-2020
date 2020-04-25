@@ -487,17 +487,12 @@ class PetCharacter(arcade.AnimatedTimeSprite):
         self.sea_adult_sick_textures.append(arcade.load_texture(file_name=ADULT_SEA_SICK_NORM))
         self.sea_adult_sick_textures.append(arcade.load_texture(file_name=ADULT_SEA_SICK_MOVE))
 
-        """ --- ALIEN -- """
-        self.alien_textures = []
-        self.alien_textures.append(arcade.load_texture(file_name=ALIEN_NORM))
-        self.alien_textures.append(arcade.load_texture(file_name=ALIEN_MOVE))
 
         """ Pet coordinates """
         self.center_x = 275
         self.center_y = 300
 
     def update_animation(self, delta_time: float = 1 / 60):
-        # TODO: Add Scaling
 
         """ MOUSE """
         if self.pet_species_key is 0:
@@ -556,7 +551,7 @@ class PetCharacter(arcade.AnimatedTimeSprite):
                         random.randrange(len(self.mouse_young_adult_full_textures))]
 
             # adult
-            if self.age >= 9 and self.age < 12:
+            if self.age >= 9:
                 self.scale = ADULT_SCALE
                 if self.hunger_meter <= 4:
                     if self.sick is False:
@@ -624,7 +619,7 @@ class PetCharacter(arcade.AnimatedTimeSprite):
                         random.randrange(len(self.duck_young_adult_full_textures))]
 
             # adult
-            if self.age >= 9 and self.age < 12:
+            if self.age >= 9:
                 self.scale = ADULT_SCALE
                 if self.hunger_meter <= 4:
                     if self.sick is False:
@@ -678,7 +673,7 @@ class PetCharacter(arcade.AnimatedTimeSprite):
                     self.texture = self.sea_young_adult_full_textures[
                         random.randrange(len(self.sea_young_adult_full_textures))]
 
-            if self.age >= 9 and self.age < 12:
+            if self.age >= 9:
                 self.scale = ADULT_SCALE
                 if self.hunger_meter <= 4:
                     if self.sick is False:
@@ -689,5 +684,4 @@ class PetCharacter(arcade.AnimatedTimeSprite):
                 elif self.hunger_meter > 4:
                     self.texture = self.sea_adult_full_textures[random.randrange(len(self.sea_adult_full_textures))]
 
-        if self.age >= 12:
-            self.texture = self.alien_textures[random.randrange(len(self.alien_textures))]
+

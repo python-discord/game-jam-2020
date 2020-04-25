@@ -939,7 +939,7 @@ class GameOverView(SuperView):
         self.game_text_list = None
         self.gameover_dark_panel_list = None
         self.pet = pet_object
-        self.final_score = None
+        self.final_score = 0
 
     def setup(self):
         super().setup()
