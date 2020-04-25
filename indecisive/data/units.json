@@ -6,7 +6,27 @@
         "assets/GreenSword.png",
         "assets/BlueSword.png"
       ],
-      "base_attack": 50,
-      "base_defense": 50
+      "base_attack": 5,
+      "base_defense": 5
+    },
+  "heavy": {
+      "name": "Heavy",
+      "icons": [
+        "assets/DoubleRedSwords.png",
+        "assets/DoubleGreenSwords.png",
+        "assets/DoubleBlueSwords.png"
+      ],
+      "base_attack": 15,
+      "base_defense": 5
+    },
+  "shield": {
+      "name": "Shield",
+      "icons": [
+        "assets/RedShield.png",
+        "assets/GreenShield.png",
+        "assets/BlueShield.png"
+      ],
+      "base_attack": 5,
+      "base_defense": 15
     }
 }
