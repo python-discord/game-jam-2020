@@ -15,7 +15,7 @@ music = arcade.Sound(ASSETS + 'audio/music.mp3')
 music.play(volume=get_music_volume())
 
 
-class IconButton():
+class IconButton:
     """A button, displayed with an icon."""
 
     def __init__(self, view: arcade.View, x: number, y: number, image: str,
@@ -119,7 +119,7 @@ class IconButton():
 
     def on_mouse_release(self, x: int, y: int, _button: int, _modifiers: int):
         """Check if a mouse release is a click on the button."""
-        if self.state == 'pressed' and self.touching(x, y):
+        if self.state == 'pressed':
             self.on_release(x, y)
 
     def on_mouse_drag(self, x: float, y: float, dx: float, dy: float,
@@ -144,17 +144,21 @@ class Slider(IconButton):
         self.fun = on_change
         self.center_x = x
         self.center_y = y
-        self.position = initial
+        self.position = initial * width
         self.width = width
         self.size = 32
 
     @property
     def value(self) -> float:
         """Get the value selected by the user (0 to 1)."""
-        return self.width / self.position
+        return self.position / self.width
 
     def on_draw(self):
         """Draw textures."""
+        if self.position > self.width:
+            self.position = self.width
+        elif self.position < 0:
+            self.position = 0
         arcade.draw_line(
             self.left, self.center_y, self.right, self.center_y,
             (255, 255, 255), 10
@@ -174,18 +178,18 @@ class Slider(IconButton):
         return self.center_x + self.width / 2
 
     def update_position(self, x: float):
-        self.position = x - self.left
+        self.position = min(max((0, x - self.left)), self.width)
 
     def on_click(self, x: float, y: float):
-        super().on_click(x, y)
         self.update_position(x)
+        super().on_click(x, y)
 
     def on_drag(self, x: float, _y: float):
         self.update_position(x)
 
     def on_release(self, x: float, y: float):
-        super().on_release(x, y)
         self.update_position(x)
+        super().on_release(x, y)
 
     def on_mouse_drag(self, x: float, y: float, dx: float, dy: float,
                       _buttons: int, _modifiers: int):

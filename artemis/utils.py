@@ -43,4 +43,4 @@ def play_sound_effect(name: str, volume: float = 1.0):
     """Play a sound effect."""
     settings = __import__('settings')    # circular import otherwise
     sound = arcade.Sound(f'{ASSETS}audio/{name}.ogg')
-    sound.play(volume=volume * settings.get_sfx_volume())
+    sound.play(volume=volume * settings.get_sfx_volume() * 2)

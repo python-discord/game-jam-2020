@@ -16,7 +16,7 @@ def data_util(fun: typing.Callable) -> typing.Callable:
 @data_util
 def get_sfx_volume(data: dict) -> float:
     """Check the user's sound effects volume preference."""
-    return data.get('sfx_vol', 1.0)
+    return data.get('sfx_vol', 0.5)
 
 
 @data_util
@@ -28,7 +28,7 @@ def set_sfx_volume(data: dict, volume: float):
 @data_util
 def get_music_volume(data: dict) -> float:
     """Check the user's music volume preference."""
-    return data.get('music_vol', 1.0)
+    return data.get('music_vol', 0.5)
 
 
 @data_util
