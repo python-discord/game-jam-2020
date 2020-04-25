@@ -10,6 +10,6 @@ class Scores(Cog, route='scores'):
     def post_new(data: Dict[str, Any]) -> None:
         EventStatus.new_score = data['headers']['status']
 
-    def post_get_top(data: Dict[str, Any]) -> None:
+    def post_top(data: Dict[str, Any]) -> None:
         Memory.scores = data['scores']
         EventStatus.get_top_scores = data['headers']['status']
