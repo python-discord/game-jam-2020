@@ -169,6 +169,8 @@ class Player(Mob):
 
     def heal(self):
         self.health+=Config.HEAL_AMOUNT
+        if self.health > self.max_health:
+            self.health = self.max_health
 
     def harden(self):
         self.armor+=Config.ARMOR_AMOUNT
