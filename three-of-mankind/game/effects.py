@@ -8,11 +8,10 @@ SCREEN_TITLE = "Basic Renderer"
 
 
 class ColorIsolationWindow(arcade.Window):
-
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
 
-        self.isolation_color = (0., 0., 0.)
+        self.isolation_color = (0.0, 0.0, 0.0)
         self.threshold = 2.3
 
         self.fs_program = self.ctx.program(
@@ -122,10 +121,10 @@ class ColorIsolationWindow(arcade.Window):
                 }
                 out_color =  vec4(col, 1.);
             }
-            """
+            """,
         )
 
-        self.fs_quad = geometry.quad_fs(size=(2., 2.))
+        self.fs_quad = geometry.quad_fs(size=(2.0, 2.0))
         self.ost = self.ctx.texture(self.get_framebuffer_size())
         self.fb = self.ctx.framebuffer(color_attachments=self.ost)
 
@@ -140,8 +139,8 @@ class ColorIsolationWindow(arcade.Window):
             self.use()
             # bind the texture
             self.ost.use(0)
-            self.fs_program['special_color'] = self.isolation_color
-            self.fs_program['threshold'] = self.threshold
+            self.fs_program["special_color"] = self.isolation_color
+            self.fs_program["threshold"] = self.threshold
             # render the effect
             self.fs_quad.render(self.fs_program)
 
@@ -156,7 +155,7 @@ class ColorIsolationWindow(arcade.Window):
         pass
 
     def set_isolation_color(self, color) -> None:
-        self.isolation_color = (color[0] / 255., color[1] / 255., color[2] / 255.)
+        self.isolation_color = (color[0] / 255.0, color[1] / 255.0, color[2] / 255.0)
 
     def set_isolation_threshold(self, threshold):
         self.threshold = threshold

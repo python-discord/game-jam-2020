@@ -66,17 +66,19 @@ def check_touch(sprite, geometry, x, y):
     return out
 
 
-def is_touching(sprite: arcade.Sprite, geometry: arcade.SpriteList, *, check_top: bool = False, displacement: Tuple[int, int] = (5, 5)) -> bool:
+def is_touching(
+    sprite: arcade.Sprite,
+    geometry: arcade.SpriteList,
+    *,
+    check_top: bool = True,
+    displacement: Tuple[int, int] = (5, 5)
+) -> bool:
     """Return True if sprite is touching any sprite in geometry"""
-    dirs = [
-        (-1, 0),  # Left
-        (+1, 0),  # Right
-        (0, -1)   # Bottom
-    ]
+    dirs = [(-1, 0), (+1, 0), (0, -1)]  # Left  # Right  # Bottom
     if check_top:
         dirs.append((0, +1))  # Top
 
     for dir in dirs:
-        if check_touch(sprite, geometry, *map(lambda x, y: x*y, dir, displacement)):
+        if check_touch(sprite, geometry, *map(lambda x, y: x * y, dir, displacement)):
             return True
     return False

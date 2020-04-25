@@ -1,5 +1,6 @@
 import logging
 
+from PIL import Image
 import arcade
 
 from .constants import (
@@ -17,7 +18,7 @@ from .constants import (
     LEFT,
     JUMP_VELOCITY_BONUS,
     DASH_COUNT,
-    VIEWPORT_MARGIN
+    VIEWPORT_MARGIN,
 )
 from .player import Player
 from .sprite import Sprite
@@ -36,10 +37,10 @@ class GameState:
         self.level_geometry = arcade.SpriteList()  # Have collisions
         self.level_objects = arcade.SpriteList()  # Doesn't have collision
         self.colored_geometry = {
-            'red': arcade.SpriteList(),
-            'green': arcade.SpriteList(),
-            'blue': arcade.SpriteList(),
-            'white': arcade.SpriteList()
+            "red": arcade.SpriteList(),
+            "green": arcade.SpriteList(),
+            "blue": arcade.SpriteList(),
+            "white": arcade.SpriteList(),
         }
 
         self.player = Player(scale=0.99)
@@ -57,18 +58,23 @@ class GameState:
     def load_level(self, level_id: int) -> None:
         self.level_objects = arcade.SpriteList()
         self.level_geometry = arcade.SpriteList()
+        self.danger = arcade.SpriteList()
         self.colored_geometry = {
-            'red': arcade.SpriteList(),
-            'green': arcade.SpriteList(),
-            'blue': arcade.SpriteList(),
-            'white': arcade.SpriteList()
+            "red": arcade.SpriteList(),
+            "green": arcade.SpriteList(),
+            "blue": arcade.SpriteList(),
+            "white": arcade.SpriteList(),
         }
+
+        # image = Image.open(f"levels/level_{level_id}.png")
+        # w, h = image.size
+        # pixels = image.load()
 
         with open(f"levels/level_{level_id}") as file:
             left, bottom = 0, 0
             for line in reversed(file.read().strip().splitlines()):
                 for index in range(0, len(line), BLOCK_LEN):
-                    block_str = line[index:index+BLOCK_LEN].strip()
+                    block_str = line[index : index + BLOCK_LEN].strip()
 
                     if block_str:
                         tile = getattr(tiles, block_str)
@@ -77,11 +83,17 @@ class GameState:
                         sprite.left = left
                         sprite.bottom = bottom
 
-                        if tile.name.startswith("block"):
+                        if tile.name.startswith(("block", "danger")):
                             self.level_geometry.append(sprite)
-                            self.colored_geometry[tile.name.rsplit('_', 1)[-1]].append(sprite)
+
                         else:
                             self.level_objects.append(sprite)
+
+                        if tile.name.endswith(("white", "red", "green", "blue")):
+                            self.colored_geometry[tile.name.rsplit("_", 1)[-1]].append(sprite)
+
+                        if tile.name.startswith("danger"):
+                            self.danger.append(sprite)
 
                     left += TEXTURE_SIZE
 
@@ -95,11 +107,14 @@ class GameState:
         else:
             self.player.movement_control = AIR_CONTROL
 
-        colors = {'red', 'green', 'blue'}
-        colors.discard(self.player.color_)
+        if is_touching(self.player, self.danger):
+            logging.info(f"DEAD AAAAAAAAAAAAAAAA")
+
+        colors = {"red", "green", "blue"}
+        colors.discard(self.player.str_color)
         for color in colors:
             if is_touching(self.player, self.colored_geometry[color]):
-                logging.info(f"player touched {color}.")
+                logging.info(f"DEAD AAAAA")
 
         self.player.update()
         self.engine.update()
@@ -116,6 +131,21 @@ class GameState:
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed."""
+        # Change color
+        colors = {
+            arcade.key.F: "white",
+            arcade.key.R: "red",
+            arcade.key.G: "green",
+            arcade.key.B: "blue",
+        }
+        if key == arcade.key.E:
+            all_colors = ("white", "red", "green", "blue")
+            self.player.set_color(all_colors[
+                (all_colors.index(self.player.str_color) + 1) % len(all_colors)
+            ])
+        if key in colors:
+            self.player.set_color(colors[key])
+
         # Pre
         if self.engine.can_jump():
             self.player.dash_count = 0
@@ -209,7 +239,9 @@ class GameState:
 
         # If we changed the boundary values, update the view port to match
         if changed:
-            arcade.set_viewport(self.view_left,
-                                self.game.width + self.view_left,
-                                self.view_bottom,
-                                self.game.height + self.view_bottom)
+            arcade.set_viewport(
+                self.view_left,
+                self.game.width + self.view_left,
+                self.view_bottom,
+                self.game.height + self.view_bottom,
+            )
