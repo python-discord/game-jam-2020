@@ -20,7 +20,7 @@ class MainMenu(arcade.View):
                              activation=lambda: None)
 
     setting_button_image = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/menu/settings_button.png"),
+        filename=Path().cwd() / Path("main/Resources/main_menu/settings_button.png"),
         scale=int(min(width, height)*0.15) / 256,
         center_x=int(width*0.925),
         center_y=int(height * 0.9),)

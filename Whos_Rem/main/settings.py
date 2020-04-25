@@ -24,7 +24,7 @@ class Settings(arcade.View):
                              activation=lambda self: setattr(self, "binding_key", "right"), name="right_button")
 
     return_button_image = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/settings/return_button.png"),
+        filename=Path().cwd() / Path("main/Resources/settings_menu/return_button.png"),
         scale=int(min(width, height)*0.15) / 512,
         center_x=int(width*0.075),
         center_y=int(height * 0.9),)
