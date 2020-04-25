@@ -1,5 +1,3 @@
 Have triangulation circles fade
 
 Add a restart button when they abscond
-
-Redo spawn if any are in attack range of each other

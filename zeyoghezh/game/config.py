@@ -49,6 +49,7 @@ LITHIUM_SOUND = ":resources:sounds/jump5.wav"
 HEAL_SOUND = ":resources:sounds/secret2.wav"
 ABSCOND_SOUND = ":resources:sounds/jump1.wav"
 GAME_OVER_SOUND = ":resources:sounds/lose2.wav"
+RESTART_IMAGE = ":resources:images/tiles/signLeft.png"
 
 LITHIUM_VOLUME = 0.03
 BACKGROUND_MUSIC_VOLUME = 0.03

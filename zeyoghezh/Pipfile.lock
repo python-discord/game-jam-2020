@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "89780593d0694aa4f26f2f332b84e0dafccb1279a15884bee8eb60de06cf5749"
+            "sha256": "09726a070cc7af60d964aeb6dc2a0561ad3b041664a6594913a64efbc0d53c32"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -85,10 +85,10 @@
         },
         "pyglet": {
             "hashes": [
-                "sha256:bd96b9c374a7192e4787f989e8f911719476c71476466a02312839e8cb6a0d4e",
-                "sha256:c54d897d96bf65689bfaf094330ba3dc76af24daf74e7d98336157fd82b72f1b"
+                "sha256:9c616b8f5e73d33ccf6a0cdc53f260c5bff56f880d08e7d0083997546e483138",
+                "sha256:c818459b89c9f71aad495e7875ba6235512972f2f9c29e4ffd71519090cfda9d"
             ],
-            "version": "==1.5.3"
+            "version": "==1.5.4"
         },
         "pytiled-parser": {
             "hashes": [
