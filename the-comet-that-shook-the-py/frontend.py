@@ -215,7 +215,8 @@ class MyGame(arcade.Window):
         Called when a user releases a mouse button.
         """
         if self.dragging_sprite is not None:
-            if (cell := self.submission_grid.get_relevant_cell((x, y,))) is not None:
+            cell =  self.submission_grid.get_relevant_cell((x, y,))
+            if cell is not None:
                 (self.dragging_sprite.center_x, self.dragging_sprite.center_y,) = cell.centre
                 if cell.associated_tile is not None:
                     cell.associated_tile.reset()
