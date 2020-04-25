@@ -1,1 +1,3 @@
-Make it so triangulation circles don't keep starting at the same time
+Move restart to the right so it doesn't block lithium
+
+Increase game over time
