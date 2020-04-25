@@ -3,7 +3,6 @@ import arcade
 from triple_vision import Settings as s
 from triple_vision import Tile
 from triple_vision.camera import Camera
-from triple_vision.engine import SlowModeSupportEngine
 from triple_vision.entities import (
     ChasingEnemy,
     Enemies,
@@ -36,8 +35,6 @@ class TripleVision(arcade.View):
         self.card_manager = None
         self.game_manager = None
         self.cursor_manager: CursorManager = None
-
-        self.physics_engine = None
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -75,8 +72,6 @@ class TripleVision(arcade.View):
                 Tile.SCALED * 10,
                 0.75
             )
-
-        self.physics_engine = SlowModeSupportEngine(self.player, self.collision_list)
 
     def on_key_press(self, key, modifiers) -> None:
         self.player.process_key_press(key)
@@ -181,7 +176,6 @@ class TripleVision(arcade.View):
                 self.player.on_update(delta_time)
 
         self.game_manager.on_update(delta_time)
-        self.physics_engine.update()
         self.map.on_update(delta_time)
         self.camera.update()
         self.card_manager.update()

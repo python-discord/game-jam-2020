@@ -9,6 +9,9 @@ from triple_vision.entities import Spike
 from triple_vision.utils import tile_to_pixels
 
 
+random.seed(1)
+
+
 class Map:
 
     def __init__(self, view: arcade.View, shape: Tuple[int, int]) -> None:

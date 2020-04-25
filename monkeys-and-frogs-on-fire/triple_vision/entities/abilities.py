@@ -45,6 +45,7 @@ class FloorStomp(BaseAbility):
             center_y=view_reference.player.center_y,
         )
         view_reference.game_manager.player_melee_attacks.append(floor_stomp)
+        view_reference.game_manager.effects.append(floor_stomp.effect_sprite)
 
 
 class Indestructible(BaseAbility):

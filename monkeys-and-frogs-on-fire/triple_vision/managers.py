@@ -14,10 +14,11 @@ class GameManager:
     def __init__(self, view) -> None:
         self.view = view
 
-        self.enemies = arcade.SpriteList()
-        self.player_projectiles = arcade.SpriteList()
-        self.player_melee_attacks = arcade.SpriteList()
-        self.enemy_projectiles = arcade.SpriteList()
+        self.enemies = arcade.SpriteList(use_spatial_hash=True)
+        self.player_projectiles = arcade.SpriteList(use_spatial_hash=True)
+        self.player_melee_attacks = arcade.SpriteList(use_spatial_hash=True)
+        self.effects = arcade.SpriteList()
+        self.enemy_projectiles = arcade.SpriteList(use_spatial_hash=True)
         self.damage_indicators = arcade.SpriteList()
 
         self.spikes: Optional[arcade.SpriteList] = None
@@ -27,6 +28,7 @@ class GameManager:
 
     def draw(self) -> None:
         self.player_melee_attacks.draw()
+        self.effects.draw()
         self.enemies.draw()
         self.player_projectiles.draw()
         self.enemy_projectiles.draw()
@@ -54,6 +56,7 @@ class GameManager:
                 enemy,
                 self.player_melee_attacks
             )
+
             for player_melee_attack in melee_attacks_hit_enemy:
                 self.create_dmg_indicator(str(player_melee_attack.dmg), enemy.position)
                 enemy.hit(player_melee_attack)
