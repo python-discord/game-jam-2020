@@ -22,7 +22,7 @@ TILE_PADDING_H = TILE_WIDTH // 2
 TILE_PADDING_V = 10
 
 TEXT_LEFT = WINDOW_HEIGHT * 2 / 3 + 200
-TEXT_TOP = WINDOW_HEIGHT - 90
+TEXT_TOP = WINDOW_HEIGHT
 
 
 class GridCell:
@@ -54,6 +54,32 @@ class GridCell:
 
     def __repr__(self, ):
         return str(self.centre)
+
+
+class ClueTextBox(arcade.Sprite):
+    """
+    The textbox for showing clues
+    """
+
+    def __init__(self, clues):
+        super(ClueTextBox, self).__init__('assets/background.png')
+        self.clues = clues
+        self.top, self.left = 900, 800
+        self.width = WINDOW_WIDTH * 1 / 3 + 100
+        self.height = WINDOW_HEIGHT * .7
+
+    def draw(self):
+        super(ClueTextBox, self).draw()
+        size = 20 if len(self.clues) <= 10 else 16
+        clue_text = "\n\n".join(self.clues)
+        arcade.draw_text(clue_text,
+                         self.center_x,
+                         self.top - 110,
+                         arcade.color.BLACK,
+                         size,
+                         anchor_x="center",
+                         anchor_y="top",
+                         font_name="GARA")
 
 
 class TileSprite(arcade.Sprite):
@@ -157,7 +183,7 @@ class MyGame(arcade.Window):
     # TODO figure out how to render clues as text
     def __init__(self, ):
         super().__init__(
-            WINDOW_WIDTH, WINDOW_HEIGHT, "2048",
+            WINDOW_WIDTH, WINDOW_HEIGHT, "Fun",
         )
         self.submission_grid: Optional[SubmissionGrid] = None
         self.dragging_sprite: Optional[TileSprite] = None
@@ -170,7 +196,7 @@ class MyGame(arcade.Window):
         Set the game up for play. Call this to reset the game.
         """
         (answers, shuffled_list, clues, _,) = start_new_game()  # TODO, properly load the game
-        self.clues = clues
+        self.clues = ClueTextBox(clues)
         self.submission_grid = SubmissionGrid(answers)
         self.tile_sprites = arcade.SpriteList()
         for ((x, y,), asset_path,) in zip(self.get_boneyard_starting_positions(), shuffled_list, ):
@@ -197,10 +223,7 @@ class MyGame(arcade.Window):
         arcade.start_render()
         self.submission_grid.draw()
         self.tile_sprites.draw()
-        clue_text = "\n\n".join(self.clues)
-        size = 24 if len(self.clues) <= 10 else 18
-        arcade.draw_text(clue_text,
-                         TEXT_LEFT, TEXT_TOP, arcade.color.BLACK, size, anchor_y="top")
+        self.clues.draw()
 
     def on_mouse_motion(
             self, x, y, dx, dy,
