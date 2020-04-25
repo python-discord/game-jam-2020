@@ -14,9 +14,10 @@ chess_thump = arcade.Sound(os.path.join(data_dir, "chess_tap.mp3"))
 MOVE_DICT = {0: lambda x, y, r: (x + 1, y + 1, not r) if r else (x, y, not r),
              1: lambda x, y, r: (x + 1, y, not r) if r else (x + 1, y - 1, not r),
              2: lambda x, y, r: (x + 1, y - 1, not r) if r else (x, y - 1, not r),
-             3: lambda x, y, r: (x - 1, y - 1, not r) if r else (x, y, not r),
+             3: lambda x, y, r: (x, y, not r) if r else (x - 1, y - 1, not r),
              4: lambda x, y, r: (x - 1, y + 1, not r) if r else (x - 1, y, not r),
              5: lambda x, y, r: (x, y + 1, not r) if r else (x - 1, y + 1, not r)}
+
 
 
 class TriPiece(arcade.Sprite):
@@ -51,10 +52,10 @@ class TriPiece(arcade.Sprite):
             pos_piece = self.trigrid.get_cell(*pos).piece
             if pos_piece is None:
                 return False
-            elif pos_piece.player == self.player:
-                return True
+            if pos_piece.player == self.player:
+                    return True
             else:
-                return True
+                return False
         else:
             return True
 
@@ -72,6 +73,16 @@ class TriPiece(arcade.Sprite):
         pos = self.pos if pos is None else pos
         normed_move = (self.orientation - move + 5) % 6
         return MOVE_DICT[normed_move](*pos)
+
+    def get_neighbor2_pos(self, pos=None):
+        """
+        This function gets the position of all the neighbors that shares an edge
+        that aren't directory opposite of current cell
+        :param pos: the initial position to calc the neighbor from if None then use the
+        :return:
+        """
+        x, y, r = self.pos if pos is None else pos
+        return [(x + 1, y, r), (x - 1, y, r), (x, y + 1, r), (x, y - 1, r), (x + 1, y - 1, r), (x - 1, y + 1, r)]
 
     def move_to(self, x, y, r):
         """
@@ -198,26 +209,19 @@ class Knight(TriPiece):
         possible_moves = []
         if self.pos[2]:
             tmp = self.get_neighbor_pos(0, self.get_neighbor_pos(0))
-            possible_moves.append(self.get_neighbor_pos(1, tmp))
-            possible_moves.append(self.get_neighbor_pos(5, tmp))
+            possible_moves.extend([self.get_neighbor_pos(4, tmp), self.get_neighbor_pos(2, tmp)])
             tmp = self.get_neighbor_pos(2, self.get_neighbor_pos(2))
-            possible_moves.append(self.get_neighbor_pos(1, tmp))
-            possible_moves.append(self.get_neighbor_pos(3, tmp))
+            possible_moves.extend([self.get_neighbor_pos(0, tmp), self.get_neighbor_pos(4, tmp)])
             tmp = self.get_neighbor_pos(4, self.get_neighbor_pos(4))
-            possible_moves.append(self.get_neighbor_pos(3, tmp))
-            possible_moves.append(self.get_neighbor_pos(5, tmp))
+            possible_moves.extend([self.get_neighbor_pos(2, tmp), self.get_neighbor_pos(0, tmp)])
         else:
             tmp = self.get_neighbor_pos(0, self.get_neighbor_pos(0))
-            possible_moves.append(self.get_neighbor_pos(2, tmp))
-            possible_moves.append(self.get_neighbor_pos(4, tmp))
+            possible_moves.extend([self.get_neighbor_pos(4, tmp), self.get_neighbor_pos(2, tmp)])
             tmp = self.get_neighbor_pos(2, self.get_neighbor_pos(2))
-            possible_moves.append(self.get_neighbor_pos(0, tmp))
-            possible_moves.append(self.get_neighbor_pos(4, tmp))
+            possible_moves.extend([self.get_neighbor_pos(0, tmp), self.get_neighbor_pos(4, tmp)])
             tmp = self.get_neighbor_pos(4, self.get_neighbor_pos(4))
-            possible_moves.append(self.get_neighbor_pos(0, tmp))
-            possible_moves.append(self.get_neighbor_pos(2, tmp))
+            possible_moves.extend([self.get_neighbor_pos(2, tmp), self.get_neighbor_pos(0, tmp)])
 
-        possible_moves = [self.get_neighbor_pos(direction) for direction in range(6)]
         valid_moves = [pos for pos in possible_moves if not self.is_blocked(pos)]
         return valid_moves
 
@@ -268,7 +272,7 @@ class Queen(TriPiece):
                 if player_at_next_cell is not None:
                     break
                 cur_pos = next_pos
-            return valid_moves
+        return valid_moves
 
     def list_valid_attacks(self):
         return self.list_valid_moves()
@@ -281,7 +285,7 @@ class King(TriPiece):
         super().__init__(trigrid, self.piece_name, pos, orientation, player)
 
     def list_valid_moves(self):
-        possible_moves = [self.get_neighbor_pos(direction) for direction in range(6)]
+        possible_moves = [self.get_neighbor_pos(direction) for direction in range(6)] + self.get_neighbor2_pos()
         valid_moves = [pos for pos in possible_moves if not self.is_blocked(pos)]
         return valid_moves
 
