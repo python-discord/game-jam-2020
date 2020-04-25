@@ -172,7 +172,7 @@ class LeaderboardView(arcade.View):
         self.window.button_list.append(self.back_button)
 
         self.game_title = arcade.draw_text(
-            text='Triple Vision',
+            text='Leaderboard',
             start_x=s.WINDOW_SIZE[0] / 2,
             start_y=s.WINDOW_SIZE[1] / 8 * 7,
             color=arcade.color.WHITE,
