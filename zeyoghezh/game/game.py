@@ -313,7 +313,7 @@ class Game(arcade.Window):
         delta_time = BASE_TIME_MULTIPLIER * (now - self.last_banner_change)
         if not self.player_has_clicked_lithium and delta_time > 3:
             self.set_banner_text(
-                "See the circles? Click on their intersection.")
+                "See the flickering circles? Click on their intersection.")
         if (self.player_has_clicked_lithium
                 and not self.player_has_healed_planet
                 and not self.lithium_count > 2

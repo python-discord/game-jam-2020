@@ -1,4 +1,4 @@
-Clarify that the triangulation should be flickery
+Have triangulation circles fade
 
 Add a restart button when they abscond
 
