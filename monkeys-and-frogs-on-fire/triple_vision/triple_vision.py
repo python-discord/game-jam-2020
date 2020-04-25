@@ -191,5 +191,5 @@ class TripleVision(arcade.View):
         else:
             self.player.update_health_bar(delta_time)
 
-        SoundManager.update(self.slow_down)
+        SoundManager.update(self.slow_down or self.time_slow_ability)
         self.cursor_manager.update()
