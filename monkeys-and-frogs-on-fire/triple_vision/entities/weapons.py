@@ -99,8 +99,8 @@ class Melee(Weapon):
 
 class FloorStompMelee(Projectile):
     # TODO SOUNDS
-    activate_sounds = ("laser_activate_0.mp3",)
-    hit_sounds = ("laser_hit_0.ogg",)
+    activate_sounds = ("fireball.wav",)
+    hit_sounds = ("laser_hit_1.wav",)
 
     def __init__(
         self,
