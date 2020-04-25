@@ -25,8 +25,10 @@ class ActiveRecipe(arcade.SpriteList):
         super().__init__()
         self.active = Recipe.GHOSTS
         self.cycle_recipes = [self.set_ghosts, self.set_frogs, self.set_ggf]
+        self.ghost = arcade.Sprite(filename="resources/images/monsters/ghost/ghost1.png")
+        self.frog = arcade.Sprite(filename="resources/images/monsters/frog/frog1.png")
         self.pos = 0
-        self.kill_num = 0
+        self.kill_list = []
 
 
     def render(self) -> None:
@@ -37,7 +39,16 @@ class ActiveRecipe(arcade.SpriteList):
             sprite.scale = 4
             sprite.center_x = screen_right - x
             sprite.center_y = screen_top
-
+            x += 70
+            sprite.draw()
+        x = 0
+        for kill in self.kill_list:
+            sprite = getattr(self, kill)
+            screen_right = arcade.get_viewport()[1] - 240
+            screen_top = arcade.get_viewport()[3] - 150
+            sprite.scale = 4
+            sprite.center_x = screen_right + x
+            sprite.center_y = screen_top
             x += 70
             sprite.draw()
 
@@ -48,33 +59,34 @@ class ActiveRecipe(arcade.SpriteList):
         self.cycle_recipes[self.pos]()
 
     def add_kill(self, monster_type) -> int:
-        for sprite in self.sprite_list:
-            if monster_type in "ghost":
-                r, g, b = sprite.color
-                darken = lambda c, s: c * (1 - s)
-                r = darken(r, .5)
-                g = darken(g, .5)
-                b = darken(b, .5)
-                sprite.color = (r, g, b)
-        return self.pos
+        # Adds a kill to kill_list. If 3 or more check the recipe then give a power up if it matches.
+        self.kill_list.append(monster_type)
+        ret_val = -1
+        if len(self.kill_list) >= 3:
+            if self.active == self.kill_list:
+                print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+                self.kill_list = []
+                ret_val = self.pos
+            self.kill_list = []
+        return ret_val
 
     def set_ghosts(self) -> None:
         self.active = Recipe.GHOSTS
         self.sprite_list = []
-        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/ghost/ghost1.png"))
-        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/ghost/ghost1.png"))
-        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/ghost/ghost1.png"))
+        self.sprite_list.append(self.ghost)
+        self.sprite_list.append(self.ghost)
+        self.sprite_list.append(self.ghost)
             
     def set_frogs(self) -> None:
         self.active = Recipe.FROGS
         self.sprite_list = []
-        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/frog/frog1.png"))
-        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/frog/frog1.png"))
-        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/frog/frog1.png"))
+        self.sprite_list.append(self.frog)
+        self.sprite_list.append(self.frog)
+        self.sprite_list.append(self.frog)
         
     def set_ggf(self) -> None:
         self.active = Recipe.GHOST_FROG
         self.sprite_list = []
-        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/frog/frog1.png"))
-        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/ghost/ghost1.png"))
-        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/ghost/ghost1.png"))
+        self.sprite_list.append(self.frog)
+        self.sprite_list.append(self.ghost)
+        self.sprite_list.append(self.ghost)

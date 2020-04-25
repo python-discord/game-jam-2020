@@ -168,19 +168,6 @@ class Player(Mob):
         self.cur_recipe = None
         self.speed = 14
 
-    def add_kill(self, creature) -> int:
-        # Adds a kill to kill_list. If 3 or more check the recipe then give a power up if it matches.
-        self.kill_list.append(creature)
-        print(self.kill_list)
-        print(self.cur_recipe)
-        if len(self.kill_list) >= 3:
-            if self.cur_recipe == self.kill_list:
-                print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-                self.kill_list = []
-                return 1
-            self.kill_list = []
-        return 0
-        
     def heal(self):
         self.health+=Config.HEAL_AMOUNT
 

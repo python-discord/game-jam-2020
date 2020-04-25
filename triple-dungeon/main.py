@@ -245,7 +245,7 @@ class Game(arcade.Window):
                 bullet.remove_from_sprite_lists()
             if len(enemy_hit_list):
                 boon = self.Recipe.add_kill(enemy_hit_list[0].monster_type)
-                if self.player.add_kill(enemy_hit_list[0].monster_type):
+                if boon >= 0:
                     getattr(self.player, Config.BOON_LIST[boon])();
                 enemy_hit_list[0].remove_from_sprite_lists()
                 bullet.remove_from_sprite_lists()
