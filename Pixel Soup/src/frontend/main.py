@@ -1,4 +1,5 @@
 import arcade
+import logging
 
 from .gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE
 from .views.mainview import MainView
@@ -6,6 +7,9 @@ from .views.mainview import MainView
 
 def main() -> None:
     """Entry point of the game."""
+
+    logging.basicConfig(level=logging.INFO)
+
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
     joysticks = arcade.get_joysticks()
