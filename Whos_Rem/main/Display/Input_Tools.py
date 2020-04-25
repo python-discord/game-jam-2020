@@ -1,5 +1,5 @@
 import arcade
-from Utility import ColourBlend as cb
+from .Utility import ColourBlend as cb
 
 
 class Button:
