@@ -12,10 +12,6 @@ import arcade
 from backend import start_new_game
 
 # TODO fix this bad way of using constants for everything
-BOARD_SIZE = 3
-SQUARE_SIZE = 200
-MARGIN = 10
-TEXT_SIZE = 50
 WINDOW_WIDTH = 1600
 WINDOW_HEIGHT = 900
 (TILE_WIDTH, TILE_HEIGHT,) = (
@@ -24,6 +20,9 @@ WINDOW_HEIGHT = 900
 )
 TILE_PADDING_H = TILE_WIDTH // 2
 TILE_PADDING_V = 10
+
+TEXT_LEFT = WINDOW_HEIGHT * 2 / 3 + 200
+TEXT_TOP = WINDOW_HEIGHT - 90
 
 
 class GridCell:
@@ -170,7 +169,8 @@ class MyGame(arcade.Window):
         """
         Set the game up for play. Call this to reset the game.
         """
-        (answers, shuffled_list, _, _,) = start_new_game()  # TODO, properly load the game
+        (answers, shuffled_list, clues, _,) = start_new_game()  # TODO, properly load the game
+        self.clues = clues
         self.submission_grid = SubmissionGrid(answers)
         self.tile_sprites = arcade.SpriteList()
         for ((x, y,), asset_path,) in zip(self.get_boneyard_starting_positions(), shuffled_list, ):
@@ -197,6 +197,10 @@ class MyGame(arcade.Window):
         arcade.start_render()
         self.submission_grid.draw()
         self.tile_sprites.draw()
+        clue_text = "\n\n".join(self.clues)
+        size = 24 if len(self.clues) <= 10 else 18
+        arcade.draw_text(clue_text,
+                         TEXT_LEFT, TEXT_TOP, arcade.color.BLACK, size, anchor_y="top")
 
     def on_mouse_motion(
             self, x, y, dx, dy,
