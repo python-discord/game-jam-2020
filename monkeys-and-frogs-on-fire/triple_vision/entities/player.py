@@ -293,6 +293,7 @@ class PlayerLiveManager:
         self.half_heart_value = self.view.player.hp / sum(self.heart_map)
         self.scaling = scale
         self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
+        self._previous_player_hp = None
 
         if not is_filled:
             return
@@ -308,6 +309,9 @@ class PlayerLiveManager:
             )
 
     def update(self):
+        if self._previous_player_hp is None:
+            self._previous_player_hp = self.view.player.hp
+
         viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
 
         if self.prev_viewport != viewport:
@@ -317,22 +321,31 @@ class PlayerLiveManager:
 
             self.prev_viewport = viewport
 
+        if self._previous_player_hp == self.view.player.hp:
+            return
+
+        self._previous_player_hp = self.view.player.hp
+
         total_hearts = sum(self.heart_map)
         if total_hearts > 0:
             # +1 so we don't loose half hearth on first hit
-            player_hearts = self.view.player.hp // self.half_heart_value + 1
-            if player_hearts < total_hearts:
-                self._update_heart_map(player_hearts)
-                self._update_hearts_icons()
+            player_hearts = int(self.view.player.hp // self.half_heart_value + 1)
+            self._update_heart_map(player_hearts)
+            self._update_hearts_icons()
 
     def _update_heart_map(self, player_hearts: int):
-        heart_sum = 0
-        for idx, heart_value in enumerate(self.heart_map):
-            if heart_sum + heart_value > player_hearts:
-                self.heart_map[idx] -= 1
-                self._update_heart_map(player_hearts)
-            else:
-                heart_sum += heart_value
+        temp_hearth_map = [0, 0, 0]
+        index = 0
+        for hearth_i in range(player_hearts):
+            if temp_hearth_map[index] == 2:
+                index += 1
+                if index == len(temp_hearth_map) - 1:
+                    # HP is full
+                    return
+
+            temp_hearth_map[index] += 1
+
+        self.heart_map = temp_hearth_map
 
     def _update_hearts_icons(self):
         for idx, heart_val in enumerate(self.heart_map):
