@@ -19,6 +19,8 @@ class TripleVision(arcade.View):
     def __init__(self, main_view) -> None:
         super().__init__()
 
+        self.main_view = main_view
+
         self.slow_down = False
 
         self.map = None
@@ -79,6 +81,7 @@ class TripleVision(arcade.View):
 
     def on_key_press(self, key, modifiers) -> None:
         if key == arcade.key.ESCAPE:
+            arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
             self.window.show_view(self.main_view)
         else:
             self.player.process_key_press(key)
