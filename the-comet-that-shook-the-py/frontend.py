@@ -14,6 +14,16 @@ TILE_PADDING_H = TILE_WIDTH // 2
 TILE_PADDING_V = 10
 
 
+class GridCell:
+    def __init__(self, centre: Tuple[float, float], width, height):
+        self.bottom_left = centre[0] - width / 2, centre[1] - height / 2
+        self.top_right = centre[0] + width / 2, centre[1] + height / 2
+        self.centre = centre
+
+    def __repr__(self):
+        return str(self.centre)
+
+
 class TileSprite(arcade.Sprite):
     def __init__(self, image_filepath: str, starting_x: int, starting_y: int):
         super().__init__(image_filepath)
@@ -47,6 +57,20 @@ class SubmissionGrid(arcade.Sprite):
         self.height = WINDOW_HEIGHT * (2 / 3)
         self.center_y = WINDOW_HEIGHT * (2 / 3) - (1 / 27 * WINDOW_HEIGHT)
         self.center_x = WINDOW_HEIGHT * 1 / 3 + WINDOW_HEIGHT * 1 / 27
+        self.cells: List[GridCell] = []
+        self._load_grid()
+        print(self.cells)
+
+    def _load_grid(self):
+        top_left = self.center_x - self.width / 2, self.center_y + self.height / 2
+        cell_width = self.width // 3
+        cell_height = self.height // 3
+        for row_num in range(3):
+            for col_num in range(3):
+                x = top_left[0] + (col_num * cell_width) + cell_width // 2
+                y = top_left[1] - (row_num * cell_height) - cell_height // 2
+                print(x)
+                self.cells.append(GridCell((x, y), cell_width, cell_height))
 
     def check_if_point_is_inside(self, point: Tuple[float, float]) -> Optional[Tuple[float, float]]:
         """
@@ -55,8 +79,9 @@ class SubmissionGrid(arcade.Sprite):
         :param point: the point to check the bounds of
         :return: None, or a point which is the centre of the octothorpe section which the provided point is in
         """
-        # TODO implement
-        pass
+        for cell in self.cells:
+            if check_bounds(point, cell.bottom_left, cell.top_right):
+                return cell.centre
 
 
 class MyGame(arcade.Window):
@@ -70,6 +95,7 @@ class MyGame(arcade.Window):
         Initializer for MyGame
         """
         super().__init__(WINDOW_WIDTH, WINDOW_HEIGHT, "2048")
+        self.submission_grid = SubmissionGrid()
         self.dragging_sprite: Optional[TileSprite] = None
         self.main_sprites: Optional[arcade.SpriteList] = None
         self.tile_sprites: Optional[arcade.SpriteList] = None
@@ -81,7 +107,6 @@ class MyGame(arcade.Window):
         Set the game up for play. Call this to reset the game.
         """
         self.main_sprites = arcade.SpriteList()
-        self.main_sprites.append(SubmissionGrid())
         self.tile_sprites = arcade.SpriteList()
         for x, y in self.get_boneyard_starting_positions():
             # TODO interface this with the backend
@@ -106,7 +131,7 @@ class MyGame(arcade.Window):
         Main draw function. Draws the boneyard, and the submission grid
         """
         arcade.start_render()
-        self.main_sprites.draw()
+        self.submission_grid.draw()
         self.tile_sprites.draw()
 
     def on_mouse_motion(self, x, y, dx, dy):
@@ -133,7 +158,14 @@ class MyGame(arcade.Window):
         Called when a user releases a mouse button.
         """
         if self.dragging_sprite is not None:
-            self.dragging_sprite.reset()
+            print(x, y)
+            print(self.submission_grid.check_if_point_is_inside((x, y)))
+            if (point := self.submission_grid.check_if_point_is_inside((x, y))) is not None:
+                print("stuff")
+                self.dragging_sprite.center_x = point[0]
+                self.dragging_sprite.center_y = point[1]
+            else:
+                self.dragging_sprite.reset()
             self.dragging_sprite = None
 
 
