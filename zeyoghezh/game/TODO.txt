@@ -1,1 +1,1 @@
-Have triangulation circles fade
+Make it so triangulation circles don't keep starting at the same time

@@ -9,7 +9,7 @@ from .config import (
     SCREEN_SIZE, PLANET_BASE_SPEED, PUSH_BASE_SPEED,
     PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
     PLANET_COLORS, PLANET_SPRITES, TRIANGULATION_START_LIKELIHOOD,
-    TRIANGULATION_END_LIKELIHOOD, ATTACK_SOUND, ATTACK_PLAYS_SOUND_CHANCE,
+    ATTACK_SOUND, ATTACK_PLAYS_SOUND_CHANCE,
     SOUND_VOLUME, BOTTOM_BORDER_Y, TRIANGULATION_FADE_TIME
 )
 
@@ -39,7 +39,6 @@ class Planet(arcade.Sprite):
         self.attacked_last_round = []
         self.total_healing = 0
 
-        self.is_triangulating = False
         self.last_triangulating = None
 
         self.proper_name = self.name[0].upper() + self.name[1:].lower()
@@ -184,9 +183,7 @@ class Planet(arcade.Sprite):
         assert self.health > 0
 
     def get_triangulation_strength(self):
-        health_normalized = min(self.health, 1)
-        if self.is_triangulating:
-            return int(255 * health_normalized)
+        health_normalized = max(min(self.health, 1), 0.5)
         if self.last_triangulating < self.parent.last_lithium_change:
             return 0
         time_since_last_triangulation = time.time() - self.last_triangulating
@@ -210,14 +207,9 @@ class Planet(arcade.Sprite):
             self, time_multiplier, in_tutorial, should_not_triangulate):
         # TODO improve chance logic here
         if should_not_triangulate:
-            self.is_triangulating = False
             return
         start_chance = TRIANGULATION_START_LIKELIHOOD * time_multiplier
-        end_chance = TRIANGULATION_END_LIKELIHOOD * time_multiplier
         if in_tutorial:
             start_chance = (start_chance*99 + 1) / 100
         if random.random() < start_chance:
             self.last_triangulating = time.time()
-            self.is_triangulating = True
-        if random.random() < end_chance:
-            self.is_triangulating = False
