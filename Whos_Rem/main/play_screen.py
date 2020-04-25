@@ -238,7 +238,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         self.audio = Audio(main_=main_)
         self.main = main_
         self.settings = main_.settings
-        self.WIDTH, self.HEIGHT = self.main.window.width, self.main.window.height
+        self.WIDTH, self.HEIGHT = self.main.size
         self.background_sprite = arcade.Sprite(
             filename=f"{self.BASE_DIR}/main/Resources/game_play/Notes-Background.png",
             scale=1,

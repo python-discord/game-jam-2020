@@ -94,4 +94,5 @@ class ShapeManager:
 
     @classmethod
     def draw_all_shapes(cls, shapes: "list of shape objects"):
-        list(map(cls.renderer, shapes))
+        for shape in shapes:
+            shape.draw()
