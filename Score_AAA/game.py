@@ -86,7 +86,7 @@ class MyGame(arcade.Window):
             SCREEN_WIDTH,
             "./ressources/New_Q_Run_1.png",
             q_run_textures,
-            {0: 0, 1: 1, 2: 2, 3: 3, 4: 2},
+            {0: 0, 1: 1, 2: 2, 3: 3, 4: 2}
         )
         self.char_list.append(self.lane_up.char)
         self.floor_list.append(self.lane_up.floor)
@@ -105,7 +105,7 @@ class MyGame(arcade.Window):
 
         # Set up lane 2
         w_run_textures = []
-        for i in range(3):
+        for i in range(5):
             w_run_textures.append(arcade.load_texture(f"./ressources/W_Run_{i+1}.png"))
 
         self.lane_middle = Lane(
@@ -115,7 +115,7 @@ class MyGame(arcade.Window):
             SCREEN_WIDTH,
             "./ressources/W_Idle.png",
             w_run_textures,
-            {0: 0, 1: 0, 2: 1, 3: 1, 4: 2},
+            {0: 0, 1: 0, 2: 1, 3: 2, 4: 3, 5:4}
         )
         self.char_list.append(self.lane_middle.char)
         self.floor_list.append(self.lane_middle.floor)
@@ -144,7 +144,7 @@ class MyGame(arcade.Window):
             SCREEN_WIDTH,
             "./ressources/E_Idle.png",
             w_run_textures,
-            {0: 0, 1: 1, 2: 2, 3: 1, 4: 3, 5: 4, 6: 5},
+            {0: 0, 1: 1, 2: 2, 3: 1, 4: 3, 5: 4, 6: 5}
         )
         self.char_list.append(self.lane_down.char)
         self.floor_list.append(self.lane_down.floor)

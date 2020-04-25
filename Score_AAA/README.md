@@ -27,7 +27,7 @@ you have the opportunity to enter 3 letters to commemorate your achievment. Try 
 
 Installation is simple, first clone this repo and install the required libraries with this command, in your terminal:
 
-```pip install requirement.txt```
+```pip install -r requirement.txt```
 
 Once you've done that, just launch the game with this command, still in your terminal:
 
