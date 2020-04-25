@@ -176,6 +176,6 @@ class TripleVision(arcade.View):
         self.map.on_update(delta_time)
         self.camera.update()
         self.card_manager.update()
-        self.player.update_health_bar(delta_time)
         SoundManager.update(self.slow_down)
         self.cursor_manager.update()
+        self.player.update_health_bars(delta_time)

@@ -55,6 +55,7 @@ class Player(LivingEntity, MovingSprite):
         self.path = None
 
         self.mana_bar: HealthBar = None
+        self.health_bar: PlayerLiveManager = None
 
         self.left_pressed = False
         self.right_pressed = False
@@ -113,6 +114,7 @@ class Player(LivingEntity, MovingSprite):
             scale=1,
             auto_filling_speed=1.5
         )
+        self.health_bar = PlayerLiveManager(self.view, self.hp)
 
         center = tuple()
 
@@ -120,8 +122,8 @@ class Player(LivingEntity, MovingSprite):
             center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
 
             if (
-                len(arcade.get_sprites_at_point(center, self.view.collision_list)) == 0 and
-                len(arcade.get_sprites_at_point(center, self.view.map.sprites)) > 0
+                    len(arcade.get_sprites_at_point(center, self.view.collision_list)) == 0 and
+                    len(arcade.get_sprites_at_point(center, self.view.map.sprites)) > 0
             ):
                 break
 
@@ -202,9 +204,82 @@ class Player(LivingEntity, MovingSprite):
 
         super().on_update(delta_time)
 
-    def update_health_bar(self, delta_time):
+    def update_health_bars(self, delta_time):
         self.mana_bar.on_update(delta_time)
+        self.health_bar.update()
 
     def draw(self):
         super().draw()
         self.mana_bar.draw()
+        self.health_bar.draw()
+
+
+class PlayerLiveManager:
+    def __init__(
+        self,
+        view,
+        life_count: int = 10,
+        is_filled: bool = True,
+        scale: float = 1,
+    ) -> None:
+
+        self.view = view
+        self.margin = 30
+        self.hearts = arcade.SpriteList()
+        self.heart_map = [2, 2, 2]
+        self.half_heart_value = self.view.player.hp / sum(self.heart_map)
+        self.scaling = scale
+        self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
+
+        if not is_filled:
+            return
+
+        for i in range(3):
+            self.hearts.append(
+                arcade.Sprite(
+                    "assets/hearts/heart_2.png",
+                    center_x=(i + 1) * 100 + self.view.camera.viewport_left + self.margin,
+                    center_y=30 + self.view.camera.viewport_bottom,
+                    scale=self.scaling
+                )
+            )
+
+    def update(self):
+        viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
+
+        if self.prev_viewport != viewport:
+            for heart in self.hearts:
+                heart.center_x += viewport[0] - self.prev_viewport[0]
+                heart.center_y += viewport[1] - self.prev_viewport[1]
+
+            self.prev_viewport = viewport
+
+        total_hearts = sum(self.heart_map)
+        if total_hearts > 0:
+            # +1 so we don't loose half hearth on first hit
+            player_hearts = self.view.player.hp // self.half_heart_value + 1
+            if player_hearts < total_hearts:
+                self._update_heart_map(player_hearts)
+                self._update_hearts_icons()
+
+    def _update_heart_map(self, player_hearts: int):
+        heart_sum = 0
+        for idx, heart_value in enumerate(self.heart_map):
+            if heart_sum + heart_value > player_hearts:
+                self.heart_map[idx] -= 1
+                self._update_heart_map(player_hearts)
+            else:
+                heart_sum += heart_value
+
+    def _update_hearts_icons(self):
+        for idx, heart_val in enumerate(self.heart_map):
+            self.hearts.pop(idx)
+            self.hearts.insert(idx, arcade.Sprite(
+                f"assets/hearts/heart_{heart_val}.png",
+                center_x=(idx + 1) * 100 + self.view.camera.viewport_left + self.margin,
+                center_y=30 + self.view.camera.viewport_bottom,
+                scale=self.scaling
+            ))
+
+    def draw(self):
+        self.hearts.draw()
