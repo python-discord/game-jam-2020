@@ -4,7 +4,7 @@ Frontend of the 3x3 puzzle game
 from typing import (
     Optional,
     List,
-    Tuple,
+    Tuple, Set,
 )
 
 import arcade
@@ -21,7 +21,7 @@ WINDOW_HEIGHT = 900
 (TILE_WIDTH, TILE_HEIGHT,) = (
     90,
     90,
-)  # WINDOW_WIDTH/32, WINDOW_WIDTH/32
+)
 TILE_PADDING_H = TILE_WIDTH // 2
 TILE_PADDING_V = 10
 
@@ -30,7 +30,7 @@ class GridCell:
     """Represents a cell within the main grid which the user interacts with"""
 
     def __init__(
-            self, centre: Tuple[float, float,], width, height, allowed_tile_values: List[str]
+            self, centre: Tuple[float, float,], width, height, allowed_tile_values: Set[str]
     ):
         self.bottom_left = (
             centre[0] - width / 2,
@@ -43,7 +43,15 @@ class GridCell:
         self.centre = centre
         self.associated_tile: Optional[TileSprite] = None
         self.allowed_tile_values = allowed_tile_values
-        print(allowed_tile_values)
+
+    def accept_tile(self, possible_tile: 'TileSprite'):
+        if possible_tile.tile_value not in self.allowed_tile_values:
+            return False
+        return True
+
+    def place_associated_tile(self):
+        self.associated_tile.center_x, self.associated_tile.center_y = self.centre
+        self.associated_tile.set_bounds()
 
     def __repr__(self, ):
         return str(self.centre)
@@ -59,7 +67,7 @@ class TileSprite(arcade.Sprite):
             self, image_filepath: str, starting_x: int, starting_y: int,
     ):
         super().__init__(image_filepath)
-        self.tile_value = image_filepath
+        self.tile_value = image_filepath.split('/')[1]
         self.starting_x = starting_x
         self.starting_y = starting_y
 
@@ -82,6 +90,7 @@ class TileSprite(arcade.Sprite):
 
     def reset(self, ):
         """Resets the sprite back to its original starting position"""
+        print(f'{self.tile_value} is resetting')
         self.center_x = self.starting_x
         self.center_y = self.starting_y
         self.set_bounds()
@@ -218,16 +227,27 @@ class MyGame(arcade.Window):
         """
         Called when a user releases a mouse button.
         """
-        if self.dragging_sprite is not None:
-            if (cell := self.submission_grid.get_relevant_cell((x, y,))) is not None:
-                (self.dragging_sprite.center_x, self.dragging_sprite.center_y,) = cell.centre
-                if cell.associated_tile is not None:
-                    cell.associated_tile.reset()
-                cell.associated_tile = self.dragging_sprite
-                self.dragging_sprite.set_bounds()
-            else:
-                self.dragging_sprite.reset()
+        if self.dragging_sprite is None:
+            return
+
+        grid_cell = self.submission_grid.get_relevant_cell((x, y,))
+        if grid_cell is None:
+            self.dragging_sprite.reset()
             self.dragging_sprite = None
+            return
+
+        if not grid_cell.accept_tile(self.dragging_sprite):
+            self.dragging_sprite.reset()
+            self.dragging_sprite = None
+            return
+
+        if grid_cell.associated_tile is not None:
+            grid_cell.associated_tile.reset()
+            grid_cell.associated_tile = None
+
+        grid_cell.associated_tile = self.dragging_sprite
+        grid_cell.place_associated_tile()
+        self.dragging_sprite = None
 
 
 def check_bounds(
