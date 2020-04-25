@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Tuple
+from typing import Any, Tuple
 
 import arcade
 
@@ -11,7 +11,7 @@ from triple_vision.networking import client, get_status
 
 class BackButton(arcade.TextButton):
 
-    def __init__(self, view, *args, **kwargs) -> None:
+    def __init__(self, view: arcade.View, *args: Any, **kwargs: Any) -> None:
         super().__init__(text='Back', *args, **kwargs)
         self.view = view
         self.pressed = False
@@ -45,8 +45,8 @@ class ScoreNode:
         self.score = score
         self.timestamp = datetime.fromisoformat(timestamp).strftime(r'%d/%m/%Y | %I:%M %p')
 
-        self.center_x = center_x
-        self.center_y = center_y
+        self._center_x = center_x
+        self._center_y = center_y
 
         self.width = width
         self.height = height
@@ -72,6 +72,10 @@ class ScoreNode:
             color=outline_color,
             border_width=outline_width
         )
+
+        self.elements = arcade.ShapeElementList()
+        self.elements.append(self.display)
+        self.elements.append(self.display_outline)
 
         self.username_text = arcade.draw_text(
             text=username,
@@ -99,9 +103,32 @@ class ScoreNode:
 
         arcade.text.draw_text_cache.clear()
 
+    @property
+    def center_x(self) -> float:
+        return self._center_x
+
+    @center_x.setter
+    def center_x(self, value: float) -> None:
+        self.elements.center_x = value
+        self.username_text.center_x = value
+        self.score_text.center_x = value
+        self.timestamp_text.center_x = value
+        self._center_x = value
+
+    @property
+    def center_y(self) -> float:
+        return self._center_y
+
+    @center_y.setter
+    def center_y(self, value: float) -> None:
+        self.elements.center_y = value
+        self.username_text.center_y = value
+        self.score_text.center_y = value
+        self.timestamp_text.center_y = value
+        self._center_y = value
+
     def draw(self) -> None:
-        self.display.draw()
-        self.display_outline.draw()
+        self.elements.draw()
 
         self.username_text.draw()
         self.score_text.draw()
@@ -121,10 +148,16 @@ class LeaderboardView(arcade.View):
         self.score_nodes = list()
         self.scores = None
 
+        self.viewport = [0, 0]
+        self.prev_viewport = [0, 0]
+
         self.background = arcade.load_texture('assets/background.png')
 
     def back(self) -> None:
         self.window.button_list.clear()
+
+        arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
+
         self.window.show_view(self.main_view)
 
     def on_show(self) -> None:
@@ -173,8 +206,7 @@ class LeaderboardView(arcade.View):
         arcade.start_render()
 
         arcade.draw_lrwh_rectangle_textured(
-            bottom_left_x=0,
-            bottom_left_y=0,
+            *self.viewport,
             width=s.WINDOW_SIZE[0],
             height=s.WINDOW_SIZE[1],
             texture=self.background
@@ -185,3 +217,27 @@ class LeaderboardView(arcade.View):
 
         for node in self.score_nodes:
             node.draw()
+
+    def on_mouse_scroll(self, x: int, y: int, scroll_x: int, scroll_y: int) -> None:
+        self.viewport[1] += scroll_y
+
+        arcade.set_viewport(
+            self.viewport[0],
+            self.viewport[0] + s.WINDOW_SIZE[0],
+            self.viewport[1],
+            self.viewport[1] + s.WINDOW_SIZE[1]
+        )
+
+        delta_viewport = (
+            self.viewport[0] - self.prev_viewport[0],
+            self.viewport[1] - self.prev_viewport[1]
+        )
+
+        self.back_button.center_x += delta_viewport[0]
+        self.back_button.center_y += delta_viewport[1]
+
+        for node in self.score_nodes:
+            node.elements.center_x -= delta_viewport[0]
+            node.elements.center_y -= delta_viewport[1]
+
+        self.prev_viewport = self.viewport.copy()
