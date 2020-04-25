@@ -1,6 +1,7 @@
 from collections import deque
 import json
 import arcade
+import time
 from pyglet.gl import GL_NEAREST
 from entities import Splash
 from lane import Lane
@@ -9,6 +10,7 @@ from score_screen import Score
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
+
 
 class EnumGameState:
     title = 0
@@ -71,39 +73,62 @@ class MyGame(arcade.Window):
         # Set up lane 1
         q_run_textures = []
         for i in range(4):
-            q_run_textures.append(arcade.load_texture(f"../ressources/New_Q_Run_{i+1}.png"))
+            q_run_textures.append(
+                arcade.load_texture(f"../ressources/New_Q_Run_{i+1}.png")
+            )
 
-        self.lane_up = Lane(1, 1.7,
-                            SCREEN_HEIGHT,
-                            SCREEN_WIDTH,
-                            "../ressources/New_Q_Run_1.png",
-                            q_run_textures,
-                            {0: 0, 1: 1, 2: 2, 3: 3, 4: 2})
+        self.lane_up = Lane(
+            1,
+            1.7,
+            SCREEN_HEIGHT,
+            SCREEN_WIDTH,
+            "../ressources/New_Q_Run_1.png",
+            q_run_textures,
+            {0: 0, 1: 1, 2: 2, 3: 3, 4: 2},
+        )
         self.char_list.append(self.lane_up.char)
         self.floor_list.append(self.lane_up.floor)
-        for background in self.lane_up.generate_background("../ressources/Q_Background_Crayon.png", 2, 107):
+        [
             self.background.append(background)
-        for sky in self.lane_up.generate_background("../ressources/Q_Sky.png", 1, 107):
+            for background in self.lane_up.generate_background(
+                "../ressources/Q_Background_Crayon.png", 2, 107
+            )
+        ]
+        [
             self.sky_list.append(sky)
+            for sky in self.lane_up.generate_background(
+                "../ressources/Q_Sky.png", 1, 107
+            )
+        ]
 
         # Set up lane 2
-
         w_run_textures = []
         for i in range(3):
             w_run_textures.append(arcade.load_texture(f"../ressources/W_Run_{i+1}.png"))
 
-        self.lane_middle = Lane(2, 1.8,
-                                SCREEN_HEIGHT,
-                                SCREEN_WIDTH,
-                                "../ressources/W_Idle.png",
-                                w_run_textures,
-                                {0: 0, 1: 0, 2: 1, 3: 1, 4: 2})
+        self.lane_middle = Lane(
+            2,
+            1.8,
+            SCREEN_HEIGHT,
+            SCREEN_WIDTH,
+            "../ressources/W_Idle.png",
+            w_run_textures,
+            {0: 0, 1: 0, 2: 1, 3: 1, 4: 2},
+        )
         self.char_list.append(self.lane_middle.char)
         self.floor_list.append(self.lane_middle.floor)
-        for background in self.lane_up.generate_background("../ressources/W_Background.png", 2,  -93):
+        [
             self.background.append(background)
-        for sky in self.lane_up.generate_background("../ressources/W_Sky.png", 1, -93):
+            for background in self.lane_up.generate_background(
+                "../ressources/W_Background.png", 2, -93
+            )
+        ]
+        [
             self.sky_list.append(sky)
+            for sky in self.lane_up.generate_background(
+                "../ressources/W_Sky.png", 1, -93
+            )
+        ]
 
         # Set up lane 3
 
@@ -111,18 +136,29 @@ class MyGame(arcade.Window):
         for i in range(6):
             w_run_textures.append(arcade.load_texture(f"../ressources/E_Run_{i+1}.png"))
 
-        self.lane_down = Lane(3, 1.7,
-                              SCREEN_HEIGHT,
-                              SCREEN_WIDTH,
-                              "../ressources/E_Idle.png",
-                              w_run_textures,
-                              {0: 0, 1: 1, 2: 2, 3: 1, 4: 3, 5: 4, 6: 5})
+        self.lane_down = Lane(
+            3,
+            1.7,
+            SCREEN_HEIGHT,
+            SCREEN_WIDTH,
+            "../ressources/E_Idle.png",
+            w_run_textures,
+            {0: 0, 1: 1, 2: 2, 3: 1, 4: 3, 5: 4, 6: 5},
+        )
         self.char_list.append(self.lane_down.char)
         self.floor_list.append(self.lane_down.floor)
-        for background in self.lane_up.generate_background("../ressources/E_Sky_1.png", 3,  -300):
+        [
             self.background.append(background)
-        for sky in self.lane_up.generate_background("../ressources/E_Sky_2.png", 8, -300):
+            for background in self.lane_up.generate_background(
+                "../ressources/E_Sky_1.png", 3, -300
+            )
+        ]
+        [
             self.sky_list.append(sky)
+            for sky in self.lane_up.generate_background(
+                "../ressources/E_Sky_2.png", 8, -300
+            )
+        ]
 
         # Visual cue for when an input is valid
         ok_zone = arcade.Sprite("../ressources/Valid Zone.png")
@@ -131,7 +167,9 @@ class MyGame(arcade.Window):
         self.floor_list.append(ok_zone)
 
         # Set up the rest
-        self.pattern = PatternGenerator([self.lane_up, self.lane_middle, self.lane_down])
+        self.pattern = PatternGenerator(
+            [self.lane_up, self.lane_middle, self.lane_down]
+        )
         arcade.set_background_color(arcade.color.SMOKY_BLACK)
         self.score_screen = Score(SCREEN_WIDTH, SCREEN_HEIGHT)
         self.score = 0
@@ -145,10 +183,11 @@ class MyGame(arcade.Window):
         self.obstacle_queue = deque([[], [], [], [], []])
 
         # Play the music
-
         if self.music:
             self.music.stop()
-        self.music = arcade.Sound("../ressources/Loyalty_Freak_Music_-_04_-_It_feels_good_to_be_alive_too.mp3")
+        self.music = arcade.Sound(
+            "../ressources/Loyalty_Freak_Music_-_04_-_It_feels_good_to_be_alive_too.mp3"
+        )
 
     def draw_game(self):
         """
@@ -177,23 +216,26 @@ class MyGame(arcade.Window):
             arcade.draw_text(output, 700, 550, arcade.color.BLACK, 14)
 
     def draw_title_screen(self):
-        arcade.draw_texture_rectangle(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2,
-                                      self.title_screen.width,
-                                      self.title_screen.height,
-                                      self.title_screen, 0)
+        arcade.draw_texture_rectangle(
+            SCREEN_WIDTH // 2,
+            SCREEN_HEIGHT // 2,
+            self.title_screen.width,
+            self.title_screen.height,
+            self.title_screen,
+            0,
+        )
+
     def on_draw(self):
         """
         Function to render the game.
         """
-        # This command has to happen before we start drawing
-
         if self.game_state == EnumGameState.title:
             self.draw_title_screen()
-        elif self.game_state == EnumGameState.game:
+        elif (
+            self.game_state == EnumGameState.game
+            or self.game_state == EnumGameState.game_over
+        ):
             self.draw_game()
-        elif self.game_state == EnumGameState.game_over:
-            self.draw_game()
-
 
     def on_key_press(self, key, modifiers):
         """
@@ -219,8 +261,7 @@ class MyGame(arcade.Window):
 
     def key_action(self, lane):
         result = lane.action(self.obstacle_list)
-        splash = Splash(result.name,
-                        [lane.char.center_x + 75, lane.char.center_y + 50])
+        splash = Splash(result.name, [lane.char.center_x + 75, lane.char.center_y + 50])
         self.splash_list.append(splash)
 
         if result.name == "miss":

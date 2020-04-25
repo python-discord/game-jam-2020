@@ -1,8 +1,8 @@
 import json
 import arcade
 
-class Score:
 
+class Score:
     def __init__(self, SCREEN_WIDTH, SCREEN_HEIGHT):
         self.width = SCREEN_WIDTH
         self.height = SCREEN_HEIGHT
@@ -16,7 +16,10 @@ class Score:
         with open(self.path) as file:
             self.score_dict = json.load(file)
 
-        if player_score > int(list(self.score_dict.keys())[-1]) and str(player_score) not in self.score_dict:
+        if (
+            player_score > int(list(self.score_dict.keys())[-1])
+            and str(player_score) not in self.score_dict
+        ):
             self.score_dict[str(player_score)] = "___"
             dum = [int(x) for x in list(self.score_dict.keys())]
             self.score_dict.pop(str(sorted(dum)[0]))
@@ -33,30 +36,40 @@ class Score:
 
     def draw_score_screen(self):
 
-        arcade.draw_text("- SCORE -", self.width//2 - 100,
-                         self.height - self.height // 10,
-                         arcade.color.RED_BROWN, 40)
+        arcade.draw_text(
+            "- SCORE -",
+            self.width // 2 - 100,
+            self.height - self.height // 10,
+            arcade.color.RED_BROWN,
+            40,
+        )
         count = 1
         for value, item in self.score_dict.items():
             count += 1
             if count - 2 == self.index:
-                arcade.draw_text(f"* {value}  -   {item}",
-                                 self.width//2 - 40 - 20*len(value),
-                                 self.height - (self.height // 10)*count,
-                                 arcade.color.YELLOW,
-                                 30)
+                arcade.draw_text(
+                    f"* {value}  -   {item}",
+                    self.width // 2 - 40 - 20 * len(value),
+                    self.height - (self.height // 10) * count,
+                    arcade.color.YELLOW,
+                    30,
+                )
             else:
-                arcade.draw_text(f"* {value}  -   {item}",
-                                 self.width//2 - 40 - 20*len(value),
-                                 self.height - (self.height // 10)*count,
-                                 arcade.color.RED_DEVIL,
-                                 30)
+                arcade.draw_text(
+                    f"* {value}  -   {item}",
+                    self.width // 2 - 40 - 20 * len(value),
+                    self.height - (self.height // 10) * count,
+                    arcade.color.RED_DEVIL,
+                    30,
+                )
         if self.restart_timer >= 0:
-            arcade.draw_text("Press any key to restart the game",
-                             self.width // 2 - 62 * len(value),
-                             self.height // 9,
-                             arcade.color.RED_ORANGE,
-                             30)
+            arcade.draw_text(
+                "Press any key to restart the game",
+                self.width // 2 - 62 * len(value),
+                self.height // 9,
+                arcade.color.RED_ORANGE,
+                30,
+            )
 
     def score_input(self, char: str):
         if self.restart_timer > 1.5:
