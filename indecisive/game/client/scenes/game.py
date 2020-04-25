@@ -43,6 +43,7 @@ class Game(Base):
         self.selected = [None, None]
         self.ui_background = None
         self.city_ui = [arcade.SpriteList(), []]
+        self.unit_ui = [arcade.SpriteList(), []]
         self.current_ui = [arcade.SpriteList(), []]
         self.empty_ui = [arcade.SpriteList(), []]
         self.selectors = [arcade.SpriteList(), [lambda: None, lambda: None, lambda: None, lambda: None]]
@@ -98,6 +99,8 @@ class Game(Base):
                     self.server_create_city(data["data"])
                 elif data["type"] == "newUnit":
                     self.server_create_unit(data["data"])
+                elif data["type"] == "moveUnit":
+                    self.server_move_unit(data["data"])
                 elif data["type"] == "turn":
                     self.turn = data["data"]
                     self.top_ui[1][self.top_ui[2]["currentTurn"]]["text"] = f"Current turn: {self.players[self.turn]['name']}"
@@ -166,12 +169,12 @@ class Game(Base):
             center_y=unit["loc"][1] * self.square + self.y_buffer_bottom + self.square / 2
         ))
 
-    def client_create_city(self, city):
-        self.send_queue.put({"type": "turnFinal", "actionType": "createCity", "data": city})
-
     def server_create_city(self, city):
         self.world["cities"].append(city)
         self._create_city(city)
+
+    def client_create_city(self, city):
+        self.send_queue.put({"type": "turnFinal", "actionType": "createCity", "data": city})
 
     def server_create_unit(self, unit):
         self.world["units"].append(unit)
@@ -180,7 +183,13 @@ class Game(Base):
     def client_create_unit(self, unit):
         self.send_queue.put({"type": "turnFinal", "actionType": "createUnit", "data": unit})
 
-    # UI
+    def client_move_unit(self, data):
+        self.send_queue.put({"type": "turnFinal", "actionType": "moveUnit", "data": data})
+
+    def server_move_unit(self, data):
+        self.world["units"][data["unit_id"]]["loc"] = data["loc"]
+        self.unit_sprites[data["unit_id"]].position = self.get_xy_centre(data["loc"])
+
     def setup_ui(self):
         # MAIN UI
         self.ui_background = arcade.create_rectangle_filled(640, 95, 1280, 190, color=(150, 150, 150))
@@ -190,6 +199,18 @@ class Game(Base):
             scale=0.25,
             center_x=200,
             center_y=50
+        )
+        move_unit = arcade.Sprite(
+            "assets/simple_button.png",
+            scale=0.25,
+            center_x=200,
+            center_y=50
+        )
+        attack_unit = arcade.Sprite(
+            "assets/simple_button.png",
+            scale=0.25,
+            center_x=200,
+            center_y=100
         )
 
         # selectors
@@ -204,6 +225,11 @@ class Game(Base):
         # city UI
         self.city_ui[0].append(create_unit)
         self.city_ui[1] = [self.create_unit]
+
+        # unit UI
+        self.unit_ui[0].extend([move_unit, attack_unit])
+        self.unit_ui[1].extend([self.move_unit, self.attack_unit])
+
 
         # TOP BAR UI
         player_icon = arcade.Sprite(
@@ -229,13 +255,14 @@ class Game(Base):
             "name": 0,
             "currentTurn": 1
         }
+    # UI
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int) -> None:
         selected = self.map_sprite_clicked(x, y)
         if selected is False:
             for ui_num, ui in enumerate(self.current_ui[0]):
                 if ui.collides_with_point((x, y)) is True:
-                    self.current_ui[1][ui_num](self.world[self.selected[0]][self.selected[1]])
+                    self.current_ui[1][ui_num](self.world[self.selected[0]][self.selected[1]], self.selected[1])
                     return
 
             for selector_number in range(4):
@@ -248,9 +275,16 @@ class Game(Base):
         self.selected = selected
         self.update_ui()
 
-    def create_unit(self, city):
+    def create_unit(self, city, city_id):
         action_maker = self.action_maker_maker(self.client_create_unit, {"owner": self.player_id, "type": "basic"})
         self.move_selectors_all_block(city["loc"], action_maker)
+
+    def move_unit(self, unit, unit_id):
+        action_maker = self.action_maker_maker(self.client_move_unit, {"unit_id": unit_id, "loc": [0, 0]})
+        self.move_selectors_all_block(unit["loc"], action_maker)
+
+    def attack_unit(self, unit):
+        pass
 
     def action_maker_maker(self, action, arg: dict, hide_ui=True):
 
@@ -267,10 +301,12 @@ class Game(Base):
     def update_ui(self):
         if self.selected[0] == "cities" and self.world["cities"][self.selected[1]]["owner"] == self.player_id:
             self.current_ui = self.city_ui
-            self.hide_selectors()
+        elif self.selected[0] == "units" and self.world["units"][self.selected[1]]["owner"] == self.player_id:
+            self.current_ui = self.unit_ui
         else:
             self.current_ui = self.empty_ui
-            self.hide_selectors()
+
+        self.hide_selectors()
 
     def hide_selectors(self):
         for selector_number in range(4):

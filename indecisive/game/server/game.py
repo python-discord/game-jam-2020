@@ -33,10 +33,11 @@ class Game:
             data = self.receive_queue.get()
             if data["type"] == "turnFinal" and data["connection"] == self.turn:
                 if data["actionType"] == "moveUnit":
-                    pass
+                    self.send_queue.put({"type": "moveUnit", "data": data["data"]})
+                    self.world["units"][data["data"]["unit_id"]]["loc"] = data["data"]["loc"]
                 elif data["actionType"] == "createUnit":
-                    print(f":O {data}")
                     self.send_queue.put({"type": "newUnit", "data": data["data"]})
+                    self.world["units"].append(data["data"])
                 self.next_turn()
 
     def next_turn(self):

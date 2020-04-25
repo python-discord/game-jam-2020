@@ -1,3 +1,3 @@
-from client.graphics import main
+from client.main import main
 
 main()
