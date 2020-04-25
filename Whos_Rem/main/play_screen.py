@@ -4,7 +4,7 @@ import json
 import time
 import os
 import vlc
-from . import perspective_objects
+from .perspective_objects import ShapeManager
 
 
 class Audio:
@@ -165,6 +165,7 @@ class GameScreen(arcade.View, PauseScreen):
     key_1, key_2, key_3 = None, None, None
     count_down = []
     to_be_rendered = None
+    notes_list = []
 
     # Game Data
     score = 0
@@ -231,11 +232,12 @@ class GameScreen(arcade.View, PauseScreen):
         self.active = self.audio.player.is_playing()
         if self.active:
             self.left, self.center, self.right = self.audio.get_notes(next(self.audio.frame_count))
-
-        elif not self.paused and not self.active and self.started:
-            pass
-            # with open(f"{self.BASE_DIR}/tracks/{self.track['path']}_new.json", 'w+') as file:
-            #   json.dump(self.notes_, file)
+            if self.left:
+                self.notes_list.append(ShapeManager.create_shape(-1))
+            elif self.center:
+                self.notes_list.append(ShapeManager.create_shape(0))
+            elif self.right:
+                self.notes_list.append(ShapeManager.create_shape(1))
 
     def on_start(self):
         self.started = True
@@ -247,13 +249,17 @@ class GameScreen(arcade.View, PauseScreen):
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
-        points_to_add, combos = GameLogic.get_data(
-            (self.left_button_active, self.middle_button_active, self.right_button_active),
-            (self.key_1, self.key_2, self.key_3),
-            ()  # todo get jamie to help with note handling
-        )
-        self.score += points_to_add
-        self.combo = (self.combo + combos) if combos != -1 else 0
+        if self.started and not self.paused:
+            points_to_add, combos = GameLogic.get_data(
+                (self.left_button_active, self.middle_button_active, self.right_button_active),
+                (self.key_1, self.key_2, self.key_3),
+                (self.notes_list[0] if len(self.notes_list) > 0 else None,
+                 self.notes_list[1] if len(self.notes_list) > 1 else None,
+                 self.notes_list[2] if len(self.notes_list) > 2 else None,
+                 )
+            )
+            self.score += points_to_add
+            self.combo = (self.combo + combos) if combos != -1 else 0
 
         if not self.audio.player.is_playing() and self.started and not self.paused:
             pass  # todo make a end screen
@@ -261,6 +267,9 @@ class GameScreen(arcade.View, PauseScreen):
     def on_draw(self, time_delta=None, count_down=None):
         """ In charge of rendering the notes at current time. """
         arcade.start_render()
+
+        # notes
+        ShapeManager.manage_shapes(self.notes_list)
 
         # Background rendering
         self.background.center_x = self.WIDTH / 2
