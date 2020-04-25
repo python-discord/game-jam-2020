@@ -1,3 +1,9 @@
+import enum
+
+
+from triple_vision.entities.weapons import FloorStompMelee
+
+
 class BaseAbility:
     base_cool_down = 30.0
 
@@ -12,7 +18,7 @@ class BaseAbility:
 
     def deactivate(self, view_reference):
         """To be overwritten (if the ability can be deactivated)"""
-        print("Ability deactivation not yet implemented")
+        pass
 
 
 class TimeSlow(BaseAbility):
@@ -29,10 +35,16 @@ class TimeSlow(BaseAbility):
 
 
 class FloorStomp(BaseAbility):
-    DURATION = 5
-
     def __init__(self):
-        super().__init__(self.DURATION)
+        # Instant ability no duration
+        super().__init__(duration=0)
+
+    def activate(self, x, y, view_reference):
+        floor_stomp = FloorStompMelee(
+            center_x=view_reference.player.center_x,
+            center_y=view_reference.player.center_y,
+        )
+        view_reference.game_manager.player_melee_attacks.append(floor_stomp)
 
 
 class Indestructible(BaseAbility):
@@ -40,3 +52,10 @@ class Indestructible(BaseAbility):
 
     def __init__(self):
         super().__init__(self.DURATION)
+
+
+class Abilities(enum.Enum):
+    # Key are names, values are subclass of BaseAbility
+    blue = TimeSlow()
+    red = FloorStomp()
+    green = Indestructible()

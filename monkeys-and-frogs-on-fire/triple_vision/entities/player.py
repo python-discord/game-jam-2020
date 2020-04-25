@@ -12,14 +12,7 @@ from triple_vision.entities.weapons import ChargedLaserProjectile
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
 from triple_vision.sound import SoundManager
-from triple_vision.entities.abilities import TimeSlow, FloorStomp, Indestructible
-
-
-class Abilities(Enum):
-    # Key are names, values are subclass of BaseAbility
-    blue = TimeSlow()
-    red = FloorStomp()
-    green = Indestructible()
+from triple_vision.entities.abilities import Abilities
 
 
 class States(Enum):

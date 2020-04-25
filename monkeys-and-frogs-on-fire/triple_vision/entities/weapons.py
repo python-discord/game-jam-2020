@@ -21,7 +21,8 @@ class Weapon(SoundEntity):
 
 
 class Projectile(Weapon, TemporarySprite, MovingSprite):
-    pass
+    def destroy(self):
+        self.kill()
 
 
 class LaserProjectile(Projectile):
@@ -91,3 +92,42 @@ class Melee(Weapon):
             activate_sounds=self.activate_sounds,
             hit_sounds=self.hit_sounds
         )
+
+
+class FloorStompMelee(Projectile):
+    # TODO SOUNDS
+    activate_sounds = ("laser_activate_0.mp3",)
+    hit_sounds = ("laser_hit_0.ogg",)
+
+    def __init__(
+        self,
+        dmg: float = random.randrange(512, 1024),
+        moving_speed: float = 0.0,
+        **kwargs: Any
+    ) -> None:
+
+        super().__init__(
+            dmg=dmg,
+            throwback_force=8,
+            activate_sounds=self.activate_sounds,
+            hit_sounds=self.hit_sounds,
+            lifetime=0.5,
+            moving_speed=moving_speed,
+            filename=f':resources:images/pinball/pool_cue_ball.png',
+            **kwargs
+        )
+        self.alpha = 50
+        self._tick_delta = 0.0
+
+    def destroy(self):
+        pass
+
+    def on_update(self, delta_time: float):
+        # Remember that this is tied to lifetime, it will keep going until temporal sprite
+        # destroys itself
+        self._tick_delta += delta_time
+        if self._tick_delta > 0.05:
+            self.scale += 1
+            self._tick_delta = 0.0
+
+        super().on_update(delta_time)

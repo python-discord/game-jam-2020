@@ -16,6 +16,7 @@ class GameManager:
 
         self.enemies = arcade.SpriteList()
         self.player_projectiles = arcade.SpriteList()
+        self.player_melee_attacks = arcade.SpriteList()
         self.enemy_projectiles = arcade.SpriteList()
         self.damage_indicators = arcade.SpriteList()
 
@@ -25,6 +26,7 @@ class GameManager:
         self.prev_sent = False
 
     def draw(self) -> None:
+        self.player_melee_attacks.draw()
         self.enemies.draw()
         self.player_projectiles.draw()
         self.enemy_projectiles.draw()
@@ -46,12 +48,20 @@ class GameManager:
             for projectile in projectile_hit_enemy:
                 self.create_dmg_indicator(str(projectile.dmg), enemy.position)
                 enemy.hit(projectile)
-                projectile.kill()
+                projectile.destroy()
+
+            melee_attacks_hit_enemy = arcade.check_for_collision_with_list(
+                enemy,
+                self.player_melee_attacks
+            )
+            for player_melee_attack in melee_attacks_hit_enemy:
+                self.create_dmg_indicator(str(player_melee_attack.dmg), enemy.position)
+                enemy.hit(player_melee_attack)
 
         projectiles_hit_player = arcade.check_for_collision_with_list(self.view.player, self.enemy_projectiles)
         for projectile in projectiles_hit_player:
             self.view.player.hit(projectile)
-            projectile.kill()
+            projectile.destroy()
 
         spikes_hit = arcade.check_for_collision_with_list(self.view.player, self.spikes)
         for spike in spikes_hit:
@@ -62,8 +72,11 @@ class GameManager:
 
         if self.view.time_slow_ability:
             self.player_projectiles.on_update(delta_time * s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
+            self.player_melee_attacks.on_update(delta_time * s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
         else:
             self.player_projectiles.on_update(delta_time)
+            self.player_melee_attacks.on_update(delta_time)
+
         self.enemy_projectiles.on_update(delta_time)
         self.damage_indicators.on_update(delta_time)
 
