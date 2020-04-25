@@ -7,7 +7,7 @@ import arcade
 from triple_vision import Settings as s
 from triple_vision import Tile
 from triple_vision.entities.entities import LivingEntity
-from triple_vision.entities.sprites import HealthBar, MovingSprite
+from triple_vision.entities.sprites import ManaBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile, Melee
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
@@ -58,7 +58,7 @@ class Player(LivingEntity, MovingSprite):
         self.path_finder = PathFinder()
         self.path = None
 
-        self.mana_bar: HealthBar = None
+        self.mana_bar: ManaBar = None
         self.health_bar: PlayerLiveManager = None
 
         self.left_pressed = False
@@ -132,7 +132,7 @@ class Player(LivingEntity, MovingSprite):
         self.curr_color = 'red'
         self.selected_ability = Abilities.red.value
 
-        self.mana_bar = HealthBar(
+        self.mana_bar = ManaBar(
             self.view,
             fill_part_filename="assets/healthbar/mana_fill_part.png",
             fill_part_width=44.0,
@@ -140,7 +140,7 @@ class Player(LivingEntity, MovingSprite):
             center_x=420,
             center_y=18,
             scale=1,
-            auto_filling_speed=1.5
+            auto_filling_speed=2
         )
         self.health_bar = PlayerLiveManager(self.view, self.hp)
 
@@ -206,13 +206,12 @@ class Player(LivingEntity, MovingSprite):
         self.state = States.ATTACKING_RANGED
 
     def process_right_mouse_press(self, x, y) -> None:
-        if self.current_cool_down == 0:
-            self.current_cool_down = self.selected_ability.base_cool_down
-            self._ability_duration_left = self.selected_ability.duration
+        if len(self.mana_bar) == self.mana_bar.max_fillers:
+            self.mana_bar.clear()
             self.selected_ability.activate(x, y, self.view)
         else:
-            print(f"On cool-down! {self.current_cool_down}")
-
+            # TODO empty mana sound
+            pass
     def kill(self):
         self.is_alive = False
         super().kill()
