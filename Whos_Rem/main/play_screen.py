@@ -11,6 +11,7 @@ class Audio:
     FPS = 16
 
     settings = None
+    volume = None
 
     track = None
     music = None
@@ -23,22 +24,19 @@ class Audio:
     def __init__(self, main_):
         self.main = main_
         self.settings = self.main.settings
-
-    @property
-    def volume(self):
-        return self.settings.volume * 0.1
+        self.volume = self.settings.volume * 0.1
 
     @classmethod
     def _setup(cls, _track: dict):
         cls.track = _track
 
-        path = f"{cls.BASE_DIR}/tracks/{cls.track['path'].upper()}.{cls.track['type']}"
+        path = f"{cls.BASE_DIR}/main/tracks/{cls.track['path'].upper()}.{cls.track['type']}"
         cls.vlc_instance = vlc.Instance('--input-repeat=-1')
         cls.player = cls.vlc_instance.media_player_new()
         media = cls.vlc_instance.media_new(path)
         cls.player.set_media(media)
 
-        with open(f"{cls.BASE_DIR}/tracks/{cls.track['path']}.json", 'r') as file:
+        with open(f"{cls.BASE_DIR}/main/tracks/{cls.track['path']}.json", 'r') as file:
             cls.notes = json.load(file)
 
     @classmethod
@@ -78,25 +76,25 @@ class PauseScreen:
     @classmethod
     def pause_menu(cls):
         cls.sprite_list.append(  # Game Paused text
-            arcade.Sprite(filename=f"{cls.BASE_DIR}/Resources/game_play/Game-Paused.png",
+            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Game-Paused.png",
                           center_x=cls.WIDTH / 2,
                           center_y=cls.HEIGHT / 1.25,
                           scale=1))
 
         cls.sprite_list.append(  # Main Menu text
-            arcade.Sprite(filename=f"{cls.BASE_DIR}/Resources/game_play/Main-Menu.png",
+            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Main-Menu.png",
                           center_x=cls.WIDTH / 2,
                           center_y=cls.HEIGHT / 1.75,
                           scale=1))
 
         cls.sprite_list.append(  # settings text
-            arcade.Sprite(filename=f"{cls.BASE_DIR}/Resources/game_play/Settings.png",
+            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Settings.png",
                           center_x=cls.WIDTH / 2,
                           center_y=cls.HEIGHT / 2.5,
                           scale=1))
 
         cls.sprite_list.append(  # settings text
-            arcade.Sprite(filename=f"{cls.BASE_DIR}/Resources/game_play/Press-SPACE-to-unpause.png",
+            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Press-SPACE-to-unpause.png",
                           center_x=cls.WIDTH / 2,
                           center_y=cls.HEIGHT / 4.75,
                           scale=0.75))
@@ -130,8 +128,9 @@ class GameScreen(arcade.View, PauseScreen):
         self.audio = Audio(main_=main_)
         self.main = main_
         self.settings = main_.settings
+        self.WIDTH, self.HEIGHT = self.main.window.width, self.main.window.height
         self.background_sprite = arcade.Sprite(
-            filename=f"{self.BASE_DIR}/Resources/game_play/Notes-Background.png",
+            filename=f"{self.BASE_DIR}/main/Resources/game_play/Notes-Background.png",
             scale=1,
             image_height=self.HEIGHT,
             image_width=self.WIDTH)
@@ -142,27 +141,27 @@ class GameScreen(arcade.View, PauseScreen):
         self.pause_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
         self.key_binds = self.settings.key_binds
         self.background = arcade.Sprite(
-            filename=f"{self.BASE_DIR}/Resources/background.png",
+            filename=f"{self.BASE_DIR}/main/Resources/background.png",
             scale=0.4,
             image_height=self.HEIGHT * 14/5,
             image_width=self.WIDTH)
 
         self.note_1 = arcade.Sprite(
-            filename=f"{self.BASE_DIR}/Resources/game_play/note_key.png",
+            filename=f"{self.BASE_DIR}/main/Resources/game_play/note_key.png",
             scale=(self.WIDTH / self.HEIGHT) / (20/3))
         self.note_2 = arcade.Sprite(
-            filename=f"{self.BASE_DIR}/Resources/game_play/note_key.png",
+            filename=f"{self.BASE_DIR}/main/Resources/game_play/note_key.png",
             scale=(self.WIDTH / self.HEIGHT) / (20/3))
         self.note_3 = arcade.Sprite(
-            filename=f"{self.BASE_DIR}/Resources/game_play/note_key.png",
+            filename=f"{self.BASE_DIR}/main/Resources/game_play/note_key.png",
             scale=(self.WIDTH / self.HEIGHT) / (20/3))
 
         self.count_down.append(
-            arcade.Sprite(filename=f"{self.BASE_DIR}/Resources/game_play/1.png", scale=1))
+            arcade.Sprite(filename=f"{self.BASE_DIR}/main/Resources/game_play/1.png", scale=1))
         self.count_down.append(
-            arcade.Sprite(filename=f"{self.BASE_DIR}/Resources/game_play/2.png", scale=1))
+            arcade.Sprite(filename=f"{self.BASE_DIR}/main/Resources/game_play/2.png", scale=1))
         self.count_down.append(
-            arcade.Sprite(filename=f"{self.BASE_DIR}/Resources/game_play/3.png", scale=1))
+            arcade.Sprite(filename=f"{self.BASE_DIR}/main/Resources/game_play/3.png", scale=1))
 
     @staticmethod
     def draw_note_key(x, y, height, width):
@@ -221,7 +220,7 @@ class GameScreen(arcade.View, PauseScreen):
         self.background_sprite.alpha = 160
         self.background_sprite.draw()
 
-        # If un pausing render
+        # If un pausing render  todo finish
         if count_down is not None:
             count_down.draw()
 
