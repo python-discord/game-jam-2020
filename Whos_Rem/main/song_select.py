@@ -45,7 +45,7 @@ class SongSelection(arcade.View):
         track_dict = {
             "name": name,
             "path": base_path / Path(name),
-            "type": file_type
+            "type": file_type[0]
         }
 
         return track_dict
