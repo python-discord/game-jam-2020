@@ -122,8 +122,6 @@ class Player(LivingEntity, MovingSprite):
         )
         self.health_bar = PlayerLiveManager(self.view, self.hp)
 
-        center = tuple()
-
         while True:
             center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
 
