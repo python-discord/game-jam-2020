@@ -32,6 +32,50 @@ class Settings(arcade.View):
     return_button = Button(width*0.03, height*0.86, width*0.09, height*0.08,
                            activation=lambda: None, draw_func=lambda: None, name="menu button")
 
+    settings_title = arcade.Sprite(
+        filename=Path().cwd() / Path("main/Resources/settings_menu/settings-title.png"),
+        scale=int(min(width, height) * 0.2) / 128,
+        center_x=int(width * 0.5),
+        center_y=int(height * 0.87),
+    )
+    brightness_text = arcade.Sprite(
+        filename=Path().cwd() / Path("main/Resources/settings_menu/brightness.png"),
+        scale=int(min(width, height) * 0.1) / 128,
+        center_x=int(width * 0.8),
+        center_y=int(height * 0.56),
+    )
+    volume_text = arcade.Sprite(
+        filename=Path().cwd() / Path("main/Resources/settings_menu/volume.png"),
+        scale=int(min(width, height) * 0.14) / 128,
+        center_x=int(width * 0.8),
+        center_y=int(height * 0.68),
+    )
+
+    left_text = arcade.Sprite(
+        filename=Path().cwd() / Path("main/Resources/settings_menu/Left.png"),
+        scale=int(min(width, height) * 0.15) / 128,
+        center_x=int(width * 0.23),
+        center_y=int(height * 0.25),
+    )
+    center_text = arcade.Sprite(
+        filename=Path().cwd() / Path("main/Resources/settings_menu/Center.png"),
+        scale=int(min(width, height) * 0.15) / 128,
+        center_x=int(width * 0.51),
+        center_y=int(height * 0.25),
+    )
+    right_text = arcade.Sprite(
+        filename=Path().cwd() / Path("main/Resources/settings_menu/Right.png"),
+        scale=int(min(width, height) * 0.15) / 128,
+        center_x=int(width * 0.78),
+        center_y=int(height * 0.25),
+    )
+    key_binds_text = arcade.Sprite(
+        filename=Path().cwd() / Path("main/Resources/settings_menu/Key-Binds.png"),
+        scale=int(min(width, height) * 0.17) / 128,
+        center_x=int(width * 0.5),
+        center_y=int(height * 0.47),
+    )
+
     binding_key = None
     key_binds = {"left": arcade.key.A, "center": arcade.key.S, "right": arcade.key.D}
 
@@ -90,18 +134,27 @@ class Settings(arcade.View):
         self.binding_key = binding_key
 
     def draw_text(self):
-        arcade.draw_text("SETTINGS", self.width * 0.2, self.height * 0.8,
-                         cb.brightness([255, 255, 255], self.brightness),
-                         min(self.width, self.height) / 8, align="center",
-                         width=int(self.width * 0.6))
-        arcade.draw_text("BRIGHTNESS", self.width * 0.5, self.height * 0.52,
-                         cb.brightness([255, 255, 255], self.brightness),
-                         min(self.width, self.height) / 12, align="center",
-                         width=int(self.width * 0.6))
-        arcade.draw_text("VOLUME", self.width * 0.5, self.height * 0.65,
-                         cb.brightness([255, 255, 255], self.brightness),
-                         min(self.width, self.height) / 12, align="center",
-                         width=int(self.width * 0.6))
+        alpha = int(255 * self.main.brightness)
+        self.settings_title.alpha = alpha
+        self.settings_title.draw()
+
+        self.brightness_text.alpha = alpha
+        self.brightness_text.draw()
+
+        self.volume_text.alpha = alpha
+        self.volume_text.draw()
+
+        self.left_text.alpha = alpha
+        self.left_text.draw()
+
+        self.center_text.alpha = alpha
+        self.center_text.draw()
+
+        self.right_text.alpha = alpha
+        self.right_text.draw()
+
+        self.key_binds_text.alpha = alpha
+        self.key_binds_text.draw()
 
         arcade.draw_text(chr(self.key_binds["left"]).upper(),
                          self.width * 0.178, self.height * 0.105,
@@ -118,24 +171,6 @@ class Settings(arcade.View):
                          cb.brightness([0, 0, 0], self.brightness),
                          min(self.width, self.height) / 16, align="center",
                          width=int(self.width * 0.1))
-
-        arcade.draw_text("LEFT", self.width * 0.103, self.height * 0.2,
-                         cb.brightness([255, 255, 255], self.brightness),
-                         min(self.width, self.height) / 16, align="center",
-                         width=int(self.width * 0.25))
-        arcade.draw_text("CENTER", self.width * 0.378, self.height * 0.2,
-                         cb.brightness([255, 255, 255], self.brightness),
-                         min(self.width, self.height) / 16, align="center",
-                         width=int(self.width * 0.25))
-        arcade.draw_text("RIGHT", self.width * 0.653, self.height * 0.2,
-                         cb.brightness([255, 255, 255], self.brightness),
-                         min(self.width, self.height) / 16, align="center",
-                         width=int(self.width * 0.25))
-
-        arcade.draw_text("KEY BINDS", self.width * 0.3, self.height * 0.38,
-                         cb.brightness([255, 255, 255], self.brightness),
-                         min(self.width, self.height) / 12, align="center",
-                         width=int(self.width * 0.4))
 
         arcade.draw_text("Press the button of the input channel you want to assign a new button too,\n"
                          " then press the key you want that input to be assigned to",
