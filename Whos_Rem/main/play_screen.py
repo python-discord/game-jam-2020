@@ -249,7 +249,7 @@ class GameScreen(arcade.View, PauseScreen):
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
-        if self.started and not self.paused:
+        if self.started and not self.paused and False:  # todo not fuck this
             points_to_add, combos = GameLogic.get_data(
                 (self.left_button_active, self.middle_button_active, self.right_button_active),
                 (self.key_1, self.key_2, self.key_3),
