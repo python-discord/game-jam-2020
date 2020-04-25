@@ -9,7 +9,7 @@ from constants import ASSETS, FONT, HEIGHT, WIDTH
 number = typing.Union[int, float]
 
 
-class IconButton():
+class IconButton:
     """A button, displayed with an icon."""
 
     def __init__(self, view: arcade.View, x: number, y: number, image: str,
@@ -29,6 +29,7 @@ class IconButton():
         self.center_x = x
         self.center_y = y
         self.size = size
+        self.sound = arcade.Sound(':resources:/sounds/jump1.wav')
 
     def load_texture(self, file: str, size: int) -> arcade.Texture:
         """Load a texture from a file. Arcade wasn't resizing nicely."""
@@ -86,6 +87,7 @@ class IconButton():
                        _modifiers: int):
         """Check if a mouse press is on the button."""
         x += arcade.get_viewport()[0]
+        self.sound.play()
         if self.left <= x <= self.right and self.bottom <= y <= self.top:
             self.state = 'pressed'
 
