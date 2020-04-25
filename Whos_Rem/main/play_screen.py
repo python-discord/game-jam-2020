@@ -102,6 +102,41 @@ class PauseScreen:
         return cls.sprite_list
 
 
+class GameLogic:
+    @classmethod
+    def get_points(cls, note_y, key_height):
+        delta = note_y - key_height
+        if delta in range(-5, 5):
+            return 100  # Perfect
+        elif delta in range(-20, -5):
+            return 50  # Good
+        elif delta in range(-50, -20):
+            return 20  # OK
+        else:
+            return -1  # Miss
+
+    @classmethod
+    def check_miss(cls, note_y, key_height):
+        delta = note_y - key_height
+        return delta not in range(-50, 50)
+
+    @classmethod
+    def get_data(cls, keys_list, key_data, notes):
+        total_points, combos = 0, 0
+        for loc, key in enumerate(keys_list):
+            if key:
+                points = cls.get_points(notes[loc], key_data[loc])
+                if points != -1:
+                    total_points += points
+                    combos += 1
+                else:
+                    combos = -1
+            else:
+                if cls.check_miss(notes[loc], key_data[loc]):
+                    combos = -1
+        return total_points, combos
+
+
 class GameScreen(arcade.View, PauseScreen):
     """ Main audio playing screen. """
 
@@ -184,18 +219,6 @@ class GameScreen(arcade.View, PauseScreen):
     def on_pause(self):
         self.paused = not self.paused
         self.audio._pause()
-
-    @staticmethod
-    def get_points(note_y, key_height):
-        delta = note_y - key_height
-        if delta in range(-5, 5):
-            return 100  # Perfect
-        elif delta in range(-20, -5):
-            return 50   # Good
-        elif delta in range(-50, -20):
-            return 20   # OK
-        else:
-            return -1   # Miss
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
