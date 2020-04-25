@@ -6,7 +6,7 @@ from .settings import Settings
 
 class Shape:
 
-    screen_width_center = pyautogui.size().width
+    screen_width_center = pyautogui.size().width // 2
 
     def __init__(self, x, y, scale_size, dims, dist, colour, speed):
         """
@@ -78,12 +78,12 @@ class ShapeManager:
 
     @staticmethod
     def create_shape(note, total_notes=3, colour=(255, 0, 0), screen_width=1920) -> Shape:
-        final_spacing = int(screen_width * 0.6)
-        central_spacing = final_spacing // total_notes
+        final_spacing = int(screen_width * 0.3)
+        central_spacing = final_spacing // (total_notes - 1) if total_notes != 1 else 0
         width = int(central_spacing * 0.45)
-        x_pos = int(central_spacing * (note / total_notes)) + screen_width // 2
+        x_pos = int(central_spacing * note)
         y_pos = int(pyautogui.size().height * 0.8)
-        new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 64, colour, 2)
+        new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 256, colour, 2)
 
         return new_shape
 
