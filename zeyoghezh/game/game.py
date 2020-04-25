@@ -13,8 +13,8 @@ from .config import (
     SCREEN_SIZE, SCREEN_TITLE, ALL_PLANETS, BACKGROUND_IMAGE, BACKGROUND_MUSIC,
     BACKGROUND_MUSIC_VOLUME, STORY_LINES, LITHIUM_MULTIPLIER, LITHIUM_SOUND,
     BASE_TIME_MULTIPLIER, VOLUME_IMAGE, VOLUME_MOVER_IMAGE, LITHIUM_VOLUME,
-    HEAL_VOLUME, GAME_OVER_VOLUME, ABSCOND_VOLUME, HEAL_SOUND,
-    GAME_OVER_SOUND, ABSCOND_SOUND, RESTART_IMAGE
+    HEAL_VOLUME, GAME_OVER_VOLUME, ABSCOND_VOLUME, HEAL_SOUND, RESTART_VOLUME,
+    GAME_OVER_SOUND, ABSCOND_SOUND, RESTART_IMAGE, RESTART_SOUND
 )
 import sys
 
@@ -67,6 +67,7 @@ class Game(arcade.Window):
         self.heal_sound = arcade.Sound(HEAL_SOUND)
         self.abscond_sound = arcade.Sound(ABSCOND_SOUND)
         self.game_over_sound = arcade.Sound(GAME_OVER_SOUND)
+        self.restart_sound = arcade.Sound(RESTART_SOUND)
 
         self.master_volume = 0.5
 
@@ -265,6 +266,7 @@ class Game(arcade.Window):
     def on_mouse_press(self, x, y, button, modifiers):
         if self.game_over_time:
             if self.restart_button.collides_with_point((x, y)):
+                self.restart_sound.play(self.master_volume * RESTART_VOLUME)
                 self.setup()
             return
         if get_distance(x, y, *self.lithium_location) < 10:

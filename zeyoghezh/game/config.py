@@ -50,6 +50,7 @@ HEAL_SOUND = ":resources:sounds/secret2.wav"
 ABSCOND_SOUND = ":resources:sounds/jump1.wav"
 GAME_OVER_SOUND = ":resources:sounds/lose2.wav"
 RESTART_IMAGE = ":resources:images/tiles/signLeft.png"
+RESTART_SOUND = ":resources:sounds/upgrade2.wav"
 
 LITHIUM_VOLUME = 0.03
 BACKGROUND_MUSIC_VOLUME = 0.03
@@ -57,6 +58,7 @@ SOUND_VOLUME = 0.01
 HEAL_VOLUME = 0.03
 ABSCOND_VOLUME = 0.04
 GAME_OVER_VOLUME = 0.04
+RESTART_VOLUME = 0.04
 
 
 SCREEN_TITLE = "Zeyoghezh"
