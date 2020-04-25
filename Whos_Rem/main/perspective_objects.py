@@ -8,7 +8,13 @@ class Shape:
 
     screen_width_center = pyautogui.size().width // 2
 
-    def __init__(self, x, y, scale_size, dims, dist, colour, speed):
+    def __init__(self, x: "end position relative to center screen",
+                 y: "starting y height, ends at 0",
+                 scale_size: "final size",
+                 dims: "ratio width:height, list length 2",
+                 dist: "starting 'dist' from screen, int",
+                 colour: list,
+                 speed: "default rate distance decreases, can be overwritten in update()",):
         """
         Note: dims is a relative ratio to scale size, if you want a rectangle which
         grows to a size of 400x200 its recommended you set scale_size to 400 and
@@ -78,7 +84,7 @@ class ShapeManager:
 
     @staticmethod
     def create_shape(note, total_notes=3, colour=(255, 0, 0), screen_width=1920) -> Shape:
-        final_spacing = int(screen_width * 0.3)
+        final_spacing = int(screen_width * 0.5)
         central_spacing = final_spacing // (total_notes - 1) if total_notes != 1 else 0
         width = int(central_spacing * 0.45)
         x_pos = int(central_spacing * note)
