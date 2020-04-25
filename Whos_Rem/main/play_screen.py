@@ -238,6 +238,7 @@ class GameScreen(arcade.View, PauseScreen):
                 self.notes_list.append(ShapeManager.create_shape(0))
             elif self.right:
                 self.notes_list.append(ShapeManager.create_shape(1))
+            print(len(self.notes_list))
 
     def on_start(self):
         self.started = True
@@ -267,9 +268,6 @@ class GameScreen(arcade.View, PauseScreen):
     def on_draw(self, time_delta=None, count_down=None):
         """ In charge of rendering the notes at current time. """
         arcade.start_render()
-
-        # notes
-        ShapeManager.manage_shapes(self.notes_list)
 
         # Background rendering
         self.background.center_x = self.WIDTH / 2
@@ -346,6 +344,9 @@ class GameScreen(arcade.View, PauseScreen):
                          end_y=height * pos,
                          line_width=width,
                          color=arcade.color.CRIMSON)
+
+        # notes
+        ShapeManager.manage_shapes(self.notes_list)
 
         # Shows Pause menu because i suck?
         if self.paused:
