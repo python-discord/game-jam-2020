@@ -3,8 +3,8 @@ import time
 
 import arcade
 import pyautogui
-from .Display import Button
-from .Display import ColourBlend as cb
+from .display import Button
+from .display import ColourBlend as cb
 
 
 class MainMenu(arcade.View):

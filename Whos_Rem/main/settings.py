@@ -2,8 +2,8 @@ from pathlib import Path
 
 import arcade
 import pyautogui
-from .Display import Button, Slider
-from .Display import ColourBlend as cb
+from .display import Button, Slider
+from .display import ColourBlend as cb
 
 
 class Settings(arcade.View):

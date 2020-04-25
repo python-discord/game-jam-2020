@@ -1,6 +1,6 @@
 import arcade
 from screeninfo import get_monitors
-from .Display import ColourBlend as cb
+from .display import ColourBlend as cb
 from .settings import Settings
 
 

@@ -2,8 +2,8 @@ from pathlib import Path
 
 import arcade
 import pyautogui
-from .Display import Button
-from .Display import ColourBlend as cb
+from .display import Button
+from .display import ColourBlend as cb
 
 
 class SongSelection(arcade.View):
@@ -27,10 +27,25 @@ class SongSelection(arcade.View):
         arcade.start_render()
         arcade.set_background_color([0, 0, 0])
 
+        arcade.draw_text("Choose a song:", self.width*0.05, self.height*0.67,
+                         cb.brightness([255, 255, 255], self.main.brightness),
+                         font_size=min(self.width, self.height)*0.1,)
         self.return_button_image.alpha = int(255*self.main.brightness)
         self.return_button_image.draw()
 
     def on_mouse_press(self, x, y, button, modifiers):
-
         if self.return_button.pressed(x, y):
             self.main.window.show_view(self.main.menu)
+
+    @staticmethod
+    def load_song_data(song_choice, base_path=Path.cwd() / Path("main/tracks")):
+        name = f"track_{song_choice}"
+        file_type = list(base_path.glob(f"*{name}*"))
+        file_type = [path.suffix[1:] for path in file_type if "json" not in path.suffix]
+        track_dict = {
+            "name": name,
+            "path": base_path / Path(name),
+            "type": file_type
+        }
+
+        return track_dict
