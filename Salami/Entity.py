@@ -46,7 +46,7 @@ class Entity(arcade.Sprite):
 
         self.is_solid = False
         self.flying = False
-
+        self.removed = False
         
         # self.set_hit_box([
         #     [-self.width, -TILE_SIZE_D2],
