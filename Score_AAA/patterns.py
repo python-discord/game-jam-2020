@@ -10,15 +10,15 @@ class PatternGenerator:
         if 0 <= rand <= 11:
             return [[]]
         elif rand <= 34:
-            return self._generate_one("../ressources/E_Obstacle.png")
+            return self._generate_one("./ressources/E_Obstacle.png")
         elif rand <= 54:
-            return self._generate_consecutives(2, "../ressources/W_Obstacle.png")
+            return self._generate_consecutives(2, "./ressources/W_Obstacle.png")
         elif rand <= 69:
-            return self._generate_consecutives(3, "../ressources/W_Obstacle.png")
+            return self._generate_consecutives(3, "./ressources/W_Obstacle.png")
         elif rand <= 84:
-            return self._generate_simultaneous(2, "../ressources/Q_Obstacle.png")
+            return self._generate_simultaneous(2, "./ressources/Q_Obstacle.png")
         else:
-            return self._generate_simultaneous(3, "../ressources/Q_Obstacle.png")
+            return self._generate_simultaneous(3, "./ressources/Q_Obstacle.png")
 
     def _generate_one(self, sprite_path):
         return [self.lanes[randint(0, 2)].generate_obstacle(sprite_path)]

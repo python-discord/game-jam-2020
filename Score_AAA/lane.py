@@ -44,7 +44,7 @@ class Lane:
         self.char.center_x = SCREEN_WIDTH // 10
         self.char.scale = scale
 
-        self.floor = arcade.Sprite("../ressources/Floor_Tempo.png")
+        self.floor = arcade.Sprite("./ressources/Floor_Tempo.png")
         self.floor.center_y = SCREEN_HEIGHT - (SCREEN_HEIGHT // 3) * tier + 5
         floor_list = arcade.SpriteList()
         floor_list.append(self.floor)
@@ -67,23 +67,12 @@ class Lane:
         obstacle.change_x = -self.difficulty
         return obstacle
 
-    def generate_tree(self) -> arcade.Sprite:
-        """
-        Unused. Generate a tree that move towards the char
-        """
-        tree = arcade.Sprite("../ressources/Tree_Tempo.png")
-        tree.scale = 0.5
-        tree.center_x = self.SCREEN_WIDTH
-        tree.center_y = self.SCREEN_HEIGHT - (self.SCREEN_HEIGHT // 3) * self.tier + 38
-        tree.change_x = -2
-        return tree
-
     def generate_valid_zone(self) -> arcade.Sprite:
         """
         Generate a sprite in front of the character,
         to detect correct input when an obstacle arrive.
         """
-        valid_zone = arcade.Sprite("../ressources/Lane_Valid_Zone.png")
+        valid_zone = arcade.Sprite("./ressources/Lane_Valid_Zone.png")
         valid_zone.center_x = (self.SCREEN_WIDTH // 10) * 2
         valid_zone.center_y = (
             self.SCREEN_HEIGHT - (self.SCREEN_HEIGHT // 3) * self.tier + 90

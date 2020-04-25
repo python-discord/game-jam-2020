@@ -50,13 +50,13 @@ class Obstacle(arcade.Sprite):
 class Splash(arcade.Sprite):
     def __init__(self, type, position):
         if type == "ok":
-            path = "../ressources/splash_ok.png"
+            path = "./ressources/splash_ok.png"
         elif type == "super":
-            path = "../ressources/splash_super.png"
+            path = "./ressources/splash_super.png"
         elif type == "perfect":
-            path = "../ressources/splash_perfect.png"
+            path = "./ressources/splash_perfect.png"
         else:
-            path = "../ressources/splash_miss.png"
+            path = "./ressources/splash_miss.png"
         super().__init__(path)
         self.gravity = 0.5
         self.center_x = position[0]
