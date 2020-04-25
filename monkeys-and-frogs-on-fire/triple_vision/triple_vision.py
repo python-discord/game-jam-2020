@@ -82,6 +82,7 @@ class TripleVision(arcade.View):
     def on_key_press(self, key, modifiers) -> None:
         if key == arcade.key.ESCAPE:
             arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
+            self.window.set_mouse_visible(True)
             self.window.show_view(self.main_view)
         else:
             self.player.process_key_press(key)
