@@ -156,8 +156,8 @@ class Player(LivingEntity, MovingSprite):
 
     def process_left_mouse_press(self, x, y, charge) -> None:
         if time.time() - self.last_shot < self.dexterity:
-            SoundManager.add_sound("empty_gun.wav")
-            SoundManager.play_sound("empty_gun.wav")
+            # SoundManager.add_sound("empty_gun.wav")
+            # SoundManager.play_sound("empty_gun.wav")
             return
 
         if len(self.mana_bar) == 0:
