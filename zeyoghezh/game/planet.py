@@ -3,13 +3,14 @@ from .util import (
     get_distance, closest_distance_between_planets, get_unit_push_distance
 )
 import logging
+import time
 import random
 from .config import (
     SCREEN_SIZE, PLANET_BASE_SPEED, PUSH_BASE_SPEED,
     PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
     PLANET_COLORS, PLANET_SPRITES, TRIANGULATION_START_LIKELIHOOD,
     TRIANGULATION_END_LIKELIHOOD, ATTACK_SOUND, ATTACK_PLAYS_SOUND_CHANCE,
-    SOUND_VOLUME, BOTTOM_BORDER_Y
+    SOUND_VOLUME, BOTTOM_BORDER_Y, TRIANGULATION_FADE_TIME
 )
 
 logger = logging.getLogger()
@@ -39,6 +40,7 @@ class Planet(arcade.Sprite):
         self.total_healing = 0
 
         self.is_triangulating = False
+        self.last_triangulating = None
 
         self.proper_name = self.name[0].upper() + self.name[1:].lower()
 
@@ -52,6 +54,7 @@ class Planet(arcade.Sprite):
         self.center_y = center_y
         self.speed_x = start_speed_x
         self.speed_y = start_speed_y
+        self.last_triangulating = time.time()
 
     def move(self, time_multiplier, delta_x=None, delta_y=None):
         # I have no idea why this needs to be 4 and not 2
@@ -163,9 +166,9 @@ class Planet(arcade.Sprite):
         )
 
     def draw_triangulation_circle(self):
-        health_normalized = int(255 * min(self.health, 1))
+        triangulation_strength = self.get_triangulation_strength()
         transparentized_color = arcade.make_transparent_color(
-            self.color, health_normalized)
+            self.color, triangulation_strength)
         lithium_location = self.parent.lithium_location
         distance_to_lithium = get_distance(
             self.center_x, self.center_y, *lithium_location
@@ -180,6 +183,29 @@ class Planet(arcade.Sprite):
         self.scale = self.health
         assert self.health > 0
 
+    def get_triangulation_strength(self):
+        health_normalized = min(self.health, 1)
+        if self.is_triangulating:
+            return int(255 * health_normalized)
+        if self.last_triangulating < self.parent.last_lithium_change:
+            return 0
+        time_since_last_triangulation = time.time() - self.last_triangulating
+        triangulation_trace = max(
+            0, TRIANGULATION_FADE_TIME - time_since_last_triangulation)
+        triangulation_strength = health_normalized * triangulation_trace
+        alpha = int(triangulation_strength * 255)
+        print(f"{triangulation_trace=}, {health_normalized=}, "
+              f"{triangulation_strength=}, {alpha=}")
+        assert 0 <= health_normalized
+        assert health_normalized <= 1
+        assert 0 <= triangulation_trace
+        assert triangulation_trace <= 1
+        assert 0 <= triangulation_strength
+        assert triangulation_strength <= 1
+        assert 0 <= alpha
+        assert alpha <= 255
+        return alpha
+
     def update_triangulating(
             self, time_multiplier, in_tutorial, should_not_triangulate):
         # TODO improve chance logic here
@@ -191,6 +217,7 @@ class Planet(arcade.Sprite):
         if in_tutorial:
             start_chance = (start_chance*99 + 1) / 100
         if random.random() < start_chance:
+            self.last_triangulating = time.time()
             self.is_triangulating = True
         if random.random() < end_chance:
             self.is_triangulating = False

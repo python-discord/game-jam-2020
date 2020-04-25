@@ -58,6 +58,7 @@ class Game(arcade.Window):
         super().__init__(SCREEN_SIZE[0], SCREEN_SIZE[1], SCREEN_TITLE)
         self.planets = None
         self.lithium_location = get_new_lithium_location()
+        self.last_lithium_change = time.time()
         self.lithium_count = 0
         self.lithium_score_location = (SCREEN_SIZE[0]/3, SCREEN_SIZE[1]/20)
         self.theme = None
@@ -218,8 +219,7 @@ class Game(arcade.Window):
             planet.attacked_last_round = []
             planet.pushed_last_round = []
 
-            if planet.is_triangulating:
-                planet.draw_triangulation_circle()
+            planet.draw_triangulation_circle()
         self.planets.draw()
         lithium_count_text = f"Lithium count: {self.lithium_count:.2f}"
         arcade.draw_text(
@@ -288,6 +288,7 @@ class Game(arcade.Window):
         planet_avg_health = self.avg_planet_health()
         self.lithium_count += planet_avg_health * LITHIUM_MULTIPLIER
         self.lithium_location = get_new_lithium_location()
+        self.last_lithium_change = time.time()
         self.player_has_clicked_lithium = True
 
     def avg_planet_health(self):
