@@ -37,10 +37,10 @@ class Score:
     def draw_score_screen(self):
 
         arcade.draw_text(
-            "- SCORE -",
-            self.width // 2 - 100,
-            self.height - self.height // 10,
-            arcade.color.RED_BROWN,
+            "- HIGH SCORE -",
+            self.width // 2 - 155,
+            self.height - self.height // 10 - 10,
+            arcade.color.RUBY_RED,
             40,
         )
         count = 1
@@ -56,18 +56,18 @@ class Score:
                 )
             else:
                 arcade.draw_text(
-                    f"* {value}  -   {item}",
-                    self.width // 2 - 40 - 20 * len(value),
+                    f" {value}  -   {item}",
+                    self.width // 2 - 20 - 20 * len(value),
                     self.height - (self.height // 10) * count,
                     arcade.color.RED_DEVIL,
                     30,
                 )
         if self.restart_timer >= 0:
             arcade.draw_text(
-                "Press any key to restart the game",
-                self.width // 2 - 62 * len(value),
+                "Press a key to play again",
+                self.width // 2 - 47 * len(value),
                 self.height // 9,
-                arcade.color.RED_ORANGE,
+                arcade.color.YELLOW_ORANGE,
                 30,
             )
 

@@ -8,7 +8,7 @@ class PatternGenerator:
     def generate_pattern(self):
         rand = randint(0, 99)
         if 0 <= rand <= 11:
-            return []
+            return [[]]
         elif rand <= 34:
             return self._generate_one("../ressources/E_Obstacle.png")
         elif rand <= 54:
@@ -27,7 +27,7 @@ class PatternGenerator:
         rand = randint(0, len(self.lanes) - 1)
         result = []
         for numbers in range(repeat):
-            result.append(self.lanes[rand].generate_obstacle(sprite_path))
+            result.append([self.lanes[rand].generate_obstacle(sprite_path)])
         return result
 
     def _generate_simultaneous(self, number: int, sprite_path) -> list:

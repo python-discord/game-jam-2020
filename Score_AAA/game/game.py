@@ -37,6 +37,7 @@ class MyGame(arcade.Window):
         self.sky_list = None
         self.splash_list = None
         self.score_list = None
+        self.life_list = None
 
         # Set up the Lanes
         self.lane_up = None
@@ -69,6 +70,7 @@ class MyGame(arcade.Window):
         self.char_list = arcade.SpriteList()
         self.splash_list = arcade.SpriteList()
         self.score_list = arcade.SpriteList()
+        self.life_list = arcade.SpriteList()
 
         # Set up lane 1
         q_run_textures = []
@@ -131,7 +133,6 @@ class MyGame(arcade.Window):
         ]
 
         # Set up lane 3
-
         w_run_textures = []
         for i in range(6):
             w_run_textures.append(arcade.load_texture(f"../ressources/E_Run_{i+1}.png"))
@@ -166,23 +167,39 @@ class MyGame(arcade.Window):
         ok_zone.center_y = SCREEN_HEIGHT // 2
         self.floor_list.append(ok_zone)
 
-        # Set up the rest
+        # Set up obstacle Generation
         self.pattern = PatternGenerator(
             [self.lane_up, self.lane_middle, self.lane_down]
         )
-        arcade.set_background_color(arcade.color.SMOKY_BLACK)
+        self.obstacle_queue = deque([[], [], [], [], []])
+
+        # Set up life system
+        self.life = 5
+        life_pos = [SCREEN_WIDTH// 2 + 40, SCREEN_HEIGHT - 30]
+        for life_sprite in range(self.life):
+            self.life_list.append(arcade.Sprite("../ressources/Life_Orb.png",
+                                                center_x= life_pos[0],
+                                                center_y= life_pos[1]))
+            life_pos[0] += 40
+
+        # Set up Combo and Score and difficulty
         self.score_screen = Score(SCREEN_WIDTH, SCREEN_HEIGHT)
+        self.score_list.append(arcade.Sprite("..//ressources/Score_Box.png",
+                                             center_x=700,
+                                             center_y=560,
+                                             scale=1.2))
         self.score = 0
+        self.combo = 0
+        self.stage = [60000, 20000, 2500]
+
+        # Set up Technical stuff
         self.time = 0
         self.frame = 0
         self.fps = 0
-        self.combo = 0
-        self.life = 5
-        self.stage = [60000, 20000, 2500]
-        self.music = None
-        self.obstacle_queue = deque([[], [], [], [], []])
+        arcade.set_background_color(arcade.color.SMOKY_BLACK)
 
         # Play the music
+        self.music = None
         if self.music:
             self.music.stop()
         self.music = arcade.Sound(
@@ -202,18 +219,23 @@ class MyGame(arcade.Window):
         self.obstacle_list.draw(filter=GL_NEAREST)
         self.char_list.draw(filter=GL_NEAREST)
         self.splash_list.draw(filter=GL_NEAREST)
+        self.score_list.draw(filter=GL_NEAREST)
+        self.life_list.draw(filter=GL_NEAREST)
         if self.game_state == EnumGameState.game:
             # Put the text on the screen.
-            output = f"Score: {self.score}"
-            arcade.draw_text(output, 700, 550, arcade.color.BLACK, 14)
+            output = f"{self.score}"
+            arcade.draw_text(output, 693, 560, arcade.color.DARK_RED, 15)
+            combo = f"{self.combo}"
+            arcade.draw_text(combo, 693, 542, arcade.color.DARK_RED, 15)
+
+            # Put the fps on the bottom left
             fps = f"FPS: {self.fps}"
-            arcade.draw_text(fps, 700, 565, arcade.color.BLACK, 14)
-            combo = f"COMBO: {self.combo}"
-            arcade.draw_text(combo, 700, 535, arcade.color.BLACK, 14)
+            arcade.draw_text(fps, 730, 10, arcade.color.YELLOW, 14)
+
         elif self.game_state == EnumGameState.game_over:
             self.score_screen.draw_score_screen()
-            output = f"Score: {self.score}"
-            arcade.draw_text(output, 700, 550, arcade.color.BLACK, 14)
+            output = f"{self.score}"
+            arcade.draw_text(output, 700, 560, arcade.color.DARK_RED, 14)
 
     def draw_title_screen(self):
         arcade.draw_texture_rectangle(
@@ -267,6 +289,7 @@ class MyGame(arcade.Window):
         if result.name == "miss":
             self.combo = 0
             self.life -= 1
+            self.life_list[self.life].color = (50, 50, 50)
         else:
             self.combo += 1
             self.score += result.value * self.combo
@@ -297,7 +320,12 @@ class MyGame(arcade.Window):
 
                 # Generation of obstacles
                 if not self.obstacle_queue:
-                    self.obstacle_queue.append(self.pattern.generate_pattern())
+                    result = self.pattern.generate_pattern()
+                    if isinstance(result[0], list):
+                        for x in result:
+                                self.obstacle_queue.append(x)
+                    else:
+                        self.obstacle_queue.append(result)
                 for obstacle in self.obstacle_queue.popleft():
                     self.obstacle_list.append(obstacle)
 
@@ -311,6 +339,7 @@ class MyGame(arcade.Window):
                         self.score -= 50
                         self.combo = 0
                         self.life -= 1
+                        self.life_list[self.life].color = (50, 50, 50)
                     obstacle.remove_from_sprite_lists()
 
             # Increase speed at each level of difficulty
@@ -327,7 +356,12 @@ class MyGame(arcade.Window):
                 self.obstacle_list = arcade.SpriteList()
                 self.char_list = arcade.SpriteList()
                 self.splash_list = arcade.SpriteList()
+                self.life_list = arcade.SpriteList()
                 self.score_screen.load_score(self.score)
+                self.score_list.append(arcade.Sprite("..//ressources/Score_Ground.png",
+                                                     center_x= SCREEN_WIDTH//2,
+                                                     center_y= SCREEN_HEIGHT//2))
+
 
         if self.score_screen.restart_timer >= 0:
             self.score_screen.restart_timer += delta_time
