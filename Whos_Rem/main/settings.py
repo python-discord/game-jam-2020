@@ -8,8 +8,14 @@ from .display import ColourBlend as cb
 
 class Settings(arcade.View):
     width, height = pyautogui.size()
-
     mouse_pressing = False
+
+    background_image = arcade.Sprite(
+        filename=Path().cwd() / Path("main/Resources/background.png"),
+        scale=min(width / 6400, height / 3600),
+        center_x=int(width * 0.5),
+        center_y=int(height * 0.5),
+    )
 
     brightness_slide = Slider(int(width * 0.1), int(height * 0.57), int(width * 0.3), int(height * 0.01),
                               name="Brightness")
@@ -73,8 +79,11 @@ class Settings(arcade.View):
         filename=Path().cwd() / Path("main/Resources/settings_menu/Key-Binds.png"),
         scale=int(min(width, height) * 0.17) / 128,
         center_x=int(width * 0.5),
-        center_y=int(height * 0.47),
+        center_y=int(height * 0.45),
     )
+
+    text_objects = [settings_title, brightness_text, volume_text, left_text,
+                    right_text, center_text, key_binds_text, return_button_image]
 
     binding_key = None
     key_binds = {"left": arcade.key.A, "center": arcade.key.S, "right": arcade.key.D}
@@ -85,7 +94,8 @@ class Settings(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
-        arcade.set_background_color([0, 0, 0])
+        self.background_image.alpha = int(255 * self.brightness)
+        self.background_image.draw()
 
         self.brightness_slide.draw(self.brightness)
         self.volume_slide.draw(self.brightness)
@@ -93,9 +103,6 @@ class Settings(arcade.View):
         self.left_key_button.draw(self.brightness)
         self.center_key_button.draw(self.brightness)
         self.right_key_button.draw(self.brightness)
-
-        self.return_button_image.alpha = int(255*self.brightness)
-        self.return_button_image.draw()
 
         self.draw_text()
 
@@ -135,26 +142,9 @@ class Settings(arcade.View):
 
     def draw_text(self):
         alpha = int(255 * self.main.brightness)
-        self.settings_title.alpha = alpha
-        self.settings_title.draw()
-
-        self.brightness_text.alpha = alpha
-        self.brightness_text.draw()
-
-        self.volume_text.alpha = alpha
-        self.volume_text.draw()
-
-        self.left_text.alpha = alpha
-        self.left_text.draw()
-
-        self.center_text.alpha = alpha
-        self.center_text.draw()
-
-        self.right_text.alpha = alpha
-        self.right_text.draw()
-
-        self.key_binds_text.alpha = alpha
-        self.key_binds_text.draw()
+        for item in self.text_objects:
+            item.alpha = alpha
+            item.draw()
 
         arcade.draw_text(chr(self.key_binds["left"]).upper(),
                          self.width * 0.178, self.height * 0.105,

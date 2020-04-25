@@ -14,7 +14,14 @@ class SongSelection(arcade.View):
         filename=Path().cwd() / Path("main/Resources/settings_menu/return_button.png"),
         scale=int(min(width, height) * 0.15) / 512,
         center_x=int(width * 0.075),
-        center_y=int(height * 0.9), )
+        center_y=int(height * 0.9),
+    )
+    background_image = arcade.Sprite(
+        filename=Path().cwd() / Path("main/Resources/background.png"),
+        scale=min(width/6400, height/3600),
+        center_x=int(width * 0.5),
+        center_y=int(height * 0.5),
+    )
 
     return_button = Button(width * 0.03, height * 0.86, width * 0.09, height * 0.08,
                            activation=lambda: None, draw_func=lambda: None, name="menu button")
@@ -25,7 +32,8 @@ class SongSelection(arcade.View):
 
     def on_draw(self):
         arcade.start_render()
-        arcade.set_background_color([0, 0, 0])
+        self.background_image.alpha = int(255 * self.main.brightness)
+        self.background_image.draw()
 
         arcade.draw_text("Choose a song:", self.width*0.05, self.height*0.67,
                          cb.brightness([255, 255, 255], self.main.brightness),

@@ -11,7 +11,6 @@ class Audio:
     FPS = 16
 
     settings = None
-    volume = None
 
     track = None
     music = None
@@ -24,7 +23,10 @@ class Audio:
     def __init__(self, main_):
         self.main = main_
         self.settings = self.main.settings
-        self.volume = self.volume * 0.1
+
+    @property
+    def volume(self):
+        return self.settings.volume * 0.1
 
     @classmethod
     def _setup(cls, _track: dict):
