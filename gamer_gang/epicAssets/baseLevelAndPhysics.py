@@ -304,12 +304,6 @@ class Level(arcade.View):
                 if p.pymunk_shape.body.velocity.x < -300:
                     p.pymunk_shape.body.velocity = pymunk.Vec2d((-150, p.pymunk_shape.body.velocity.y))
 
-        for j in self.jumpPads:  # move the boxes (if jump pad detected)
-            for b in arcade.check_for_collision_with_list(j, self.boxes):
-                if b.can_jump:
-                    b.pymunk_shape.body.velocity += pymunk.Vec2d((0, 600))
-                    b.can_jump = False
-
     def entityInteractionCheck(self):
         for p in self.players:
             if p is None:
