@@ -1,11 +1,9 @@
 k judges  
 this only works if your current working directory is my team repo  
 ###running directions
-so your file path has to be like C:/Users/stuff/game-jam-2020/gamer_gang for this game to work  
+so your file path has to be like C:/Users/stuff/game-jam-2020 for this game to work  
+so yea you're gonna have to run: "python gamer_gang/triple_blocks.py"  
 there might be some other ones but idk  
-so what you do  
-is you run triple_blocks.py (in the specified directory above, ofc)  
-that's it  
 maybe requirements.txt too but idk  
 ###game mechanics
 up, left, right OR WAD to move  
