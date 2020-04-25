@@ -7,7 +7,6 @@ Python Discord | Game Jam 2020
 from math import atan2, degrees, radians, sin, cos, sqrt
 import os
 from pathlib import Path
-import pprint
 import random
 import time
 
@@ -16,7 +15,7 @@ import arcade
 import PIL
 from pyglet import gl
 
-# Local application
+# Local
 from game.utils import pathfinding
 
 UPDATES_PER_FRAME = 3
@@ -179,7 +178,6 @@ class EnemyShip(arcade.Sprite):
         self.collision_time = 0
         self.collision_time_diff = 0
 
-
     def move_to(self, delta_time):
         self.change_x = 0
         self.change_y = 0
@@ -271,17 +269,21 @@ class EnemyShip(arcade.Sprite):
 
 
 class Pirate(arcade.Sprite):
-    '''
+    """
     Player class
-    '''
+    """
     def __init__(self, sprite_root):
         super().__init__()
         self.name = sprite_root
 
         self.scale = CHARACTER_SCALING
 
+        self.health = 100
+
         sprite_path = path['img'] / sprite_root
+
         self.texture_dict = {}
+
         self.texture_dict['run'] = [
             load_texture_pair(sprite_path / "run" / f"{i}.png")
             for i in range(1, len(os.listdir(sprite_path / "run"))+1)
@@ -294,6 +296,14 @@ class Pirate(arcade.Sprite):
             load_texture_pair(sprite_path / "attack" / f"{i}.png")
             for i in range(1, len(os.listdir(sprite_path / "attack"))+1)
         ]
+        self.texture_dict['hit'] = [
+            load_texture_pair(sprite_path / "hit" / f"{i}.png")
+            for i in range(1, len(os.listdir(sprite_path / "hit"))+1)
+        ]
+        self.texture_dict['death'] = [
+            load_texture_pair(sprite_path / "death" / f"{i}.png")
+            for i in range(1, len(os.listdir(sprite_path / "death"))+1)
+        ]
 
         self.texture = self.texture_dict['idle'][0][0]
         self.bottom = 0
@@ -301,11 +311,14 @@ class Pirate(arcade.Sprite):
         self.cur_run_texture = 0
         self.cur_idle_texture = 0
         self.cur_attack_texture = 0
+        self.cur_hit_texture = 0
+        self.cur_death_texture = 0
 
         self.character_face_direction = RIGHT_FACING
 
         self.is_idle = False
         self.is_attacking = False
+        self.is_hit = False
         self.follower = False
 
     def update_animation(self):
@@ -319,19 +332,54 @@ class Pirate(arcade.Sprite):
              ):
             self.character_face_direction = RIGHT_FACING
 
+        # TODO: Create single function for each animation instead of repeating
+        #       all this code
+
         # Idle animation
-        if self.is_idle:
+        if self.health <= 0:
+            self.change_x, self.change_y = 0, 0
+
+            frames = self.cur_death_texture // UPDATES_PER_FRAME
+
+            if frames == len(self.texture_dict['death'])-1:
+                return
+
+            # print(self.name, frames)
+            self.texture = self.texture_dict['death'][frames][
+                self.character_face_direction
+                ]
+
+            self.cur_death_texture += 1
+            return
+
+        elif self.is_idle:
             frames = self.cur_idle_texture // UPDATES_PER_FRAME
 
             if frames == len(self.texture_dict['idle'])-1:
                 self.cur_idle_texture = 0
 
-            print(self.name, frames)
+            # print(self.name, frames)
             self.texture = self.texture_dict['idle'][frames][
                 self.character_face_direction
                 ]
 
             self.cur_idle_texture += 1
+            return
+
+        elif self.is_hit:
+            frames = self.cur_hit_texture // UPDATES_PER_FRAME
+
+            if frames == len(self.texture_dict['hit'])-1:
+                self.cur_hit_texture = 0
+                self.is_hit = False
+                return
+
+            # print(self.name, frames)
+            self.texture = self.texture_dict['hit'][frames][
+                self.character_face_direction
+                ]
+
+            self.cur_hit_texture += 1
             return
 
         # Attack animation
@@ -372,20 +420,10 @@ class Pirate(arcade.Sprite):
             self.cur_run_texture += 1
 
     def on_update(self, delta_time):
+        self.update_animation()
+
         self.center_x += self.change_x * delta_time
         self.center_y += self.change_y * delta_time
-
-        # if self.left < 0:
-        #     self.left = 0
-        # elif self.right > SCREEN_WIDTH - 1:
-        #     self.right = SCREEN_WIDTH - 1
-        #
-        # if self.bottom < 0:
-        #     self.bottom = 0
-        # elif self.top > SCREEN_HEIGHT - 1:
-        #     self.top = SCREEN_HEIGHT - 1
-
-        self.update_animation()
 
 
 class Enemy_SpriteSheet(arcade.Sprite):
@@ -405,10 +443,21 @@ class Enemy_SpriteSheet(arcade.Sprite):
         self.cur_attack_texture = 0
         self.cur_run_texture = 0
         self.cur_hit_texture = 0
+        self.cur_death_texture = 0
+
+        self.center_x, self.center_y = 300, 300
+
+        self.path = []
+        self.path_position = 1
 
         self.right_facing_textures = [
             arcade.load_spritesheet(
-                path['img'] / sprite_root / f'{i}.png', PIL.Image.open(path['img'] / sprite_root / f'{i}.png').size[0]/j, PIL.Image.open(path['img'] / sprite_root / f'{i}.png').size[1], j, j)
+                path['img'] / sprite_root / f'{i}.png',
+                PIL.Image.open(
+                    path['img'] / sprite_root / f'{i}.png').size[0]/j,
+                PIL.Image.open(
+                    path['img'] / sprite_root / f'{i}.png').size[1],
+                j, j)
             for (i, j) in zip(
                 ('attack', 'death', 'hurt', 'idle', 'walk'),
                 (20, 13, 16, 18, 20))
@@ -420,12 +469,11 @@ class Enemy_SpriteSheet(arcade.Sprite):
             textures_list = []
             for texture in animation:
                 textures_list.append(
-                arcade.Texture(
-                    f'{texture.name}_mirrored',
-                    PIL.ImageOps.mirror(texture.image)
-                ))
+                    arcade.Texture(
+                        f'{texture.name}_mirrored',
+                        PIL.ImageOps.mirror(texture.image)
+                    ))
             self.left_facing_textures.append(textures_list)
-
 
         self.texture_dict = {}
 
@@ -436,21 +484,68 @@ class Enemy_SpriteSheet(arcade.Sprite):
             self.texture_dict[i] = [
                 self.right_facing_textures[j], self.left_facing_textures[j]
             ]
-        # print("RIGHT", self.right_facing_textures)
-        # print("LEFT", self.left_facing_textures)
-        pp = pprint.PrettyPrinter(indent=4)
-        pp.pprint(self.texture_dict)
-        # print("DICT", self.texture_dict)
-        # [[j for i in ('attack', 'death', 'hurt', 'idle', 'walk') for j in self.right_facing_textures],
-        # [j for i in ('attack', 'death', 'hurt', 'idle', 'walk') for j in self.left_facing_textures]]
 
         self.texture = self.left_facing_textures[0][0]
 
-    def on_update(self, delta_time):
-        self.update_animation(delta_time)
+        self.target = (self.center_x, self.center_y)
 
-        if self.health <= 0:
-            self.kill()
+    def enemy_pathfinding(self, matrix, target, delta_time):
+        if len(self.path)-1 < self.path_position:
+            self.path_position = 1
+
+            self.path = pathfinding.find_path(
+                matrix,
+                self.center_x, self.center_y,
+                target.center_x, target.center_y,
+                16, 36
+            )
+
+        # print(self.path, self.path_position)
+
+        if len(self.path) > 2:
+
+            path_x, path_y = self.path[self.path_position]
+            if (
+                    int(self.center_x) not in range(
+                        path_x-2, path_x+2)and
+                    int(self.center_y) not in range(
+                        path_y-2, path_y+2)
+            ):
+                # print(f"Moving to node {self.path_position}")
+                self.target = self.path[self.path_position]
+
+            else:
+                # print(f"At node {self.path_position}")
+                self.path_position += 1
+
+        else:
+            self.change_x, self.change_y = 0, 0
+            # self.character_face_direction = target.character_face_direction
+            self.path = pathfinding.find_path(
+                matrix,
+                self.center_x, self.center_y,
+                target.center_x, target.center_y,
+                16, 36
+            )
+            self.path_position = 1
+
+    def move_to(self, delta_time):
+        # target = (x, y)
+
+        dx = self.target[0] - self.center_x
+        dy = self.target[1] - self.center_y
+
+        magnitude = sqrt(dx**2 + dy**2)+0.00001
+
+        self.change_y = dy/magnitude*10
+        self.change_x = dx/magnitude*10
+
+        # print(f"""MOVING:{dy, dx, self.angle, self.change_x, self.change_y}
+        # \n{self.path_position, self.path}""")
+
+    def on_update(self, delta_time):
+        self.move_to(delta_time)
+        self.update_animation(delta_time)
 
         self.center_x += self.change_x*delta_time*self.movement_speed
         self.center_y += self.change_y*delta_time*self.movement_speed
@@ -468,6 +563,23 @@ class Enemy_SpriteSheet(arcade.Sprite):
                 self.character_face_direction == LEFT_FACING
              ):
             self.character_face_direction = RIGHT_FACING
+
+        if self.health <= 0:
+            self.change_x = 0
+            self.change_y = 0
+            frames = self.cur_death_texture // UPDATES_PER_FRAME
+
+            if frames == len(self.texture_dict['death'][0])-1:
+                self.cur_death_texture = 0
+                self.kill()
+
+            # print(self.name, frames)
+            self.texture = self.texture_dict['death'][
+                self.character_face_direction
+                ][frames]
+
+            self.cur_death_texture += 1
+            return
 
         # Idle animation
         if self.is_idle:
@@ -517,7 +629,9 @@ class Enemy_SpriteSheet(arcade.Sprite):
 
         # Default animation
         elif self.change_x == 0 and self.change_y == 0:
-            self.texture = self.texture = self.texture_dict['idle'][self.character_face_direction][0]
+            self.texture = (self.texture_dict['idle']
+                            [self.character_face_direction][0]
+                            )
             (self.cur_run_texture, self.cur_idle_texture,
                 self.cur_attack_texture) = (0, 0, 0)
             return
@@ -534,10 +648,6 @@ class Enemy_SpriteSheet(arcade.Sprite):
                 ][frames]
 
             self.cur_run_texture += 1
-
-    def move_to(self, target):
-        pass
-        # atan2()
 
 
 class ShipView(arcade.View):
@@ -599,8 +709,10 @@ class ShipView(arcade.View):
                 self.player_ship, self.map_layers[2])
 
         # Used to keep track of our scrolling
-        self.view_bottom = 0
+        self.view_right = 0
         self.view_left = 0
+        self.view_bottom = 0
+        self.view_top = 0
 
         # self.player_view = PlayerView()
 
@@ -676,6 +788,10 @@ class ShipView(arcade.View):
                 int(bottom),
                 int(top)
             )
+        self.view_top = top
+        self.view_left = left
+        self.view_right = right
+        self.view_bottom = bottom
 
     def ship_controls(self, delta_time):
         # Calculate speed based on the keys pressed
@@ -713,6 +829,9 @@ class ShipView(arcade.View):
 
         elif self.right_pressed and not self.left_pressed:
             self.player_ship.change_angle = -1
+
+        if self.player_ship.health <= 0:
+            self.player_ship.change_x, self.player_ship.change_y = 0, 0
 
     def animate_layers(self):
         """
@@ -817,7 +936,8 @@ class ShipView(arcade.View):
                 enemy.path = pathfinding.find_path(
                     self.matrix,
                     enemy.center_x, enemy.center_y,
-                    self.player_ship.center_x, self.player_ship.center_y
+                    self.player_ship.center_x, self.player_ship.center_y,
+                    64, 36
                 )
 
             # print(enemy.path, enemy.path_position)
@@ -844,7 +964,8 @@ class ShipView(arcade.View):
                 enemy.path = pathfinding.find_path(
                     self.matrix,
                     enemy.center_x, enemy.center_y,
-                    self.player_ship.center_x, self.player_ship.center_y
+                    self.player_ship.center_x, self.player_ship.center_y,
+                    64, 36
                 )
                 enemy.path_position = 1
 
@@ -863,6 +984,14 @@ class ShipView(arcade.View):
 
         self.enemy_list.draw()
 
+        if self.player_ship.collides_with_list(self.map_layers[3]):
+            arcade.draw_text(
+                "Press SPACE to enter the island.",
+                SCREEN_WIDTH/2*self.viewport_scale+self.view_left,
+                self.view_bottom+50*self.viewport_scale, arcade.color.BLACK,
+                self.viewport_scale*40, align='center',
+                anchor_x='center', anchor_y='center'
+            )
         # for enemy in self.enemy_list:
         #     for point in enemy.path:
         #         arcade.draw_point(point[0], point[1], arcade.color.RED, 30)
@@ -945,6 +1074,7 @@ class ShipView(arcade.View):
         # TODO: KEYS Q + E can easily be combined into one function that
         # changes the angle based on which key is pressed.
 
+        # - - Cannonball firing - -
         if key == arcade.key.Q and self.cannon_cooldown > 2:
             cannonball = arcade.Sprite(
                 path['img'] / 'ship' / 'cannonBall.png', 1)
@@ -963,7 +1093,6 @@ class ShipView(arcade.View):
             self.cannonballs.append(cannonball)
 
             self.cannon_fired_time = time.time()
-
         if key == arcade.key.E and self.cannon_cooldown > 2:
             cannonball = arcade.Sprite(
                 path['img'] / 'ship' / 'cannonBall.png', 1)
@@ -983,14 +1112,25 @@ class ShipView(arcade.View):
 
             self.cannon_fired_time = time.time()
 
+        # Scale the viewport
         if key == arcade.key.EQUAL:
             self.viewport_scale -= 0.5
         if key == arcade.key.MINUS:
             self.viewport_scale += 0.5
 
+        # Fullscreen toggle
         if key == arcade.key.F11:
             self.window.set_fullscreen(not self.window.fullscreen)
             self.window.set_vsync(not self.window.vsync)
+
+        '''Transition to PlayerView when SPACE is pressed at the port'''
+        if (key == arcade.key.SPACE
+                and self.player_ship.collides_with_list(self.map_layers[3])):
+            self.music.stop()
+            self.ambient_track.stop()
+
+            player_view = PlayerView()
+            self.window.show_view(player_view)
 
     def on_key_release(self, key, key_modifiers):
         """
@@ -1012,9 +1152,12 @@ class PlayerView(arcade.View):
 
         self.formation = 0
 
-        self.paused = False
+        self.matrix = pathfinding.layer_to_grid(
+            path['maps'] / 'dungeon_test_walls.csv')
 
-        self.mouse_position = (0,0)
+        self.paused = True
+
+        self.mouse_position = (0, 0)
 
         self.cursor = arcade.Sprite(path['img'] / 'cursor' / 'sword.png')
 
@@ -1028,10 +1171,6 @@ class PlayerView(arcade.View):
 
         self.player_sprites = arcade.SpriteList()
 
-
-
-        # for i in ('brawn', 'bald'):
-        #     self.player_sprites.append(Pirate(i))
         self.player_sprites.append(Pirate('brawn'))
         self.player_sprites.append(Pirate('captain'))
         self.player_sprites.append(Pirate('bald'))
@@ -1039,7 +1178,7 @@ class PlayerView(arcade.View):
         self.selected_character = 0
         self.player_sprite = self.player_sprites[self.selected_character]
 
-        self.player_sprites[0].set_position(200, 200)
+        self.player_sprites[1].set_position(200, 200)
         self.player_sprites[2].set_position(200, 200)
         self.player_sprite.set_position(200, 200)
 
@@ -1049,7 +1188,9 @@ class PlayerView(arcade.View):
             self.enemy_list.append(
                 Enemy_SpriteSheet('undead'))
             self.enemy_list[i].scale = 1.25
-            self.enemy_list[i].set_position(random.randint(0, 500), random.randint(0, 500))
+            self.enemy_list[i].set_position(
+                random.randint(0, 500), random.randint(0, 500)
+            )
 
         # self.enemy_list[0].set_position(800, 200)
         # self.enemy_list[0].scale = 1.25
@@ -1065,22 +1206,9 @@ class PlayerView(arcade.View):
             layer.spatial_hash = arcade.sprite_list._SpatialHash(cell_size=128)
             layer._recalculate_spatial_hashes()
 
-        self.physics_engines = []
-
-        for sprite in self.player_sprites:
-            if sprite is self.player_sprite:
-                self.physics_engines.append(
-                    arcade.PhysicsEngineSimple(
-                        sprite, self.map_layers[2]
-                    )
-                )
-
-        # for sprite in self.enemy_list:
-        #     self.physics_engines.append(
-        #         arcade.PhysicsEngineSimple(
-        #             sprite, self.map_layers[2]
-        #         )
-        #     )
+        self.physics_engine = arcade.PhysicsEngineSimple(
+            self.player_sprite, self.map_layers[2]
+        )
 
         # Used to keep track of our scrolling
         self.view_bottom = 0
@@ -1101,8 +1229,8 @@ class PlayerView(arcade.View):
         if self.viewport_scale < 0.25:
             self.viewport_scale = 0.25
 
-        if self.viewport_scale > 2.0:
-            self.viewport_scale = 2.0
+        if self.viewport_scale > 3.0:
+            self.viewport_scale = 3.0
 
         left = int(
             self.player_sprite._get_position()[0] -
@@ -1147,6 +1275,8 @@ class PlayerView(arcade.View):
         print("Switched to PlayerView")
         self.window.set_mouse_visible(False)
 
+        self.paused = False
+
     def on_draw(self):
         arcade.start_render()
         for layer in self.map_layers:
@@ -1160,18 +1290,20 @@ class PlayerView(arcade.View):
 
         self.cursor.draw()
 
-        # arcade.draw_line(self.mouse_position[0]*self.viewport_scale, self.mouse_position[1]*self.viewport_scale, self.player_sprite.center_x, self.player_sprite.center_y, arcade.color.RED, 1)
+    def update_player_weapon(self):
+        '''
+        Handle positioning the player's weapon
+        '''
+        dx = (self.mouse_position[0]*self.viewport_scale+self.view_left)-self.player_sprite.center_x
+        dy = (self.mouse_position[1]*self.viewport_scale+self.view_bottom)-self.player_sprite.center_y
+        angle = atan2(dy, dx)
+        self.player_sprite.weapon.center_x = self.player_sprite.center_x+25*cos(angle)
+        self.player_sprite.weapon.center_y = self.player_sprite.center_y+25*sin(angle)
+        self.player_sprite.weapon.angle = degrees(angle)
 
-    def on_update(self, delta_time):
+        self.player_sprite.weapon.update_animation()
 
-        if self.paused:
-            return
-
-        self.scroll()
-
-        for sprite in self.player_sprites:
-            sprite.update_animation()
-
+    def update_player_movement(self, delta_time):
         # Calculate speed based on the keys pressed
         self.player_sprite.change_x = 0
         self.player_sprite.change_y = 0
@@ -1184,7 +1316,8 @@ class PlayerView(arcade.View):
             self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED * delta_time
         elif self.right_pressed and not self.left_pressed:
             self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED * delta_time
-
+        if self.player_sprite.health <= 0:
+            self.player_sprite.change_x, self.player_sprite.change_y = 0, 0
         # print(self.get_viewport())
         width, height = arcade.get_viewport()[1:4:2]
 
@@ -1198,50 +1331,10 @@ class PlayerView(arcade.View):
         elif self.player_sprite.top > height - 1:
             self.player_sprite.top = height - 1
 
-        count = 0
-        for sprite in self.player_sprites:
-            if sprite is not self.player_sprite:
-                count += 1
-                if self.player_sprite.is_attacking:
-                    sprite.is_attacking = True
-                # sprite.character_face_direction = self.player_sprite.character_face_direction
-                # direction = atan2(self.player_sprite.center_y, self.player_sprite.center_x)
-                # sprite.change_x, sprite.change_y = PLAYER_MOVEMENT_SPEED*
-                # if self.formation == 0:
-                #     if count == 1:
-                #         sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y+30*count)
-                #
-                #     else:
-                #         sprite.set_position(self.player_sprite.center_x, self.player_sprite.center_y-15*count)
-                # else:
-                #     if self.player_sprite.character_face_direction == RIGHT_FACING:
-                #         sprite.set_position(self.player_sprite.center_x-30*count, self.player_sprite.center_y)
-                #     else:
-                #         sprite.set_position(self.player_sprite.center_x+30*count, self.player_sprite.center_y)
-
-        for engine in self.physics_engines:
-            engine.update()
-
-        self.player_sprites[0].on_update(delta_time)
-        self.player_sprites[2].on_update(delta_time)
-
-        # self.level_sprites.update()
-
-        self.enemy_list.on_update(delta_time)
-        self.view_left
-        '''Handle positioning the player's weapon'''
-        dx = (self.mouse_position[0]*self.viewport_scale+self.view_left)-self.player_sprite.center_x
-        dy = (self.mouse_position[1]*self.viewport_scale+self.view_bottom)-self.player_sprite.center_y
-        angle = atan2(dy, dx)
-        self.player_sprite.weapon.center_x = self.player_sprite.center_x+25*cos(angle)
-        self.player_sprite.weapon.center_y = self.player_sprite.center_y+25*sin(angle)
-        self.player_sprite.weapon.angle = degrees(angle)
-
-        self.player_sprite.weapon.update_animation()
-
-        if self.selected_character > 2:
-            self.selected_character = 0
-
+    def detect_enemy_collision(self):
+        '''
+        Check for enemy being hit
+        '''
         player_stab = (
             self.player_sprite.weapon.is_stab and
             self.player_sprite.weapon.cur_stab_texture == 1
@@ -1258,13 +1351,36 @@ class PlayerView(arcade.View):
         else:
             enemy_collisions = []
 
-        '''Check for enemy being hit'''
+
         if len(enemy_collisions) > 0:
             for enemy in enemy_collisions:
-                print("LOL BRUH U JUST GOT HIT")
+                # print("LOL BRUH U JUST GOT HIT")
                 enemy.is_hit = True
                 enemy.health -= 10
         # print(self.player_sprite.weapon.collides_with_list(self.enemy_list))
+
+    def on_update(self, delta_time):
+
+        if self.paused:
+            return
+
+        self.scroll()
+
+        self.update_player_movement(delta_time)
+
+        self.update_player_weapon()
+
+        self.physics_engine.update()
+
+        self.detect_enemy_collision()
+
+        for pirate in range(len(self.player_sprites)):
+            self.player_sprites[pirate].on_update(delta_time)
+
+        self.enemy_list.on_update(delta_time)
+
+        if self.selected_character > 2:
+            self.selected_character = 0
 
         x, y = self.mouse_position
         self.cursor._set_left(x*self.viewport_scale+self.view_left)
@@ -1272,8 +1388,19 @@ class PlayerView(arcade.View):
         self.cursor.scale = self.viewport_scale
 
         for enemy in self.enemy_list:
-            if arcade.get_distance_between_sprites(self.player_sprite, enemy) < 100:
+            if arcade.get_distance_between_sprites(
+                    self.player_sprite, enemy) < 50:
                 enemy.move_to(self.player_sprite)
+            enemy.enemy_pathfinding(
+                self.matrix, self.player_sprite, delta_time
+            )
+            distance = arcade.get_distance_between_sprites(
+                enemy, self.player_sprite)
+            if distance < 10:
+                enemy.is_attacking = True
+                if arcade.check_for_collision(self.player_sprite, enemy):
+                    self.player_sprite.health -= 10
+                    self.player_sprite.is_hit = True
 
     def on_key_press(self, key, key_modifiers):
         """
@@ -1312,6 +1439,7 @@ class PlayerView(arcade.View):
 
         if key == arcade.key.LALT:
             self.selected_character += 1
+
 
     def on_key_release(self, key, key_modifiers):
         """

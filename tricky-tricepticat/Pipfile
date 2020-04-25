@@ -6,8 +6,8 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-arcade = "*"
 pathfinding = "*"
+c34b4ee = {file = "https://github.com/pvcraven/arcade/archive/shader_experimental.zip"}
 
 [requires]
 python_version = "3.7"
