@@ -9,8 +9,9 @@ from .config import (
     SCREEN_SIZE, PLANET_BASE_SPEED, PUSH_BASE_SPEED,
     PUSH_MAX_DISTANCE, BASE_DAMAGE, PLANET_DAMAGE, MAX_ATTACK_DISTANCE,
     PLANET_COLORS, PLANET_SPRITES, TRIANGULATION_START_LIKELIHOOD,
-    ATTACK_SOUND, ATTACK_PLAYS_SOUND_CHANCE,
-    SOUND_VOLUME, BOTTOM_BORDER_Y, TRIANGULATION_FADE_TIME
+    ATTACK_SOUND, ATTACK_PLAYS_SOUND_CHANCE, TRIANGULATION_FADE_OUT_TIME,
+    SOUND_VOLUME, BOTTOM_BORDER_Y, TRIANGULATION_FADE_IN_TIME,
+    TRIANGULATION_FADE_TOTAL_TIME
 )
 
 logger = logging.getLogger()
@@ -187,17 +188,29 @@ class Planet(arcade.Sprite):
         if self.last_triangulating < self.parent.last_lithium_change:
             return 0
         time_since_last_triangulation = time.time() - self.last_triangulating
-        triangulation_trace = max(
-            0, TRIANGULATION_FADE_TIME - time_since_last_triangulation
-        ) / TRIANGULATION_FADE_TIME
+        if time_since_last_triangulation <= TRIANGULATION_FADE_IN_TIME:
+            triangulation_trace = (
+                time_since_last_triangulation
+                / TRIANGULATION_FADE_IN_TIME
+            )
+        else:
+            triangulation_trace = max(
+                0,
+                (TRIANGULATION_FADE_OUT_TIME - (
+                    time_since_last_triangulation
+                    - TRIANGULATION_FADE_IN_TIME)
+                 )
+                / TRIANGULATION_FADE_OUT_TIME)
         triangulation_strength = health_normalized * triangulation_trace
         alpha = int(triangulation_strength * 255)
-        logger.debug(f"{triangulation_trace=}, {health_normalized=}, "
-                     f"{triangulation_strength=}, {alpha=}")
+        logger.debug(
+            f"{triangulation_trace=}, {health_normalized=}, "
+            f"{triangulation_strength=}, {alpha=}, "
+            f"{time_since_last_triangulation=}")
         assert 0 <= health_normalized
         assert health_normalized <= 1
         assert 0 <= triangulation_trace
-        assert triangulation_trace <= 1
+        assert triangulation_trace <= 1, f"{triangulation_trace=}"
         assert 0 <= triangulation_strength
         assert triangulation_strength <= 1
         assert 0 <= alpha
@@ -207,6 +220,9 @@ class Planet(arcade.Sprite):
     def update_triangulating(
             self, time_multiplier, in_tutorial, should_not_triangulate):
         if should_not_triangulate:
+            return
+        last_triangulating_delta = time.time() - self.last_triangulating
+        if last_triangulating_delta < TRIANGULATION_FADE_TOTAL_TIME:
             return
         adjusted_time_multiplier = (
             time_multiplier * 6 if in_tutorial else time_multiplier)
