@@ -1,13 +1,18 @@
 """Various UI elements."""
 from PIL import Image, ImageDraw, ImageFont
+import time
 import typing
 import arcade
 
 from constants import ASSETS, FONT, HEIGHT, WIDTH
+from settings import get_music_volume
+from utils import play_sound_effect
 
 
 number = typing.Union[int, float]
 
+music = arcade.Sound(ASSETS + 'audio/music.mp3')
+music.play(volume=get_music_volume())
 
 class IconButton:
     """A button, displayed with an icon."""
@@ -83,27 +88,120 @@ class IconButton:
         """Get the bottom of the button."""
         return self.center_y - self.size / 2
 
+    def on_click(self, _x: float, _y: float):
+        """Play sound effect and set state."""
+        play_sound_effect('mouseclick')
+        self.state = 'pressed'
+
+    def touching(self, x: float, y: float):
+        x += arcade.get_viewport()[0]
+        return self.left <= x <= self.right and self.bottom <= y <= self.top
+
+    def on_release(self, _x: float, _y: float):
+        """Play sound effect, update state and run callback."""
+        play_sound_effect('mouserelease')
+        self.fun()
+        self.state = 'normal'
+
     def on_mouse_press(self, x: float, y: float, _button: int,
                        _modifiers: int):
         """Check if a mouse press is on the button."""
-        x += arcade.get_viewport()[0]
-        self.sound.play()
-        if self.left <= x <= self.right and self.bottom <= y <= self.top:
-            self.state = 'pressed'
+        if self.touching(x, y):
+            self.on_click(x, y)
 
     def on_mouse_motion(self, x: float, y: float, _dx: int, _dy: int):
         """Check if mouse motion is hovering on the button."""
-        x += arcade.get_viewport()[0]
-        if self.left <= x <= self.right and self.bottom <= y <= self.top:
-            self.state = 'hover'
+        if self.touching(x, y):
+            if self.state != 'pressed':
+                self.state = 'hover'
         else:
             self.state = 'normal'
 
     def on_mouse_release(self, x: int, y: int, _button: int, _modifiers: int):
         """Check if a mouse release is a click on the button."""
         if self.state == 'pressed':
-            self.fun()
-            self.state = 'normal'
+            self.on_release(x, y)
+
+    def on_mouse_drag(self, x: float, y: float, dx: float, dy: float,
+                      _buttons: int, _modifiers: int):
+        """Don't do anything."""
+
+
+class Slider(IconButton):
+    """A horizontal slider."""
+
+    def __init__(self, view: arcade.View, x: number, y: number,
+                 initial: number, on_change: typing.Callable,
+                 width: int = WIDTH // 3):
+        """Load textures and record parameters."""
+        self.view = view
+        self.state = 'normal'
+        self.textures = {}
+        for state in ('normal', 'pressed', 'hover'):
+            self.textures[state] = self.load_texture(
+                'button_' + state, 32
+            )
+        self.fun = on_change
+        self.center_x = x
+        self.center_y = y
+        self.position = initial * width
+        self.width = width
+        self.size = 32
+
+    @property
+    def value(self) -> float:
+        """Get the value selected by the user (0 to 1)."""
+        return self.position / self.width
+
+    def on_draw(self):
+        """Draw textures."""
+        if self.position > self.width:
+            self.position = self.width
+        elif self.position < 0:
+            self.position = 0
+        arcade.draw_line(
+            self.left, self.center_y, self.right, self.center_y,
+            (255, 255, 255), 10
+        )
+        self.textures[self.state].draw_scaled(
+            self.left + self.position, self.center_y
+        )
+
+    @property
+    def left(self) -> float:
+        """Get the left of the slider."""
+        return self.center_x - self.width / 2
+
+    @property
+    def right(self) -> float:
+        """Get the right of the slider."""
+        return self.center_x + self.width / 2
+
+    def update_position(self, x: float):
+        self.position = min(max((0, x - self.left)), self.width)
+
+    def on_click(self, x: float, y: float):
+        self.update_position(x)
+        super().on_click(x, y)
+
+    def on_drag(self, x: float, _y: float):
+        self.update_position(x)
+
+    def on_release(self, x: float, y: float):
+        self.update_position(x)
+        super().on_release(x, y)
+
+    def on_mouse_drag(self, x: float, y: float, dx: float, dy: float,
+                      _buttons: int, _modifiers: int):
+        """Check if a mouse release is a click on the button."""
+        if self.touching(x, y) and self.state == 'pressed':
+            self.state = 'pressed'
+            self.on_drag(x, y)
+        elif self.bottom < y < self.top and self.state == 'pressed':
+            if x < self.left:
+                self.on_drag(self.left, y)
+            if x > self.right:
+                self.on_drag(self.right, y)
 
 
 class Achievement(IconButton):
@@ -235,7 +333,7 @@ class View(arcade.View):
         self.hide_mouse_after = 1
 
     def on_update(self, td: float):
-        """Hide mouse if ready."""
+        """Hide mouse if ready and loop music."""
         self.hide_mouse_after -= td
         if self.hide_mouse_after < 0:
             visible = False
@@ -244,6 +342,10 @@ class View(arcade.View):
                     visible = True
                     break
             self.window.set_mouse_visible(visible)
+        if music.get_stream_position() == 0.0:
+            music.stop()
+            music.play(volume=get_music_volume())
+            time.sleep(0.01)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """Check motion with buttons and unhide mouse."""
@@ -272,3 +374,9 @@ class View(arcade.View):
         """Check mouse release with buttons."""
         for button in self.buttons:
             button.on_mouse_release(x, y, button_id, modifiers)
+
+    def on_mouse_drag(self, x: float, y: float, dx: float, dy: float,
+                      buttons: int, modifiers: int):
+        """Check mouse drag with buttons."""
+        for button in self.buttons:
+            button.on_mouse_drag(x, y, dx, dy, buttons, modifiers)

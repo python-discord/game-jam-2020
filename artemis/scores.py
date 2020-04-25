@@ -1,38 +1,16 @@
-"""Read and write data to/from a JSON file."""
-import json
+"""Read and write scores, achievements and awards."""
 import typing
 
 from constants import AWARDS
+import utils
 
 
 FILE = 'data/scores.json'
 
 
-def open_file() -> dict:
-    """Open the file, if present, if not, return an empty dict."""
-    try:
-        with open(FILE) as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
-
-
-def save_file(data: dict):
-    """Save the file with modified data."""
-    with open(FILE, 'w') as f:
-        json.dump(data, f, indent=1)
-
-
-def data_util(fun: typing.Callable) -> typing.Callable:
-    """Wrap functions that need read/write access to the data."""
-    def wrapper(*args, **kwargs) -> typing.Any:
-        """Open the file and save it again."""
-        data = open_file()
-        ret = fun(data, *args, **kwargs)
-        save_file(data)
-        return ret
-
-    return wrapper
+def data_util(fun: typing.Callable):
+    """Use specific file."""
+    return utils.data_util(fun, FILE)
 
 
 @data_util

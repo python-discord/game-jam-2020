@@ -23,7 +23,9 @@ ABOUT = (
     'competition rules, the game is written in Python\n'
     'and utilises Paul Craven\'s game library, Arcade.\n'
     'All graphics were created by Artemis#8799 using\n'
-    'pixilart.com, and the font "Ubuntu" is used.'
+    'pixilart.com, and the font "Ubuntu" is used. \n'
+    'Sound effects are from kenney.nl, and music is by\n'
+    'Eric Matyas (soundimage.org).'
 )
 MULTIPLAYER_HELP = (
     'In multiplayer mode, two or three players fight to\n'

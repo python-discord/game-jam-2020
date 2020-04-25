@@ -9,6 +9,7 @@ import player
 from scores import add_award, add_score, add_time, get_hiscore
 from sprites import Block, Gem, RandomBlock
 from ui import View
+from utils import play_sound_effect
 import views
 
 
@@ -115,6 +116,7 @@ class Game(View):
 
     def game_over(self, message: str, _player: player.Player = None):
         """Display the game over view with some explanatory message."""
+        play_sound_effect('death')
         self.save()
         self.window.show_view(
             views.GameOver(message, [self.player.score], Game)

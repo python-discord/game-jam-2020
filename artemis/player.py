@@ -9,6 +9,8 @@ import displays
 import engine
 import game
 import multiplayer
+from scores import add_award
+from utils import play_sound_effect
 
 
 class Player(arcade.Sprite):
@@ -55,6 +57,7 @@ class Player(arcade.Sprite):
         self.blocks: Optional[arcade.SpriteList] = None
         self.revive_after: Optional[int] = None
         self.death_message: Optional[str] = None
+        self.matches = {'r': 0, 'b': 0, 'y': 0}
 
     def prepare(self, name: str) -> Image.Image:
         """Open and resize an image for a texture."""
@@ -131,6 +134,7 @@ class Player(arcade.Sprite):
 
         gems = arcade.check_for_collision_with_list(self, self.game.gems)
         for gem in gems:
+            play_sound_effect('gem')
             self.add_gem(gem.colour)
             gem.place()
 
@@ -206,16 +210,38 @@ class Player(arcade.Sprite):
 
     def remove_three(self, colour: str):
         """Once notified that there are three of some colour, remove them."""
+        play_sound_effect('match')
         removed = 0
+        pinks = 0
+        done = False
         for box in self.boxes:
             if box.colour == colour:
                 box.remove_gem()
                 removed += 1
                 if removed == 3:
-                    return
+                    done = True
+            if box.colour == 'p':
+                pinks += 1
+        if pinks == 2:
+            self.add_award(2)
+        if removed == 0:
+            self.add_award(0)
+        else:
+            # only if it actually had some colour in it
+            self.matches[colour] += 1
+            if all(self.matches.values()):
+                add_award(3)
+        if done:
+            self.add_award(4)
+            return
         for box in self.boxes:
             if box.colour == 'w':
                 box.remove_gem()
                 removed += 1
                 if removed == 3:
                     return
+    
+    def add_award(self, num: int):
+        """Add an award if this is not multiplayer."""
+        if isinstance(self.game, game.Game):
+            add_award(num)
