@@ -98,7 +98,6 @@ class TriGrid:
 
     def on_draw(self, grid_coord=False):
         self.update_shape_list()
-        arcade.start_render()
         self.shape_list.draw()
         self.piece_list.draw()
         if grid_coord:

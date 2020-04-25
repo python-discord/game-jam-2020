@@ -31,8 +31,8 @@ WIDTH = 40
 MARGIN = 5
 
 # Do the math to figure out our screen dimensions
-SCREEN_WIDTH = (WIDTH + MARGIN) * BOARD_SIZE + MARGIN
-SCREEN_HEIGHT = SCREEN_WIDTH
+SCREEN_WIDTH = 1024
+SCREEN_HEIGHT = 800
 CELL_WIDTH = int(SCREEN_WIDTH/BOARD_SIZE)
 
 SCREEN_TITLE = "TriTess Grid example"
@@ -50,13 +50,18 @@ class TriTess(arcade.Window):
         """
 
         super().__init__(width, height, title)
+
         self.trigrid = trigrid.TriGrid(BOARD_SIZE, CELL_WIDTH, 'trichess3')
+        self.background = None
         self.cur_player = 0
         self.cur_cell = None
         self.cur_valid_moves = None
         self.cur_valid_attacks = None
 
-        arcade.set_background_color(arcade.color.WHITE)
+        # arcade.set_background_color(arcade.color.WHITE)
+
+    def setup(self):
+        self.background = arcade.load_texture(os.path.join(data_dir, "background.png"))
 
     def on_draw(self):
         """
@@ -65,6 +70,11 @@ class TriTess(arcade.Window):
 
         # This command has to happen before we start drawing
         arcade.start_render()
+
+        # Draw the background texture
+        arcade.draw_lrwh_rectangle_textured(0, 0,
+                                            SCREEN_WIDTH, SCREEN_HEIGHT,
+                                            self.background)
 
         # Draw the grid
         self.trigrid.on_draw(grid_coord=True)
@@ -118,8 +128,10 @@ class TriTess(arcade.Window):
         self.cur_valid_attacks = None
         self.trigrid.clear_highlights()
 
+
 def main():
     tritess_window = TriTess(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    tritess_window.setup()
     arcade.run()
 
 

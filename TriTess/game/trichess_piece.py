@@ -19,7 +19,6 @@ MOVE_DICT = {0: lambda x, y, r: (x + 1, y + 1, not r) if r else (x, y, not r),
              5: lambda x, y, r: (x, y + 1, not r) if r else (x - 1, y + 1, not r)}
 
 
-
 class TriPiece(arcade.Sprite):
     def __init__(self, trigrid, piece_name, pos, orientation, player):
         """
