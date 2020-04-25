@@ -37,7 +37,7 @@ CELL_WIDTH = int(SCREEN_WIDTH/BOARD_SIZE)
 
 SCREEN_TITLE = "TriTess Grid example"
 data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
-chess_thump = arcade.Sound(os.path.join(data_dir, "chess_thump.mp3"))
+chess_thump = arcade.Sound(os.path.join(data_dir, "chess_tap.mp3"))
 
 
 class TriTess(arcade.Window):
@@ -51,7 +51,7 @@ class TriTess(arcade.Window):
         """
 
         super().__init__(width, height, title)
-        self.trigrid = trigrid.TriGrid(BOARD_SIZE, CELL_WIDTH, 'triangular')
+        self.trigrid = trigrid.TriGrid(BOARD_SIZE, CELL_WIDTH, 'hex2')
         self.cur_player = 0
         self.cur_cell = None
         self.cur_valid_moves = None
