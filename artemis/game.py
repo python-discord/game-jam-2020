@@ -2,8 +2,8 @@
 import arcade
 
 from constants import BACKGROUND, FONT, HEIGHT, SCALING, SIDE, TOP, WIDTH
-from displays import Box, PausePlay
-from engine import BiDirectionalPhysicsEnginePlatformer
+from displays import PausePlay
+from engine import PhysicsEngine
 from player import Player
 from scores import add_award, add_score, add_time, get_hiscore
 from sprites import Block, Gem, RandomBlock
@@ -23,7 +23,6 @@ class Game(View):
         arcade.set_background_color(BACKGROUND)
 
         self.left = 0
-        self.score = 0
         self.time = 0
         self.randomblocks = 2
         self.matches = {'r': 0, 'b': 0, 'y': 0}
@@ -49,15 +48,10 @@ class Game(View):
         for _ in range(2):
             RandomBlock(self)
 
-        for n in range(5):
-            Box(self, n)
-
         self.pauseplay = PausePlay(0, HEIGHT - 40, self)
         self.buttons.append(self.pauseplay)
 
-        self.engine = BiDirectionalPhysicsEnginePlatformer(
-            self.player, self.blocks, 1
-        )
+        self.engine = PhysicsEngine(self.player, self.blocks, 1)
         self.player.engine = self.engine
 
         self.sprite_lists = [
@@ -77,7 +71,7 @@ class Game(View):
             anchor_y='center', font_name=FONT.format(type='b')
         )
         arcade.draw_text(
-            text=f'Score: {self.score:03d}',
+            text=f'Score: {self.player.score:03d}',
             start_x=self.left + WIDTH - 100,
             start_y=HEIGHT - (TOP - self.blocks[0].height // 2) // 2 - 15,
             color=arcade.color.WHITE, font_size=20, anchor_x='right',
@@ -93,7 +87,7 @@ class Game(View):
             )
             super().on_draw()
             if not self.pause_screen:
-                self.pause_screen = views.Paused(self)
+                self.pause_screen = views.Paused(self, Game)
                 self.window.show_view(self.pause_screen)
 
     def on_update(self, timedelta: float):
@@ -109,82 +103,21 @@ class Game(View):
                 if 2 + progress / 3 < self.randomblocks:
                     self.randomblocks += 1
                     RandomBlock(self)
-            self.engine.update()
             self.scroll()
-
-    def gem_added(self, _player: Player):
-        """Check if the inventory is full or gems can be matched."""
-        colours = [box.colour for box in self.boxes if box.colour]
-        counts = {'r': 0, 'b': 0, 'y': 0}
-        for colour in colours:
-            if colour == 'w':
-                for key in counts:
-                    counts[key] += 1
-            elif colour in counts:
-                counts[colour] += 1
-        all_three = None
-        for colour in counts:
-            if counts[colour] >= 3:
-                all_three = colour
-        if all_three:
-            self.score += 1
-            self.remove_three(all_three)
-            return
-        over = False
-        size = 5 - colours.count('p')
-        unique = sum(1 for i in 'rby' if (i in colours))
-        if len(colours) == 5:
-            over = True
-        elif size < 3:
-            over = True
-        elif size - unique < 2:
-            over = True
-        if over:
-            self.game_over('Inventory Full')
-
-    def remove_three(self, colour: str):
-        """Once notified that there are three of some colour, remove them."""
-        removed = 0
-        pinks = 0
-        done = False
-        for box in self.boxes:
-            if box.colour == colour:
-                box.remove_gem()
-                removed += 1
-                if removed == 3:
-                    done = True
-            if box.colour == 'p':
-                pinks += 1
-        if pinks == 2:
-            add_award(2)
-        if removed == 0:
-            add_award(0)
-        else:
-            # only if it actually had some colour in it
-            self.matches[colour] += 1
-            if all(self.matches.values()):
-                add_award(3)
-        if done:
-            add_award(4)
-            return
-        for box in self.boxes:
-            if box.colour == 'w':
-                box.remove_gem()
-                removed += 1
-                if removed == 3:
-                    return
 
     def save(self):
         """Save the player's score and time spent playing."""
-        if self.score == 69:
+        if self.player.score == 69:
             add_award(5)
-        add_score(self.score)
+        add_score(self.player.score)
         add_time(self.time)
 
-    def game_over(self, message: str):
+    def game_over(self, message: str, _player: Player = None):
         """Display the game over view with some explanatory message."""
         self.save()
-        self.window.show_view(views.GameOver(message))
+        self.window.show_view(
+            views.GameOver(message, [self.player.score], Game)
+        )
 
     def scroll(self):
         """Scroll the viewport."""

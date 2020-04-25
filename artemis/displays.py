@@ -2,34 +2,29 @@
 from __future__ import annotations
 import arcade
 
-from constants import ASSETS, HEIGHT, SCALING, SPEED, TOP
+from constants import ASSETS, SCALING, SPEED
 import game
+import player
 from ui import IconButton
 
 
 class Box(arcade.Sprite):
     """Display for an inventory slot."""
 
-    def __init__(self, game: game.Game, n: int,
+    def __init__(self, x: int, y: int, player: player.Player,
                  image: str = ASSETS + 'box.png'):
         """Set up box."""
-        super().__init__(
-            image, SCALING * 0.5,
-            center_x=(n + 0.6) * 256 * SCALING,
-            center_y=HEIGHT - (TOP - game.blocks[0].height // 2) // 2
-        )
-        self.game = game
+        super().__init__(image, SCALING * 0.4, center_x=x, center_y=y)
         self.alpha = 50
         self.colour = None
         self.gem = None
-        game.boxes.append(self)
+        self.player = player
 
     def add_gem(self, colour: str):
         """Set the gem in the box."""
         self.colour = colour
         self.gem = BoxGem(self)
         self.alpha = 100
-        self.game.gem_added()
 
     def remove_gem(self):
         """Remove any gems from the box."""
@@ -41,6 +36,14 @@ class Box(arcade.Sprite):
     def update(self):
         """Update x with viewport scrolling."""
         self.center_x += SPEED
+        if self.gem:
+            self.gem.update()
+
+    def draw(self):
+        """Draw the sprite and it's gem if present."""
+        super().draw()
+        if self.gem:
+            self.gem.draw()
 
 
 class BoxGem(arcade.Sprite):
@@ -52,7 +55,6 @@ class BoxGem(arcade.Sprite):
             f'{ASSETS}gem_{box.colour}.png', SCALING * 0.25,
             center_x=box.center_x, center_y=box.center_y
         )
-        box.game.others.append(self)
         self.box = box
 
     def update(self):

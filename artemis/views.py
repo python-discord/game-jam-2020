@@ -4,8 +4,9 @@ import arcade
 import typing
 
 from achievements import get_achievements
-from constants import ABOUT, ASSETS, FONT, HEIGHT, WIDTH
+from constants import ABOUT, ASSETS, FONT, HEIGHT, MULTIPLAYER_HELP, WIDTH
 from game import Game
+from multiplayer import MultiplayerGame
 from scores import add_award, get_awards
 from ui import Achievement, Award, IconButton, View, ViewButton
 
@@ -19,9 +20,10 @@ class Paused(View):
 
     reset_viewport = False
 
-    def __init__(self, game: Game):
+    def __init__(self, game: Game, new: typing.Callable):
         """Store game state."""
         self.game = game
+        self.create_new = new
         super().__init__()
 
     def on_show(self):
@@ -51,7 +53,7 @@ class Paused(View):
         if restarts == 4:
             add_award(1)
         self.game.save()
-        self.window.show_view(Game())
+        self.window.show_view(self.create_new())
 
     def on_draw(self):
         """Draw buttons, game and title."""
@@ -164,16 +166,21 @@ class Menu(View):
         """Create the buttons."""
         super().on_show()
         self.buttons.append(ViewButton(
+            self, WIDTH / 2 - 70, HEIGHT / 2 - 50,
+            'multiplayer', MultiplayerMenu
+        ))
+        self.buttons.append(ViewButton(
             self, WIDTH / 2, HEIGHT / 2 - 50, 'play', Game
         ))
         self.buttons.append(ViewButton(
-            self, WIDTH / 2 - 70, HEIGHT / 2 - 50, 'help', Tutorial
+            self, WIDTH / 2 + 70, HEIGHT / 2 - 50, 'help', Tutorial
         ))
         self.buttons.append(ViewButton(
-            self, WIDTH / 2 + 70, HEIGHT / 2 - 50, 'about', About
+            self, WIDTH / 2 - 35, HEIGHT / 2 - 120, 'about', About
         ))
         self.buttons.append(ViewButton(
-            self, WIDTH / 2, HEIGHT / 2 - 120, 'achievements', Achievements
+            self, WIDTH / 2 + 35, HEIGHT / 2 - 120,
+            'achievements', Achievements
         ))
 
     def on_draw(self):
@@ -187,12 +194,99 @@ class Menu(View):
         )
 
 
+class MultiplayerMenu(View):
+    """View to select a multiplayer game."""
+
+    def on_show(self):
+        """Create the buttons."""
+        super().on_show()
+        self.buttons.append(ViewButton(
+            self, WIDTH / 2 - 35, HEIGHT / 2 - 50, 'two_player', 
+            lambda: MultiplayerGame(2)
+        ))
+        self.buttons.append(ViewButton(
+            self, WIDTH / 2 + 35, HEIGHT / 2 - 50, 'three_player',
+            lambda: MultiplayerGame(3)
+        ))
+        self.buttons.append(ViewButton(
+            self, WIDTH / 2 - 35, HEIGHT / 2 - 120, 'help', MultiplayerHelpOne
+        ))
+        self.buttons.append(ViewButton(
+            self, WIDTH / 2 + 35, HEIGHT / 2 - 120, 'home', Menu
+        ))
+
+    def on_draw(self):
+        """Display the buttons and title."""
+        arcade.start_render()
+        super().on_draw()
+        arcade.draw_text(
+            'Multiplayer', WIDTH / 2, HEIGHT / 2,
+            arcade.color.WHITE, font_size=50, anchor_x='center',
+            anchor_y='bottom', font_name=FONT.format(type='b')
+        )
+
+
+class MultiplayerHelpOne(View):
+    """Display the textual help for multiplayer mode."""
+
+    def on_show(self):
+        """Create the 'next' button."""
+        super().on_show()
+        self.buttons.append(ViewButton(
+            self, WIDTH - 110, HEIGHT - 40, 'back', MultiplayerMenu
+        ))
+        self.buttons.append(ViewButton(
+            self, WIDTH - 40, HEIGHT - 40, 'next', MultiplayerHelpTwo
+        ))
+
+    def on_draw(self):
+        """Draw text and back button."""
+        super().on_draw()
+        arcade.draw_text(
+            'Multiplayer', WIDTH / 2, HEIGHT - 200,
+            arcade.color.WHITE, font_size=50, anchor_x='center',
+            font_name=FONT.format(type='b')
+        )
+        arcade.draw_text(
+            MULTIPLAYER_HELP, WIDTH / 2, HEIGHT / 2, arcade.color.WHITE,
+            font_size=20, anchor_x='center', anchor_y='center',
+            align='center', font_name=FONT.format(type='r')
+        )
+
+
+class MultiplayerHelpTwo(View):
+    """Display the accompanying help image for multiplayer mode."""
+
+    def on_show(self):
+        """Create buttons and image."""
+        super().on_show()
+        self.buttons.append(ViewButton(
+            self, WIDTH - 110, HEIGHT - 40, 'back', MultiplayerHelpOne
+        ))
+        self.buttons.append(ViewButton(
+            self, WIDTH - 40, HEIGHT - 40, 'next', MultiplayerMenu
+        ))
+        self.main = arcade.Sprite(
+            ASSETS + 'multiplayer_help.png',
+            center_x=WIDTH / 2, center_y=HEIGHT / 2
+        )
+
+    def on_draw(self):
+        """Draw image and buttons."""
+        arcade.start_render()
+        self.main.draw()
+        super().on_draw(start_render=False)
+
+
 class GameOver(View):
     """View for the game over screen."""
 
-    def __init__(self, message: str):
-        """Store an explanatory message to display."""
+    def __init__(self, message: str, scores: typing.List[int],
+                 new: typing.Callable):
+        """Store parameters."""
         self.message = message
+        self.scores = scores
+        self.create_new = new
         super().__init__()
 
     def on_draw(self):
@@ -202,18 +296,37 @@ class GameOver(View):
         restarts = 0
         # won't work without this for some reason
         arcade.set_viewport(0, WIDTH, 0, HEIGHT)
+        y = HEIGHT / 2 + 80
         arcade.draw_text(
-            'Game Over:', WIDTH / 2, HEIGHT / 2,
-            arcade.color.RED, font_size=50, anchor_x='center',
+            'Game Over:', WIDTH / 2, y,
+            (255, 0, 0), font_size=50, anchor_x='center',
             font_name=FONT.format(type='b')
         )
+        y -= 50
         arcade.draw_text(
-            self.message, WIDTH / 2, HEIGHT / 2 - 50,
-            arcade.color.RED, font_size=30, anchor_x='center',
+            self.message, WIDTH / 2, y,
+            (255, 0, 0), font_size=30, anchor_x='center',
             font_name=FONT.format(type='m')
         )
+        y -= 60
+        if len(self.scores) == 1:
+            arcade.draw_text(
+                f'Score: {self.scores[0]}', WIDTH / 2, y,
+                (255, 255, 255), font_size=30, anchor_x='center',
+                font_name=FONT.format(type='m')
+            )
+            y -= 30
+        else:
+            for n, score in enumerate(self.scores):
+                arcade.draw_text(
+                    f'Player {n + 1}: {score}', WIDTH / 2, y,
+                    (255, 255, 255), font_size=30, anchor_x='center',
+                    font_name=FONT.format(type='m')
+                )
+                y -= 40
+            y -= 10
         arcade.draw_text(
-            'Click anywhere to continue', WIDTH / 2, HEIGHT / 2 - 100,
+            'Click anywhere to continue', WIDTH / 2, y,
             arcade.color.GRAY, font_size=20, anchor_x='center',
             font_name=FONT.format(type='ri')
         )
@@ -221,11 +334,7 @@ class GameOver(View):
     def on_mouse_release(self, _x: int, _y: int, _button: int,
                          _modifiers: int):
         """Start a new game on any mouse click."""
-        self.window.show_view(Game())
-
-    def on_key_release(self, key: int, modifiers: int):
-        """Start a new game on any keyboard click."""
-        self.window.show_view(Game())
+        self.window.show_view(self.create_new())
 
 
 class Achievements(View):

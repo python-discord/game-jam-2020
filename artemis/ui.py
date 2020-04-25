@@ -19,7 +19,7 @@ class IconButton():
         self.state = 'normal'
         self.tooltip_text = tooltip
         if not tooltip:
-            self.tooltip_text = image.title()
+            self.tooltip_text = image.replace('_', ' ').title()
         self.tooltip_texture = self.create_tooltip()
         self.icon_texture = self.load_texture(image, size // 2)
         self.textures = {}

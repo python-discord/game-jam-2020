@@ -4,8 +4,8 @@ import arcade
 from constants import (
     BACKGROUND, FONT, GRAVITY, HEIGHT, SCALING, SIDE, SPEED, TOP, WIDTH
 )
-from displays import Box, PausePlay
-from engine import BiDirectionalPhysicsEnginePlatformer
+from displays import PausePlay
+from engine import PhysicsEngine
 from player import Player
 from sprites import Block, Gem, RandomBlock
 from ui import View
@@ -25,13 +25,11 @@ class MultiplayerGame(View):
 
         self.left = 0
         self.time_left = 90
-        self.scores = [0 for _ in range(players)]
         self.randomblocks = 2
         self.paused = False
         self.pause_screen = None
         self.blocks = arcade.SpriteList()
         self.gems = arcade.SpriteList()
-        self.boxes = arcade.SpriteList()
         self.others = arcade.SpriteList()
         self.spikes = arcade.SpriteList()
         self.players = arcade.SpriteList()
@@ -51,9 +49,6 @@ class MultiplayerGame(View):
         for _ in range(2):
             RandomBlock(self)
 
-        for n in range(5):
-            Box(self, n)
-
         self.pauseplay = PausePlay(0, HEIGHT - 40, self)
         self.buttons.append(self.pauseplay)
 
@@ -65,14 +60,13 @@ class MultiplayerGame(View):
             for other in self.players:
                 if other != player:
                     blocks.append(other)
-            engine = BiDirectionalPhysicsEnginePlatformer(
-                player, blocks, GRAVITY
-            )
+            player.blocks = blocks
+            engine = PhysicsEngine(player, blocks, GRAVITY)
             self.engines.append(engine)
             player.engine = engine
 
         self.sprite_lists = [
-            self.blocks, self.gems, self.boxes, self.others, self.spikes
+            self.blocks, self.gems, self.others, self.spikes
         ]
 
     def on_draw(self):
@@ -80,20 +74,34 @@ class MultiplayerGame(View):
         arcade.start_render()
         self.pauseplay.center_x = self.left + WIDTH - 40
         super().on_draw()
-        initial_offset = 30 * (len(self.players) - 1.5)
-        y = HEIGHT - (TOP - self.blocks[0].height // 2) // 2 + initial_offset
-        for n, score in enumerate(self.scores):
+        for n, player in enumerate(self.players):
+            center_x = (n + 0.5) * (WIDTH / 4) + self.left
             arcade.draw_text(
-                text=f'Player {n + 1}: {score:03d}',
-                start_x=self.left + WIDTH - 100,
-                start_y=y,
-                color=arcade.color.WHITE, font_size=20, anchor_x='right',
-                anchor_y='center', font_name=FONT.format(type='b')
+                text=f'Player {n + 1}',
+                start_x=center_x,
+                start_y=HEIGHT - 5,
+                color=arcade.color.WHITE, font_size=20, anchor_x='center',
+                anchor_y='top', font_name=FONT.format(type='b')
             )
-            y -= 30
+            if player.death_message:
+                message = (
+                    f'{player.death_message}, {player.revive_after // 60}'
+                )
+                colour = (255, 0, 0)
+            else:
+                message = f'Score: {player.score:3d}'
+                colour = (255, 255, 255)
+            arcade.draw_text(
+                text=message,
+                start_x=center_x,
+                start_y=HEIGHT - TOP + 21,
+                color=colour, font_size=20, anchor_x='center',
+                font_name=FONT.format(type='r')
+            )
         for sprite_list in self.sprite_lists:
             sprite_list.draw()
-        self.players.draw()
+        for player in self.players:
+            player.draw()
         if self.paused:
             arcade.draw_lrtb_rectangle_filled(
                 left=self.left, right=WIDTH + self.left, top=HEIGHT, bottom=0,
@@ -101,7 +109,9 @@ class MultiplayerGame(View):
             )
             super().on_draw()
             if not self.pause_screen:
-                self.pause_screen = views.Paused(self)
+                self.pause_screen = views.Paused(
+                    self,  lambda: MultiplayerGame(len(self.players))
+                )
                 self.window.show_view(self.pause_screen)
 
     def on_update(self, timedelta: float):
@@ -110,7 +120,7 @@ class MultiplayerGame(View):
         if not self.paused:
             self.time_left -= timedelta
             if self.time_left < 0:
-                self.game_over('Time up!')
+                self.time_up()
                 return
             for sprite_list in self.sprite_lists:
                 sprite_list.update()
@@ -123,63 +133,34 @@ class MultiplayerGame(View):
                     RandomBlock(self)
             self.scroll()
 
-    def gem_added(self):
-        """Check if the inventory is full or gems can be matched."""
-        colours = [box.colour for box in self.boxes if box.colour]
-        counts = {'r': 0, 'b': 0, 'y': 0}
-        for colour in colours:
-            if colour == 'w':
-                for key in counts:
-                    counts[key] += 1
-            elif colour in counts:
-                counts[colour] += 1
-        all_three = None
-        for colour in counts:
-            if counts[colour] >= 3:
-                all_three = colour
-        if all_three:
-            # self.score += 1
-            self.remove_three(all_three)
-            return
-        over = False
-        size = 5 - colours.count('p')
-        unique = sum(1 for i in 'rby' if (i in colours))
-        if len(colours) == 5:
-            over = True
-        elif size < 3:
-            over = True
-        elif size - unique < 2:
-            over = True
-        if over:
-            self.game_over('Inventory Full')
+    def save(self):
+        """Don't save anything in multiplayer mode."""
 
-    def remove_three(self, colour: str):
-        """Once notified that there are three of some colour, remove them."""
-        removed = 0
-        for box in self.boxes:
-            if box.colour == colour:
-                box.remove_gem()
-                removed += 1
-                if removed == 3:
-                    return
-        for box in self.boxes:
-            if box.colour == 'w':
-                box.remove_gem()
-                removed += 1
-                if removed == 3:
-                    return
+    def time_up(self):
+        """Display the game over view when the time runs out."""
+        self.window.show_view(views.GameOver(
+            'Time Up!', [i.score for i in self.players],
+            lambda: MultiplayerGame(len(self.players))
+        ))
 
-    def game_over(self, message: str):
-        """Display the game over view with some explanatory message."""
-        self.window.show_view(views.GameOver(message))
+    def game_over(self, message: str, player: Player):
+        """Kill the player and show some explanatory message."""
+        player.score = 0
+        for box in player.boxes:
+            box.remove_gem()
+        player.revive_after = 240
+        player.death_message = message
+        for other in self.players:
+            if other != player:
+                other.blocks.remove(player)
 
     def scroll(self):
         """Scroll the viewport."""
         self.left += SPEED
         arcade.set_viewport(self.left, WIDTH + self.left, 0, HEIGHT)
         for player in self.players:
-            if self.left > player.right:
-                pass    # kill
+            if self.left > player.right and player.revive_after is None:
+                self.game_over('Got Stuck', player)
 
     def on_key_press(self, key: int, _modifiers: int):
         """Process key press."""
@@ -188,5 +169,7 @@ class MultiplayerGame(View):
                 self.players[0].switch()
             elif key == arcade.key.SPACE and len(self.players) > 1:
                 self.players[1].switch()
-            elif key == arcade.key.UP and len(self.players) > 2:
+            elif key in (arcade.key.UP,
+                         arcade.key.LSHIFT,
+                         arcade.key.RSHIFT) and len(self.players) > 2:
                 self.players[2].switch()

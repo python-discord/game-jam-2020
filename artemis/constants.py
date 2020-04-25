@@ -10,7 +10,7 @@ BLOCKS_TOP = 5
 TOP = int(BLOCKS_TOP * SCALING * 128)
 
 SPEED = 20 * SCALING
-GRAVITY = 1
+GRAVITY = 5 * SCALING
 
 ASSETS = 'assets/'
 FONT = ASSETS + 'ubuntu_{type}.ttf'
@@ -22,6 +22,14 @@ ABOUT = (
     'and utilises Paul Craven\'s game library, Arcade.\n'
     'All graphics were created by Artemis#8799 using\n'
     'pixilart.com, and the font "Ubuntu" is used.'
+)
+MULTIPLAYER_HELP = (
+    'In multiplayer mode, two or three players fight to\n'
+    'get the most points. Each player controls a seperate\n'
+    'blob, and must get gems before other players, or\n'
+    'push their opponents into spikes. You have ninety\n'
+    'seconds to get points, however if you die, your\n'
+    'points reset. Be careful!'
 )
 
 ACHIEVEMENTS = [

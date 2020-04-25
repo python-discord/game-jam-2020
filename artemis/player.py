@@ -4,7 +4,8 @@ import arcade
 from typing import Mapping
 from PIL import Image, ImageDraw
 
-from constants import ASSETS, HEIGHT, SPEED, WIDTH
+from constants import ASSETS, HEIGHT, SCALING, SPEED, TOP, WIDTH
+import displays
 import game
 
 
@@ -17,12 +18,13 @@ class Player(arcade.Sprite):
         'walk_right_6', 'walk_right_7'
     ]
 
-    def __init__(self, game: game.Game, n: int = 0, x: int = WIDTH // 5,
-                 y: int = HEIGHT // 2, speed: int = SPEED):
+    def __init__(self, game: game.Game, player_num: int = 0,
+                 x: int = WIDTH // 5, y: int = HEIGHT // 2,
+                 speed: int = SPEED):
         """Set up counters and load textures."""
-        self.image = ASSETS + f'player_{n}_{{name}}.png'
+        self.image = ASSETS + f'player_{player_num}_{{name}}.png'
         super().__init__(center_x=x, center_y=y)
-        self.player = n
+        self.player = player_num
         self.textures = {}
         for texture in Player.TEXTURES:
             if texture == 'jump':
@@ -35,7 +37,17 @@ class Player(arcade.Sprite):
         self.time_since_change = 0
         self.num = 0
         self.last_x = -1
-        self.engine = None    # will be overwritten by game
+        self.boxes = arcade.SpriteList()
+        start_x = player_num * (WIDTH / 4)
+        y = HEIGHT - TOP // 2 + 8
+        for n in range(5):
+            x = start_x + (n + 0.6) * 210 * SCALING
+            self.boxes.append(displays.Box(x, y, self))
+        self.score = 0
+        self.engine = None
+        self.blocks = None
+        self.revive_after = None
+        self.death_message = None
 
     def prepare(self, name: str) -> Image.Image:
         """Open and resize an image for a texture."""
@@ -61,17 +73,19 @@ class Player(arcade.Sprite):
         im = self.prepare(name)
         textures = {}
         for n in range(4):
-            n_name = f'{name}_{n}'
-            textures[n_name] = arcade.Texture(n_name, im.rotate(n * 90))
+            uid = f'{name}_{n}_{self.player}'
+            textures[f'{name}_{n}'] = arcade.Texture(uid, im.rotate(n * 90))
         return textures
 
     def load_flipped_pair(self, name: str) -> Mapping[str, arcade.Texture]:
         """Load the vertically flipped versions of an image."""
         im = self.prepare(name)
         return {
-            f'{name}_up': arcade.Texture(name + 'up', im),
+            f'{name}_up': arcade.Texture(f'{name}_up_{self.player}', im),
             f'{name}_down': arcade.Texture(
-                name + 'down', im.transpose(Image.FLIP_TOP_BOTTOM)
+                f'{name}_down_{self.player}', im.transpose(
+                    Image.FLIP_TOP_BOTTOM
+                )
             )
         }
 
@@ -82,6 +96,21 @@ class Player(arcade.Sprite):
 
     def update(self):
         """Move the player and change the texture."""
+        self.boxes.update()
+
+        if self.revive_after is not None:
+            self.revive_after -= 1
+            self.center_x += self.speed
+            if self.center_x < self.game.left + WIDTH // 5:
+                self.center_x += self.speed * 0.1
+            if self.revive_after <= 0:
+                self.revive_after = None
+                self.death_message = None
+                for other in self.game.players:
+                    if self not in other.blocks and other != self:
+                        other.blocks.append(self)
+            return
+
         direction = ['up', 'down'][self.engine.gravity_constant < 0]
         if abs(self.center_x - self.last_x) < 1:
             name = f'walk_forward_{direction}'
@@ -93,23 +122,27 @@ class Player(arcade.Sprite):
 
         self.last_x = self.center_x
 
-        # check touching sprites
         gems = arcade.check_for_collision_with_list(self, self.game.gems)
         for gem in gems:
-            for box in self.game.boxes:
-                if not box.colour:
-                    box.add_gem(gem.colour, self.player)
-                    break
+            self.add_gem(gem.colour)
             gem.place()
 
         spikes = arcade.check_for_collision_with_list(self, self.game.spikes)
         if spikes:
-            self.game.game_over('Hit a Spike', self.player)
+            self.game.game_over('Hit a Spike', self)
             return
 
+        if self.bottom < 32:
+            self.bottom = 32
+        elif self.top > HEIGHT - TOP - 16:
+            self.top = HEIGHT - TOP - 16
+
         self.change_x = self.speed
-        if self.center_x < self.game.left + WIDTH // 5:
+        ideal = self.game.left + WIDTH // 5
+        if self.center_x < ideal:
             self.change_x *= 1.1
+        elif self.center_x > ideal:
+            self.change_x *= 0.9
         self.engine.update()
         self.change_x = 0
 
@@ -118,3 +151,64 @@ class Player(arcade.Sprite):
             self.time_since_change = 0
             self.num += 1
             self.num %= 4
+
+    def draw(self):
+        """Draw the sprite and it's boxes to the screen."""
+        for box in self.boxes:
+            box.draw()
+        if self.revive_after is None:
+            self.alpha = 255
+        else:
+            self.alpha = 128
+        super().draw()
+
+    def add_gem(self, colour: str):
+        """Add a gem and process points."""
+        for box in self.boxes:
+            if not box.colour:
+                box.add_gem(colour)
+                break
+
+        colours = [box.colour for box in self.boxes if box.colour]
+        counts = {'r': 0, 'b': 0, 'y': 0}
+        for colour in colours:
+            if colour == 'w':
+                for key in counts:
+                    counts[key] += 1
+            elif colour in counts:
+                counts[colour] += 1
+        all_three = None
+        for colour in counts:
+            if counts[colour] >= 3:
+                all_three = colour
+        if all_three:
+            self.score += 1
+            self.remove_three(all_three)
+            return
+        over = False
+        size = 5 - colours.count('p')
+        unique = sum(1 for i in 'rby' if (i in colours))
+        if len(colours) == 5:
+            over = True
+        elif size < 3:
+            over = True
+        elif size - unique < 2:
+            over = True
+        if over:
+            self.game.game_over('Inventory Full', self)
+
+    def remove_three(self, colour: str):
+        """Once notified that there are three of some colour, remove them."""
+        removed = 0
+        for box in self.boxes:
+            if box.colour == colour:
+                box.remove_gem()
+                removed += 1
+                if removed == 3:
+                    return
+        for box in self.boxes:
+            if box.colour == 'w':
+                box.remove_gem()
+                removed += 1
+                if removed == 3:
+                    return
