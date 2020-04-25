@@ -34,6 +34,25 @@ def get_new_lithium_location():
     )
 
 
+def get_spawn_locations():
+    positions = [[0] * 2] * 3
+    for i in range(len(positions)):
+        while True:
+            positions[i] = [
+                random.random()*SCREEN_SIZE[0],
+                random.random()*SCREEN_SIZE[1]
+            ]
+            distances_to_others = [
+                get_distance(*other_position, *positions[i])
+                for other_position in positions[:i]]
+            if all([distance_to_others > 300
+                    for distance_to_others in distances_to_others]):
+                logger.debug(
+                    f"Got {positions[i]=} for {i=}. {distances_to_others=}.")
+                break
+    return positions
+
+
 class Game(arcade.Window):
     def __init__(self):
         super().__init__(SCREEN_SIZE[0], SCREEN_SIZE[1], SCREEN_TITLE)
@@ -115,14 +134,15 @@ class Game(arcade.Window):
         self.volume_mover.center_y = self.volume_meter.center_y
         self.volume_mover.scale /= 3
 
-        for planet in planets:
+        spawn_locations = get_spawn_locations()
+        for planet, spawn_location in zip(planets, spawn_locations):
             self.planets.append(planet)
             others = [other for other in planets if other != planet]
             planet.setup(
                 parent=self,
                 others=others,
-                center_x=random.random()*SCREEN_SIZE[0],
-                center_y=random.random()*SCREEN_SIZE[1],
+                center_x=spawn_location[0],
+                center_y=spawn_location[1],
                 start_speed_x=random.random(),
                 start_speed_y=random.random()
             )
