@@ -27,6 +27,7 @@ class Game:
                 break
         self.generate_map()
         self.send_queue.put({"type": "world", "data": self.world})
+        self.send_queue.put({"type": "turn", "data": self.turn})
         while True:
             # main game loop
             data = self.receive_queue.get()

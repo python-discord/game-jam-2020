@@ -46,7 +46,7 @@ class Game(Base):
         self.current_ui = [arcade.SpriteList(), []]
         self.empty_ui = [arcade.SpriteList(), []]
         self.selectors = [arcade.SpriteList(), [lambda: None, lambda: None, lambda: None, lambda: None]]
-        self.top_ui = [arcade.SpriteList(), []]
+        self.top_ui = [arcade.SpriteList(), [], dict()]  # list of sprite, list of text kwargs, dict of text indexs
 
         with open("data/units.json") as file:
             self.unit_types = json.load(file)
@@ -100,23 +100,28 @@ class Game(Base):
                     self.server_create_unit(data["data"])
                 elif data["type"] == "turn":
                     self.turn = data["data"]
+                    self.top_ui[1][self.top_ui[2]["currentTurn"]]["text"] = f"Current turn: {self.players[self.turn]['name']}"
                 else:
                     print(f"SCREAMS IN BRAILLE: {data}")
 
     # INITIAL DOWNLOAD
     def initialise(self):
-        ready = [False]
+        ready = [False, False]
         while not all(ready):
             data = self.receive_queue.get()
             if data["type"] == "world":
                 self.world = data["data"]
                 ready[0] = True
+            if data["type"] == "turn":
+                self.turn = data["data"]
+                ready[1] = True
             else:
                 self.receive_queue.put(data)
         print(self.world)
         self.dim = self.world["dim"]
         self.setup_world()
         self.setup_ui()
+        self.top_ui[1][self.top_ui[2]["currentTurn"]]["text"] = f"Current turn: {self.players[self.turn]['name']}"
         self.initialised = True
 
     # WORLD
@@ -215,11 +220,15 @@ class Game(Base):
             "font_size": 30
         })
         self.top_ui[1].append({
-            "text": f"Current turn: {self.players[self.turn]['name']}",
+            "text": "",
             "start_x": 800, "start_y": 675,
             "color": (0, 0, 0),
             "font_size": 30
         })
+        self.top_ui[2] = {
+            "name": 0,
+            "currentTurn": 1
+        }
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int) -> None:
         selected = self.map_sprite_clicked(x, y)
