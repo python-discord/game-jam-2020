@@ -1,5 +1,6 @@
 
 import arcade
+import PIL
 
 from Constants import TILE_SIZE
 
@@ -39,8 +40,23 @@ class Textures:
             result.append(arcade.load_texture(filename + "_" + str(i) + ".png"))
         return result
 
+def get_textures(x, y, count, mirrored=False):
+    result = []
+    for i in range(count):
+        tex = get_texture(x + i, y)
+        if tex:
+            result.append(tex)
+    return result
 
-CHARACTERS = Textures.load_textures("Salami/spritesheet.png", 2, 12, 8, 27)
-SYMBOLS = Textures.load_textures("Salami/spritesheet.png", 2, 13, 8, 21)
-SPRITESHEET = arcade.load_spritesheet("Salami/spritesheet.png", 16, 16, 16, 256)
+def get_texture(x, y, mirrored=False):
+    if x < 0 or y < 0 or x >= 16 or y >= 16:
+        return
+    tex = SPRITESHEET[x + y * 16]
+    if mirrored:
+        tex.image = PIL.ImageOps.mirror(tex.image)
+    return tex
+
+CHARACTERS = Textures.load_textures("Salami/chars.png", 0, 0, 8, 27)
+SYMBOLS = Textures.load_textures("Salami/chars.png", 0, 1, 8, 21)
+SPRITESHEET = arcade.load_spritesheet("Salami/spritesheet.png", 16, 16, 16, 16 * 16)
 THIN_CHARS = arcade.load_spritesheet("Salami/thin_chars.png", 6, 8, 27, 27 * 3)
