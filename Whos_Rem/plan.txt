@@ -1,17 +1,20 @@
 Menu     ~ Select song                                                       x
          ~ View score / level (db)                                           x
-         ~ Open settings                                                     x
+         ~ Open settings                                                     ✓
 
-Songs    ~ Each song has a set difficulty                                    ?
-         ~ Use algorithm to determine when beats are                         ?
+Songs    ~ Each song has a set difficulty                                    ✓
+         ~ Use algorithm to determine when beats are                         ✓
          ~ Create Shape object which is rendered as a note                   ✓
          ~ Shape spawned certain distance away so that rectangle is over     ✓
            the right area as the beat arrives
-         ~ Indicator for when to press key                                   x
-         ~ Path chosen by random seed/algo (still deciding)                  x
+         ~ Indicator for when to press key                                   ✓
+         ~ Path chosen by random seed/algo (still deciding)                  ✓
 
 Inputs   ~ Mouse position for menu song selection / opening high scores      ✓
          ~ Keyboard keys for main game                                       ✓
 
 Settings ~ Adjust volume                                                     ✓
          ~ Key Binds                                                         ✓
+
+General ~ Link windows together                                              ?
+        ~ Make UI nicer                                                      x

@@ -1,12 +1,12 @@
 import arcade
 from screeninfo import get_monitors
-from Display import ColourBlend as cb
-from Settings import Settings
+from .Display import ColourBlend as cb
+from .settings import Settings
 
 
 class Shape:
 
-    screen_width_center = get_monitors()[0].width
+    screen_width_center = 1920  # get_monitors()[0].width
 
     def __init__(self, x, y, scale_size, dims, dist, colour, speed):
         """
@@ -74,7 +74,7 @@ class ShapeManager:
         return shapes
 
     @staticmethod
-    def create_shape(note, total_notes=3, colour=(255, 0, 0), screen_width=get_monitors()[0].width) -> Shape:
+    def create_shape(note, total_notes=3, colour=(255, 0, 0), screen_width=1920) -> Shape:
         final_spacing = int(screen_width * 0.6)
         central_spacing = final_spacing // total_notes
         width = int(central_spacing * 0.45)

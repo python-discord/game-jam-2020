@@ -1,11 +1,12 @@
 import arcade
+from perspective_objects import ShapeManager
 import itertools
 import json
 import time
 import os
-from Settings import Settings
 
 BASE_DIR = os.getcwd()
+print(BASE_DIR)
 song_filepath = r"TRACK_1.wav"
 notes_filepath = r"track_1.json"
 
@@ -22,7 +23,6 @@ class GameScreen(arcade.View):
     the audio bars sync up in the right time frame, Musically speaking
     on a 4/4 beat.
     """
-    settings = Settings()
     width = 1000  # get_monitors()[0].width
     height = 600  # get_monitors()[0].height
 
@@ -38,7 +38,7 @@ class GameScreen(arcade.View):
     frame_count = itertools.count(0, 1)
     all_sprites_list = arcade.SpriteList()
     background_sprite = arcade.Sprite(
-        filename=r"F:\game-jam-2020\Whos_Rem\main\Resources\game_play\undertale.png",
+        filename=f"{BASE_DIR}/Resources/game_play/undertale.png",
         scale=1,
         image_height=height,
         image_width=width)
@@ -51,11 +51,9 @@ class GameScreen(arcade.View):
     fps = 16  # used for calculations
     active = False
 
-    volume = settings.volume * 0.1
-
     def setup(self):
         arcade.schedule(self.on_draw, 1 / self.fps)
-        self.song.play(self.volume)
+        self.song.play(0.05)
         self.active = True
         time.sleep(0.03)
 

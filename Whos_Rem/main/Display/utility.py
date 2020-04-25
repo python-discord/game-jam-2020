@@ -1,4 +1,5 @@
 from functools import reduce
+import arcade
 
 
 class ListFunctions:
@@ -83,3 +84,26 @@ class ColourBlend:
             elif brightness == 0:
                 mult = 1
             brightness += step * mult
+
+    @staticmethod
+    def rainbow_cycle(step=16):
+        colour = [255, 0, 0]
+        while True:
+            yield colour
+            if colour[0] == 255 and colour[1] < 255 and colour[2] == 0:
+                colour[1] += step
+            elif colour[1] == 255 and colour[0] > 0 and colour[2] == 0:
+                colour[0] -= step
+            elif colour[1] == 255 and colour[2] < 255 and colour[0] == 0:
+                colour[2] += step
+            elif colour[2] == 255 and colour[1] > 0 and colour[0] == 0:
+                colour[1] -= step
+            elif colour[2] == 255 and colour[0] < 255 and colour[1] == 0:
+                colour[0] += step
+            elif colour[0] == 255 and colour[2] > 0 and colour[1] == 0:
+                colour[2] -= step
+
+            for index in range(len(colour)):
+                colour[index] = min(colour[index], 255)
+                colour[index] = max(colour[index], 0)
+

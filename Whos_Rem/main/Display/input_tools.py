@@ -1,5 +1,5 @@
 import arcade
-from .Utility import ColourBlend as cb
+from .utility import ColourBlend as cb
 
 
 class Button:
@@ -12,7 +12,7 @@ class Button:
         self.name = name
 
         if draw_func is None:
-            self.draw = lambda brightness: arcade.draw_lrtb_rectangle_filled(self.x, self.x + self.height,
+            self.draw = lambda brightness: arcade.draw_lrtb_rectangle_filled(self.x, self.x + self.width,
                                                                              self.y + self.height, self.y,
                                                                              cb.brightness(self.colour, brightness))
         else:
@@ -87,9 +87,14 @@ class Slider:
             self.__slide_dist = mouse_y - self.y
 
     def hit_box(self, mouse_x, mouse_y):
-        if -0.2 * self.width <= mouse_x - self.x <= 1.2 * self.width:
-            if 0.2 * self.height <= mouse_y - self.y <= 1.2 * self.height:
-                return True
+        if self.rotation == "hor":
+            if 0 <= mouse_x - self.x <= self.width:
+                if -1.5 * self.height <= mouse_y - self.y <= 2.5 * self.height:
+                    return True
+        else:
+            if -1.5 * self.width <= mouse_x - self.x <= 2.5 * self.width:
+                if 0 <= mouse_y - self.y <= self.height:
+                    return True
 
         return False
 
