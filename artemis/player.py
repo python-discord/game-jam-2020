@@ -9,6 +9,7 @@ import displays
 import engine
 import game
 import multiplayer
+from utils import play_sound_effect
 
 
 class Player(arcade.Sprite):
@@ -131,6 +132,7 @@ class Player(arcade.Sprite):
 
         gems = arcade.check_for_collision_with_list(self, self.game.gems)
         for gem in gems:
+            play_sound_effect('gem')
             self.add_gem(gem.colour)
             gem.place()
 
@@ -206,6 +208,7 @@ class Player(arcade.Sprite):
 
     def remove_three(self, colour: str):
         """Once notified that there are three of some colour, remove them."""
+        play_sound_effect('match')
         removed = 0
         for box in self.boxes:
             if box.colour == colour:

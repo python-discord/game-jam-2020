@@ -10,6 +10,7 @@ from engine import PhysicsEngine
 import player as player_module
 from sprites import Block, Gem, RandomBlock
 from ui import View
+from utils import play_sound_effect
 import views
 
 
@@ -156,6 +157,7 @@ class MultiplayerGame(View):
 
     def game_over(self, message: str, player: player_module.Player):
         """Kill the player and show some explanatory message."""
+        play_sound_effect('death')
         player.score = 0
         for box in player.boxes:
             box.remove_gem()

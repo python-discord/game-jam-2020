@@ -8,7 +8,10 @@ from constants import ABOUT, ASSETS, FONT, HEIGHT, MULTIPLAYER_HELP, WIDTH
 from game import Game
 from multiplayer import MultiplayerGame
 from scores import add_award, get_awards
-from ui import Achievement, Award, IconButton, View, ViewButton
+from settings import (
+    get_sfx_volume, get_music_volume, set_sfx_volume, set_music_volume
+)
+from ui import Achievement, Award, IconButton, View, ViewButton, Slider
 
 
 # keep track of restarts for award "The perfect spawn"
@@ -86,7 +89,7 @@ class About(View):
         """Create back button."""
         super().on_show()
         self.buttons.append(ViewButton(
-            self, WIDTH / 2, HEIGHT / 2 - 120, 'home', Menu
+            self, WIDTH / 2, HEIGHT / 2 - 150, 'home', Menu
         ))
 
     def on_draw(self):
@@ -191,6 +194,9 @@ class Menu(View):
         self.buttons.append(IconButton(
             self, WIDTH / 2 + 70, HEIGHT / 2 - 120, 'quit', self.window.close
         ))
+        # self.buttons.append(ViewButton(
+        #     self, WIDTH / 2, HEIGHT / 2 - 190, 'settings', Settings
+        # ))
 
     def on_draw(self):
         """Display the buttons and title."""
@@ -201,6 +207,32 @@ class Menu(View):
             arcade.color.WHITE, font_size=50, anchor_x='center',
             anchor_y='bottom', font_name=FONT.format(type='b')
         )
+
+
+class Settings(View):
+    """Change game settings."""
+
+    def __init__(self):
+        """Create the buttons."""
+        super().__init__()
+        sfx_vol = get_sfx_volume()
+        x = WIDTH / 2
+        y = HEIGHT / 2 - 160
+        self.sfx_slider = Slider(self, x, y, sfx_vol, self.set_sfx)
+        self.buttons.append(self.sfx_slider)
+        music_vol = get_music_volume()
+        y -= 50
+        self.music_slider = Slider(self, x, y, music_vol, self.set_music)
+        self.buttons.append(self.music_slider)
+
+    def set_sfx(self):
+        value = self.sfx_slider.value
+        set_sfx_volume(value)
+
+    def set_music(self):
+        value = self.music_slider.value
+        set_music_volume(value)
+        # update currently running music
 
 
 class MultiplayerMenu(View):
