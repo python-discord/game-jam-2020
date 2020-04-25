@@ -67,15 +67,16 @@ class Paused(View):
         )
         super().on_draw()
 
-    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+    def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Check own buttons and game buttons."""
-        for view in (super(), self.game):
-            view.on_mouse_press(x, y, button, modifiers)
+        super().on_mouse_press(x, y, button, modifiers)
+        self.game.on_mouse_press(x, y, button, modifiers)
 
-    def on_mouse_release(self, x: int, y: int, button: int, modifiers: int):
+    def on_mouse_release(self, x: float, y: float, button: int,
+                         modifiers: int):
         """Check own buttons and game buttons."""
-        for view in (super(), self.game):
-            view.on_mouse_release(x, y, button, modifiers)
+        super().on_mouse_release(x, y, button, modifiers)
+        self.game.on_mouse_release(x, y, button, modifiers)
 
 
 class About(View):
@@ -118,7 +119,9 @@ class Tutorial(View):
             IconButton(self, WIDTH - 70, HEIGHT - 70, 'home', self.home)
         )
 
-    def get_textures(self, file: str) -> typing.Iterable[arcade.Texture]:
+    def get_textures(self, file: str
+                     ) -> typing.Iterable[typing.Tuple[arcade.Texture,
+                                                       float]]:
         """Open a GIF and yield a texture for each frame."""
         gif = Image.open(file)
         n = 0
@@ -136,7 +139,7 @@ class Tutorial(View):
         """Switch to the menu view."""
         self.window.show_view(Menu())
 
-    def on_update(self, timedelta: int):
+    def on_update(self, timedelta: float):
         """Switch to the next frame."""
         super().on_update(timedelta)
         self.time_till_change -= timedelta
@@ -340,7 +343,7 @@ class GameOver(View):
             font_name=FONT.format(type='ri')
         )
 
-    def on_mouse_release(self, _x: int, _y: int, _button: int,
+    def on_mouse_release(self, _x: float, _y: float, _button: int,
                          _modifiers: int):
         """Start a new game on any mouse click."""
         self.window.show_view(self.create_new())

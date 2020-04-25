@@ -2,9 +2,19 @@
 from __future__ import annotations
 import arcade
 import random
+import typing
 
 from constants import ASSETS, HEIGHT, SCALING, SIDE, TOP, WIDTH
 import game
+import multiplayer
+
+
+def game_type() -> typing.Type:
+    """Game or MultiplayerGame typing annotation.
+
+    Function rather than variable to prevent circular imports.
+    """
+    return typing.Union[game.Game, multiplayer.MultiplayerGame]
 
 
 class Gem(arcade.Sprite):
@@ -12,7 +22,7 @@ class Gem(arcade.Sprite):
 
     TEXTURES = 'rbywp'
 
-    def __init__(self, game: game.Game, image: str = ASSETS + 'gem_{}.png'):
+    def __init__(self, game: game_type(), image: str = ASSETS + 'gem_{}.png'):
         """Load textures and store parameters."""
         super().__init__(image.format('w'), SCALING * 0.25)
         self.textures = []
@@ -72,7 +82,7 @@ class Gem(arcade.Sprite):
 class Block(arcade.Sprite):
     """A block on the top or bottom."""
 
-    def __init__(self, game: game.Game, x: int, y: int, up: bool,
+    def __init__(self, game: game_type(), x: int, y: int, up: bool,
                  image: str = ASSETS + 'block.png', scale: float = SCALING):
         """Set up the block."""
         super().__init__(image, center_x=x, center_y=y, scale=scale)
@@ -120,9 +130,11 @@ class Block(arcade.Sprite):
 class RandomBlock(Block):
     """A block between the top and bottom rows of blocks."""
 
-    def __init__(self, game: game.Game):
+    def __init__(self, game: game_type()):
         """Create a block and decide a position."""
-        super().__init__(game, 0, 0, random.randrange(2), scale=SCALING * 2)
+        super().__init__(
+            game, 0, 0, bool(random.randrange(2)), scale=SCALING * 2
+        )
         self.total_reposition()
         self.reposition()
 

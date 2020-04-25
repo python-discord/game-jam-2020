@@ -1,11 +1,12 @@
 """Module for the player sprite."""
 from __future__ import annotations
 import arcade
-from typing import Mapping, Union
+from typing import Dict, Optional, Union
 from PIL import Image, ImageDraw
 
 from constants import ASSETS, HEIGHT, SCALING, SPEED, TOP, WIDTH
 import displays
+import engine
 import game
 import multiplayer
 
@@ -22,24 +23,24 @@ class Player(arcade.Sprite):
     def __init__(self,
                  master: Union[multiplayer.MultiplayerGame, game.Game],
                  player_num: int = 0, x: int = WIDTH // 5,
-                 y: int = HEIGHT // 2, speed: int = SPEED):
+                 y: int = HEIGHT // 2, speed: float = SPEED):
         """Set up counters and load textures."""
         self.image = ASSETS + f'player_{player_num}_{{name}}.png'
         super().__init__(center_x=x, center_y=y)
         self.player = player_num
-        self.textures = {}
+        self.all_textures = {}
         for texture in Player.TEXTURES:
             if texture == 'jump':
-                self.textures.update(self.load_rotations(texture))
+                self.all_textures.update(self.load_rotations(texture))
             else:
-                self.textures.update(self.load_flipped_pair(texture))
-        self.texture = self.textures['walk_forward_up']
+                self.all_textures.update(self.load_flipped_pair(texture))
+        self.texture = self.all_textures['walk_forward_up']
         self.game = master
         self.speed = speed
         self.time_since_change = 0
         self.num = 0
         self.last_x = -1
-        self.boxes = arcade.SpriteList()
+        self.boxes: arcade.SpriteList = arcade.SpriteList()
         y = HEIGHT - TOP // 2 + 8
         start_x = player_num * (WIDTH / 4)
         for n in range(5):
@@ -50,10 +51,10 @@ class Player(arcade.Sprite):
             x = start_x + (n + 0.6) * scale * 500
             self.boxes.append(displays.Box(x, y, self, scale))
         self.score = 0
-        self.engine = None
-        self.blocks = None
-        self.revive_after = None
-        self.death_message = None
+        self.engine: Optional[engine.PhysicsEngine] = None
+        self.blocks: Optional[arcade.SpriteList] = None
+        self.revive_after: Optional[int] = None
+        self.death_message: Optional[str] = None
 
     def prepare(self, name: str) -> Image.Image:
         """Open and resize an image for a texture."""
@@ -74,7 +75,7 @@ class Player(arcade.Sprite):
                 ], col, col)
         return new
 
-    def load_rotations(self, name: str) -> Mapping[str, arcade.Texture]:
+    def load_rotations(self, name: str) -> Dict[str, arcade.Texture]:
         """Load the four rotations by 90 degrees of an image."""
         im = self.prepare(name)
         textures = {}
@@ -83,7 +84,7 @@ class Player(arcade.Sprite):
             textures[f'{name}_{n}'] = arcade.Texture(uid, im.rotate(n * 90))
         return textures
 
-    def load_flipped_pair(self, name: str) -> Mapping[str, arcade.Texture]:
+    def load_flipped_pair(self, name: str) -> Dict[str, arcade.Texture]:
         """Load the vertically flipped versions of an image."""
         im = self.prepare(name)
         return {
@@ -124,7 +125,7 @@ class Player(arcade.Sprite):
             name = f'walk_right_{self.num}_{direction}'
         else:
             name = f'jump_{self.num}'
-        self.texture = self.textures[name]
+        self.texture = self.all_textures[name]
 
         self.last_x = self.center_x
 

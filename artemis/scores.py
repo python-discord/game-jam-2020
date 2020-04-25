@@ -80,7 +80,7 @@ def get_awards(data: dict) -> list:
     award_nums = data.get('awards', [])
     awards = []
     for num, award in enumerate(AWARDS):
-        copy = dict(award)
+        copy: typing.Dict[str, typing.Any] = dict(award)
         copy['achieved'] = num in award_nums
         awards.append(copy)
     return awards

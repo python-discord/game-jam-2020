@@ -1,11 +1,21 @@
 """Sprites for the game view that are not directly part of game play."""
 from __future__ import annotations
 import arcade
+import typing
 
 from constants import ASSETS, SCALING, SPEED
 import game
+import multiplayer
 import player
 from ui import IconButton
+
+
+def game_type() -> typing.Type:
+    """Game or MultiplayerGame typing annotation.
+
+    Function rather than variable to prevent circular imports.
+    """
+    return typing.Union[game.Game, multiplayer.MultiplayerGame]
 
 
 class Box(arcade.Sprite):
@@ -16,8 +26,8 @@ class Box(arcade.Sprite):
         """Set up box."""
         super().__init__(image, scale, center_x=x, center_y=y)
         self.alpha = 50
-        self.colour = None
-        self.gem = None
+        self.colour: typing.Optional[str] = None
+        self.gem: typing.Optional[BoxGem] = None
         self.player = player
 
     def add_gem(self, colour: str):
@@ -65,11 +75,10 @@ class BoxGem(arcade.Sprite):
 class PausePlay(IconButton):
     """Button for pausing/playing the game."""
 
-    def __init__(self, x: int, y: int, game: game.Game):
+    def __init__(self, x: int, y: int, game: game_type()):
         """Set up the button."""
         super().__init__(game, x, y, 'pause', self.go, 32)
         self.game = game
-        game.on_mouse_release = self.on_mouse_release
 
     def go(self):
         """Pause or unpause the game."""

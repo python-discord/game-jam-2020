@@ -2,18 +2,12 @@
 import pyglet
 
 
-def get_display_size():
-    """Return the resolution of the monitor.
+_display = pyglet.canvas.Display()
+_screen = _display.get_default_screen()
 
-    Wasn't installed with arcade for me...
-    """
-    display = pyglet.canvas.Display()
-    screen = display.get_default_screen()
-    return screen.width, screen.height
-
-
+WIDTH = _screen.width
+HEIGHT = _screen.height
 SCALING = 0.3
-WIDTH, HEIGHT = get_display_size()
 SIDE = WIDTH // 2
 TOP = 5 * SCALING * 128
 

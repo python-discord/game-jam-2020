@@ -25,8 +25,7 @@ def _circular_check(player: arcade.Sprite, walls: arcade.SpriteList):
         vary *= 2
 
 
-def _move_sprite(moving_sprite: arcade.Sprite, walls: arcade.SpriteList,
-                 ramp_up: bool) -> arcade.SpriteList:
+def _move_sprite(moving_sprite: arcade.Sprite, walls: arcade.SpriteList):
     # Rotate
     moving_sprite.angle += moving_sprite.change_angle
 
@@ -42,7 +41,6 @@ def _move_sprite(moving_sprite: arcade.Sprite, walls: arcade.SpriteList,
     # Check for wall hit
     hit_list_x = arcade.check_for_collision_with_list(moving_sprite, walls)
     # print(f"Post-y move {hit_list_x}")
-    complete_hit_list = hit_list_x
 
     # If we hit a wall, move so the edges are at the same point
     if len(hit_list_x) > 0:
@@ -71,10 +69,6 @@ def _move_sprite(moving_sprite: arcade.Sprite, walls: arcade.SpriteList,
         check_again = False
         # Check for wall hit
         hit_list_y = arcade.check_for_collision_with_list(moving_sprite, walls)
-        complete_hit_list = hit_list_x
-        for sprite in hit_list_y:
-            if sprite not in complete_hit_list:
-                complete_hit_list.append(sprite)
 
         # If we hit a wall, move so the edges are at the same point
         if len(hit_list_y) > 0:
@@ -96,8 +90,6 @@ def _move_sprite(moving_sprite: arcade.Sprite, walls: arcade.SpriteList,
                     "a physics engine update and an all sprites list update."
                 )
 
-    return complete_hit_list
-
 
 class PhysicsEngine(arcade.PhysicsEnginePlatformer):
     """The pyhsics engine.
@@ -109,7 +101,7 @@ class PhysicsEngine(arcade.PhysicsEnginePlatformer):
     def update(self):
         """Move everything and resolve collisions."""
         self.player_sprite.change_y -= self.gravity_constant
-        _move_sprite(self.player_sprite, self.platforms, False)
+        _move_sprite(self.player_sprite, self.platforms)
 
     def can_jump(self, y_distance: int = 5) -> bool:
         """Check if the player can jump ie. if they are on a platform."""

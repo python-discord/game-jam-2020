@@ -45,7 +45,7 @@ class IconButton():
         im = Image.new('RGB', (width, height), color=(255, 255, 255))
         draw = ImageDraw.Draw(im)
         draw.text((padding, padding), self.tooltip_text, (0, 0, 0), font)
-        return arcade.Texture(self.tooltip_text, im)
+        return arcade.Texture(str(self.tooltip_text), im)
 
     def on_draw(self):
         """Draw textures."""
@@ -63,32 +63,33 @@ class IconButton():
             self.view.on_top.remove(self)
 
     @property
-    def left(self) -> int:
+    def left(self) -> float:
         """Get the left of the button."""
         return self.center_x - self.size / 2
 
     @property
-    def right(self) -> int:
+    def right(self) -> float:
         """Get the right of the button."""
         return self.center_x + self.size / 2
 
     @property
-    def top(self) -> int:
+    def top(self) -> float:
         """Get the top of the button."""
         return self.center_y + self.size / 2
 
     @property
-    def bottom(self) -> int:
+    def bottom(self) -> float:
         """Get the bottom of the button."""
         return self.center_y - self.size / 2
 
-    def on_mouse_press(self, x: int, y: int, _button: int, _modifiers: int):
+    def on_mouse_press(self, x: float, y: float, _button: int,
+                       _modifiers: int):
         """Check if a mouse press is on the button."""
         x += arcade.get_viewport()[0]
         if self.left <= x <= self.right and self.bottom <= y <= self.top:
             self.state = 'pressed'
 
-    def on_mouse_motion(self, x: int, y: int, _dx: int, _dy: int):
+    def on_mouse_motion(self, x: float, y: float, _dx: int, _dy: int):
         """Check if mouse motion is hovering on the button."""
         x += arcade.get_viewport()[0]
         if self.left <= x <= self.right and self.bottom <= y <= self.top:
@@ -120,7 +121,9 @@ class Achievement(IconButton):
         self.view = view
         self.state = 'normal'
         self.size = size
-        self.tooltip_texture = self.create_tooltip(name, description)
+        self.name = name
+        self.desc = description
+        self.tooltip_texture = self.create_tooltip()
         self.center_x = x
         self.center_y = y
         self.alpha = 255 if achieved else 100
@@ -136,20 +139,22 @@ class Achievement(IconButton):
             f'achievement_level_{self.level}', self.size
         )
 
-    def create_tooltip(self, name: str, desc: str) -> arcade.Texture:
+    def create_tooltip(self) -> arcade.Texture:
         """Create an arcade texture for the tooltip."""
         gap = 5
         name_font = ImageFont.truetype(FONT.format(type='r'), 20)
         desc_font = ImageFont.truetype(FONT.format(type='ri'), 15)
-        name_width, name_height = name_font.getsize(name)
-        desc_width, desc_height = desc_font.getsize(desc)
+        name_width, name_height = name_font.getsize(self.name)
+        desc_width, desc_height = desc_font.getsize(self.desc)
         width = max(name_width, desc_width) + gap * 2
         height = name_height + gap * 3 + desc_height
         im = Image.new('RGB', (width, height), color=(255, 255, 255))
         draw = ImageDraw.Draw(im)
-        draw.text((gap, gap), name, (0, 0, 0), name_font)
-        draw.text((gap, name_height + gap * 2), desc, (0, 0, 0), desc_font)
-        return arcade.Texture(name + '\n' + desc, im)
+        draw.text((gap, gap), self.name, (0, 0, 0), name_font)
+        draw.text(
+            (gap, name_height + gap * 2), self.desc, (0, 0, 0), desc_font
+        )
+        return arcade.Texture(self.name + '\n' + self.desc, im)
 
     def on_draw(self):
         """Draw the relevant textures."""
@@ -168,10 +173,11 @@ class Achievement(IconButton):
         elif self in self.view.on_top:
             self.view.on_top.remove(self)
 
-    def on_mouse_press(self, _x: int, _y: int, _button: int, _modifiers: int):
+    def on_mouse_press(self, _x: float, _y: float, _button: int,
+                       _modifiers: int):
         """Don't do anything since it isn't actually a button."""
 
-    def on_mouse_release(self, _x: int, _y: int, _button: int,
+    def on_mouse_release(self, _x: float, _y: float, _button: int,
                          _modifiers: int):
         """Don't do anything since it isn't actually a button."""
 
@@ -202,7 +208,7 @@ class ViewButton(IconButton):
     """An icon button for switching views."""
 
     def __init__(self, view: arcade.View, x: number, y: number, image: str,
-                 switch_to: arcade.View, size: int = 64):
+                 switch_to: typing.Type[arcade.View], size: int = 64):
         """Load textures and store parameters."""
         self.switch_to = switch_to
         super().__init__(view, x, y, image, self.switch)
@@ -226,7 +232,7 @@ class View(arcade.View):
         self.on_top = []
         self.hide_mouse_after = 1
 
-    def on_update(self, td: int):
+    def on_update(self, td: float):
         """Hide mouse if ready."""
         self.hide_mouse_after -= td
         if self.hide_mouse_after < 0:
@@ -237,7 +243,7 @@ class View(arcade.View):
                     break
             self.window.set_mouse_visible(visible)
 
-    def on_mouse_motion(self, x: int, y: int, dx: int, dy: int):
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """Check motion with buttons and unhide mouse."""
         self.hide_mouse_after = 1
         self.window.set_mouse_visible(True)
@@ -253,12 +259,14 @@ class View(arcade.View):
         for button in self.on_top:
             button.on_draw()
 
-    def on_mouse_press(self, x: int, y: int, button: int, modifiers: int):
+    def on_mouse_press(self, x: float, y: float, button_id: int,
+                       modifiers: int):
         """Check mouse press with buttons."""
         for button in self.buttons:
-            button.on_mouse_press(x, y, button, modifiers)
+            button.on_mouse_press(x, y, button_id, modifiers)
 
-    def on_mouse_release(self, x: int, y: int, button: int, modifiers: int):
+    def on_mouse_release(self, x: float, y: float, button_id: int,
+                         modifiers: int):
         """Check mouse release with buttons."""
         for button in self.buttons:
-            button.on_mouse_release(x, y, button, modifiers)
+            button.on_mouse_release(x, y, button_id, modifiers)

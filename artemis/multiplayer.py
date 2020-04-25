@@ -25,15 +25,15 @@ class MultiplayerGame(View):
         arcade.set_background_color(BACKGROUND)
 
         self.left = 0
-        self.time_left = 90
+        self.time_left = 90.0
         self.randomblocks = 2
         self.paused = False
         self.pause_screen = None
-        self.blocks = arcade.SpriteList()
-        self.gems = arcade.SpriteList()
-        self.others = arcade.SpriteList()
-        self.spikes = arcade.SpriteList()
-        self.players = arcade.SpriteList()
+        self.blocks: arcade.SpriteList = arcade.SpriteList()
+        self.gems: arcade.SpriteList = arcade.SpriteList()
+        self.others: arcade.SpriteList = arcade.SpriteList()
+        self.spikes: arcade.SpriteList = arcade.SpriteList()
+        self.players: arcade.SpriteList = arcade.SpriteList()
 
         # sprites
         for n in range(players):
@@ -58,7 +58,7 @@ class MultiplayerGame(View):
 
         self.engines = []
         for player in self.players:
-            blocks = arcade.SpriteList()
+            blocks: arcade.SpriteList = arcade.SpriteList()
             for block in self.blocks:
                 blocks.append(block)
             for other in self.players:

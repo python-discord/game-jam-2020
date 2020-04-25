@@ -49,13 +49,13 @@ def check_type_3() -> int:
 
 def get_achievements() -> list:
     """Get a list of lists of achievements."""
-    checked = []
+    checked: typing.List[typing.List[dict]] = []
     checks = [check_type_0, check_type_1, check_type_2, check_type_3]
     for achv_type, check in zip(ACHIEVEMENTS, checks):
         level = check()
         checked.append([])
         for n, achv in enumerate(achv_type):
-            copy = dict(achv)
+            copy: typing.Dict[str, typing.Any] = dict(achv)
             copy['achieved'] = n <= level
             copy['type'] = checks.index(check)
             copy['level'] = n
