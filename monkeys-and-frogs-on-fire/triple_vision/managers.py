@@ -303,12 +303,11 @@ class CursorManager:
         # TODO save player states by current weapon and update cursor
         if self.player.is_moving():
             self.curr_cursor = "moving"
-        elif self.player.state == States.ATTACKING_RANGED:
+            self._curr_cursor.angle += 1
+        elif self.player.state in (States.ATTACKING_RANGED, States.IDLE):
             self.curr_cursor = "ranged"
         elif self.player.state == States.AIMING_BLOCKED:
             self.curr_cursor = "blocked"
-        elif self.player.state == States.IDLE:
-            self.curr_cursor = "ranged"
 
         viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
         if self.prev_viewport != viewport:
