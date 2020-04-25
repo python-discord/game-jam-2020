@@ -268,10 +268,10 @@ class CursorManager:
         self.cursors = {
             "moving": arcade.Sprite("assets/crosshairs/moving.png"),
             "ranged": arcade.Sprite("assets/crosshairs/ranged.png"),
-            "blocked": arcade.Sprite("assets/crosshairs/blocked.png"),
         }
         self._curr_cursor: arcade.Sprite = self.cursors["ranged"]
         self.window.set_mouse_visible(False)
+
 
         self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
 
@@ -289,12 +289,6 @@ class CursorManager:
         self._curr_cursor.center_x = x + self.view.camera.viewport_left
         self._curr_cursor.center_y = y + self.view.camera.viewport_bottom
 
-    def process_mouse_motion(self, x, y):
-        if arcade.get_sprites_at_exact_point((x, y), self.view.collision_list):
-            # TODO not working
-            self.curr_cursor = "blocked"
-        self.set_cursor_position(x, y)
-
     def update(self):
         # TODO save player states by current weapon and update cursor
         if self.player.is_moving():
@@ -302,9 +296,6 @@ class CursorManager:
             self._curr_cursor.angle += 1
         elif self.player.state in (States.ATTACKING_RANGED, States.IDLE):
             self.curr_cursor = "ranged"
-        elif self.player.state == States.AIMING_BLOCKED:
-            # TODO
-            self.curr_cursor = "blocked"
 
         viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
         if self.prev_viewport != viewport:

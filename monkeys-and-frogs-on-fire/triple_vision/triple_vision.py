@@ -11,8 +11,8 @@ from triple_vision.entities import (
     StationaryEnemy
 )
 from triple_vision.managers import CardManager, GameManager, CursorManager
-from triple_vision.sound import SoundManager
 from triple_vision.map import Map
+from triple_vision.sound import SoundManager
 
 
 class TripleVision(arcade.View):
@@ -112,7 +112,7 @@ class TripleVision(arcade.View):
             x + self.camera.viewport_left,
             y + self.camera.viewport_bottom
         )
-        self.cursor_manager.process_mouse_motion(x, y)
+        self.cursor_manager.set_cursor_position(x, y)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int) -> None:
         if not self.player.is_alive:
