@@ -1,4 +1,5 @@
 
+import math
 
 import LevelGenerator
 import Textures
@@ -18,7 +19,7 @@ class Player(Mob):
         self.jump_height = 4
         self.jumping = False
 
-        self.max_attack_speed = 4
+        self.max_attack_speed = 12
         self.curr_attack_speed = 0
         self.attack_dir = 0
 
@@ -63,12 +64,11 @@ class Player(Mob):
             self.dashing = True
         
         if self.keyboard.is_pressed("l"):
-            level_gen_x = self.center_x // TILE_SIZE // ROOM_WIDTH
-            level_gen_y = self.center_y // TILE_SIZE // ROOM_HEIGHT
-
-            LevelGenerator.generateLevel(self.level, int(level_gen_x), int(level_gen_y))
+            self.level.generate_level(self.center_x, self.center_y)
 
         if self.keyboard.is_pressed("down"):
+            # if not self.crawling:
+            self.change_y -= 0.1
             self.crawling = True
             speed_mult *= 0.5
         else:
@@ -76,12 +76,21 @@ class Player(Mob):
 
         if self.keyboard.is_pressed("attack"):
             if self.curr_attack_speed == 0:
+                extra_y_dir = 0
+                if self.keyboard.is_pressed("up"):
+                    extra_y_dir = 4
+                elif self.keyboard.is_pressed("down"):
+                    extra_y_dir = -4
+                attack_x = (self.change_x) * 4
+                attack_y = (self.change_y + extra_y_dir) * 3
+                attack_angle = int(math.atan2(attack_y, attack_x)/math.pi*180)
+                print(attack_angle)
                 card = Projectile(
-                    Textures.SPRITESHEET[3 + 1 * 16],
+                    Textures.SPRITESHEET[3 + int((attack_angle % 360) / 45) + 16],
                     self.center_x,
                     self.center_y,
-                    self.change_x * 3,
-                    self.change_y * 2)
+                    attack_x,
+                    attack_y)
                 self.level.add_entity_to_list(card, self.level.entities)
                 self.curr_attack_speed = self.max_attack_speed
             # self.level.ball.center_x = self.center_x
@@ -177,3 +186,6 @@ class Player(Mob):
                     self.texture = self.idle_texture_mirrored
 
         super().update()
+
+    def collided(self, entity, dx, dy):
+        super().collided(entity, dx, dy)
