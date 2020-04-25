@@ -270,11 +270,6 @@ class CursorManager:
             "ranged": arcade.Sprite("assets/crosshairs/ranged.png"),
             "blocked": arcade.Sprite("assets/crosshairs/blocked.png"),
         }
-        self.colors = {
-            "red": (255, 51, 51),
-            "green": (0, 204, 0),
-            "blue": (0, 128, 255),
-        }
         self._curr_cursor: arcade.Sprite = self.cursors["ranged"]
         self.window.set_mouse_visible(False)
 
@@ -295,7 +290,11 @@ class CursorManager:
         self._curr_cursor.center_y = y + self.view.camera.viewport_bottom
 
     def process_mouse_motion(self, x, y):
-        if arcade.get_sprites_at_exact_point((x, y), self.view.collision_list):
+        if arcade.get_sprites_at_exact_point(
+            (x + self.view.camera.viewport_left, y + self.view.camera.viewport_bottom),
+                self.view.collision_list
+        ):
+            # TODO not working
             self.curr_cursor = "blocked"
         self.set_cursor_position(x, y)
 
@@ -307,6 +306,7 @@ class CursorManager:
         elif self.player.state in (States.ATTACKING_RANGED, States.IDLE):
             self.curr_cursor = "ranged"
         elif self.player.state == States.AIMING_BLOCKED:
+            # TODO
             self.curr_cursor = "blocked"
 
         viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
@@ -315,7 +315,7 @@ class CursorManager:
             self._curr_cursor.center_y += viewport[1] - self.prev_viewport[1]
             self.prev_viewport = viewport
 
-        self._curr_cursor.color = self.colors[self.player.curr_color]
+        self._curr_cursor.color = self.player.colors[self.player.curr_color]
 
     def draw(self):
         if self._curr_cursor is not None:
