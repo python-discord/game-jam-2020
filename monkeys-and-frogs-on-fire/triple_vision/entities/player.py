@@ -8,10 +8,9 @@ from triple_vision import Settings as s
 from triple_vision import Tile
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import HealthBar, MovingSprite
-from triple_vision.entities.weapons import ChargedLaserProjectile
+from triple_vision.entities.weapons import ChargedLaserProjectile, Melee
 from triple_vision.pathfinding import PathFinder
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
-from triple_vision.sound import SoundManager
 
 
 class States(Enum):
@@ -61,6 +60,8 @@ class Player(LivingEntity, MovingSprite):
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
+
+        self.melee_weapon = None
 
         self.colors = {
             "red": (255, 20, 20),
@@ -121,6 +122,11 @@ class Player(LivingEntity, MovingSprite):
             auto_filling_speed=1.5
         )
         self.health_bar = PlayerLiveManager(self.view, self.hp)
+
+        self.melee_weapon = Melee(
+            100, 20, filename="assets/dungeon/frames/weapon_katana.png",
+            center_x=self.center_x, center_y=self.center_y
+        )
 
         while True:
             center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
@@ -219,6 +225,7 @@ class Player(LivingEntity, MovingSprite):
         super().draw()
         self.mana_bar.draw()
         self.health_bar.draw()
+        self.melee_weapon.draw()
 
 
 class PlayerLiveManager:
