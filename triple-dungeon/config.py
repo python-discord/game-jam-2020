@@ -51,7 +51,7 @@ class Config(object):
     TOP_VIEWPORT_MARGIN = 350
 
     # All debug statements and renderings should use this
-    DEBUG = True
+    DEBUG = False
 
     # Monster Count to be spawned
     MONSTER_COUNT = 8
