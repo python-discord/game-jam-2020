@@ -46,8 +46,11 @@ class Shape:
         else:
             return self.scale_size
 
-    def update(self):
-        self.dist -= self.speed
+    def update(self, speed=None):
+        if speed is None:
+            self.dist -= self.speed
+        else:
+            self.dist -= speed
 
     @property
     def removable(self):
@@ -63,12 +66,12 @@ class Shape:
 class ShapeManager:
 
     @classmethod
-    def manage_shapes(cls, shapes: "list of shape objects") -> "list of updated shapes":
+    def manage_shapes(cls, shapes: "list of shape objects", speed: int = None) -> "list of updated shapes":
         for shape in shapes:
             if shape.removable:
                 shapes.remove(shape)
             else:
-                shape.update()
+                shape.update(speed)
 
         cls.draw_all_shapes(shapes)
         return shapes

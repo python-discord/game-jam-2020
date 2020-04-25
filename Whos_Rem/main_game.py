@@ -15,6 +15,10 @@ class Main:
     def brightness(self):
         return self.settings.brightness
 
+    @property
+    def volume(self):
+        return self.settings.volume
+
 
 if __name__ == "__main__":
     main = Main()
