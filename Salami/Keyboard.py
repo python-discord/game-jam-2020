@@ -29,9 +29,13 @@ class Keyboard:
         self.add_key("left", arcade.key.LEFT, arcade.key.A)
         self.add_key("right", arcade.key.RIGHT, arcade.key.D)
         self.add_key("jump", arcade.key.SPACE)
+
         self.add_key("attack", arcade.key.J)
-        self.add_key("sprint", arcade.key.LSHIFT)
         self.add_key("dash", arcade.key.K)
+        self.add_key("l", arcade.key.L)
+        self.add_key("sprint", arcade.key.LSHIFT)
+        self.add_key("e", arcade.key.E)
+
         self.add_key("zoom_out", arcade.key.MINUS)
         self.add_key("zoom_in", arcade.key.EQUAL)
         self.add_key("fullscreen", arcade.key.F10)
