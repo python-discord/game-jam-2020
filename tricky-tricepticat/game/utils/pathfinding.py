@@ -43,10 +43,11 @@ def find_path(matrix, start_x, start_y, end_x, end_y):
 
     # Again, subtracting by the tile height otherwise the path is flipped
     path_resized = [
-        (position[0]*tile_size, (36-position[1])*tile_size) for position in path
+        (position[0]*tile_size, (36-position[1])
+            * tile_size) for position in path
     ]
 
-    print('operations:', runs, 'path length:', len(path))
-    print(grid.grid_str(path=path, start=start, end=end))
+    # print('operations:', runs, 'path length:', len(path))
+    # print(grid.grid_str(path=path, start=start, end=end))
 
     return path_resized
