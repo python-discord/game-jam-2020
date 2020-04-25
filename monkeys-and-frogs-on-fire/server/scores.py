@@ -40,7 +40,7 @@ class Scores(Cog, route='scores'):
         **kwargs: Any
     ) -> None:
         with managed_session() as session:
-            scores = session.query(Score).order_by(Score.score.desc()).limit(10).all()
+            scores = session.query(Score).order_by(Score.score.asc()).limit(10).all()
 
             kwargs['client_send']({
                 'headers': {
