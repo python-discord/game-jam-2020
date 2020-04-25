@@ -212,10 +212,6 @@ class GameScreen(arcade.View, PauseScreen):
         self.count_down.append(
             arcade.Sprite(filename=f"{self.BASE_DIR}/main/Resources/game_play/3.png", scale=1))
 
-    @staticmethod
-    def draw_note_key(x, y, height, width):
-        arcade.draw_rectangle_filled(x, y, width=width, height=height, color=arcade.color.CRIMSON)
-
     def on_note_change(self, td):
         self.active = self.audio.player.is_playing()
         if self.active:
