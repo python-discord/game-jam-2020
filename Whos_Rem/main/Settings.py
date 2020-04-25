@@ -5,8 +5,8 @@ from Display import ColourBlend as cb
 
 
 class Settings(arcade.View):
-    width = 1920  # get_monitors()[0].width
-    height = 1080  # get_monitors()[0].height
+    width = 1000  # get_monitors()[0].width
+    height = 600  # get_monitors()[0].height
 
     mouse_x = 0
     mouse_y = 0
