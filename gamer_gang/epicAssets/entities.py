@@ -86,7 +86,6 @@ class StarSprite(arcade.Sprite):
             self.scale *= 1.05
             self.angle += self.scale*2
             self.alpha -= 10 if self.alpha != 5.0 else 0
-            self.kill()
 
 def makePlayer(mass, space, textures, scale, x, y, name):
     width, height = textures[0].width, textures[0].height

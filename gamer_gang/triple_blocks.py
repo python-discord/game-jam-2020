@@ -23,7 +23,7 @@ class ActualGame(arcade.Window):
     def setup(self):
         self.menuView = MenuView()
         self.gameOver = GameOverView()
-        self.levels = {1: BaseLevel()}
+        self.levels = {1: BaseLevel(1)}
         self.game_over = False
         self.deathCause = None
         self.show_view(self.menuView)

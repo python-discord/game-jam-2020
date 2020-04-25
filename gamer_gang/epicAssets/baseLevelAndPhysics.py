@@ -1,4 +1,4 @@
-import math
+import time
 import itertools
 from pathlib import Path
 import pytiled_parser
@@ -28,13 +28,13 @@ def getNames(name):
 def getLayer(layer_path, map_object):
     def _get_tilemap_layer(path, layers):
         layer_name = path.pop(0)
-        for layer in layers:
-            if layer.name.lower() == layer_name.lower():
-                if isinstance(layer, pytiled_parser.objects.LayerGroup):
+        for l in layers:
+            if l.name.lower() == layer_name.lower():
+                if isinstance(l, pytiled_parser.objects.LayerGroup):
                     if len(path) != 0:
-                        return _get_tilemap_layer(path, layer.layers)
+                        return _get_tilemap_layer(path, l.layers)
                 else:
-                    return layer
+                    return l
         return None
 
     path = layer_path.strip('/').split('/')
@@ -43,9 +43,10 @@ def getLayer(layer_path, map_object):
 
 
 class BaseLevel(arcade.View):
-    def __init__(self):
+    def __init__(self, levelNum):
         super().__init__()
         arcade.set_background_color(arcade.color.LIGHT_BLUE)
+        self.ln = levelNum  # ln stands for level number
 
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
@@ -59,8 +60,8 @@ class BaseLevel(arcade.View):
 
         self.makeLevel()
 
-    def makeLevel(self):  # the placeholder level here is just level 1
-        self.map = arcade.tilemap.read_tmx(str(Path(__file__).parent) + '/levels/level1/level_1.tmx')
+    def makeLevel(self):
+        self.map = arcade.tilemap.read_tmx(str(Path(__file__).parent) + f'/levels/level{self.ln}/level_{self.ln}.tmx')
         self.frames = 0
         self.totalTime = 0
         self.ground = arcade.SpriteList()
@@ -75,7 +76,7 @@ class BaseLevel(arcade.View):
                                              center_x=self.map.map_size.width * self.map.tile_size.width / 2,
                                              center_y=self.map.map_size.height * self.map.tile_size.height / 2)
         self.deco = arcade.SpriteList()
-        self.score = 0
+        self.collectedStars = 0
         self.gotToExit = []  # the players that have gotten to the exit
 
         ground_list = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/Ground", self.map))
@@ -102,10 +103,14 @@ class BaseLevel(arcade.View):
 
         for s in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/stars", self.map)):
             self.stars.append(StarSprite(s.textures, 1, s.center_x, s.center_y, s.hit_box))
+        self.neededStars = len(self.stars)
 
         self.spikes = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/spikes", self.map))
         self.jumpPads = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/jumping pads", self.map))
         self.exit = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/exit door", self.map))
+        self.exit[0].textures = [arcade.load_texture(str(Path(__file__).parent) + '/images/doorImages/doorClosed.png'),
+                                 arcade.load_texture(str(Path(__file__).parent) + '/images/doorImages/doorOpen.png')]
+        self.exit[0].texture = self.exit[0].textures[0]
 
         self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Trees", self.map)))
         self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Plants", self.map)))
@@ -118,13 +123,19 @@ class BaseLevel(arcade.View):
         self.backgroundImage.draw()
         self.background.draw()
         self.deco.draw()
+        self.exit.draw()
         self.spikes.draw()
         self.BEES.draw()
         self.ground.draw()
         self.boxes.draw()
         self.jumpPads.draw()
-        self.exit.draw()
         self.stars.draw()
+        if self.collectedStars != self.neededStars:
+            arcade.draw_text(f'stars collected: {self.collectedStars} out of {self.neededStars}',
+                             self.leftView + 5, self.bottomView + 573, font_size=20, color=arcade.color.BLACK)
+        else:
+            arcade.draw_text(f'exit unlocked!',
+                             self.leftView + 5, self.bottomView + 573, font_size=20, color=arcade.color.BLACK)
 
         for p in self.players:
             if p is not None:
@@ -273,8 +284,11 @@ class BaseLevel(arcade.View):
                 if p.can_jump:
                     if arcade.check_for_collision_with_list(p, self.jumpPads):
                         p.pymunk_shape.body.velocity += pymunk.Vec2d((0, 600))
+                        self.window.sfx['jump'].play()
                     else:
-                        p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.userInputs[2]))
+                        if self.userInputs[2]:
+                            p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.userInputs[2]))
+                            self.window.sfx['jump'].play()
                     p.can_jump = False
 
                 if p.pymunk_shape.body.velocity.x > 300:  # prevent from accelerating too fast
@@ -303,11 +317,13 @@ class BaseLevel(arcade.View):
 
             if arcade.check_for_collision_with_list(p, self.stars):
                 for collided in arcade.check_for_collision_with_list(p, self.stars):
-                    self.window.sfx['star'].play()
-                    collided.obtained = True
+                    if not collided.obtained:
+                        self.collectedStars += 1
+                        self.window.sfx['star'].play()
+                        collided.obtained = True
 
             left = []
-            if arcade.check_for_collision_with_list(p, self.exit):
+            if arcade.check_for_collision_with_list(p, self.exit) and self.collectedStars == self.neededStars:
                 for v, pl in enumerate(self.players):
                     if pl == p:
                         self.players[v].kill()
@@ -331,12 +347,12 @@ class BaseLevel(arcade.View):
     def on_update(self, dt):
         self.frames += 1
         self.timeAfterSplit += dt
-        if self.totalTime == 0:
+        """if self.totalTime == 0:
             self.window.sfx["level music"].play(volume=0.5)
         if self.window.sfx["level music"].get_length() < self.totalTime:
             self.totalTime = 0
         else:
-            self.totalTime += dt
+            self.totalTime += dt"""
 
         for _ in range(10):  # if the steps are smaller the game's more accurate
             self.space.step(1 / 600.0)
@@ -380,12 +396,17 @@ class BaseLevel(arcade.View):
                     self.space.remove(b.pymunk_shape, b.pymunk_shape.body)
                     b.kill()
 
+            if self.collectedStars == self.neededStars:
+                self.exit[0].texture = self.exit[0].textures[1]
+
             self.BEES.update_animation(dt)
             for b in self.BEES:
                 b.update(self.players)
 
             for s in self.stars:
                 s.update(self.frames)
+                if s.alpha == 0:
+                    s.kill()
 
         else:
             self.window.show_view(self.window.gameOver)
@@ -393,7 +414,17 @@ class BaseLevel(arcade.View):
 
 if __name__ == '__main__':
     testGame = arcade.Window(1000, 600, 'test')
-    testGame.level = BaseLevel()
+    testGame.level = BaseLevel(1)
     testGame.game_over = False
+    filePath = str(Path(__file__).parent.parent)
+    testGame.sfx = {"jump": arcade.load_sound(filePath + "/epicAssets/sounds/jump.wav"),
+                    "star": arcade.load_sound(filePath + "/epicAssets/sounds/star.wav"),
+                    "void": arcade.load_sound(filePath + "/epicAssets/sounds/dropVoid.wav"),
+                    "sting": arcade.load_sound(filePath + "/epicAssets/sounds/beeSting.wav"),
+                    "lost": arcade.load_sound(filePath + "/epicAssets/sounds/levelLost.wav"),
+                    "win": arcade.load_sound(filePath + "/epicAssets/sounds/levelPass.wav"),
+                    "spike": arcade.load_sound(filePath + "/epicAssets/sounds/spike.wav"),
+                    "level music": arcade.load_sound(filePath + "/epicAssets/sounds/background.wav"),
+                    "menu music": arcade.load_sound(filePath + "/epicAssets/sounds/menu.wav")}
     testGame.show_view(testGame.level)
     arcade.run()

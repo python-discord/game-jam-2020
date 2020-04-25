@@ -248,6 +248,7 @@ class RestartButton(TextButton):
     def on_press(self):
         if not self.pressed:
             self.pressed = True
+            self.game.window.sfx['level music'].stop()
             self.game.window.setup()
 
     def on_release(self):
