@@ -82,7 +82,7 @@ class ShapeManager:
         central_spacing = final_spacing // total_notes
         width = int(central_spacing * 0.45)
         x_pos = int(central_spacing * (note / total_notes)) + screen_width // 2
-        y_pos = int(get_monitors()[0].height * 0.8)
+        y_pos = int(pyautogui.size().height * 0.8)
         new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 64, colour, 2)
 
         return new_shape

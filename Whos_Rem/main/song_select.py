@@ -57,3 +57,9 @@ class SongSelection(arcade.View):
         }
 
         return track_dict
+
+
+class song_choice:
+
+    def __init__(self):
+        pass
