@@ -24,7 +24,7 @@ class ActiveRecipe(arcade.SpriteList):
     def __init__(self):
         super().__init__()
         self.active = Recipe.GHOSTS
-        self.cycle_recipes = [self.set_frogs, self.set_ghosts]
+        self.cycle_recipes = [self.set_ghosts, self.set_frogs, self.set_ggf]
         self.pos = 0
         self.kill_num = 0
 
@@ -42,10 +42,10 @@ class ActiveRecipe(arcade.SpriteList):
             sprite.draw()
 
     def next_recipe(self):
-        self.cycle_recipes[self.pos]()
         self.pos += 1
         if self.pos == len(self.cycle_recipes):
             self.pos = 0
+        self.cycle_recipes[self.pos]()
 
     def add_kill(self, monster_type) -> int:
         for sprite in self.sprite_list:
@@ -71,3 +71,10 @@ class ActiveRecipe(arcade.SpriteList):
         self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/frog/frog1.png"))
         self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/frog/frog1.png"))
         self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/frog/frog1.png"))
+        
+    def set_ggf(self) -> None:
+        self.active = Recipe.GHOST_FROG
+        self.sprite_list = []
+        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/frog/frog1.png"))
+        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/ghost/ghost1.png"))
+        self.sprite_list.append(arcade.Sprite(filename="resources/images/monsters/ghost/ghost1.png"))

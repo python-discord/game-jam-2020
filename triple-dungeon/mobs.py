@@ -183,9 +183,12 @@ class Player(Mob):
         
     def heal(self):
         self.health+=Config.HEAL_AMOUNT
-        
+
     def harden(self):
         self.armor+=Config.ARMOR_AMOUNT
+
+    def hurry(self):
+        self.speed+=Config.SPEED_AMOUNT
 
     def update_animation(self, delta_time: float = 1 / 60) -> None:
         """

@@ -109,6 +109,7 @@ class Game(arcade.Window):
             # Draw stats
             arcade.draw_text("Health:"+str(self.player.health)+"/"+str(self.player.max_health), self.view_left+100, self.view_bottom+60, arcade.color.RED, 15, font_name='Arial')
             arcade.draw_text("Armor:"+str(self.player.armor), self.view_left+100, self.view_bottom+90, arcade.color.BLUE, 15, font_name='Arial')
+            arcade.draw_text("Speed:"+str(self.player.speed), self.view_left+100, self.view_bottom+120, arcade.color.YELLOW, 15, font_name='Arial')
             
             if Config.DEBUG:
                 x, y = self.player.position
@@ -152,16 +153,16 @@ class Game(arcade.Window):
         """Called whenever a key is pressed. """
 
         if key == arcade.key.UP or key == arcade.key.W:
-            self.player.change_y = Config.PLAYER_MOVEMENT_SPEED
+            self.player.change_y = self.player.speed
             self.prev_keypress.append(key)
         elif key == arcade.key.DOWN or key == arcade.key.S:
-            self.player.change_y = -Config.PLAYER_MOVEMENT_SPEED
+            self.player.change_y = -self.player.speed
             self.prev_keypress.append(key)
         elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player.change_x = -Config.PLAYER_MOVEMENT_SPEED
+            self.player.change_x = -self.player.speed
             self.prev_keypress.append(key)
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player.change_x = Config.PLAYER_MOVEMENT_SPEED
+            self.player.change_x = self.player.speed
             self.prev_keypress.append(key)
         elif key == 65307:
             self.close()

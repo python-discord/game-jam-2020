@@ -38,10 +38,11 @@ class Config(object):
     PLAYER_MOVEMENT_SPEED = 14
     MONSTER_MOVEMENT_SPEED = 11
 
-    # Boon constants
-    BOON_LIST = ["heal", "harden"]
+    # Boon and Recipe constants
+    BOON_LIST = ["heal", "harden", "hurry"]
     HEAL_AMOUNT = 20
     ARMOR_AMOUNT = 1
+    SPEED_AMOUNT = 2
 
     # How many pixels to keep as a minimum margin between the characters and the edge of the screen.
     LEFT_VIEWPORT_MARGIN = 700
