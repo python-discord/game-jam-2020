@@ -64,7 +64,7 @@ class ChargedLaserProjectile(Projectile):
         """
 
         dmg = random.randrange(60 + int(charge), 70 + math.ceil(charge))
-        lifetime = 2 - round(charge/50, 2)
+        lifetime = 2 - round(charge/60, 2)
         moving_speed = 5.0 + round(charge/10, 2)
         throwback_force = 8 + charge//10
 
