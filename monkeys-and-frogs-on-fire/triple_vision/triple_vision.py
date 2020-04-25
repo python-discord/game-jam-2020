@@ -205,9 +205,9 @@ class TripleVision(arcade.View):
         self.card_manager.update()
 
         if self.time_slow_ability:
-            self.player.update_health_bar(delta_time * s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
+            self.player.update_health_bars(delta_time * s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
         else:
-            self.player.update_health_bar(delta_time)
+            self.player.update_health_bars(delta_time)
 
         SoundManager.update(self.slow_down or self.time_slow_ability)
         self.cursor_manager.update()
