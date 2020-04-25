@@ -99,6 +99,13 @@ class MultiplayerGame(View):
                 color=colour, font_size=20, anchor_x='center',
                 font_name=FONT.format(type='r')
             )
+        arcade.draw_text(
+            text=f'{int(self.time_left):03d}',
+            start_x=self.left + WIDTH - 100,
+            start_y=HEIGHT - (TOP - self.blocks[0].height // 2) // 2,
+            color=arcade.color.WHITE, font_size=20, anchor_x='right',
+            anchor_y='center', font_name=FONT.format(type='b')
+        )
         for sprite_list in self.sprite_lists:
             sprite_list.draw()
         for player in self.players:
