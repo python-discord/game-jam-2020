@@ -9,7 +9,8 @@ PLAYER3_COLOR = arcade.color.BATTLESHIP_GREY
 color_dict = {0: PLAYER1_COLOR, 1: PLAYER2_COLOR, 2: PLAYER3_COLOR}
 data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
 DEFAULT_SPRITE_SIZE = 20
-
+chess_thump = arcade.Sound(os.path.join(data_dir, "chess_tap.mp3"))
+# TODO fix the fact that r changes depending on  orientation
 MOVE_DICT = {0: lambda x, y, r: (x + 1, y + 1, not r) if r else (x, y, not r),
              1: lambda x, y, r: (x + 1, y, not r) if r else (x + 1, y - 1, not r),
              2: lambda x, y, r: (x + 1, y - 1, not r) if r else (x, y - 1, not r),
@@ -69,12 +70,19 @@ class TriPiece(arcade.Sprite):
         :return:
         """
         pos = self.pos if pos is None else pos
-        normed_move = self.orientation - move + 5 % 6
+        normed_move = (self.orientation - move + 5) % 6
         return MOVE_DICT[normed_move](*pos)
 
-    def set_pos(self, x, y, r):
+    def move_to(self, x, y, r):
+        """
+        remove self from current cell then set to selected coord cell at grid coordinate x, y, r
+        :return:
+        """
+        self.trigrid.get_cell(*self.pos).piece = None
+        self.trigrid.get_cell(x, y, r).piece = self
         self.pos = (x, y, r)
         self.center_x, self.center_y = self.get_coord_from_pos()
+        chess_thump.play()
 
     @staticmethod
     def create_piece(trigrid, piece_name, pos, orientation, player):
@@ -88,13 +96,25 @@ class Pawn(TriPiece):
         super().__init__(trigrid, self.piece_name, pos, orientation, player)
 
     def list_valid_moves(self):
-        possible_moves = [self.get_neighbor_pos(0)]
-        possible_moves.append(self.get_neighbor_pos(0, possible_moves[0]))
-        valid_moves = [self.trigrid.is_valid_cell(pos) for pos in possible_moves if self.trigrid.get_cell(*pos).piece is None]
+        valid_moves = []
+        first_step = self.get_neighbor_pos(0)
+        if self.trigrid.get_cell(*first_step).piece is None and self.trigrid.is_valid_cell(*first_step):
+            valid_moves.append(first_step)
+            second_step = self.get_neighbor_pos(0, first_step)
+            if self.trigrid.get_cell(*second_step).piece is None and self.trigrid.is_valid_cell(*second_step):
+                valid_moves.append(second_step)
         return valid_moves
 
     def list_valid_attacks(self):
-        return [self.get_neighbor_pos(5), self.get_neighbor_pos(1)]
+        possible_attacks = [self.get_neighbor_pos(5), self.get_neighbor_pos(1)]
+        return [attack for attack in possible_attacks if self.is_attackable(*attack)]
+
+    def is_attackable(self, x, y, r):
+        if self.trigrid.is_valid_cell(x, y, r):
+            cell_piece = self.trigrid.get_cell(x, y, r).piece
+            if cell_piece is not None and cell_piece.player is not self.player:
+                return True
+        return False
 
 
 class Rook(TriPiece):
@@ -117,7 +137,7 @@ class Rook(TriPiece):
             cur_pos = self.pos
             while True:
                 next_pos = self.get_neighbor_pos(rook_direction(cur_pos[2]), cur_pos)
-                if self.trigrid.is_valid_cell(*next_pos):
+                if not self.trigrid.is_valid_cell(*next_pos):
                     break
                 player_at_next_cell = self.trigrid.get_player_at_cell(*next_pos)
                 if player_at_next_cell == self.player:
@@ -146,7 +166,7 @@ class Bishop(TriPiece):
             cur_pos = self.pos
             while True:
                 next_pos = self.get_neighbor_pos(bishop_direction, cur_pos)
-                if self.trigrid.is_valid_cell(*next_pos):
+                if not self.trigrid.is_valid_cell(*next_pos):
                     break
                 player_at_next_cell = self.trigrid.get_player_at_cell(*next_pos)
                 if player_at_next_cell == self.player:
@@ -218,7 +238,7 @@ class Queen(TriPiece):
             cur_pos = self.pos
             while True:
                 next_pos = self.get_neighbor_pos(bishop_direction, cur_pos)
-                if self.trigrid.is_valid_cell(*next_pos):
+                if not self.trigrid.is_valid_cell(*next_pos):
                     break
                 player_at_next_cell = self.trigrid.get_player_at_cell(*next_pos)
                 if player_at_next_cell == self.player:
@@ -239,7 +259,7 @@ class Queen(TriPiece):
             cur_pos = self.pos
             while True:
                 next_pos = self.get_neighbor_pos(rook_direction(cur_pos[2]), cur_pos)
-                if self.trigrid.is_valid_cell(*next_pos):
+                if not self.trigrid.is_valid_cell(*next_pos):
                     break
                 player_at_next_cell = self.trigrid.get_player_at_cell(*next_pos)
                 if player_at_next_cell == self.player:

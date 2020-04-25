@@ -37,7 +37,6 @@ CELL_WIDTH = int(SCREEN_WIDTH/BOARD_SIZE)
 
 SCREEN_TITLE = "TriTess Grid example"
 data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
-chess_thump = arcade.Sound(os.path.join(data_dir, "chess_tap.mp3"))
 
 
 class TriTess(arcade.Window):
@@ -74,52 +73,50 @@ class TriTess(arcade.Window):
         """
         Called when the user presses a mouse button.
         """
-        x, y, r = self.trigrid.get_grid_position(coord_x, coord_y)
-        if (x, y, r) in self.trigrid.grid_map:
-            print(f"Click coordinates: ({coord_x}, {coord_y}). Grid coordinates: ({x}, {y}, {r})")
+        pos = self.trigrid.get_grid_position(coord_x, coord_y)
+        if pos in self.trigrid.grid_map:
+            print(f"Click coordinates: ({coord_x}, {coord_y}). Grid coordinates: ({pos})")
 
             if button == arcade.MOUSE_BUTTON_LEFT:
                 self.trigrid.clear_highlights()
-                self.cur_cell = self.trigrid.get_cell(x, y, r)
+                self.cur_cell = self.trigrid.get_cell(*pos)
                 if self.cur_cell.piece is not None and self.cur_cell.piece.player == self.cur_player:
-                    self.cur_valid_moves = self.cur_cell.piece.list_valid_moves()
-                    for move in self.cur_valid_moves:
-                        self.trigrid.get_cell(*move).set_highlight("movable")
-
                     self.cur_valid_attacks = self.cur_cell.piece.list_valid_attacks()
                     for attack in self.cur_valid_attacks:
                         self.trigrid.get_cell(*attack).set_highlight("attackable")
 
+                    self.cur_valid_moves = self.cur_cell.piece.list_valid_moves()
+                    for move in self.cur_valid_moves:
+                        self.trigrid.get_cell(*move).set_highlight("movable")
+
                 else:
-                    self.cur_cell = None
-                    self.cur_valid_moves = None
-                    self.cur_valid_attacks = None
-                    self.trigrid.clear_highlights()
+                    self.clear_selection()
 
             elif button == arcade.MOUSE_BUTTON_RIGHT:
                 if self.cur_cell is not None:
-                    selected_cell = self.trigrid.get_cell(x, y, r)
-                    if selected_cell.piece is not None and self.cur_cell.piece.player != selected_cell.piece.player:
-                        if (x, y, r) in self.cur_valid_attacks:
-                            selected_cell.piece.clear_spatial_hashes()
-                            chess_thump.play()
-                            selected_cell.piece = self.cur_cell.piece
-                            self.cur_cell.piece.set_pos(x, y, r)
-                            self.cur_player = self.cur_player + 1 % 3
+                    new_cell = self.trigrid.get_cell(*pos)
+                    if new_cell.piece is not None and self.cur_cell.piece.player != new_cell.piece.player:
+                        if pos in self.cur_valid_attacks:
+                            new_cell.piece.clear_spatial_hashes()
+                            new_cell.piece = None
+                            self.cur_cell.piece.move_to(*pos)
+                            self.cur_player = (self.cur_player + 1) % self.trigrid.num_players
 
-                    elif (x, y, r) in self.cur_valid_moves:
-                        self.trigrid.get_cell(x, y, r).piece = self.cur_cell.piece
-                        chess_thump.play()
-                        self.cur_cell.piece.set_pos(x, y, r)
-                        self.cur_player = self.cur_player + 1 % 3
+                    elif pos in self.cur_valid_moves:
+                        self.trigrid.get_cell(*pos).piece = self.cur_cell.piece
 
-                    self.cur_cell = None
-                    self.cur_valid_moves = None
-                    self.cur_valid_attacks = None
-                    self.trigrid.clear_highlights()
+                        self.cur_cell.piece.move_to(*pos)
+                        self.cur_player = (self.cur_player + 1) % self.trigrid.num_players
+
+                    self.clear_selection()
 
             self.on_draw()
 
+    def clear_selection(self):
+        self.cur_cell = None
+        self.cur_valid_moves = None
+        self.cur_valid_attacks = None
+        self.trigrid.clear_highlights()
 
 def main():
     tritess_window = TriTess(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)

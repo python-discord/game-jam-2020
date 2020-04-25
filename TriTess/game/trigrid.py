@@ -15,16 +15,17 @@ class TriGrid:
         self.shape_list = None
         self.grid_map = self.init_grid(grid_type)
         self.piece_list = self.init_pieces(grid_type)
+        self.num_players = board_init_config.num_player_for_grid[grid_type]
         self.on_draw()
 
     def init_grid(self, grid_type):
         grid_map = {}
         if grid_type == "hex2":
-            for row in range(board_init_config.hex2_board_size):
-                for col in range(board_init_config.hex2_board_size - row):
+            for grid_x in range(board_init_config.hex2_board_size):
+                for grid_y in range(board_init_config.hex2_board_size - grid_x):
                     for r in [False, True]:
-                        if board_init_config.is_valid_hex2_cell(row, col, r):
-                            grid_map[(row, col, r)] = TriCell(row, col, r, self.cell_width)
+                        if board_init_config.is_valid_hex2_cell(grid_x, grid_y, r):
+                            grid_map[(grid_x, grid_y, r)] = TriCell(grid_x, grid_y, r, self.cell_width)
 
         return grid_map
 
