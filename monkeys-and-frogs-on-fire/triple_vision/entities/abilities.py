@@ -49,10 +49,20 @@ class FloorStomp(BaseAbility):
 
 
 class Indestructible(BaseAbility):
-    DURATION = 5
+    DURATION = 8
 
     def __init__(self):
         super().__init__(self.DURATION)
+
+    def activate(self, x, y, game_view_reference):
+        game_view_reference.player.resistance = 1.0
+        game_view_reference.player.regenerating_hp = True
+        game_view_reference.player.regeneration_hp_value = 40
+
+    def deactivate(self, game_view_reference):
+        game_view_reference.player.reset_stats()
+        game_view_reference.player.regenerating_hp = False
+        game_view_reference.player.regeneration_hp_value = game_view_reference.player.DEFAULT_HP_REGENERATION_PER_S
 
 
 class Abilities(enum.Enum):

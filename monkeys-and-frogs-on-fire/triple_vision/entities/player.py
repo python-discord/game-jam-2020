@@ -26,6 +26,8 @@ class States(Enum):
 
 
 class Player(LivingEntity, MovingSprite):
+    MAX_HP = 1000
+    DEFAULT_HP_REGENERATION_PER_S = 1
 
     def __init__(self, view: arcade.View, gender: str) -> None:
         super().__init__(
@@ -35,7 +37,7 @@ class Player(LivingEntity, MovingSprite):
             has_hit_frame=True,
             gender=gender,
             scale=s.SCALING,
-            hp=1000,
+            hp=self.MAX_HP,
             ctx=view.game_manager,
             moving_speed=3,
             rotate=False
@@ -44,6 +46,7 @@ class Player(LivingEntity, MovingSprite):
         self.view = view
         self.last_shot = time.time()
 
+        self.max_hp = self.MAX_HP
         self.state = States.IDLE
 
         self.is_alive = True
@@ -65,6 +68,11 @@ class Player(LivingEntity, MovingSprite):
         self.selected_ability = None
         self.current_cool_down = 0.0
         self._ability_duration_left = 0.0
+
+        self.regenerating_hp = False
+        self.regeneration_hp_value = self.DEFAULT_HP_REGENERATION_PER_S
+        self._regeneration_tick = 0.0
+        self._regeneration_interval = 1  # in seconds
 
     @property
     def curr_color(self):
@@ -97,6 +105,9 @@ class Player(LivingEntity, MovingSprite):
             raise ValueError('Color can only be red, green, or blue.')
 
         self._curr_color = value
+
+    def reset_stats(self):
+        self.curr_color = self._curr_color
 
     def setup(self) -> None:
         self.set_hit_box([
@@ -206,6 +217,16 @@ class Player(LivingEntity, MovingSprite):
             change_x = -1
         elif self.right_pressed and not self.left_pressed:
             change_x = 1
+
+        if self.regenerating_hp:
+            self._regeneration_tick += delta_time
+            if self._regeneration_tick >= self._regeneration_interval:
+                self._regeneration_tick = 0.0
+                
+                if self.hp < self.max_hp:
+                    self.hp += self.regeneration_hp_value
+                else:
+                    self.hp = self.MAX_HP
 
         dest = tile_to_pixels(
             *pixels_to_tile(
