@@ -120,14 +120,14 @@ class DamageIndicator(TemporarySprite, MovingSprite):
         self.move_to(start_x, start_y + 10, set_target=False)
 
 
-class HealthBar(arcade.Sprite):
+class ManaBar(arcade.Sprite):
     def __init__(
         self,
         view,
         fill_part_filename: str,
         fill_part_width: float,
         *args,
-        life_count: int = 10,
+        max_fillers: int = 10,
         is_filled: bool = True,
         auto_filling_speed: Optional[float] = None,
         scale: float = 1,
@@ -138,13 +138,13 @@ class HealthBar(arcade.Sprite):
         self.view = view
         self.fill_part_filename = fill_part_filename
         self.fill_part_width = fill_part_width * scale
-        self.life_count = life_count
+        self.max_fillers = max_fillers
         self.fill_part_list = arcade.SpriteList()
         self.auto_filling_speed = auto_filling_speed
         if not is_filled:
             return
 
-        for i in range(life_count):
+        for i in range(max_fillers):
             self.fill_part_list.append(
                 arcade.Sprite(
                     fill_part_filename,
@@ -168,8 +168,12 @@ class HealthBar(arcade.Sprite):
             return
         self.fill_part_list.pop()
 
+    def clear(self):
+        for _ in range(len(self.fill_part_list)):
+            self.fill_part_list.pop()
+
     def add_filling_part(self):
-        if len(self.fill_part_list) < self.life_count:
+        if len(self.fill_part_list) < self.max_fillers:
             self.fill_part_list.append(
                 arcade.Sprite(
                     self.fill_part_filename,
@@ -202,6 +206,7 @@ class HealthBar(arcade.Sprite):
     def draw(self):
         self.fill_part_list.draw()
         super().draw()
+
 
 class PotionEffect:
     def __init__(self, heal=0, speed=0, strength=0):
