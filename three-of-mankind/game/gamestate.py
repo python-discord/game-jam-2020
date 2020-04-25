@@ -15,6 +15,7 @@ from .constants import (
     LEFT,
     JUMP_VELOCITY_BONUS,
     DASH_COUNT,
+    VIEWPORT_MARGIN
 )
 from .player import Player
 from .sprite import Sprite
@@ -25,7 +26,11 @@ from .utils import sweep_trace
 class GameState:
     """Represent the state of the current game, and manage it."""
 
-    def __init__(self):
+    def __init__(self, game):
+        self.view_left = 0
+        self.view_bottom = 0
+        self.game = game
+
         self.level_geometry = arcade.SpriteList()  # Have collisions
         self.level_objects = arcade.SpriteList()  # Doesn't have collision
 
@@ -77,6 +82,8 @@ class GameState:
         self.player.update()
         self.engine.update()
         self.level_objects.update()
+
+        self.update_screen()
 
     def on_draw(self) -> None:
         """Handle draw event."""
@@ -138,3 +145,49 @@ class GameState:
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             if self.player.movement_x > 0:
                 self.player.movement_x = 0
+
+    def update_screen(self):
+        """Update viewport and scroll camera.
+
+        From https://arcade.academy/examples/sprite_move_scrolling.html#sprite-move-scrolling"""
+        # Keep track of if we changed the boundary. We don't want to call the
+        # set_viewport command if we didn't change the view port.
+        changed = False
+
+        # Scroll left
+        left_boundary = self.view_left + VIEWPORT_MARGIN
+        if self.player.left < left_boundary:
+            self.view_left -= left_boundary - self.player.left
+            changed = True
+
+        # Scroll right
+        right_boundary = self.view_left + self.game.width - VIEWPORT_MARGIN
+        if self.player.right > right_boundary:
+            self.view_left += self.player.right - right_boundary
+            changed = True
+
+        # Scroll up
+        top_boundary = self.view_bottom + self.game.height - VIEWPORT_MARGIN
+        if self.player.top > top_boundary:
+            self.view_bottom += self.player.top - top_boundary
+            changed = True
+
+        # Scroll down
+        bottom_boundary = self.view_bottom + VIEWPORT_MARGIN
+        if self.player.bottom < bottom_boundary:
+            self.view_bottom -= bottom_boundary - self.player.bottom
+            changed = True
+
+        # Make sure our boundaries are integer values. While the view port does
+        # support floating point numbers, for this application we want every pixel
+        # in the view port to map directly onto a pixel on the screen. We don't want
+        # any rounding errors.
+        self.view_left = int(self.view_left)
+        self.view_bottom = int(self.view_bottom)
+
+        # If we changed the boundary values, update the view port to match
+        if changed:
+            arcade.set_viewport(self.view_left,
+                                self.game.width + self.view_left,
+                                self.view_bottom,
+                                self.game.height + self.view_bottom)

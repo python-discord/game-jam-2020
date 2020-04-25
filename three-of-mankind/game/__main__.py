@@ -47,7 +47,7 @@ class Game(ColorIsolationWindow):
         """Create gamestate and set to the ingame mode."""
         logging.info('New game started')
         self.ingame = True
-        self.gamestate = GameState()
+        self.gamestate = GameState(game=self)
 
 
 # Start game

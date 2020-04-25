@@ -22,3 +22,6 @@ LEFT = -1
 
 # Level-related
 BLOCK_LEN = 6
+
+# Camera
+VIEWPORT_MARGIN = 200
