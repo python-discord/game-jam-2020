@@ -15,7 +15,7 @@ class Display(arcade.Window):
         self.scenes["loading"] = LoadingScreen(self)
         self.scenes["lobby"] = Lobby(self)
         self.scenes["mainMenu"] = MainMenu(self)
-        # self.scenes["options"] = Options()
+        self.scenes["options"] = Options(self)
         self.scenes["playClient"] = PlayAsClient(self)
         self.scenes["playServer"] = PlayAsServer(self)
         self.scenes["game"] = Game(self)

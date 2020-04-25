@@ -63,8 +63,8 @@ class MainMenu(Base):
             arcade.close_window()
         elif self.spritedict["credits"].collides_with_point((x, y)) is True:
             self.display.change_scenes("loading", startup=False)
-#        elif self.spritedict["options"].collides_with_point((x, y)) is True:
-#            self.display.change_scenes("options")
+        elif self.spritedict["options"].collides_with_point((x, y)) is True:
+            self.display.change_scenes("options")
         elif self.spritedict["playClient"].collides_with_point((x, y)) is True:
             self.display.change_scenes("playClient", startup=False)
         elif self.spritedict["playHost"].collides_with_point((x, y)) is True:

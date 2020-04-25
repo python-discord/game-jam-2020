@@ -1,58 +1,58 @@
 import arcade
+from .base import Base
+from .sound import Sound
 
-class Options():
-    def __init__(self):
+class Options(Base):
+    def __init__(self, display):
         self.spritelist = arcade.SpriteList()
-        self.buttonlist = arcade.View.button_list()
         self.spritedict = dict()
         self.timeAlive = 0
+        self.pressed = False
+        self.display = display
         self.sprite_setup()
-        self.button_setup()
-        arcade.set_background_color(arcade.color.BEAU_BLUE)
-        self.background = arcade.load_textures()
-        normal = "./assets/normal_Button.png"
-        hover = "./assets/Hovered_Button.png"
-        clicked = "./assets/Hovered_Button.png"
-        self.theme.add_button_textures(normal, hover, clicked)
 
     def sprite_setup(self):
         self.spritedict = {
-            "back": arcade.Sprite(
-                "./assets/Options.png",
+            "exit": arcade.Sprite(
+                "./assets/Exit.png",
                 scale=0.25,
-                center_x=160,
-                center_y=687.5
-            )
-        }
-        self.spritelist.extend(self.spritedict.values())
+                center_x=640,
+                center_y=120
+            ),
 
-    def button_setup(self):
-        esc = Button("options", "main_menu", 560, 620, 400, 150, "Exit", self.theme)
-        music = Button("options", "option", 600, 400, "Music", self.theme)
-        accept = Button("options", "main_menu", 500, 200, "Accept", self.theme)
-        button_items = [esc, music, accept]
-        self.buttonlist += button_items
+            "title": arcade.Sprite(
+                "./assets/Options.png",
+                scale=0.5,
+                center_x=770,
+                center_y=580
+            ),
+        }
+        if not self.pressed:
+            self.spritedict["music"] = arcade.Sprite("./assets/music_not_chosen.png", scale=0.5, center_x=650, center_y= 400)
+        if self.pressed:
+            self.spritedict["music"] = arcade.Sprite("./assets/music.png", scale=0.5, center_x=650, center_y= 400)
+        self.spritelist.extend(self.spritedict.values())
 
     def update(self, delta_time: float) -> None:
         self.timeAlive += delta_time
 
     def draw(self):
+        self.sprite_setup()
         self.spritelist.draw()
 
+    def mouse_release(self, x: float, y: float, button: int, modifiers: int):
+        print((x, y))
+        if self.spritedict["exit"].collides_with_point((x, y)) is True:
+            self.display.change_scenes("mainMenu")
+        elif self.spritedict["music"].collides_with_point((x, y)) is True:
+            if not self.pressed:
+                print("play")
 
-class Button(arcade.TextButton):
-    def __init__(self, start_scene, next_scene, x, y, width, height, text, theme=None):
-        super.__init__(x, y, width, height, text, theme=theme, font="Roboto", font_color=255)
-        self.start_scene = start_scene
-        self.next_scene = next_scene
-        self.clicked = False
+                self.pressed = True
+                Sound().setup()
 
-    def on_press(self):
-        self.clicked = True
+            elif self.pressed:
+                print("pause")
+                self.pressed = False
+                Sound().stop_song()
 
-    def on_release(self):
-        if self.clicked:
-            if self.next_scene == "Exit":
-                arcade.close_window()
-            else:
-                self.display.change_scenes(self.next_scene)
