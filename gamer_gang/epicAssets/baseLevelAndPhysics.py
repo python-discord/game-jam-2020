@@ -40,7 +40,7 @@ def getLayer(layer_path, map_object):
     return layer
 
 
-class BaseLevel(arcade.View):
+class Level(arcade.View):
     def __init__(self, levelNum):
         super().__init__()
         arcade.set_background_color(arcade.color.LIGHT_BLUE)
@@ -78,6 +78,7 @@ class BaseLevel(arcade.View):
         self.deco = arcade.SpriteList()
         self.collectedStars = 0
         self.gotToExit = []  # the players that have gotten to the exit
+        self.gotAllStars = False
 
         ground_list = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/Ground", self.map))
         for i in ground_list:
@@ -103,9 +104,10 @@ class BaseLevel(arcade.View):
 
         try:
             for b in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/bees", self.map)):
-                textures = {"f1": [arcade.load_texture(f"images/beeImages/bee{i}.png") for i in range(1, 3)],
-                            "f2": [arcade.load_texture(f"images/beeImages/bee{i}.png", mirrored=True)
-                                   for i in range(1, 3)]}
+                textures = {"f1": [arcade.load_texture(str(Path(__file__).parent) + f"/images/beeImages/bee{i}.png")
+                                   for i in range(1, 3)],
+                            "f2": [arcade.load_texture(str(Path(__file__).parent) + f"/images/beeImages/bee{i}.png",
+                                                       mirrored=True) for i in range(1, 3)]}
                 self.BEES.append(BeeSprite(textures, b.scale, b.center_x, b.center_y))
         except AttributeError:
             pass
@@ -320,10 +322,9 @@ class BaseLevel(arcade.View):
                 continue
 
             if arcade.check_for_collision_with_list(p, self.BEES):
-                self.window.game_over = True
+                # self.window.game_over = True
                 self.window.sfx['sting'].play()
-                self.window.deathCause = 'BEEEEEEEEES that most definitely don\'t like jazz ' \
-                                         '(and probably aren\'t from animal crossing either)'
+                self.window.deathCause = 'BEEEEEEEEES that most definitely don\'t like jazz'
                 continue
 
             if arcade.check_for_collision_with_list(p, self.stars):
@@ -364,7 +365,8 @@ class BaseLevel(arcade.View):
         else:
             self.totalTime += dt
 
-        self.space.step(dt)
+        for _ in range(10):
+            self.space.step(dt/10)
 
         self.movement()  # move all the players (well, the characters)
         self.cameraShift(dt)  # shift camera
@@ -375,7 +377,7 @@ class BaseLevel(arcade.View):
             if p is not None and p.top < 0:
                 self.window.game_over = True
                 self.window.sfx['void'].play()
-                self.window.deathCause = 'no pit is more bottomless than the bottomless pit! (which you fell into)'
+                self.window.deathCause = 'the bottomless bottomless pit'
 
         if not self.window.game_over:
             for p in self.players:
@@ -437,10 +439,11 @@ class BaseLevel(arcade.View):
             for b in self.BEES:
                 b.update(self.players)
 
-            if self.collectedStars == self.neededStars:
+            if self.collectedStars == self.neededStars and not self.gotAllStars:
                 self.window.sfx["win"].play()
-                self.msg = MessagePop(arcade.load_texture("images/doorUnlocked.png"))
+                self.msg = MessagePop(arcade.load_texture(str(Path(__file__).parent) + "/images/doorUnlocked.png"))
                 self.exit[0].texture = self.exit[0].textures[1]
+                self.gotAllStars = True
 
             for s in self.stars:
                 s.update(self.frames)
@@ -449,8 +452,8 @@ class BaseLevel(arcade.View):
 
             if self.msg is not None:
                 self.msg.update(self.xCam, self.yCam)
-                if self.msg.alpha == 0:
-                    self.msg.kill()
+                if self.msg.alpha <= 0:
+                    self.msg = None
 
         else:
             self.window.show_view(self.window.gameOver)
@@ -458,7 +461,7 @@ class BaseLevel(arcade.View):
 
 if __name__ == '__main__':
     testGame = arcade.Window(1000, 600, 'test')
-    testGame.level = BaseLevel(1)
+    testGame.level = Level(1)
     testGame.game_over = False
     filePath = str(Path(__file__).parent.parent)
     testGame.sfx = {"jump": arcade.load_sound(filePath + "/epicAssets/sounds/jump.wav"),

@@ -17,13 +17,13 @@ class ActualGame(arcade.Window):
                     "lost": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/levelLost.wav"),
                     "win": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/levelPass.wav"),
                     "spike": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/spike.wav"),
-                    "level music": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/bkg.wav"),
+                    "level music": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/background.wav"),
                     "menu music": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/menu.wav")}
 
     def setup(self):
         self.menuView = MenuView()
         self.gameOver = GameOverView()
-        self.levels = {1: BaseLevel(1)}
+        self.levels = {1: Level(1), 2: Level(2), 3: Level(3), 4: Level(4)}
         self.game_over = False
         self.deathCause = None
         self.show_view(self.menuView)
