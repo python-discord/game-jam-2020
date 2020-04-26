@@ -19,13 +19,15 @@ class Enemies(enum.Enum):
     """
     big_demon = 1024
     chort = 100
-    imp = 300
     wogol = 512
     big_zombie = 512
     tiny_zombie = 100
     goblin = 64
     ice_zombie = 256
     muddy = 2048
+
+    imp = 300
+    necromancer = 512
 
 
 class BaseEnemy(LivingEntity):
@@ -158,6 +160,7 @@ class StationaryEnemy(BaseEnemy):
         target_sprite: arcade.Sprite,
         detection_radius: int,
         shoot_interval: float,
+        dmg: random.randrange,
         **kwargs
     ) -> None:
         super().__init__(enemy, is_pushable=False, kill_value=5, **kwargs)
@@ -165,6 +168,7 @@ class StationaryEnemy(BaseEnemy):
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
         self.shoot_interval = shoot_interval
+        self.dmg = dmg
         self._passed_time = 0.0
 
     def on_update(self, delta_time: float = 1/60) -> None:
@@ -179,6 +183,7 @@ class StationaryEnemy(BaseEnemy):
 
         laser = LaserProjectile(
             color='red',
+            dmg=self.dmg,
             center_x=self.center_x,
             center_y=self.center_y,
             rotate=True
