@@ -1,5 +1,6 @@
 import copy
 import typing as t
+import random
 
 import arcade
 
@@ -20,6 +21,11 @@ class AdventuresGame(arcade.Window):
         self.balls: t.Optional[arcade.SpriteList] = None
         self.road: t.Optional[t.List[t.List[int]]] = None
         self.frames: t.Optional[arcade.SpriteList] = None
+        self.walls: t.Optional[arcade.SpriteList] = None
+        self.engines: t.List[t.Optional[arcade.PhysicsEngineSimple]] = None
+
+        self.frame_count: int = 0
+        self.without: int = 0
 
     def setup(self) -> None:
         """Setup/reset game state."""
@@ -40,12 +46,14 @@ class AdventuresGame(arcade.Window):
                 if self.road[row][column] == Blocks.frame:
                     self.frames.append(sprite)
 
-        pos = (4, 8, 12)
+        pos = (4, 7, 10)
 
         for i, col in enumerate(("red_ball", "blue_ball", "green_ball")):
             s = arcade.Sprite(f"./resources/{col}.png", scale=0.40)
             s.position = (pos[i] * BLOCK_WIDTH, SCREEN_HEIGHT / 4)
             self.balls.append(s)
+        
+        self.engines = [arcade.PhysicsEngineSimple(ball, self.frames) for ball in self.balls]
 
     def on_draw(self) -> None:
         """Render game screen."""
@@ -58,15 +66,16 @@ class AdventuresGame(arcade.Window):
         status = []
         for ball in self.balls:
             s = copy.deepcopy(ball)
-            s.center_x += BLOCK_WIDTH * direction
-            if not arcade.check_for_collision_with_list(s, self.frames):
+            s.change_x += direction * 4
+            engine = arcade.PhysicsEngineSimple(s, self.frames)
+            if not engine.update():
                 status.append(True)
                 continue
             status.append(False)
         yes = all(s for s in status)
         if yes:
             for ball in self.balls:
-                ball.center_x += BLOCK_WIDTH * direction
+                ball.change_x += direction * 4
 
     def on_key_press(self, key, _) -> None:
         """Handle key pressing."""
@@ -75,3 +84,38 @@ class AdventuresGame(arcade.Window):
         elif key == arcade.key.RIGHT:
             self.move(1)
 
+    def on_key_release(self, key, _) -> None:
+        """Handle key releasing."""
+        if key == arcade.key.LEFT or key == arcade.key.RIGHT:
+            for ball in self.balls:
+                ball.change_x = 0
+
+    def forward(self) -> None:
+        """Remove one row and add new."""
+        self.road.pop(-1)
+        if self.without == 3:
+            walls = random.randint(0, 2)
+            rows = [Blocks.wall] * walls + [Blocks.empty] * (13 - walls)
+            random.shuffle(rows)
+            self.without = 0
+        else:
+            rows = [Blocks.empty] * 13
+            self.without += 1
+        self.road.insert(0, [Blocks.frame] + rows + [Blocks.frame])
+        self.update_board()
+
+    def on_update(self, dt) -> None:
+        """Remove old row, check colliding with walls."""
+        self.frame_count += 1
+        for e in self.engines:
+            e.update()
+        if self.frame_count % 40 == 0:
+            self.forward()
+
+    def update_board(self) -> None:
+        """Sync board with actual output."""
+        for row in range(len(self.road)):
+            for col in range(len(self.road[0])):
+                v = self.road[row][col]
+                i = row * BLOCKS_AMOUNT_X + col
+                self.board_sprite_list[i].set_texture(v)
