@@ -438,7 +438,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                 self.started and \
                 self.audio.started and not\
                 self.paused and \
-                self.audio.thread_end and self.audio.thead_finished_allow_end and self.notes_total > 2500:
+                self.audio.thread_end and self.audio.thead_finished_allow_end and self.notes_total > 50:
             self.ended = True
 
     def on_draw(self, time_delta=None, count_down=None):
