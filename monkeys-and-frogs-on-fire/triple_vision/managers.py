@@ -39,8 +39,8 @@ class GameManager:
         enemy.setup()
         self.enemies.append(enemy)
 
-    def create_dmg_indicator(self, text: str, position: Tuple[float, float]) -> None:
-        dmg_indicator = DamageIndicator(text, *position)
+    def create_dmg_indicator(self, dmg: float, position: Tuple[float, float]) -> None:
+        dmg_indicator = DamageIndicator(str(int(dmg)), *position)
         self.damage_indicators.append(dmg_indicator)
 
     def on_update(self, delta_time) -> None:
@@ -48,8 +48,11 @@ class GameManager:
 
             projectile_hit_enemy = arcade.check_for_collision_with_list(enemy, self.player_projectiles)
             for projectile in projectile_hit_enemy:
-                self.create_dmg_indicator(str(projectile.dmg), enemy.position)
-                enemy.hit(projectile)
+                self.create_dmg_indicator(
+                    projectile.dmg * self.view.player.attack_multiplier,
+                    enemy.position
+                )
+                enemy.hit(projectile, self.view.player.attack_multiplier)
                 projectile.destroy()
 
             melee_attacks_hit_enemy = arcade.check_for_collision_with_list(
@@ -58,8 +61,11 @@ class GameManager:
             )
 
             for player_melee_attack in melee_attacks_hit_enemy:
-                self.create_dmg_indicator(str(player_melee_attack.dmg), enemy.position)
-                enemy.hit(player_melee_attack)
+                self.create_dmg_indicator(
+                    player_melee_attack.dmg * self.view.player.attack_multiplier,
+                    enemy.position
+                )
+                enemy.hit(player_melee_attack, self.view.player.attack_multiplier)
 
         projectiles_hit_player = arcade.check_for_collision_with_list(self.view.player, self.enemy_projectiles)
         for projectile in projectiles_hit_player:

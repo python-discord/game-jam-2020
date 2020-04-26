@@ -166,22 +166,19 @@ class LivingEntity(AnimatedEntity):
 
         self.resistance = 0
 
-    def hit(self, weapon, wall_reference: arcade.SpriteList = tuple()) -> None:
+    def hit(self, weapon, attack_multiplier: float = 1.0) -> None:
         """
         :param weapon: Weapon the entity is being hit. Used for getting dmg, throwback force
                        and position for knock-back direction.
-        :param wall_reference: SpriteList of things that the entity cannot go trough. This will
-                               stop the entity from being pushed and slightly damage the entity.
-                               TODO: Currently a placeholder, to be implemented,
-                                     maybe this check should be done in manager?
-                                     So if hits wall and being_pushed True then deduct hp
+        :param attack_multiplier: self descriptive
         """
         self._is_hit = True
         self.color = (255, 0, 0)
 
         weapon.play_hit_sound()
 
-        self.hp -= weapon.dmg * (1 - self.resistance)
+        dmg = weapon.dmg * attack_multiplier
+        self.hp -= dmg * (1 - self.resistance)
         if self.hp <= 0:
             self.kill()
             return
