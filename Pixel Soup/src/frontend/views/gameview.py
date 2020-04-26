@@ -149,7 +149,7 @@ class GameView(arcade.View):
         self.feedback = feedback
         if (
             os.getenv("SERVER") == "127.0.0.1"
-            or os.getenv("PORT") == socket.gethostname()
+            or os.getenv("SERVER") == socket.gethostname()
         ):
             arcade.schedule(self.stream, 0.2)
 
@@ -247,7 +247,7 @@ class GameView(arcade.View):
 
             if (
                 os.getenv("SERVER") == "127.0.0.1"
-                or os.getenv("PORT") == socket.gethostname()
+                or os.getenv("SERVER") == socket.gethostname()
             ):
                 self.stream()
 

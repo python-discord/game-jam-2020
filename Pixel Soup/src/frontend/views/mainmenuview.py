@@ -15,7 +15,7 @@ DATA_PATH = f"{GAME_PATH}/data"
 
 def networking(forward, feedback):
     while True:
-        pipe = Pipe(server=os.getenv("PORT"), port=int(os.getenv("PORT")))
+        pipe = Pipe(server=os.getenv("SERVER"), port=int(os.getenv("PORT")))
         response = pipe.login()
         feedback.put(response)
         if response:
