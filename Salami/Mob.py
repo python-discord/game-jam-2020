@@ -11,7 +11,7 @@ class Mob(Entity):
 
         self.curr_invis_frame = 0
         self.invis_frame = 12
-        self.health = 9
+        self.health = 5
 
         self.grabbable = False
 
@@ -88,7 +88,13 @@ class Mob(Entity):
             self.curr_invis_frame = self.invis_frame
 
         if self.health <= 0:
-            self.removed = True
+            self.die()
 
     def grabbed(self, entity):
         pass
+
+    def heal(self, amount):
+        self.health += amount
+
+    def die(self):
+        self.removed = True

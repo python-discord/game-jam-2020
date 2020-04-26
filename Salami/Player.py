@@ -4,6 +4,7 @@ import math
 
 import LevelGenerator
 import Textures
+import Sounds
 
 from Constants import TILE_SIZE, ROOM_WIDTH, ROOM_HEIGHT
 from Mob import Mob
@@ -42,7 +43,7 @@ class Player(Mob):
 
         self.health = 9
         self.curr_invis_frame = 0
-        self.invis_frame = 90
+        self.invis_frame = 150
 
         # Textures
         self.idle_texture = Textures.get_texture(0, 4)
@@ -64,9 +65,7 @@ class Player(Mob):
         
         if self.keyboard.is_pressed("dash"):
             if not self.dashing:
-                self.change_y += 2
-                if self.health > 0:
-                    self.health -= 1 
+                self.change_y += 1
             self.dashing = True
         
         if self.keyboard.is_pressed("l"):
@@ -101,6 +100,7 @@ class Player(Mob):
                     attack_y)
                 self.level.add_entity_to_list(card, self.level.entities)
                 self.curr_attack_speed = self.max_attack_speed
+                Sounds.play(Sounds.SHOOT)
 
         if self.curr_attack_speed > 0:
             self.curr_attack_speed -= 1
@@ -108,6 +108,8 @@ class Player(Mob):
         if self.keyboard.is_pressed("jump"):
             if self.level.physics_engine.can_jump(1):
             # if self.level.engine.can_jump(self, 1):
+                if not self.jumping:
+                    Sounds.play(Sounds.JUMP)
                 self.level.physics_engine.jump(self.jump_height)
                 self.jumping = True
             # elif self.level.engine.can_jump(self, -1):
@@ -204,7 +206,7 @@ class Player(Mob):
             self.health -= damage
             self.change_x += knockback
             self.curr_invis_frame = self.invis_frame
-
+            Sounds.play(Sounds.HURT)
         if self.health <= 0:
             # Die
             pass
