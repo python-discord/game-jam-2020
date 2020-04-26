@@ -93,7 +93,7 @@ class AnimatedEntity(arcade.Sprite):
             main_path = PATH['img'] / 'sprite' / 'fire'
 
         if e_type > 7:
-            self.character_face_direction = TL
+            self.character_face_direction = TR
             self.cooldown = 0
             self.target = None
             self.dmg = T_DMG

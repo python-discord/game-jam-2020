@@ -1,6 +1,5 @@
 # setup
 import arcade
-from arcade.gui import TextButton  # don't use textbox
 from submission.gameConstants import *
 from submission.loadAnimatedChars import *
 from submission.tileMapLoader import *
