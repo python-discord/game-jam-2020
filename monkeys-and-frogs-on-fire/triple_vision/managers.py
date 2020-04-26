@@ -45,7 +45,7 @@ class GameManager:
         self.potions.draw()
 
     def create_potion(self, effect: PotionEffect, *args, **kwargs):
-        self.potions.append(Potion(self.view.player, effect, *args, **kwargs))
+        self.potions.append(Potion(self, self.view.player, effect, *args, **kwargs))
 
     def create_enemy(self, enemy_class, *args, **kwargs) -> None:
         enemy = enemy_class(ctx=self, *args, **kwargs)
@@ -497,14 +497,14 @@ class LevelManager:
             filename="assets/dungeon/frames/flask_yellow.png"
         )
 
-        for _ in range(random.randint(0, 3 - level)):
+        for _ in range(0, 3 - level):
             game_manager.create_potion(
                 PotionEffect(
                     heal=200.0
                 ),
                 filename="assets/dungeon/frames/flask_big_yellow.png"
             )
-        for _ in range(random.randint(0, 3 - level)):
+        for _ in range(0, 3 - level):
             game_manager.create_potion(
                 PotionEffect(
                     resistance=0.1
@@ -512,7 +512,7 @@ class LevelManager:
                 duration=3.0,
                 filename="assets/dungeon/frames/flask_green.png"
             )
-        for _ in range(random.randint(0, 3 - level)):
+        for _ in range(0, 3 - level):
             game_manager.create_potion(
                 PotionEffect(
                     strength=0.1
@@ -520,7 +520,7 @@ class LevelManager:
                 duration=3.0,
                 filename="assets/dungeon/frames/flask_big_red.png"
             )
-        for _ in range(random.randint(0, 3 - level)):
+        for _ in range(0, 3 - level):
             game_manager.create_potion(
                 PotionEffect(
                     speed=0.1
