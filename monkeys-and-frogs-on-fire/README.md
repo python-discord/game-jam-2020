@@ -27,7 +27,20 @@ The player and some specific enemies are able to shoot laser projectiles at each
 I think that's about it for our current game implementation.
 
 
+## Main screen
+
+Click Register to go to register screen (you can see screen name at top).
+
+Input your name/password, click register again to confirm.
+
+Once you have a account go back to login view by clicking login button.
+
+Input you username and password and press login again.
+
+
+
 ## Tutorial
+
 
 
 ### Movement
