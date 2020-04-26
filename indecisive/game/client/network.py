@@ -47,7 +47,6 @@ class Client:
                 except json.JSONDecodeError:
                     print(f"Error decoding JSON {data}")
                 else:
-                    print(data["type"])
                     self.receive.put(data)
                 await asyncio.sleep(0.05)
 

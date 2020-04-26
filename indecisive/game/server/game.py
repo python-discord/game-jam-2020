@@ -39,18 +39,19 @@ class Game:
                 elif data["actionType"] == "createUnit":
                     self.send_queue.put({"type": "newUnit", "data": data["data"]})
                     self.world["units"].append(data["data"])
-                    print(self.world)
                 elif data["actionType"] == "attackUnit":
                     self.attack_unit(data["data"])
                 elif data["actionType"] == "attackCity":
                     self.attack_city(data["data"])
                 elif data["actionType"] == "upgradeCity":
                     self.upgrade_city(data["data"])
+                elif data["actionType"] == "settleCity":
+                    self.create_city(data["data"])
 
                 self.next_turn()
 
     def next_turn(self):
-        self.turn += 1
+        self.turn += 0
         if self.turn >= len(self.players):
             self.turn = 0
         self.send_queue.put({"type": "turn", "data": self.turn})
@@ -65,10 +66,22 @@ class Game:
             # noinspection PyTypeChecker
             world["cities"].append({
                 "loc": [i * 11 + 5, 5],
+                "level": 0,
                 "owner": i
             })
 
         self.world = world
+
+    def create_city(self, unit_id):
+        unit = self.world["units"][unit_id]
+        city = {
+            "loc": unit["loc"],
+            "owner": unit["owner"],
+            "level": 0
+        }
+        self.world["cities"].append(city)
+        self.send_queue.put({"type": "createCity", "data": city})
+        self.send_queue.put({"type": "killUnit", "data": unit_id})
 
     def attack_unit(self, data):
         defending = self.world["units"][data["attack"]]
@@ -77,6 +90,7 @@ class Game:
         defend = random.randint(1, 101) + self.unit_types[defending["type"]]["base_defense"]
         if attack >= defend:
             self.send_queue.put({"type": "killUnit", "data": data["attack"]})
+            self.world["units"][data["attack"]] = None
             self.send_queue.put({"type": "moveUnit", "data": data})
         else:
             print("Attack failed")
@@ -88,12 +102,14 @@ class Game:
         defend = 100
         if attack >= defend:
             self.send_queue.put({"type": "killCity", "data": data["attack"]})
+            self.world["units"][data["attack"]] = None
             self.send_queue.put({"type": "moveUnit", "data": data})
+            self.world["cities"][data["attack"]] = None
         else:
             print("Attack failed")
 
     def upgrade_city(self, data):
-        self.world["ciites"][data["city_id"]]["level"] += 1
+        self.world["cities"][data["city_id"]]["level"] += 1
         self.send_queue.put({"type": "upgradeCity", "data": data})
 
 

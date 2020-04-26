@@ -36,7 +36,7 @@
         "assets/GreenSettler.png",
         "assets/BlueSettler.png"
       ],
-      "base_attack": 0,
-      "base_defense": 0
+      "base_attack": -50,
+      "base_defense": -50
     }
 }
