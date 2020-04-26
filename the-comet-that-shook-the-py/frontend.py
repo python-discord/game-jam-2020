@@ -30,7 +30,9 @@ TEXT_TOP = WINDOW_HEIGHT
 class GridCell:
     """Represents a cell within the main grid which the user interacts with"""
 
-    def __init__(self, centre: Tuple[float, float,], width, height, allowed_tile_values: Set[str]):
+    def __init__(
+        self, centre: Tuple[float, float, ], width, height, allowed_tile_values: Set[str]
+    ):
         self.bottom_left = (
             centre[0] - width / 2,
             centre[1] - height / 2,
@@ -209,11 +211,11 @@ class SubmissionGrid(arcade.Sprite):
                         (x, y,),
                         cell_width,
                         cell_height,
-                        allowed_values[row_num * 3 : (row_num + 1) * 3],
+                        allowed_values[row_num * 3: (row_num + 1) * 3],
                     )
                 )
 
-    def get_relevant_cell(self, point: Tuple[float, float,],) -> GridCell:
+    def get_relevant_cell(self, point: Tuple[float, float, ],) -> GridCell:
         """
         Gets the cell, or None, in which the provided point resides
         :param point the x/y coord of which to check
@@ -303,7 +305,9 @@ class MyGame(arcade.Window):
             "assets/bone_back.png", (self.submission_grid.center_x, 120), time.time()
         )
         self.end_timer.stop = True
-        for ((x, y,), asset_path,) in zip(self.get_boneyard_starting_positions(), shuffled_list,):
+        for ((x, y,), asset_path,) in zip(
+            self.get_boneyard_starting_positions(), shuffled_list,
+        ):
             tile_sprite = TileSprite(f"assets/{asset_path}", int(x), int(y),)
             self.tile_sprites.append(tile_sprite)
 
@@ -360,7 +364,9 @@ class MyGame(arcade.Window):
         Called when the user presses a mouse button.
         """
         for button in self.button_list:
-            if check_bounds((x, y), (button.left, button.bottom), (button.right, button.top)):
+            if check_bounds(
+                (x, y), (button.left, button.bottom), (button.right, button.top)
+            ):
                 button.on_click()
         if self.game_won:
             if check_bounds(
@@ -425,7 +431,9 @@ class MyGame(arcade.Window):
 
 
 def check_bounds(
-    point: Tuple[float, float,], bottom_left: Tuple[float, float,], top_right: Tuple[float, float,],
+    point: Tuple[float, float, ],
+    bottom_left: Tuple[float, float, ],
+    top_right: Tuple[float, float, ],
 ) -> bool:
     """
     Check if a given point is within the bounds of 4 sides
@@ -436,4 +444,6 @@ def check_bounds(
     """
     if bottom_left == top_right:
         raise ValueError("Bottom left and top right can't be the same")
-    return (bottom_left[0] < point[0] < top_right[0]) and (bottom_left[1] < point[1] < top_right[1])
+    return (bottom_left[0] < point[0] < top_right[0]) and (
+        bottom_left[1] < point[1] < top_right[1]
+    )
