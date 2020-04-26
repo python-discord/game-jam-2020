@@ -47,6 +47,11 @@ class Game(Base):
         self.city3_ui = [arcade.SpriteList(), []]
         self.city4_ui = [arcade.SpriteList(), []]
         self.city5_ui = [arcade.SpriteList(), []]
+        self.dcity_ui = [arcade.SpriteList(), []]
+        self.dcity2_ui = [arcade.SpriteList(), []]
+        self.dcity3_ui = [arcade.SpriteList(), []]
+        self.dcity4_ui = [arcade.SpriteList(), []]
+        self.dcity5_ui = [arcade.SpriteList(), []]
         self.unit_ui = [arcade.SpriteList(), []]
         self.settler_ui = [arcade.SpriteList(), []]
         self.empty_ui = [arcade.SpriteList(), []]
@@ -131,6 +136,9 @@ class Game(Base):
                     self.top_ui[1][self.top_ui[2]["currentTurn"]]["text"] = f"Current turn: {self.players[self.turn]['name']}"
                 elif data["type"] == "victory":
                     self.victory(data["data"])
+                elif data["type"] == "updateCityHealth":
+                    print(data)
+                    self.server_repair_city(data["data"])
                 else:
                     print(f"SCREAMS IN BRAILLE: {data}")
 
@@ -227,10 +235,16 @@ class Game(Base):
     def server_kill_unit(self, unit_id):
         self.unit_sprites[unit_id].position = self.get_xy_centre((-100, 1000))
         self.world["units"][unit_id] = None
+        if self.selected == ["units", unit_id]:
+            self.selected = [None, None]
+            self.update_ui()
 
     def server_kill_city(self, city_id):
         self.city_sprites[city_id].position = self.get_xy_centre((-100, 1000))
         self.world["cities"][city_id] = None
+        if self.selected == ["cities", city_id]:
+            self.selected = [None, None]
+            self.update_ui()
 
     def client_attack_unit(self, data):
         self.send_queue.put({"type": "turnFinal", "actionType": "attackUnit", "data": data})
@@ -249,6 +263,15 @@ class Game(Base):
 
     def client_settle_city(self, unit_id):
         self.send_queue.put({"type": "turnFinal", "actionType": "settleCity", "data": unit_id})
+
+    def server_repair_city(self, data):
+        city = self.world["cities"][data["city_id"]]
+        city["health"] = data["health"]
+        if self.selected == ["cities", data["city_id"]]:
+            self.update_ui()
+
+    def client_repair_city(self, city_id):
+        self.send_queue.put({"type": "turnFinal", "actionType": "repairCity", "data": city_id})
 
     def setup_ui(self):
         # MAIN UI
@@ -308,6 +331,12 @@ class Game(Base):
             center_x=200,
             center_y=100
         )
+        repair_city = arcade.Sprite(
+            "assets/upgrade_city_button.png",
+            scale=0.25,
+            center_x=200,
+            center_y=150
+        )
 
         # selectors
         for selector_number in range(4):
@@ -329,6 +358,16 @@ class Game(Base):
         self.city4_ui[1] = [self.create_basic, self.upgrade_city, self.create_shield, self.create_heavy, self.create_settler]
         self.city5_ui[0].extend([create_basic, create_shield, create_heavy, create_settler])
         self.city5_ui[1] = [self.create_basic, self.create_shield, self.create_heavy, self.create_settler]
+        self.dcity_ui[0].extend([create_basic, repair_city])
+        self.dcity_ui[1] = [self.create_basic, self.repair_city]
+        self.dcity2_ui[0].extend([create_basic, repair_city, create_shield])
+        self.dcity2_ui[1] = [self.create_basic, self.repair_city, self.create_shield]
+        self.dcity3_ui[0].extend([create_basic, repair_city, create_shield, create_heavy])
+        self.dcity3_ui[1] = [self.create_basic, self.repair_city, self.create_shield, self.create_heavy]
+        self.dcity4_ui[0].extend([create_basic, repair_city, create_shield, create_heavy, create_settler])
+        self.dcity4_ui[1] = [self.create_basic, self.repair_city, self.create_shield, self.create_heavy, self.create_settler]
+        self.dcity5_ui[0].extend([create_basic, repair_city, create_shield, create_heavy, create_settler])
+        self.dcity5_ui[1] = [self.create_basic, self.repair_city, self.create_shield, self.create_heavy, self.create_settler]
 
         # unit UI
         self.unit_ui[0].extend([move_unit, attack_unit, attack_city])
@@ -358,9 +397,16 @@ class Game(Base):
             "color": (0, 0, 0),
             "font_size": 30
         })
+        self.top_ui[1].append({
+            "text": "",
+            "start_x": 800, "start_y": 10,
+            "color": (0, 0, 0),
+            "font_size": 20
+        })
         self.top_ui[2] = {
             "name": 0,
-            "currentTurn": 1
+            "currentTurn": 1,
+            "infoBox": 2
         }
     # UI
 
@@ -415,6 +461,9 @@ class Game(Base):
     def settle_city(self, unit, unit_id):
         self.client_settle_city(unit_id)
 
+    def repair_city(self, city, city_id):
+        self.client_repair_city(city_id)
+
     def action_maker_maker(self, action, arg: dict, hide_ui=True):
         def _action_maker(**kwargs):
             def _action():
@@ -429,17 +478,31 @@ class Game(Base):
 
     def update_ui(self):
         if self.selected[0] == "cities" and self.world["cities"][self.selected[1]]["owner"] == self.player_id:
-            level = self.world["cities"][self.selected[1]]["level"]
-            if level == 0:
-                self.current_ui = self.city_ui
-            elif level == 1:
-                self.current_ui = self.city2_ui
-            elif level == 2:
-                self.current_ui = self.city3_ui
-            elif level == 3:
-                self.current_ui = self.city4_ui
-            elif level == 4:
-                self.current_ui = self.city5_ui
+            city = self.world["cities"][self.selected[1]]
+            level = city["level"]
+            if city["max_health"] == city["health"]:
+                if level == 0:
+                    self.current_ui = self.city_ui
+                elif level == 1:
+                    self.current_ui = self.city2_ui
+                elif level == 2:
+                    self.current_ui = self.city3_ui
+                elif level == 3:
+                    self.current_ui = self.city4_ui
+                elif level == 4:
+                    self.current_ui = self.city5_ui
+            else:
+                print("damaged")
+                if level == 0:
+                    self.current_ui = self.dcity_ui
+                elif level == 1:
+                    self.current_ui = self.dcity2_ui
+                elif level == 2:
+                    self.current_ui = self.dcity3_ui
+                elif level == 3:
+                    self.current_ui = self.dcity4_ui
+                elif level == 4:
+                    self.current_ui = self.dcity5_ui
         elif self.selected[0] == "units" and self.world["units"][self.selected[1]]["owner"] == self.player_id:
             if self.world["units"][self.selected[1]]["type"] == "settler":
                 self.current_ui = self.settler_ui
@@ -447,6 +510,32 @@ class Game(Base):
                 self.current_ui = self.unit_ui
         else:
             self.current_ui = self.empty_ui
+
+        # info box
+        if self.selected != [None, None]:
+            if self.selected[0] == "cities":
+                health = self.world['cities'][self.selected[1]]['health']
+                max_health = self.world['cities'][self.selected[1]]['max_health']
+                owner = self.players[self.world['cities'][self.selected[1]]['owner']]["name"]
+                level = self.world['cities'][self.selected[1]]['level'] + 1
+                self.top_ui[1][self.top_ui[2]["infoBox"]]["text"] = f"City\n" \
+                                                                    f"Owner: {owner}\n" \
+                                                                    f"Defense: {health}\n" \
+                                                                    f"Level: {level}\n" \
+                                                                    f"Max Defense {max_health}\n\n\n"
+            elif self.selected[0] == "units":
+                owner = self.players[self.world['units'][self.selected[1]]['owner']]["name"]
+                defence = self.unit_types[self.world['units'][self.selected[1]]["type"]]['base_defense']
+                attack = self.unit_types[self.world['units'][self.selected[1]]["type"]]['base_attack']
+                type = self.unit_types[self.world['units'][self.selected[1]]["type"]]['name']
+                self.top_ui[1][self.top_ui[2]["infoBox"]]["text"] = f"Unit\n" \
+                                                                    f"Owner: {owner}\n" \
+                                                                    f"Type: {type}\n" \
+                                                                    f"Attack: {attack}\n" \
+                                                                    f"Defence {defence}\n\n\n"
+
+        else:
+            self.top_ui[1][self.top_ui[2]["infoBox"]]["text"] = ""
 
         self.hide_selectors()
 

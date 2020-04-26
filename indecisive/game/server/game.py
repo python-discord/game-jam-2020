@@ -51,8 +51,17 @@ class Game:
                     self.upgrade_city(data["data"])
                 elif data["actionType"] == "settleCity":
                     self.create_city(data["data"])
+                elif data["actionType"] == "repairCity":
+                    self.repair_city(data["data"])
 
                 self.next_turn()
+
+    def repair_city(self, city_id):
+        city = self.world["cities"][city_id]
+        city["health"] += 50
+        if city["max_health"] < city["health"]:
+            city["health"] = city["max_health"]
+        self.send_queue.put({"type": "updateCityHealth", "data": {"city_id": city_id, "health": city["health"]}})
 
     def next_turn(self):
         self.turn += 0
@@ -69,7 +78,7 @@ class Game:
             "units": [],
             "dim": [x, y]
         }
-        for i in range(1):
+        for i in range(3):
             # noinspection PyTypeChecker
             world["cities"].append({
                 "loc": [i * 11 + 5, 5],
@@ -112,22 +121,22 @@ class Game:
         defending = self.world["cities"][data["attack"]]
         attack = random.randint(1, 101) + self.unit_types[attacking["type"]]["base_attack"]
         defending["health"] -= attack
+        self.send_queue.put({"type": "updateCityHealth", "data": {"city_id": data["attack"], "health": defending["health"]}})
         print(defending["health"])
         if defending["health"] <= 0:
             self.send_queue.put({"type": "killCity", "data": data["attack"]})
             self.send_queue.put({"type": "moveUnit", "data": data})
             self.world["cities"][data["attack"]] = None
-            self.check_victory()
         else:
             print("Attack failed")
 
     def upgrade_city(self, data):
         city = self.world["cities"][data["city_id"]]
         city["level"] += 1
-        self.send_queue.put({"type": "upgradeCity", "data": data})
-        health = city["health"]/city["max_health"]
         city["max_health"] = self.city_types["health"][city["level"]]
+        health = city["health"]/city["max_health"]
         city["health"] = health * city["max_health"]
+        self.send_queue.put({"type": "upgradeCity", "data": data})
 
     def check_victory(self):
         lost = [True, True, True]
