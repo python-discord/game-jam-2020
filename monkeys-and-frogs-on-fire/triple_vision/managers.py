@@ -45,7 +45,9 @@ class GameManager:
         self.potions.draw()
 
     def create_potion(self, effect: PotionEffect, *args, **kwargs):
-        self.potions.append(Potion(self, self.view.player, effect, *args, **kwargs))
+        potion = Potion(self, self.view.player, effect, *args, scale=2, **kwargs)
+        potion.setup()
+        self.potions.append(potion)
 
     def create_enemy(self, enemy_class, *args, **kwargs) -> None:
         enemy = enemy_class(ctx=self, *args, **kwargs)
