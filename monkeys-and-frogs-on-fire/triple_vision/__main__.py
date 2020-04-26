@@ -1,16 +1,14 @@
 import arcade
 
 from triple_vision import Settings as s
-from triple_vision.triple_vision import TripleVision
+from triple_vision.views.auth_views import LoginView
 
 
 def main() -> None:
     window = arcade.Window(*s.WINDOW_SIZE, s.TITLE)
-    game = TripleVision()
+    view = LoginView()
 
-    window.show_view(game)
-    game.setup()
-
+    window.show_view(view)
     arcade.run()
 
 

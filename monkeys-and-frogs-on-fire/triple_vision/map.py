@@ -1,6 +1,5 @@
 import random
-import traceback
-from typing import Tuple
+from typing import Optional, Tuple
 
 import arcade
 import numpy as np
@@ -8,6 +7,8 @@ import numpy as np
 from triple_vision import Settings as s
 from triple_vision.entities import Spike
 from triple_vision.utils import tile_to_pixels
+
+random.seed(1)
 
 
 class Map:
@@ -25,7 +26,7 @@ class Map:
         self.FILL_PROBABILITY = 0.2
         self.SPIKE_PROBABILITY = 0.01
 
-        self.sprites = None
+        self.sprites: Optional[arcade.SpriteList] = None
 
     def generate(self) -> np.array:
         map_ = np.ones(self.shape)
@@ -46,7 +47,7 @@ class Map:
                         max(j - 1, 0): min(j + 2, map_.shape[1])
                     ]
                     flat_submap = submap.flatten()
-                    wall_count_1_away = len(np.where(flat_submap== self.WALL)[0])
+                    wall_count_1_away = len(np.where(flat_submap == self.WALL)[0])
                     floor_count_1_away = len(np.where((flat_submap == self.FLOOR) | (flat_submap == self.SPIKE))[0])
 
                     # Get walls that are 2 away from each index
@@ -80,7 +81,8 @@ class Map:
 
         return map_
 
-    def spritify(self, map_) -> arcade.SpriteList:
+    def spritify(self, map_) -> Tuple[arcade.SpriteList, arcade.SpriteList, arcade.SpriteList]:
+        spikes = arcade.SpriteList(use_spatial_hash=True)
         sprites = arcade.SpriteList(use_spatial_hash=True)
         collision_list = arcade.SpriteList(use_spatial_hash=True)
 
@@ -95,11 +97,15 @@ class Map:
 
                 if val == self.SPIKE:
                     sprite = Spike(
-                        view=self.view,
+                        ctx=self.view.game_manager,
+                        target_player=self.view.player,
+                        target_enemies=None,
                         scale=s.SCALING,
                         center_x=center_x,
-                        center_y=center_y
+                        center_y=center_y,
+                        spawn_in_map=False
                     )
+                    spikes.append(sprite)
 
                 else:
                     filename = 'wall_mid' \
@@ -117,7 +123,7 @@ class Map:
 
                 sprites.append(sprite)
 
-        return sprites, collision_list
+        return sprites, collision_list, spikes
 
     def setup(self) -> None:
         floor_count = 0
@@ -128,7 +134,7 @@ class Map:
             flat_map = map_.flatten()
             floor_count = len(np.where((flat_map == self.FLOOR) | (flat_map == self.SPIKE))[0])
 
-        self.sprites, self.view.collision_list = self.spritify(map_)
+        self.sprites, self.view.collision_list, self.view.game_manager.spikes = self.spritify(map_)
 
     def draw(self) -> None:
         self.sprites.draw()

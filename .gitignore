@@ -134,3 +134,10 @@ dmypy.json
 # IDEs
 .idea/
 .vscode/
+*.iml
+
+# Databases
+*.sqlite3
+
+# PyFrost
+.frost

@@ -1,15 +1,45 @@
 import itertools
+import random
 from pathlib import Path
 from typing import Any, Optional, Tuple
 
 import arcade
 
-from triple_vision import Direction
-from triple_vision.entities.weapons import Weapon
-from triple_vision.utils import get_change_vector, load_texture_pair
+from triple_vision import Direction, Settings as s
+from triple_vision.sound import SoundManager
+from triple_vision.utils import (
+    get_change_vector,
+    load_texture_pair,
+    tile_to_pixels
+)
 
 
-class AnimatedEntity(arcade.Sprite):
+class Entity(arcade.Sprite):
+
+    def __init__(self, ctx, spawn_in_map=True, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.ctx = ctx
+        self.spawn_in_map = spawn_in_map
+
+    def setup(self) -> None:
+        if self.spawn_in_map:
+            while True:
+                center = tile_to_pixels(
+                    random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1])
+                )
+
+                if (
+                    len(arcade.get_sprites_at_point(center, self.ctx.view.collision_list)) == 0 and
+                    len(arcade.get_sprites_at_point(center, self.ctx.view.map.sprites)) > 0
+                ):
+                    break
+
+            self.center_x = center[0]
+            self.center_y = center[1]
+
+
+class AnimatedEntity(Entity):
 
     def __init__(
         self,
@@ -121,6 +151,7 @@ class AnimatedEntity(arcade.Sprite):
 
     def on_update(self, delta_time: float = 1/60) -> None:
         self.update_animation(delta_time)
+        super().on_update(delta_time)
 
 
 class LivingEntity(AnimatedEntity):
@@ -137,22 +168,19 @@ class LivingEntity(AnimatedEntity):
 
         self.resistance = 0
 
-    def hit(self, weapon: Weapon, wall_reference: arcade.SpriteList = tuple()) -> None:
+    def hit(self, weapon, attack_multiplier: float = 1.0) -> None:
         """
         :param weapon: Weapon the entity is being hit. Used for getting dmg, throwback force
                        and position for knock-back direction.
-        :param wall_reference: SpriteList of things that the entity cannot go trough. This will
-                               stop the entity from being pushed and slightly damage the entity.
-                               TODO: Currently a placeholder, to be implemented,
-                                     maybe this check should be done in manager?
-                                     So if hits wall and being_pushed True then deduct hp
+        :param attack_multiplier: self descriptive
         """
         self._is_hit = True
         self.color = (255, 0, 0)
 
         weapon.play_hit_sound()
 
-        self.hp -= weapon.dmg * (1 - self.resistance)
+        dmg = weapon.dmg * attack_multiplier
+        self.hp -= dmg * (1 - self.resistance)
         if self.hp <= 0:
             self.kill()
             return
@@ -203,3 +231,32 @@ class LivingEntity(AnimatedEntity):
             self.reduce_throwback(delta_time)
 
         super().on_update(delta_time)
+
+
+class SoundEntity(arcade.Sprite):
+    def __init__(
+            self,
+            *args,
+            activate_sounds: Tuple[str],
+            hit_sounds: Tuple[str],
+            **kwargs
+    ) -> None:
+        """
+        activate_sounds and hit_sounds are both tuple of strings where string represent sound asset
+        activate_sounds, example for weapon, will play the weapon is shoot
+        hit_sounds, example for weapon, should play when weapon hits something.
+        """
+        super().__init__(*args, **kwargs)
+        self._activate_sounds = activate_sounds
+        self._hit_sounds = hit_sounds
+        self.load_sounds()
+
+    def load_sounds(self):
+        for sound in itertools.chain(self._activate_sounds, self._hit_sounds):
+            SoundManager.add_sound(sound)
+
+    def play_activate_sound(self) -> None:
+        SoundManager.play_sound(random.choice(self._activate_sounds))
+
+    def play_hit_sound(self) -> None:
+        SoundManager.play_sound(random.choice(self._hit_sounds))

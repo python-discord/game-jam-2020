@@ -18,6 +18,8 @@ class Tile:
 class SoundSettings:
     FADE_FREQUENCY = 0.1
     FADE_AMOUNT = 0.05
+    DEFAULT_VOLUME = 0.25
+    SOUNDTRACK_LIST = ["Monplaisir_-_06_-_Level_3.mp3", "Komiku_-_07_-_Battle_of_Pogs.mp3"]
 
 
 class Direction(IntEnum):

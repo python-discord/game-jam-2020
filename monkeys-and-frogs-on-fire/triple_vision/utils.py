@@ -18,13 +18,13 @@ def is_in_radius(center_object: arcade.Sprite, target_object: arcade.Sprite, rad
 
 
 def is_in_radius_positions(
-        center_position: Tuple[float, float],
-        target_position: Tuple[float, float],
-        radius: int
-        ):
+    center_position: Tuple[float, float],
+    target_position: Tuple[float, float],
+    radius: int
+):
     return (
-            abs(center_position[0] - target_position[0]) <= radius and
-            abs(center_position[1] - target_position[1]) <= radius
+        abs(center_position[0] - target_position[0]) <= radius and
+        abs(center_position[1] - target_position[1]) <= radius
     )
 
 
@@ -40,6 +40,14 @@ def pixels_to_tile(x: float, y: float) -> Tuple[int, int]:
         int((x - (x % Tile.SCALED)) / Tile.SCALED),
         int((y - (y % Tile.SCALED)) / Tile.SCALED)
     )
+
+
+def closest_grid_position(x: float, y: float) -> Tuple[float, float]:
+    """
+    Get the closest grid position for passed position.
+    """
+    return tile_to_pixels(*pixels_to_tile(x, y))
+
 
 def distance_between(center_object: arcade.Sprite, target_object: arcade.Sprite) -> float:
     x_diff = target_object.center_x - center_object.center_x
