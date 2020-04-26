@@ -31,4 +31,5 @@ def makeBox(mass, space, textures, hit_box, scale, x, y):
     shape.friction = 0.8
     space.add(body, shape)
     sprite = Ground(shape, textures, scale, x, y)
+    sprite.hit_box = hit_box
     return sprite

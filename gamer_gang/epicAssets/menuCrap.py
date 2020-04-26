@@ -235,6 +235,7 @@ class LevelButton(TextButton):
         if self.pressed:
             self.pressed = False
             self.game.window.sfx['menu music'].stop()
+            self.game.window.currLevel = self.levelNum
             self.game.window.show_view(self.game.window.levels[self.levelNum])
 
 
@@ -250,6 +251,7 @@ class RestartButton(TextButton):
             self.pressed = True
             self.game.window.sfx['level music'].stop()
             self.game.window.setup()
+            self.game.window.show_view(self.game.window.levels[self.game.window.currLevel])
 
     def on_release(self):
         self.pressed = False

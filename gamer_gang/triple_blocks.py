@@ -19,6 +19,7 @@ class ActualGame(arcade.Window):
                     "spike": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/spike.wav"),
                     "level music": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/background.wav"),
                     "menu music": arcade.load_sound(str(Path(__file__).parent) + "/epicAssets/sounds/menu.wav")}
+        self.currLevel = None
 
     def setup(self):
         self.menuView = MenuView()
