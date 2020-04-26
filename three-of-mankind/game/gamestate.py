@@ -43,7 +43,7 @@ class GameState:
             tiles.player_blue,
         ):
             self.player.append_texture(tile.texture)
-        self.player.set_texture(0)
+        self.player.set_color("white")
 
         self.player.center_x = 200
         self.player.center_y = 200

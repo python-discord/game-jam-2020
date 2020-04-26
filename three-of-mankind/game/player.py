@@ -11,6 +11,12 @@ import arcade
 
 class Player(Sprite):
     colors = {"white": 0, "red": 1, "green": 2, "blue": 3}
+    _colors = {
+        "white": (35, 35, 35),
+        "red": (85, 35, 35),
+        "green": (35, 85, 35),
+        "blue": (35, 35, 85)
+    }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -29,6 +35,7 @@ class Player(Sprite):
     def set_color(self, color: str) -> None:
         self.set_texture(self.colors.get(color, 0))
         self.str_color = color
+        arcade.set_background_color(self._colors.get(color, (0, 0, 0)))
 
     def update(self):
         if self.is_jumping:
