@@ -30,14 +30,15 @@ def check_for_collision(sprite1: arcade.Sprite,
 
 
 def check_for_collision_with_list(sprite: arcade.Sprite,
-                                  sprite_list: arcade.SpriteList) -> bool:
+                                  sprite_list: arcade.SpriteList
+                                  ) -> arcade.SpriteList:
     """Check for collision between a sprite and a spritelist.
 
     Used instead of Arcade's default implementation as we need a hack to
     return False if there is just a one pixel overlap, if it's not
     multiplayer...
     """
-    overlapping = arcade.SpriteList()
+    overlapping: arcade.SpriteList = arcade.SpriteList()
     for other in sprite_list:
         if check_for_collision(sprite, other):
             overlapping.append(other)
@@ -115,12 +116,12 @@ def _move_sprite(moving_sprite: arcade.Sprite, walls: arcade.SpriteList):
             change_x = moving_sprite.change_x
             if change_x > 0:
                 while check_for_collision_with_list(moving_sprite,
-                                                           walls):
+                                                    walls):
                     moving_sprite.center_x -= 1
 
             elif change_x < 0:
                 while check_for_collision_with_list(moving_sprite,
-                                                           walls):
+                                                    walls):
                     moving_sprite.center_x += 1
 
             else:

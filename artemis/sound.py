@@ -27,7 +27,6 @@ class FadeOut(Player):
             pyglet.clock.schedule_once(self.fade_out, 0.1)
 
 
-
 class BackgroundMusic(Player):
     """Class to loop the background music."""
 
