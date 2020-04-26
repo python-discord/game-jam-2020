@@ -4,7 +4,7 @@ from Entity import Entity
 
 class Projectile(Mob):
 
-    def __init__(self, tex, x, y, dx = 0, dy = 0):
+    def __init__(self, tex, x, y, dx = 0, dy = 0, type = 0):
         super().__init__(tex, x, y)
 
         self.change_x = dx
@@ -12,6 +12,7 @@ class Projectile(Mob):
 
         self.life = 600
         self.damage = 1
+        self.type = type
     
     def update(self):
         
