@@ -55,6 +55,7 @@ class PlayAsClient(Base):
 
     def connect(self):
         network_thread, receive, send = run(self.ip)
+        self.display.processes.append(network_thread)
         status = receive.get()["status"]
         if status == 0:
             # goto lobby

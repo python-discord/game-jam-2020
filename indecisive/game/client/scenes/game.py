@@ -49,10 +49,16 @@ class Game(Base):
         self.city5_ui = [arcade.SpriteList(), []]
         self.unit_ui = [arcade.SpriteList(), []]
         self.settler_ui = [arcade.SpriteList(), []]
-        self.current_ui = [arcade.SpriteList(), []]
         self.empty_ui = [arcade.SpriteList(), []]
         self.selectors = [arcade.SpriteList(), [lambda: None, lambda: None, lambda: None, lambda: None]]
-        self.top_ui = [arcade.SpriteList(), [], dict()]  # list of sprite, list of text kwargs, dict of text indexs
+        self.current_ui = [arcade.SpriteList(), []]
+
+        self.top_ui = [arcade.SpriteList(), [], dict()]  # list of sprite, list of text kwargs, dict of text indexes
+
+        self.victory_screen = [arcade.SpriteList(), []]
+        self.victory_ui = [arcade.SpriteList(), []]
+
+        self.end = True
 
         with open("data/units.json") as file:
             self.unit_types = json.load(file)
@@ -84,10 +90,13 @@ class Game(Base):
             self.grid.draw()
 
             self.ui_background.draw()
-            self.current_ui[0].draw()
             self.top_ui[0].draw()
             for text in self.top_ui[1]:
                 arcade.draw_text(**text)
+            self.victory_screen[0].draw()
+            for text in self.victory_screen[1]:
+                arcade.draw_text(**text)
+            self.current_ui[0].draw()
 
     def update(self, delta_time: float) -> None:
         self.sceneTime += delta_time
@@ -120,8 +129,16 @@ class Game(Base):
                 elif data["type"] == "turn":
                     self.turn = data["data"]
                     self.top_ui[1][self.top_ui[2]["currentTurn"]]["text"] = f"Current turn: {self.players[self.turn]['name']}"
+                elif data["type"] == "victory":
+                    self.victory(data["data"])
                 else:
                     print(f"SCREAMS IN BRAILLE: {data}")
+
+    def victory(self, winner):
+        self.display.change_scenes("victory", self.players[winner]['name'])
+        for process in self.display.processes:
+            process.terminate()
+        self.display.processes.clear()
 
     # INITIAL DOWNLOAD
     def initialise(self):
@@ -136,7 +153,6 @@ class Game(Base):
                 ready[1] = True
             else:
                 self.receive_queue.put(data)
-        print(self.world)
         self.dim = self.world["dim"]
         self.setup_world()
         self.setup_ui()

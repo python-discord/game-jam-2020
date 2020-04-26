@@ -23,11 +23,12 @@ class PlayAsServer(Base):
     def update(self, delta_time: float) -> None:
         self.sceneTime += delta_time
         network_thread, receive, send = run(socket.gethostbyname(socket.gethostname()))
-        server_run(socket.gethostbyname(socket.gethostname()))
+        game_process, game_network_process = server_run(socket.gethostbyname(socket.gethostname()))
+
+        self.display.processes.extend([network_thread, game_process, game_network_process])
 
         status = receive.get()["status"]
         connection_number = receive.get()["data"]
-        print(connection_number)
         self.display.change_scenes("lobby", network_thread, receive, send, connection_number, host=True)
 
     def draw(self):

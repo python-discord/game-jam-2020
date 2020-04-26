@@ -15,6 +15,8 @@ class Game:
         with open("data/cities.json") as file:
             self.city_types = json.load(file)
 
+        self.lost = None
+
     def start(self):
         starting = True
         while starting:
@@ -54,9 +56,12 @@ class Game:
 
     def next_turn(self):
         self.turn += 0
+        if self.lost is not None and self.turn == self.lost:
+            self.turn += 1
         if self.turn >= len(self.players):
             self.turn = 0
         self.send_queue.put({"type": "turn", "data": self.turn})
+        self.check_victory()
 
     def generate_map(self, x=33, y=11):
         world = {
@@ -64,7 +69,7 @@ class Game:
             "units": [],
             "dim": [x, y]
         }
-        for i in range(3):
+        for i in range(1):
             # noinspection PyTypeChecker
             world["cities"].append({
                 "loc": [i * 11 + 5, 5],
@@ -102,6 +107,7 @@ class Game:
             print("Attack failed")
 
     def attack_city(self, data):
+        print(self.world["units"])
         attacking = self.world["units"][data["unit_id"]]
         defending = self.world["cities"][data["attack"]]
         attack = random.randint(1, 101) + self.unit_types[attacking["type"]]["base_attack"]
@@ -109,9 +115,9 @@ class Game:
         print(defending["health"])
         if defending["health"] <= 0:
             self.send_queue.put({"type": "killCity", "data": data["attack"]})
-            self.world["units"][data["attack"]] = None
             self.send_queue.put({"type": "moveUnit", "data": data})
             self.world["cities"][data["attack"]] = None
+            self.check_victory()
         else:
             print("Attack failed")
 
@@ -122,6 +128,19 @@ class Game:
         health = city["health"]/city["max_health"]
         city["max_health"] = self.city_types["health"][city["level"]]
         city["health"] = health * city["max_health"]
+
+    def check_victory(self):
+        lost = [True, True, True]
+        for city in self.world["cities"]:
+            if city is None:
+                continue
+            else:
+                lost[city["owner"]] = False
+        print(lost)
+        if sum(lost) == 2:
+            self.send_queue.put({"type": "victory", "data": lost.index(False)})
+        elif sum(lost) == 1:
+            self.lost = lost.index(True)
 
 
 def run(receive: multiprocessing.Queue, send: multiprocessing.Queue):

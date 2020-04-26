@@ -10,6 +10,7 @@ class Display(arcade.Window):
         arcade.set_background_color((255, 255, 255))
         self.scene = "loading"
         self.scenes = dict()
+        self.processes = []
 
     def setup(self):
         self.scenes["loading"] = LoadingScreen(self)
@@ -19,13 +20,13 @@ class Display(arcade.Window):
         self.scenes["playClient"] = PlayAsClient(self)
         self.scenes["playServer"] = PlayAsServer(self)
         self.scenes["game"] = Game(self)
+        self.scenes["victory"] = Victory(self)
 
     def change_scenes(self, scene: str, *args, **kwargs):
         self.scenes[scene].reset(*args, **kwargs)
         self.scene = scene
 
     def on_draw(self):
-
         arcade.start_render()
         self.scenes[self.scene].draw()
 
@@ -37,6 +38,11 @@ class Display(arcade.Window):
 
     def on_key_press(self, key, modifiers):
         self.scenes[self.scene].key_press(key, modifiers)
+
+    def on_close(self):
+        for process in self.processes:
+            process.terminate()
+        arcade.close_window()
 
 
 def main():
