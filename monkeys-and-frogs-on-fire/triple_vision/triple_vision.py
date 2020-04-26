@@ -1,5 +1,5 @@
-import time
 import random
+import time
 
 import arcade
 
@@ -59,9 +59,8 @@ class TripleVision(arcade.View):
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
         self.cursor_manager = CursorManager(self, self.player)
-        self.sound_manager = SoundtrackManager()
-        self.sound_manager.add_sound("Monplaisir_-_06_-_Level_3.mp3", max_volume=0.1)
-        self.sound_manager.toggle_next_sound()
+        self.sound_manager = SoundtrackManager(["Monplaisir_-_06_-_Level_3.mp3"])
+        self.sound_manager.setup()
 
         self.map = Map(self, s.MAP_SIZE)
         self.map.setup()
@@ -192,6 +191,6 @@ class TripleVision(arcade.View):
             self.player.update_health_bars(delta_time)
 
         SoundManager.update(self.slow_down or self.time_slow_ability)
-        self.sound_manager.update(delta_time)
+        self.sound_manager.update()
         self.cursor_manager.update()
         self.player.update_health_bars(delta_time)

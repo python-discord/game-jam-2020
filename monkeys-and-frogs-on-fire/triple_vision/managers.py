@@ -4,14 +4,14 @@ from typing import Optional, Tuple
 import arcade
 
 from triple_vision import Settings as s
-from triple_vision.entities import DamageIndicator, States
-from triple_vision.networking import client
+from triple_vision import Tile
 from triple_vision.entities import (
     ChasingEnemy,
     Enemies,
     StationaryEnemy
 )
-from triple_vision import Tile
+from triple_vision.entities import DamageIndicator, States
+from triple_vision.networking import client
 
 
 class GameManager:

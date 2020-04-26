@@ -8,7 +8,6 @@ from triple_vision import Settings as s
 from triple_vision.entities import Spike
 from triple_vision.utils import tile_to_pixels
 
-
 random.seed(1)
 
 
