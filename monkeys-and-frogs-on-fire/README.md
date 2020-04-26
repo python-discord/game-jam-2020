@@ -33,8 +33,9 @@ I think that's about it for our current game implementation.
 - Your player moves with the WASD keys.
 
 ### Attacking
-- Your player will fire a spell when clicking on the left mouse button, the spell will move to the direction your cursor will point on while clicking.
+- Your player will fire a spell when you click on the left mouse button, the spell will move to the direction your cursor will point on while clicking. hold the left mouse button to shoot a charging spell which causes more damage and knockback!
 - Your player will activate his powerup / ability when you press the right mouse button.
+
 
 ### Entities
 - You and all moving sprites can walk on the floor.
