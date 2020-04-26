@@ -4,9 +4,14 @@ Rather than the traditional rows and columns this game is played on three diagon
 
 The game can be played with two players or three depending on the board configuration
 
-Hex board:
+Hex board (2 player):  
+![hex board](hex_board.PNG)  
+Tri board (3 player):  
+![Tri board](tri_board.PNG)  
 
- 
+###Game rules
+TriChess uses the same pieces as regular chess with familiar but different movesets
+![Tri board](pieces.PNG)
  
 ###Installation
 Simply git clone the project with:

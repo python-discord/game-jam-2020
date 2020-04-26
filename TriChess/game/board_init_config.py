@@ -12,7 +12,12 @@ player_flag = {'hex2': [True, True],
                'tri3': [True, True, True]}
 
 
-def gen_hex2_grid_map(cell_width: int) -> Dict[(int, int, bool), 'TriCell']:
+def gen_hex2_grid_map(cell_width: int):
+    """
+    generates grid map for hex board
+    :param cell_width: pixel length of the width of triangular grid cell
+    :return:  A dictionary of TriCell objects where the keys are the grid coordinate (x, y. r)
+    """
     def is_valid_hex2_cell(x: int, y: int, r: bool) -> bool:
         if r and x + y == board_size['hex2'] - 1:
             return False
@@ -29,7 +34,12 @@ def gen_hex2_grid_map(cell_width: int) -> Dict[(int, int, bool), 'TriCell']:
     return hex2_grid_map
 
 
-def gen_tri3_grid_map(cell_width: int) -> Dict[(int, int, bool), 'TriCell']:
+def gen_tri3_grid_map(cell_width: int):
+    """
+    generates grid map for Tri board
+    :param cell_width: pixel length of the width of triangular grid cell
+    :return:  A dictionary of TriCell objects where the keys are the grid coordinate (x, y. r)
+    """
     def is_valid_trichess3_cell(x: int, y: int, r: bool) -> bool:
         if (x, y, r) in trichess3_good_list:
             return True
