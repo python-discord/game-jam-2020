@@ -329,11 +329,11 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                     self.right_button_active = self.right
                 else:
                     if self.left:
-                        self.notes_list.append(ShapeManager.create_shape(-1))
+                        self.notes_list.append(ShapeManager.create_shape(-1, self.main.size))
                     elif self.center:
-                        self.notes_list.append(ShapeManager.create_shape(0))
+                        self.notes_list.append(ShapeManager.create_shape(0, self.main.size))
                     elif self.right:
-                        self.notes_list.append(ShapeManager.create_shape(1))
+                        self.notes_list.append(ShapeManager.create_shape(1, self.main.size))
 
             else:
                 global sample_sec, sample_list, prev

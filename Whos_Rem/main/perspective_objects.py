@@ -7,10 +7,9 @@ from .display import ColourBlend as cb
 
 class Shape:
 
-    screen_width_center = pyautogui.size().width // 2
-
     def __init__(self, x: "end position relative to center screen",
                  y: "starting y height, ends at 0",
+                 screen_width_center: "screen_width // 2",
                  scale_size: "final size",
                  dims: "ratio width:height, list length 2",
                  dist: "starting 'dist' from screen, int",
@@ -24,6 +23,7 @@ class Shape:
         """
         self.end_x = x
         self.start_y = y
+        self.screen_width_center = screen_width_center
         self.scale_size = scale_size
         self.dims = dims
         self.dist = self.start_dist = dist
@@ -84,13 +84,14 @@ class ShapeManager:
         return shapes
 
     @staticmethod
-    def create_shape(note, total_notes=3, colour=(255, 0, 0), screen_width=1920) -> Shape:
+    def create_shape(note, screen_size, total_notes=3, colour=(255, 0, 0)) -> Shape:
+        screen_width, screen_height = screen_size
         final_spacing = int(screen_width * 0.4)
         central_spacing = final_spacing // (total_notes - 1) if total_notes != 1 else 0
         width = int(central_spacing * 0.55)
         x_pos = int(central_spacing * note)
-        y_pos = int(pyautogui.size().height * 0.8)
-        new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 256, colour, 2)
+        y_pos = int(screen_height * 0.8)
+        new_shape = Shape(x_pos, y_pos, screen_width // 2, width, [1, 0.5], 256, colour, 2)
 
         return new_shape
 
