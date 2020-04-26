@@ -43,10 +43,10 @@ class StartMenuView(arcade.View):
         self.screen_center_x = int(self.window.get_size()[0] / 2)
         self.screen_center_y = int(self.window.get_size()[1] / 2)
 
-        game_title_text = 'Three of a Kind'
+        game_title_text = 'Flimsy Billy\'s Coin Dash 3: Super Duper Tag 3 Electric Tree'
         self.title_text = arcade.draw_text(game_title_text, self.screen_center_x, self.screen_center_y + 150,
                                                   anchor_x='center',
-                                                  anchor_y='center', color=arcade.csscolor.WHITE, font_size=64)
+                                                  anchor_y='center', color=arcade.csscolor.WHITE, font_size=32)
         play_text = 'Play'
         self.play_button = play_text_sprite = arcade.draw_text(play_text, self.screen_center_x, self.screen_center_y,
                                                                anchor_x='center', anchor_y='center',
