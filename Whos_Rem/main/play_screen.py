@@ -264,6 +264,14 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             scale=1,
             image_height=self.HEIGHT,
             image_width=self.WIDTH)
+        self.score_pic = arcade.Sprite(filename=f"{self.BASE_DIR}/main/Resources/game_play/Score.png",
+                                       scale=0.75)
+        self.notes_hit_pic = arcade.Sprite(filename=f"{self.BASE_DIR}/main/Resources/game_play/Notes-hit.png",
+                                           scale=0.5)
+        self.notes_missed_pic = arcade.Sprite(filename=f"{self.BASE_DIR}/main/Resources/game_play/Notes-missed.png",
+                                              scale=0.5)
+        self.combo_pic = arcade.Sprite(filename=f"{self.BASE_DIR}/main/Resources/game_play/Combo.png",
+                                       scale=0.75)
         self.delta_time = 0
 
     def setup(self, _track):
@@ -439,21 +447,28 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         pos = self.audio.player.get_position()
         lower_x, lower_y = self.WIDTH / 1.1 + self.WIDTH / 150, self.HEIGHT / 20
         height, width = self.HEIGHT - self.HEIGHT / 7, self.WIDTH / 18
+        #  todo  add progress bar
 
-        # Black outline
-        arcade.draw_line(start_x=lower_x,
-                         start_y=lower_y,
-                         end_x=lower_x + 300,
-                         end_y=height,
-                         line_width=width,
-                         color=arcade.color.BLACK)
-        # Filled
-        arcade.draw_line(start_x=lower_x + 5,
-                         start_y=lower_y,
-                         end_x=lower_x + 300 - 5,
-                         end_y=height * pos,
-                         line_width=width,
-                         color=arcade.color.CRIMSON)
+        # Labels
+        self.score_pic.center_x = self.combo_pic.center_x = self.notes_hit_pic.center_x \
+            = self.notes_missed_pic.center_x = (self.WIDTH / 7.5)
+        self.score_pic.center_y, self.combo_pic.center_y,\
+        self.notes_hit_pic.center_y, self.notes_missed_pic.center_y = \
+            (self.HEIGHT / 2) + ((self.HEIGHT / 10) * 1.5), (self.HEIGHT / 2) + ((self.HEIGHT / 10) * 3),\
+            (self.HEIGHT / 2) + ((self.HEIGHT / 10) * -1), (self.HEIGHT / 2) + ((self.HEIGHT / 10) * -2),
+
+        self.score_pic.draw()
+        self.combo_pic.draw()
+        self.notes_hit_pic.draw()
+        self.notes_missed_pic.draw()
+
+        # Actual score
+        arcade.draw_text(f"{self.score}",
+                         start_x=self.score_pic.center_x - (len(f"{self.score}") * 20),
+                         start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 0.25)),
+                         color=arcade.color.WHITE, align="center", font_size=50)
+
+
 
         if self.paused:
             self.background.alpha = 255
