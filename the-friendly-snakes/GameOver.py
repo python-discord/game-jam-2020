@@ -56,6 +56,7 @@ class GameOver(arcade.View):
 
     def on_mouse_motion(self, x, y, dx, dy):
         if self.play_left + self.restart_button.width + 50 >= x >= self.play_left - 50 and self.play_bottom + self.restart_button.height + 25 >= y >= self.play_bottom - 25:
+            print('True')
             self.draw_restart_button_hover = True
             self.hovering = True
         else:
@@ -103,11 +104,22 @@ class GameOver(arcade.View):
         if self.draw_restart_button_hover:
             if self.clicking:
                 arcade.draw_rectangle_filled(self.screen_center_x, self.screen_center_y, self.restart_button.width + 100, self.restart_button.height + 50, self.click_color)
+                print('Drawing')
             elif self.hovering:
                 arcade.draw_rectangle_filled(self.screen_center_x, self.screen_center_y, self.restart_button.width + 100, self.restart_button.height + 50, self.hover_color)
+                print('Drawing')
 
         self.play_bottom = self.restart_button.bottom
         self.play_left = self.restart_button.left
 
         self.game_over_text.draw()
         self.restart_button.draw()
+
+def main(gm=False):
+    if not gm:
+        window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, 'Help', resizable=True)
+        window.show_view(GameOver())
+        arcade.run()
+
+if __name__ == "__main__":
+    main()

@@ -7,6 +7,8 @@ from GameOver import GameOver
 # help-phosphorus
 # game-development
 
+GAME_OVER = GameOver()
+
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "3 of a kind"
@@ -29,6 +31,9 @@ BOTTOM_VIEWPORT_MARGIN = 128
 TOP_VIEWPORT_MARGIN = 0
 
 CAMERA_FOLLOW_SPEED = 0.2
+
+FIRST_TIME = 0
+SECOND_TIME = 1
 
 
 def load_texture_pair(filename):
@@ -104,10 +109,19 @@ class Potion(arcade.Sprite):
 
 
 class MyGame(arcade.View):
-    def __init__(self):
+    def __init__(self, run, previous_time):
         super().__init__()
 
         self.window = None
+
+        self.game_timer = 0
+        self.previous_time = previous_time
+        self.run = run
+        self.drew_game_over = False
+
+        self.music = arcade.load_sound('Music/The 16Bit Cowboy.wav')
+        self.music_length = 59
+        self.musicdt = 0
 
         self.player_list = None
         self.background_list = None
@@ -120,6 +134,7 @@ class MyGame(arcade.View):
         self.coin_secret_list = None
         self.ladder_list = None
         self.ignore_list = None
+        self.portal_list = None
 
         self.player_sprite = None
 
@@ -146,6 +161,7 @@ class MyGame(arcade.View):
         self.draw_potion_2_tip = False
         self.draw_potion_3_tip = False
         self.draw_secret_tip = False
+        self.draw_portal_tip = False
 
         self.delta_track = 0
 
@@ -174,12 +190,18 @@ class MyGame(arcade.View):
 
         self.window = arcade.get_window()
 
+        self.game_timer = 0
+        self.drew_game_over = False
+
+        self.music.play(volume=0.01)
+
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
         self.coin_2_list = arcade.SpriteList()
         self.coin_5_list = arcade.SpriteList()
         self.potion_list = arcade.SpriteList()
+        self.portal_list = arcade.SpriteList()
 
         self.coin_counter = 0
         self.delta_track = 0
@@ -218,6 +240,13 @@ class MyGame(arcade.View):
         potion.center_x = 89 * 96 + 48
         potion.center_y = 30 * 96 - 48
         self.potion_list.append(potion)
+
+        path = 'images/items/Portal'
+        frames_in_anim = 9
+        portal = Potion(path, frames_in_anim)
+        portal.center_x = 71 * 96 + 48
+        portal.center_y = 29 * 96 + 48
+        self.portal_list.append(portal)
 
         map_name = 'tmx_maps/map2.tmx'
         background_layer_name = 'Background'
@@ -265,6 +294,7 @@ class MyGame(arcade.View):
         self.wall_list.draw(filter=gl.GL_NEAREST)
         self.ladder_list.draw(filter=gl.GL_NEAREST)
         self.potion_list.draw(filter=gl.GL_NEAREST)
+        self.portal_list.draw(filter=gl.GL_NEAREST)
         self.player_list.draw(filter=gl.GL_NEAREST)
         self.coin_list.draw(filter=gl.GL_NEAREST)
         self.coin_2_list.draw(filter=gl.GL_NEAREST)
@@ -347,9 +377,15 @@ class MyGame(arcade.View):
             arcade.draw_text(tip, 81 * 96 + 48, 4 * 96 - 48, arcade.csscolor.WHITE, 32,
                              font_name='fonts/RobotoMono-Regular.ttf')
 
+        if self.draw_portal_tip:
+            tip = 'Press E to Enter'
+            arcade.draw_text(tip, 69 * 96 + 48, 32 * 96 - 48, arcade.csscolor.WHITE, 32,
+                             font_name='fonts/RobotoMono-Regular.ttf')
+
         self.super_lava.draw(filter=gl.GL_NEAREST)
         self.ladder_list.draw(filter=gl.GL_NEAREST)
         self.potion_list.draw(filter=gl.GL_NEAREST)
+        self.portal_list.draw(filter=gl.GL_NEAREST)
         self.player_list.draw(filter=gl.GL_NEAREST)
         self.coin_list.draw(filter=gl.GL_NEAREST)
         self.coin_2_list.draw(filter=gl.GL_NEAREST)
@@ -358,6 +394,16 @@ class MyGame(arcade.View):
 
         coin_text = f'Coins: {self.coin_counter}'
         arcade.draw_text(coin_text, self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 50, arcade.csscolor.BLACK, 32, font_name='fonts/RobotoMono-Regular.ttf')
+
+        timer_text = f'Time: {int(self.game_timer)}'
+        arcade.draw_text(timer_text, self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 100, arcade.csscolor.BLACK,
+                         32, font_name='fonts/RobotoMono-Regular.ttf')
+
+        if self.previous_time > 0:
+            timer_text = f'Previous Time: {int(self.previous_time)}'
+            arcade.draw_text(timer_text, self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 150,
+                             arcade.csscolor.BLACK,
+                             32, font_name='fonts/RobotoMono-Regular.ttf')
 
         if self.should_be_in_menu:
             l, w, b, h = arcade.get_viewport()
@@ -507,6 +553,12 @@ class MyGame(arcade.View):
                     arcade.set_viewport(self.view_left, self.view_left + SCREEN_WIDTH, self.view_bottom,
                                         self.view_bottom + SCREEN_HEIGHT)
 
+            if self.draw_portal_tip:
+                if key == arcade.key.E:
+                    window = arcade.get_window()
+                    next_game = MyGame(2, self.game_timer)
+                    window.show_view(next_game)
+
         if key == arcade.key.ESCAPE:
             if self.should_be_in_menu:
                 self.should_be_in_menu = False
@@ -530,6 +582,11 @@ class MyGame(arcade.View):
 
     def on_update(self, delta_time):
         self.physics_engine.update()
+        self.game_timer += delta_time
+
+        self.musicdt += delta_time
+        if self.musicdt >= self.music_length:
+            self.music.play(volume=0.01)
 
         self.delta_track += delta_time
         if self.delta_track >= 5:
@@ -654,17 +711,24 @@ class MyGame(arcade.View):
                 self.draw_potion_3_tip = False
 
             # Secret Tip
-            if self.player_sprite.left >= 83 and self.player_sprite.top <= 4 * 96 and self.player_sprite.bottom >= 0:
+            if self.player_sprite.left >= 83 * 96 and self.player_sprite.top <= 4 * 96 and self.player_sprite.bottom >= 0:
                 self.draw_secret_tip = True
             else:
                 self.draw_secret_tip = False
 
-            if len(self.coin_list) + len(self.coin_2_list) + len(self.coin_5_list) == 0:
-                game_over = GameOver()
-                self.window.show_view(game_over)
+            # Go To Second Part
+            if self.player_sprite.left >= 69 * 96 and self.player_sprite.right <= 74 * 96 and self.player_sprite.top <= 32 * 96 and self.player_sprite.bottom >= 27 * 96:
+                self.draw_portal_tip = True
+            else:
+                self.draw_portal_tip = False
+
+            if self.game_timer >= self.previous_time and self.run == 2 and not self.drew_game_over:
+                window = arcade.get_window()
+                window.show_view(GAME_OVER)
 
         self.player_list.update_animation()
         self.potion_list.update_animation()
+        self.portal_list.update_animation()
 
         self.view_left = int(arcade.lerp(self.view_left, self.player_sprite.center_x - SCREEN_WIDTH / 2, CAMERA_FOLLOW_SPEED))
         self.view_bottom = int(arcade.lerp(self.view_bottom, self.player_sprite.center_y - SCREEN_HEIGHT / 2, CAMERA_FOLLOW_SPEED))
@@ -673,9 +737,10 @@ class MyGame(arcade.View):
             arcade.set_viewport(self.view_left, self.view_left + SCREEN_WIDTH, self.view_bottom, self.view_bottom + SCREEN_HEIGHT)
 
 
-def main():
+def main(gm=False):
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=True)
     start_menu = StartMenuView()
+    game = MyGame(2, 5)
     window.show_view(start_menu)
     arcade.run()
 
