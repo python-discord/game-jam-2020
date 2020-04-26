@@ -65,11 +65,9 @@ def game_room(teammates: list, ports: int, _host_: str) -> None:
     while True:
         data, address = udp.recvfrom(1024)
         data = data.split(b"||||")
-        print(sent_player)
 
         if len(data) > 1:
             data = loads(data[0])
-            print(data)
             if data[0] in sent_player:
                 if wall_pos > 650:
                     pitch = False
@@ -95,7 +93,7 @@ def game_room(teammates: list, ports: int, _host_: str) -> None:
                 udp.sendto(
                     dumps(pipe[data[0]] + [wall_pos]) + b"||||", address,
                 )
-                pipe[data[1]] = []
+                pipe[data[0]] = []
             else:
                 udp.sendto(dumps([":server:", wall_pos]) + b"||||", address)
 

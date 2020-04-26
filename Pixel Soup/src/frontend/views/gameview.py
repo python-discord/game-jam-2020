@@ -146,7 +146,7 @@ class GameView(arcade.View):
         self.forward = forward
         self.feedback = feedback
 
-        arcade.schedule(self.stream, 2)
+        arcade.schedule(self.stream, 0.2)
 
     def on_draw(self):
         """
