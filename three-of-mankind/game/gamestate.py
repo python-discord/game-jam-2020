@@ -33,15 +33,7 @@ class GameState:
         self.view_left = 0
         self.view_bottom = 0
         self.game = game
-
-        self.level_geometry = arcade.SpriteList()  # Have collisions
-        self.level_objects = arcade.SpriteList()  # Doesn't have collision
-        self.colored_geometry = {
-            "red": arcade.SpriteList(),
-            "green": arcade.SpriteList(),
-            "blue": arcade.SpriteList(),
-            "white": arcade.SpriteList(),
-        }
+        self.level = 0
 
         self.player = Player(scale=0.99)
         for tile in (
@@ -63,21 +55,6 @@ class GameState:
         )
 
         self.dash_emitters = []
-
-    def load_level(self, level_id: int) -> None:
-        self.level_objects = arcade.SpriteList()
-        self.level_geometry = arcade.SpriteList()
-        self.danger = arcade.SpriteList()
-        self.level = 0
-
-        self.player = Player(scale=0.99)
-        for tile in (tiles.player_white, tiles.player_red, tiles.player_green, tiles.player_blue):
-            self.player.append_texture(tile.texture)
-        self.player.set_texture(0)
-
-        self.load_level(self.level)
-
-        self.engine = arcade.PhysicsEnginePlatformer(self.player, self.level_geometry, GRAVITY)
 
     def load_level(self, level_id: int) -> bool:
         try:
