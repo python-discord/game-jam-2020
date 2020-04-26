@@ -73,7 +73,7 @@ class Level:
 
     def setup(self):
     
-        self.generate_level(self.player.x, self.player.y)
+        self.generate_level(self.player.center_x, self.player.center_y)
         # self.level_gen.rooms_to_draw.pop()
 
         self.title_sprite = Tile(Textures.TITLE_TEXTURE, 0, 0, False)
@@ -93,6 +93,7 @@ class Level:
             self.difficulty += 1
             self.reset_level()
             self.generate_level(self.player.center_x, self.player.center_y)
+            self.reset = False
         
         remainder = self.player.health if self.player.health > 0 else 0
         for i, health in enumerate(self.health_bar):
@@ -166,17 +167,17 @@ class Level:
     def reset_level(self):
     
         self.tile_list = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=32, is_static=True)
-        self.entities = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=64)
+        # self.entities = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=64)
         self.tiles = {}
         # self.engine.tiles = self.tile_list
         # self.physics_engine.platforms = self.tile_list
 
-        self.add_entity_to_list(self.player, self.entities)
+        # self.add_entity_to_list(self.player, self.entities)
 
-        # for entity in self.entities:
-        #     # if entity == self.player:
-        #     #     continue
-        #     entity.removed = True
+        for entity in self.entities:
+            if entity == self.player:
+                continue
+            entity.removed = True
 
         # self.engine.update()
         # self.add_entity_to_list(self.player, self.entities)
@@ -186,3 +187,5 @@ class Level:
         self.level_gen.rooms_to_draw = []
         self.level_gen.generating = False
         self.level_gen.drawing = False
+        self.level_gen.curr_generate_speed = 0
+        self.level_gen.curr_draw_speed = 0
