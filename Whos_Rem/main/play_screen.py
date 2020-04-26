@@ -158,23 +158,41 @@ class ScoreScreen:
                           center_y=cls.HEIGHT / 1.75,
                           scale=1))
 
+        # Score
         cls.score_sprite_list.append(
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Total-score.png",
                           center_x=cls.WIDTH / 2.75,
                           center_y=cls.HEIGHT / 2.5,
                           scale=0.5))
+        arcade.draw_text(f"{score}",
+                         start_x=cls.WIDTH / 2 - (len(f"{score}") * 15),
+                         start_y=cls.HEIGHT / 2.5,
+                         color=cb.brightness(arcade.color.WHITE, brightness),
+                         align="center", font_size=50)
 
+        # Total notes
         cls.score_sprite_list.append(
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Total-notes.png",
                           center_x=cls.WIDTH / 2.75,
                           center_y=cls.HEIGHT / 3.25,
                           scale=0.50))
+        arcade.draw_text(f"{notes_total}",
+                         start_x=cls.WIDTH / 2 - (len(f"{notes_total}") * 15),
+                         start_y=cls.HEIGHT / 3.25,
+                         color=cb.brightness(arcade.color.WHITE, brightness),
+                         align="center", font_size=50)
 
+        # Notes Hit
         cls.score_sprite_list.append(
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Notes-hit.png",
                           center_x=cls.WIDTH / 2.75,
                           center_y=cls.HEIGHT / 4.0,
                           scale=0.50))
+        arcade.draw_text(f"{notes_hit}",
+                         start_x=cls.WIDTH / 2 - (len(f"{notes_hit}") * 15),
+                         start_y=cls.HEIGHT / 4.0,
+                         color=cb.brightness(arcade.color.WHITE, brightness),
+                         align="center", font_size=50)
 
         for sprite in cls.score_sprite_list:
             sprite.alpha = int(255 * brightness)
