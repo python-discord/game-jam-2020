@@ -24,6 +24,9 @@ def clamp(x, lower_limit, upper_limit):
         x = upper_limit
     return x
 
+def manhattan_dist(x0, y0, x1, y1):
+    return abs(x0 - x1) + abs(y0 - y1)
+
 def create_hit_box(width, height):
     w2 = width / 2
     h2 = height / 2
