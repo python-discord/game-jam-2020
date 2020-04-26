@@ -8,8 +8,8 @@ from datetime import timedelta
 from .perspective_objects import ShapeManager
 
 
-TESTING = False
-SAMPLING = True
+TESTING = True
+SAMPLING = False
 
 if SAMPLING:
     with open('track_1.json', 'w+') as file:
@@ -316,11 +316,12 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                     self.notes_list.append(ShapeManager.create_shape(1))
 
             else:
-                global sample_sec, sample_list
+                global sample_sec, sample_list, prev
                 section, frame = divmod(next(self.audio.frame_count), 16)
                 if section != prev:
                     sample_list.append(sample_sec)
                     sample_sec = []
+                    prev = section
                 sample_sec.append((self.left_button_active, self.middle_button_active, self.right_button_active))
 
     def on_start(self):
@@ -338,7 +339,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         """ On game end """
         if SAMPLING:
             with open('track_1.json', 'w+') as file:
-                json.dump(sample_list, file)
+                json.dump(sample_list, file, indent=4)
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
