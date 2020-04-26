@@ -8,7 +8,11 @@ from datetime import timedelta
 from .perspective_objects import ShapeManager
 
 
-TESTING = True
+TESTING = False
+SAMPLING = True
+
+if SAMPLING:
+    track_file = open('track_1.json', 'w+')
 
 
 class Audio:
@@ -63,7 +67,7 @@ class Audio:
     @classmethod
     def get_notes(cls, frame):
         section, frame = divmod(frame, cls.FPS)
-        print(section, frame, "Track time:", timedelta(milliseconds=cls.player.get_time()),)
+        #print(section, frame, "Track time:", timedelta(milliseconds=cls.player.get_time()),)
         return cls.notes[section][frame]
 
 
@@ -209,6 +213,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
     # settings
     no_fail = True  # no matter how many times u miss you're not gonna loose
     BASE_DIR = os.getcwd()
+    note_offset = 3.5
 
     # setup
     key_binds = None
@@ -255,7 +260,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         :return:
         """
 
-        arcade.schedule(self.on_note_change, 1 / 16)
+        arcade.schedule(self.on_note_change, 1 / (16 * self.note_offset))
         self.audio._setup(_track)
         self.pause_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
         self.score_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
@@ -291,19 +296,25 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
 
         self.active = self.audio.player.is_playing()
         if self.active:
-            self.left, self.center, self.right = self.audio.get_notes(next(self.audio.frame_count))
+            if not SAMPLING:
+                self.left, self.center, self.right = self.audio.get_notes(next(self.audio.frame_count))
 
-            if TESTING:
-                self.left_button_active = self.left
-                self.middle_button_active = self.center
-                self.right_button_active = self.right
+                if TESTING:
+                    self.left_button_active = self.left
+                    self.middle_button_active = self.center
+                    self.right_button_active = self.right
 
-            if self.left:
-                self.notes_list.append(ShapeManager.create_shape(-1))
-            elif self.center:
-                self.notes_list.append(ShapeManager.create_shape(0))
-            elif self.right:
-                self.notes_list.append(ShapeManager.create_shape(1))
+                if self.left:
+                    self.notes_list.append(ShapeManager.create_shape(-1))
+                elif self.center:
+                    self.notes_list.append(ShapeManager.create_shape(0))
+                elif self.right:
+                    self.notes_list.append(ShapeManager.create_shape(1))
+
+            else:
+
+
+
 
     def on_start(self):
         self.started = True
@@ -363,6 +374,9 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         if count_down is not None:
             count_down.draw()
 
+        # notes
+        ShapeManager.manage_shapes(self.notes_list, self.main.brightness, speed=2)
+
         # White box behind the keys
         arcade.draw_rectangle_filled(
             self.WIDTH / 2,
@@ -411,10 +425,6 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                          line_width=width,
                          color=arcade.color.CRIMSON)
 
-        # notes
-        ShapeManager.manage_shapes(self.notes_list, self.main.brightness)
-
-        # Shows Pause menu because i suck?
         if self.paused:
             self.background.alpha = 255
             self.background.draw()
