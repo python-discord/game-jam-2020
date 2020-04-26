@@ -176,8 +176,20 @@ class Player(LivingEntity, MovingSprite):
             SoundManager.play_sound("empty_gun.wav")
             return
 
-        if len(self.mana_bar) == 0:
-            # TODO empty mana sound
+        to_shoot = False
+        if charge >= 90 and len(self.mana_bar) >= 3:
+            to_shoot = True
+            self.mana_bar.clear(3)
+        elif charge >= 70 and len(self.mana_bar) >= 2:
+            to_shoot = True
+            self.mana_bar.clear(2)
+        elif charge >= 50 and len(self.mana_bar) >= 1:
+            to_shoot = True
+            self.mana_bar.remove_filling_part()
+        else:
+            to_shoot = True
+
+        if not to_shoot:
             return
 
         bullet = ChargedLaserProjectile(
@@ -191,12 +203,6 @@ class Player(LivingEntity, MovingSprite):
         bullet.play_activate_sound()
         self.view.game_manager.player_projectiles.append(bullet)
         self.last_shot = time.time()
-        if charge >= 90:
-            self.mana_bar.clear(3)
-        elif charge >= 70:
-            self.mana_bar.clear(2)
-        elif charge >= 50:
-            self.mana_bar.remove_filling_part()
 
         self.state = States.ATTACKING_RANGED
 
