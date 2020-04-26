@@ -81,7 +81,8 @@ class TriTess(arcade.Window):
         Called when the user presses a mouse button.
         """
         self.check_mouse_press_for_buttons(coord_x, coord_y)
-        self.trigrid.on_mouse_press(coord_x, coord_y, button, modifiers)
+        if self.trigrid is not None:
+            self.trigrid.on_mouse_press(coord_x, coord_y, button, modifiers)
         self.on_draw()
 
     def check_mouse_press_for_buttons(self, x, y):
