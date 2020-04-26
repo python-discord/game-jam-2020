@@ -69,6 +69,8 @@ class MobHandler:
         for enemy in reversed(self.enemy_list):
             distance = self.get_distance(enemy)
             enemy.collisions.update()
+            if distance < 100 :
+                self.player.health -= 1
             if (distance < 300):
                 enemy.speed = Config.MONSTER_MOVEMENT_SPEED
                 try:
