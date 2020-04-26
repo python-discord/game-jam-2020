@@ -90,7 +90,7 @@ class AnimatedEntity(arcade.Sprite):
             self.e_type = T_VACUUM
             self.update_rate = UR_VACUUM
             self.numberFrames = F_VACUUM
-            main_path = PATH['img'] / 'sprite' / 'vacuum'
+            main_path = PATH['img'] / 'sprite' / 'fire'
 
         if e_type > 7:
             self.character_face_direction = TL

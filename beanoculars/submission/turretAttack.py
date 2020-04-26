@@ -29,6 +29,17 @@ def turretAttack(turret: arcade.sprite, entity_list: arcade.sprite_list, delta_t
         if turret.e_type - 9 == turret.target.e_type:
             turret.target.health -= turret.dmg * DMG_MULTIPLIER
             if turret.e_type == T_SPRAY:
+                dmg_anim_list.append(AnimatedDamage("y_dmg", [turret.target.center_x, turret.target.center_y], 1.5))
+
+            elif turret.e_type == T_LAMP:
+                dmg_anim_list.append(AnimatedDamage("b_dmg", [turret.target.center_x, turret.target.center_y], 1.5))
+
+            elif turret.e_type == T_VACUUM:
+                dmg_anim_list.append(AnimatedDamage("r_dmg", [turret.target.center_x, turret.target.center_y], 1.5))
+
+        else:
+            turret.target.health -= turret.dmg
+            if turret.e_type == T_SPRAY:
                 dmg_anim_list.append(AnimatedDamage("y_dmg", [turret.target.center_x, turret.target.center_y]))
 
             elif turret.e_type == T_LAMP:
@@ -36,17 +47,6 @@ def turretAttack(turret: arcade.sprite, entity_list: arcade.sprite_list, delta_t
 
             elif turret.e_type == T_VACUUM:
                 dmg_anim_list.append(AnimatedDamage("r_dmg", [turret.target.center_x, turret.target.center_y]))
-
-        else:
-            turret.target.health -= turret.dmg
-            if turret.e_type == T_SPRAY:
-                dmg_anim_list.append(AnimatedDamage("y_dmg", [turret.target.center_x, turret.target.center_y], 0.5))
-
-            elif turret.e_type == T_LAMP:
-                dmg_anim_list.append(AnimatedDamage("b_dmg", [turret.target.center_x, turret.target.center_y], 0.5))
-
-            elif turret.e_type == T_VACUUM:
-                dmg_anim_list.append(AnimatedDamage("r_dmg", [turret.target.center_x, turret.target.center_y], 0.5))
 
         if turret.target.health <= 0:
             turret.target.kill()
