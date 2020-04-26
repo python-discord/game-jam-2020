@@ -73,7 +73,7 @@ class Shape:
 class ShapeManager:
 
     @classmethod
-    def manage_shapes(cls, shapes: "list of shape objects", brightness, speed: int = None) -> "list of updated shapes":
+    def manage_shapes(cls, shapes: "list of shape objects", brightness, speed: float = None) -> "list of updated shapes":
         for shape in shapes:
             if shape.removable:
                 shapes.remove(shape)
@@ -87,7 +87,7 @@ class ShapeManager:
     def create_shape(note, total_notes=3, colour=(255, 0, 0), screen_width=1920) -> Shape:
         final_spacing = int(screen_width * 0.4)
         central_spacing = final_spacing // (total_notes - 1) if total_notes != 1 else 0
-        width = int(central_spacing * 0.45)
+        width = int(central_spacing * 0.55)
         x_pos = int(central_spacing * note)
         y_pos = int(pyautogui.size().height * 0.8)
         new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 256, colour, 2)
