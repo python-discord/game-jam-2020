@@ -140,15 +140,14 @@ class GameManager:
         for potion in self.hidden_active_potions:
             potion.on_update(delta_time)
 
-        #SoundManager.update_volumes(1)
         if len(self.enemies) == 0:
             self.view.level += 1
-            #self.view.soundtrack_manager.play_external_sound("assets/audio/sounds/win.wav")
+            self.view.soundtrack_manager.play_external_sound("assets/audio/sounds/win.wav")
             self.view.soundtrack_manager.play_song()  # plays the next soundtrack
             self.view.create_level()
         elif not self.view.player.is_alive:
             self.view.level += 0
-            #self.view.soundtrack_manager.play_external_sound("assets/audio/sounds/death.wav")
+            self.view.soundtrack_manager.play_external_sound("assets/audio/sounds/death.wav")
             self.view.soundtrack_manager.play_song()  # plays the next soundtrack
             self.view.create_level()
 
