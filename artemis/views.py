@@ -9,9 +9,10 @@ from game import Game
 from multiplayer import MultiplayerGame
 from scores import add_award, get_awards
 from settings import (
-    get_sfx_volume, get_music_volume, set_sfx_volume, set_music_volume
+    get_music_volume, get_sfx_volume, set_music_volume, set_sfx_volume
 )
-from ui import Achievement, Award, IconButton, View, ViewButton, Slider, music
+from sound import music
+from ui import Achievement, Award, IconButton, Slider, View, ViewButton
 
 
 # keep track of restarts for award "The perfect spawn"
@@ -228,34 +229,46 @@ class Settings(View):
         self.buttons.append(ViewButton(self, x, y, 'home', Menu))
 
     def on_draw(self):
+        """Draw and update text."""
         super().on_draw()
         x = WIDTH / 2
         y = HEIGHT / 2 + 102.5
         colour = (255, 255, 255)
         arcade.draw_text(
-            'Settings', x, y, colour, 30, anchor_x='center', anchor_y='center'
+            'Settings', x, y, colour, 30, anchor_x='center',
+            anchor_y='center', font_name=FONT.format(type='b')
         )
         y -= 40
         sfx_vol = self.sfx_slider.value * 100
         arcade.draw_text(
-            f'SFX Volume - {sfx_vol:.0f}%', x, y, colour, 20, anchor_x='center',
-            anchor_y='center'
+            f'SFX Volume - {sfx_vol:.0f}%', x, y, colour, 20,
+            anchor_x='center', anchor_y='center',
+            font_name=FONT.format(type='r')
         )
         y -= 70
         music_vol = self.music_slider.value * 100
         arcade.draw_text(
-            f'Music Volume - {music_vol:.0f}%', x, y, colour, 20, anchor_x='center',
-            anchor_y='center'
+            f'Music Volume - {music_vol:.0f}%', x, y, colour, 20,
+            anchor_x='center', anchor_y='center',
+            font_name=FONT.format(type='r')
         )
 
     def set_sfx(self):
+        """Update sfx volume.
+
+        Callback when the slider is moved.
+        """
         value = self.sfx_slider.value
         set_sfx_volume(value)
 
     def set_music(self):
+        """Update music volume.
+
+        Callback when the slider is moved.
+        """
         value = self.music_slider.value
         set_music_volume(value)
-        music.set_volume(get_music_volume())
+        music.update_vol()
 
 
 class MultiplayerMenu(View):

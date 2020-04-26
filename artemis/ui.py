@@ -1,18 +1,14 @@
 """Various UI elements."""
 from PIL import Image, ImageDraw, ImageFont
-import time
 import typing
 import arcade
 
 from constants import ASSETS, FONT, HEIGHT, WIDTH
-from settings import get_music_volume
-from utils import play_sound_effect
+from sound import play_sound_effect
 
 
 number = typing.Union[int, float]
 
-music = arcade.Sound(ASSETS + 'audio/music.mp3')
-music.play(volume=get_music_volume())
 
 class IconButton:
     """A button, displayed with an icon."""
@@ -93,7 +89,8 @@ class IconButton:
         play_sound_effect('mouseclick')
         self.state = 'pressed'
 
-    def touching(self, x: float, y: float):
+    def touching(self, x: float, y: float) -> bool:
+        """Check if the mouse is touching the button."""
         x += arcade.get_viewport()[0]
         return self.left <= x <= self.right and self.bottom <= y <= self.top
 
@@ -178,16 +175,20 @@ class Slider(IconButton):
         return self.center_x + self.width / 2
 
     def update_position(self, x: float):
+        """Update the position of our button based on mouse position."""
         self.position = min(max((0, x - self.left)), self.width)
 
     def on_click(self, x: float, y: float):
+        """Update position and change texture."""
         self.update_position(x)
         super().on_click(x, y)
 
     def on_drag(self, x: float, _y: float):
+        """Update position."""
         self.update_position(x)
 
     def on_release(self, x: float, y: float):
+        """Update position, change texture and execute callback."""
         self.update_position(x)
         super().on_release(x, y)
 
@@ -333,7 +334,7 @@ class View(arcade.View):
         self.hide_mouse_after = 1
 
     def on_update(self, td: float):
-        """Hide mouse if ready and loop music."""
+        """Hide mouse if ready."""
         self.hide_mouse_after -= td
         if self.hide_mouse_after < 0:
             visible = False
@@ -342,10 +343,6 @@ class View(arcade.View):
                     visible = True
                     break
             self.window.set_mouse_visible(visible)
-        if music.get_stream_position() == 0.0:
-            music.stop()
-            music.play(volume=get_music_volume())
-            time.sleep(0.01)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """Check motion with buttons and unhide mouse."""

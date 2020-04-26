@@ -1,7 +1,6 @@
 """Read and write data to/from a JSON file."""
 import typing
 
-from constants import AWARDS
 import utils
 
 

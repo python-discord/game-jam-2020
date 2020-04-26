@@ -1,9 +1,6 @@
 """General utilities."""
-import arcade
 import json
 import typing
-
-from constants import ASSETS
 
 
 # --- Data storage files
@@ -34,13 +31,3 @@ def data_util(fun: typing.Callable, file: str) -> typing.Callable:
         return ret
 
     return wrapper
-
-
-# --- Sound
-
-
-def play_sound_effect(name: str, volume: float = 1.0):
-    """Play a sound effect."""
-    settings = __import__('settings')    # circular import otherwise
-    sound = arcade.Sound(f'{ASSETS}audio/{name}.ogg')
-    sound.play(volume=volume * settings.get_sfx_volume() * 2)

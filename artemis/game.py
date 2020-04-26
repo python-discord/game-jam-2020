@@ -9,7 +9,7 @@ import player
 from scores import add_award, add_score, add_time, get_hiscore
 from sprites import Block, Gem, RandomBlock
 from ui import View
-from utils import play_sound_effect
+from sound import play_sound_effect
 import views
 
 
