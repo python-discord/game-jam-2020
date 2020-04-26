@@ -14,7 +14,7 @@ from triple_vision.sound import SoundManager, SoundtrackManager
 class TripleVision(arcade.View):
     def __init__(self, main_view) -> None:
         super().__init__()
-        self.level = 4
+        self.level = 1
         self.seed = None
 
         self.main_view = main_view
@@ -41,9 +41,9 @@ class TripleVision(arcade.View):
         arcade.set_background_color(arcade.color.BLACK)
 
     def on_show(self) -> None:
-        self.crete_level()
+        self.create_level()
 
-    def crete_level(self, *, seed=None):
+    def create_level(self, *, seed=None):
         if seed is None:
             self.seed = time.time()
             random.seed(self.seed)
@@ -77,7 +77,7 @@ class TripleVision(arcade.View):
             self.window.set_mouse_visible(True)
             self.window.show_view(self.main_view)
         elif key == arcade.key.R:
-            self.crete_level(seed=self.seed)
+            self.create_level(seed=self.seed)
         else:
             self.player.process_key_press(key)
 
