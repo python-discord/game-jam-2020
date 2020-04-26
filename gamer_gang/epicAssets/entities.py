@@ -116,6 +116,6 @@ def makePlayer(mass, space, textures, scale, x, y, name):
     shape.friction = 0.5
     space.add(body, shape)
     sprite = Player(shape, textures, scale, x, y, name)
-    sprite.set_hit_box([[sprite.width / -2, sprite.height / -2 - 1], [sprite.width / 2, sprite.height / -2 - 1],
-                        [sprite.width / 2, sprite.height / 2], [sprite.width / -2, sprite.height / 2]])
+    sprite.set_hit_box(([sprite.width / -2, sprite.height / -2 - 1], [sprite.width / 2, sprite.height / -2 - 1],
+                        [sprite.width / 2, sprite.height / 2], [sprite.width / -2, sprite.height / 2]))
     return sprite, body, shape

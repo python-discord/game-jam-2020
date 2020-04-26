@@ -86,7 +86,7 @@ class Level(arcade.View):
 
         pName = 1
         for i in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/Players", self.map)):
-            p, body, shape = makePlayer(10, self.space, i.textures, 1, i.center_x, i.center_y, str(pName))
+            p, body, shape = makePlayer(15, self.space, i.textures, 1, i.center_x, i.center_y, str(pName))
             self.bodies.append(body)
             self.shapes.append(shape)
             self.players.append(p)

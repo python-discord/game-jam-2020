@@ -150,6 +150,10 @@ class GameOverView(arcade.View):
                                        str(Path(__file__).parent) + "/images/dumbGUIImages/restart.png", None)
         self.button_list.append(RestartButton(self, theme=self.theme))
 
+        self.theme.add_button_textures(str(Path(__file__).parent) + "/images/dumbGUIImages/backButton.png", None,
+                                       str(Path(__file__).parent) + "/images/dumbGUIImages/backButton.png", None)
+        self.button_list.append(BackToMenu(self, 100, 120, theme=self.theme))
+
     def on_draw(self):
         arcade.start_render()
         arcade.draw_text(f'you died from: {self.window.deathCause}',
@@ -240,7 +244,7 @@ class LevelButton(TextButton):
 
 
 class RestartButton(TextButton):
-    def __init__(self, game, x=500, y=120, width=465, height=230, text="", theme=None):
+    def __init__(self, game, x=500, y=120, width=310, height=153.33333, text="", theme=None):
         super().__init__(x, y, width, height, text, theme=theme)
         self.game = game
         self.center_x, self.center_y = x, y
@@ -255,3 +259,16 @@ class RestartButton(TextButton):
 
     def on_release(self):
         self.pressed = False
+
+class BackToMenu(TextButton):
+    def __init__(self, game, x=0, y=0, width=48, height=48, text="", theme=None):
+        super().__init__(x, y, width, height, text, theme=theme)
+        self.game = game
+        self.center_x = x
+        self.pressed = False
+
+    def on_press(self):
+        if not self.pressed:
+            self.pressed = True
+            self.game.window.setup()
+            self.game.window.show_view(self.game.window.menuView)
