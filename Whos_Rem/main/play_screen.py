@@ -315,7 +315,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         track_timings = {
             'track_1': 17,
             'track_2': 16,
-            'track_3': 16,
+            'track_3': 17,
             'track_4': 16,
             'track_5': 17,
         }
@@ -444,10 +444,6 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         self.background_sprite.width = self.WIDTH / 2
         self.background_sprite.alpha = int(255*self.main.brightness)
         self.background_sprite.draw()
-
-        # If un pausing render  todo finish
-        if count_down is not None:
-            count_down.draw()
 
         # notes
         if not self.paused and self.started:
