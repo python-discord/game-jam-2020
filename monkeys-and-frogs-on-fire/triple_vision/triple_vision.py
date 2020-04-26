@@ -1,15 +1,12 @@
+import time
+import random
+
 import arcade
 
 from triple_vision import Settings as s
-from triple_vision import Tile
 from triple_vision.camera import Camera
-from triple_vision.entities import (
-    ChasingEnemy,
-    Enemies,
-    Player,
-    StationaryEnemy
-)
-from triple_vision.managers import CardManager, GameManager, CursorManager
+from triple_vision.entities import Player
+from triple_vision.managers import CardManager, GameManager, CursorManager, LevelManager
 from triple_vision.map import Map
 from triple_vision.sound import SoundManager, SoundtrackManager
 
@@ -17,6 +14,8 @@ from triple_vision.sound import SoundManager, SoundtrackManager
 class TripleVision(arcade.View):
     def __init__(self, main_view) -> None:
         super().__init__()
+        self.level = 1
+        self.seed = None
 
         self.main_view = main_view
 
@@ -42,6 +41,16 @@ class TripleVision(arcade.View):
         arcade.set_background_color(arcade.color.BLACK)
 
     def on_show(self) -> None:
+        self.crete_level()
+
+    def crete_level(self, *, seed=None):
+        if seed is None:
+            self.seed = time.time()
+            random.seed(self.seed)
+        else:
+            self.seed = seed
+            random.seed(seed)
+
         self.bullet_list = arcade.SpriteList()
 
         self.player = Player(self, 'm')
@@ -61,46 +70,15 @@ class TripleVision(arcade.View):
         self.charge = 0.0
         self.charging = False
 
-        for _ in range(3):
-            self.game_manager.create_enemy(
-                ChasingEnemy,
-                Enemies.big_demon,
-                self.player,
-                Tile.SCALED * 10,
-                moving_speed=1
-            )
-
-        for _ in range(5):
-            self.game_manager.create_enemy(
-                StationaryEnemy,
-                Enemies.imp,
-                self.player,
-                Tile.SCALED * 10,
-                0.75
-            )
-
-        for _ in range(15):
-            self.game_manager.create_enemy(
-                ChasingEnemy,
-                Enemies.chort,
-                self.player,
-                Tile.SCALED * 10,
-                moving_speed=1
-            )
-        for _ in range(5):
-            self.game_manager.create_enemy(
-                ChasingEnemy,
-                Enemies.wogol,
-                self.player,
-                Tile.SCALED * 10,
-                moving_speed=1
-            )
+        LevelManager.create_level(self.game_manager, self.player, self.level)
 
     def on_key_press(self, key, modifiers) -> None:
         if key == arcade.key.ESCAPE:
             arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
             self.window.set_mouse_visible(True)
             self.window.show_view(self.main_view)
+        elif key == arcade.key.R:
+            self.crete_level(seed=self.seed)
         else:
             self.player.process_key_press(key)
 

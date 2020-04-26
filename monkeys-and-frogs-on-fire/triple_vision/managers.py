@@ -1,3 +1,4 @@
+import random
 from typing import Optional, Tuple
 
 import arcade
@@ -5,6 +6,12 @@ import arcade
 from triple_vision import Settings as s
 from triple_vision.entities import DamageIndicator, States
 from triple_vision.networking import client
+from triple_vision.entities import (
+    ChasingEnemy,
+    Enemies,
+    StationaryEnemy
+)
+from triple_vision import Tile
 
 
 class GameManager:
@@ -283,3 +290,154 @@ class CursorManager:
     def draw(self):
         if self._curr_cursor is not None:
             self._curr_cursor.draw()
+
+
+class LevelManager:
+    LOW_SPEED = 0.75
+    NORMAL_SPEED = 1.0
+    FAST_SPEED = 1.5
+    VERY_FAST_SPEED = 2.0
+
+    LOW_MELEE_DMG = random.randrange(15, 30)
+    NORMAL_MELEE_DMG = random.randrange(30, 60)
+    HIGH_MELEE_DMG = random.randrange(60, 120)
+
+    NORMAL_CHASING_DETECTION_RADIUS = Tile.SCALED * 12
+    BIG_CHASING_DETECTION_RADIUS = Tile.SCALED * 15
+    HUGE_CHASING_DETECTION_RADIUS = Tile.SCALED * 20
+
+    FAST_SHOOT_INTERVAL = 0.75
+    MEDIUM_SHOOT_INTERVAL = 1.25
+    SLOW_SHOOT_INTERVAL = 2.0
+
+    LOW_PROJECTILE_DMG = random.randrange(20, 40)
+    MEDIUM_PROJECTILE_DMG = random.randrange(40, 60)
+    HIGH_PROJECTILE_DMG = random.randrange(60, 90)
+
+    NORMAL_SHOOTER_RADIUS = Tile.SCALED * 10
+    BIG_SHOOTER_RADIUS = Tile.SCALED * 12
+
+    @classmethod
+    def create_level(cls, game_manager, player, level: int):
+        """Deals with how many enemies and what types spawn"""
+
+        # Goblins have low hp but are fast and big in numbers.
+        # Very small dmg
+        # level1 3
+        # level2 5
+        # level3 7
+        # level4 9
+        # etc
+        for _ in range(level * 3 - (level - 1) * 1):
+            game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.goblin,
+                player,
+                cls.NORMAL_CHASING_DETECTION_RADIUS,
+                moving_speed=cls.VERY_FAST_SPEED
+            )
+
+        # Chorts are similar to goblins
+        # level1 3
+        # level2 5
+        # level3 7
+        # level4 9
+        # etc
+        for _ in range(level * 3 - (level - 1) * 1):
+            game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.chort,
+                player,
+                cls.NORMAL_CHASING_DETECTION_RADIUS,
+                moving_speed=cls.VERY_FAST_SPEED
+            )
+
+        # Tiny zombies are similar to goblins
+        # level1 3
+        # level2 5
+        # level3 7
+        # level4 9
+        # etc
+        for _ in range(level * 3 - (level - 1) * 1):
+            game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.tiny_zombie,
+                player,
+                cls.NORMAL_CHASING_DETECTION_RADIUS,
+                moving_speed=cls.VERY_FAST_SPEED
+            )
+
+        # Ice zombies demons are fast and not insta killable
+        # level1 2
+        # level2 4
+        # level3 6
+        # level4 8
+        # etc
+        for _ in range(level * 2):
+            game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.ice_zombie,
+                player,
+                cls.BIG_CHASING_DETECTION_RADIUS,
+                moving_speed=cls.FAST_SPEED
+            )
+
+        # Big demons are tough foes, normal speed but lot HP.
+        # Huge dmg and big detection radius
+        # level1 3
+        # level2 6
+        # level3 9
+        # level4 12
+        # etc
+        for _ in range(level * 3):
+            game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.big_demon,
+                player,
+                cls.BIG_CHASING_DETECTION_RADIUS,
+                moving_speed=cls.NORMAL_SPEED
+            )
+
+        # Imps are shooting
+        # level1 2
+        # level2 4
+        # level3 6
+        # level4 8
+        for _ in range(level * 2):
+            game_manager.create_enemy(
+                StationaryEnemy,
+                Enemies.imp,
+                player,
+                cls.NORMAL_SHOOTER_RADIUS,
+                shoot_interval=cls.FAST_SHOOT_INTERVAL,
+                dmg=cls.LOW_PROJECTILE_DMG
+            )
+
+        # Necromancers are shooting
+        # level1 0
+        # level2 0
+        # level3 1
+        # level4 2
+        for _ in range(level - 2):
+            game_manager.create_enemy(
+                StationaryEnemy,
+                Enemies.necromancer,
+                player,
+                cls.BIG_SHOOTER_RADIUS,
+                shoot_interval=cls.SLOW_SHOOT_INTERVAL,
+                dmg=cls.HIGH_PROJECTILE_DMG
+            )
+
+        # Muddy is slow mowing tank
+        # level1 0
+        # level2 1
+        # level3 2
+        # level4 3
+        for _ in range(level - 1):
+            game_manager.create_enemy(
+                ChasingEnemy,
+                Enemies.muddy,
+                player,
+                cls.HUGE_CHASING_DETECTION_RADIUS,
+                moving_speed=cls.LOW_SPEED
+            )
