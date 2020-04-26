@@ -247,6 +247,7 @@ class Game(arcade.Window):
                 boon = self.Recipe.add_kill(enemy_hit_list[0].monster_type)
                 if boon >= 0:
                     getattr(self.player, Config.BOON_LIST[boon])();
+                    self.player.hurry()
                 enemy_hit_list[0].remove_from_sprite_lists()
                 bullet.remove_from_sprite_lists()
 

@@ -64,7 +64,6 @@ class ActiveRecipe(arcade.SpriteList):
         ret_val = -1
         if len(self.kill_list) >= 3:
             if self.active == self.kill_list:
-                print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
                 self.kill_list = []
                 ret_val = self.pos
             self.kill_list = []

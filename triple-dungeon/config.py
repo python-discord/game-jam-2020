@@ -42,7 +42,7 @@ class Config(object):
     BOON_LIST = ["heal", "harden", "hurry"]
     HEAL_AMOUNT = 20
     ARMOR_AMOUNT = 1
-    SPEED_AMOUNT = 2
+    SPEED_AMOUNT = 5
 
     # How many pixels to keep as a minimum margin between the characters and the edge of the screen.
     LEFT_VIEWPORT_MARGIN = 700
@@ -54,7 +54,7 @@ class Config(object):
     DEBUG = False
 
     # Monster Count to be spawned
-    MONSTER_COUNT = 8
+    MONSTER_COUNT = 6
 
 
 class Enums(Enum):

@@ -67,7 +67,6 @@ class MobHandler:
 
         # Enemy activation and update
         for enemy in reversed(self.enemy_list):
-            # TODO replace with distance checking
             distance = self.get_distance(enemy)
             enemy.collisions.update()
             if (distance < 300):
