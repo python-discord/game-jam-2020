@@ -137,7 +137,6 @@ class Game(Base):
                 elif data["type"] == "victory":
                     self.victory(data["data"])
                 elif data["type"] == "updateCityHealth":
-                    print(data)
                     self.server_repair_city(data["data"])
                 else:
                     print(f"SCREAMS IN BRAILLE: {data}")
