@@ -333,7 +333,7 @@ class Level(arcade.View):
         for i in self.jumpPads:
             for k in arcade.check_for_collision_with_list(i, self.boxes):
                 if k.timeAfterJump > 0.2:
-                    k.pymunk_shape.body.velocity += pymunk.Vec2d((0, 600))
+                    k.pymunk_shape.body.velocity += pymunk.Vec2d((0, 700))
                     k.timeAfterJump = 0
 
     def entityInteractionCheck(self):
@@ -407,7 +407,7 @@ class Level(arcade.View):
             try:
                 for k in arcade.check_for_collision_with_list(i,self.jumpPads):
                     if i.can_jump == True:
-                        i.pymunk_shape.body.velocity += pymunk.Vec2d((0,600))
+                        i.pymunk_shape.body.velocity += pymunk.Vec2d((0,700))
                         i.can_jump = False
             except:
                 continue
