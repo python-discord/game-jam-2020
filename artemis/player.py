@@ -103,6 +103,7 @@ class Player(arcade.Sprite):
         """If allowed, switch gravity."""
         if self.engine.can_jump():
             self.engine.gravity_constant *= -1
+            play_sound_effect('impact')
 
     def update(self):
         """Move the player and change the texture."""
