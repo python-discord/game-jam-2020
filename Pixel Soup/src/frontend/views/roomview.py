@@ -55,7 +55,6 @@ class RoomView(arcade.View):
         """
         if count >= 5:
             self.switch_back_with_error(error)
-        import socket
 
         self.pipe = Pipe(socket.gethostname(), int(os.getenv("PORT")))
         is_login_successful, response = self.pipe.login(

@@ -1,6 +1,5 @@
 import arcade
 
-import os
 from multiprocessing import Queue
 import random
 
@@ -82,7 +81,7 @@ class Build:
 class GameView(arcade.View):
     """Main application class."""
 
-    def __init__(self, player_connection, assigned_player: int):
+    def __init__(self):
         """ Initializer """
         # Call the parent class initializer
         super().__init__()
@@ -106,6 +105,8 @@ class GameView(arcade.View):
 
         self.forward = Queue()
         self.feedback = Queue()
+
+        self.assigned_player = 1
 
     def setup(self, forward, feedback):
         """ Set up the game and initialize the variables. """
