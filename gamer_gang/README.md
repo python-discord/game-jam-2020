@@ -8,7 +8,7 @@ Maybe requirements.txt too
 
 ###Game Mechanics 
 Up, Left, Right arrows OR WAD keys to move  
-1, 2, 3 to control the green, red, and purple squares/cubes whatever you wanna call 'em
+1, 2, 3 to control the green, red, and purple squares/cubes whatever you wanna call 'em   
 Down arrow or S key to split the stack that you're currently in  
 Get on top of another cube to join with them  
 Collect all the stars to unlock the exit door  
