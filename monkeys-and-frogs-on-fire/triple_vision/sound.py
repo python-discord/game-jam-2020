@@ -80,11 +80,12 @@ class SoundtrackManager:
     def __init__(self, music_list: List[str]):
         # Variables used to manage our music. See setup() for giving them
         # values.
-        self._volume = ss.DEFAULT_VOLUME
+        self.volume = ss.DEFAULT_VOLUME
         self._sound_assets_path = Path("./assets/audio/soundtracks")
         self.music_list = [self.get_sound_path(file_name) for file_name in music_list]
         self.current_song_position = 0
         self.curr_sound = None
+        self._slow_mode_activated = False
 
     def get_sound_path(self, sound_name: str) -> str:
         return str(self._sound_assets_path / sound_name)
@@ -113,7 +114,7 @@ class SoundtrackManager:
         # Play the next song
         print(f"Playing {self.music_list[self.current_song_position]}")
         self.curr_sound = arcade.Sound(self.music_list[self.current_song_position], streaming=True)
-        self.curr_sound.play(self._volume)
+        self.curr_sound.play(self.volume)
         # This is a quick delay. If we don't do this, our elapsed time is 0.0
         # and on_update will think the music is over and advance us to the next
         # song before starting this one.
@@ -126,7 +127,15 @@ class SoundtrackManager:
         # Play the song
         self.play_song()
 
-    def update(self):
+    def update(self, slow_mode: bool = False):
+        if slow_mode:
+            self._slow_mode_activated = True
+            self.volume = 0.025
+        elif self._slow_mode_activated:
+            self._slow_mode_activated = False
+            self.volume = ss.DEFAULT_VOLUME
+
+        self.curr_sound.set_volume(self.volume)
 
         position = self.curr_sound.get_stream_position()
 
@@ -137,5 +146,3 @@ class SoundtrackManager:
             self.advance_song()
             self.play_song()
 
-    def update_volumes(self, volume: float):
-        self._volume = volume
