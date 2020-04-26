@@ -10,7 +10,7 @@ from .display import ColourBlend as cb
 
 
 TESTING = False
-SAMPLING = True
+SAMPLING = False
 
 if SAMPLING:
     sample_list = []
@@ -500,8 +500,8 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
 
         self.score_pic.alpha = alpha
         self.score_pic.draw()
-        self.combo_pic.alpha = alpha
-        self.combo_pic.draw()
+        # self.combo_pic.alpha = alpha
+        # self.combo_pic.draw()
         self.notes_hit_pic.alpha = alpha
         self.notes_hit_pic.draw()
         self.notes_missed_pic.alpha = alpha
@@ -515,11 +515,11 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                          align="center", font_size=50)
 
         # Actual combo
-        arcade.draw_text(f"{self.combo}",
-                         start_x=self.combo_pic.center_x - (len(f"{self.combo}") * 20),
-                         start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 1.90)),
-                         color=cb.brightness(arcade.color.WHITE, self.main.brightness),
-                         align="center", font_size=50)
+        # arcade.draw_text(f"{self.combo}",
+        #                 start_x=self.combo_pic.center_x - (len(f"{self.combo}") * 20),
+        #                 start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 1.90)),
+        #                 color=cb.brightness(arcade.color.WHITE, self.main.brightness),
+        #                 align="center", font_size=50)
 
         # Actual total hits
         arcade.draw_text(f"{self.notes_hit}",
