@@ -14,18 +14,24 @@ Right now there is just a basic sailing/naval combat system and a *very* basic d
 * Custom TMX layer pathfinding functions
 
 ### Dependencies
-* Python 3.7+ (3.7 is noted in the Pipfile)
+* Python 3.7+
 * [arcade](https://arcade.academy/index.html)
 * pathfinding
 
-### Download it
+## Download it
 * `git clone https://github.com/DomicidalDesigns/game-jam-2020.git`
 
-### Run it
-* `cd` to `game-jam-2020/tricky-tricepticat`
-* `pipenv run start` or `python -m pipenv run start`
+## Install it
+* `cd` to `game-jam-2020/tricky-tricepticat/`
+* `python -m pipenv install`<br>
 
-## How to Play
+**If you have multiple python versions, instead specify one using:**
+* `python -m pipenv install --python 3.7` <br>where `3.7` is your python version, 3.7 or newer
+
+## Run it
+* `python -m pipenv run start`
+
+## Play it
 ### Ship
 `W` - Lower sails (accelerate) <br>
 `S` - Raise sails (decelerate <br>
@@ -60,8 +66,6 @@ If you liked any of their content, consider using them in your game and supporti
 * [Pixel Frog](https://pixel-frog.itch.io/) - Amazing pirate sprites
 
 ## Future Work / TODO
-In the future I want to refine the pathfinding for enemies and further improve the dungeon crawling mechanics, incorporating different fighting styles for the three pirates.
-
-Brain would use the sword, Brawn would use his fists, and Bald would use explosives.
+In the future I want to refine the pathfinding for enemies and further improve the dungeon crawling mechanics, incorporating different fighting styles for the three pirates. Brain would use the sword, Brawn would use his fists, and Bald would use explosives.
 The player would be able to freely switch between the players, and the other two pirate NPCs would follow the player.
 
