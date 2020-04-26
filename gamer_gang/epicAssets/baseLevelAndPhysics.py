@@ -162,10 +162,12 @@ class Level(arcade.View):
         if self.collectedStars != self.neededStars:
             arcade.draw_text(f'stars collected: {self.collectedStars} out of {self.neededStars}',
                              self.xCam - SCREEN_WIDTH / 2 + 10, self.yCam + SCREEN_HEIGHT / 2 - 30,
-                             font_size=20, color=arcade.color.BLACK)
+                             font_name=str(Path(__file__).parent) + "/pixelFont.TTF", font_size=20,
+                             color=arcade.color.BLACK)
         else:
             arcade.draw_text(f'exit unlocked!', self.xCam - SCREEN_WIDTH / 2 + 10, self.yCam + SCREEN_HEIGHT / 2 - 30,
-                             font_size=20, color=arcade.color.BLACK)
+                             font_name=str(Path(__file__).parent) + "/pixelFont.TTF", font_size=20,
+                             color=arcade.color.BLACK)
 
         for p in self.players:
             if p is not None:
@@ -362,6 +364,7 @@ class Level(arcade.View):
                     self.controlled = left[0]
                 else:
                     self.window.sfx['win'].play()
+                    self.window.sfx['level music'].stop()
                     self.window.show_view(self.window.menuView)
 
     def on_update(self, dt):
