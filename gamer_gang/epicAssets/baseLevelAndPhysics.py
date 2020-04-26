@@ -122,7 +122,7 @@ class Level(arcade.View):
         self.exit[0].textures = [arcade.load_texture(str(Path(__file__).parent) + '/images/doorImages/doorClosed.png'),
                                  arcade.load_texture(str(Path(__file__).parent) + '/images/doorImages/doorOpen.png')]
         self.exit[0].texture = self.exit[0].textures[0]
-        self.exit[0].center_y -= 12
+        self.exit[0].center_y -= 16
 
         self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Trees", self.map)))
         self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Plants", self.map)))
