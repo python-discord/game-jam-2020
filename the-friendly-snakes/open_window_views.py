@@ -735,7 +735,6 @@ class MyGame(arcade.View):
                 else:
                     window.show_view(GameOver())
 
-
         self.player_list.update_animation()
         self.potion_list.update_animation()
         self.portal_list.update_animation()

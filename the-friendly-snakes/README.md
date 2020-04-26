@@ -2,7 +2,9 @@
 Welcome to the famed FLimsy Billy's Coin Dash! In this game you battle against time to collect 50 coins, but 1 coin
 disappears from your inventory every second! Explore the different parts of the map and buy exciting potions! But, 
 beware, choose the wrong door when you leave the mysterious Jungle Room and you will lose half of your coins! Use the
-potions wisely. Sometimes it is more efficient to use the potions. For rules and installation instructions read below.
+potions wisely. Sometimes it is more efficient to use the potions. 
+
+**For how to play and installation instructions read below.**
 
 ### Installation
 To download and install *Flimsy Billy's Coin Dash 3: Super Tag 3 Electric Tree* there are a few simple steps that you
@@ -19,3 +21,7 @@ and then click `Enter`. It looks like this: ![How To Open CMD](StuffForREADME/cm
 4) In that terminal type: `pipenv sync && pipenv run game` and there you go! The game will be up and running. From now on,
 any time that you want to play in the future you only have to type `pipenv run game` for this last step!
 5) Enjoy *Flimsy Billy's Coin Dash 3: Super Tag 3 Electric Tree*!
+
+### How To Play
+To play *Flimsy Billy's Coin Dash 3: Super Tag 3 Electric Tree* you must control Flimsy Billy around the game world
+with the `W` `A` `S` and `D` keys. When you click play you are loaded into the prebar 

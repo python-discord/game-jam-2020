@@ -94,11 +94,12 @@ class YouWin(arcade.View):
         self.screen_center_y = int(screen_height / 2)
 
         if self.old_screen_center_x != self.screen_center_x or self.old_screen_center_y != self.screen_center_y:
-            game_over_text = 'Game Over!'
+            game_over_text = 'You Won! You got more coins then on the bar-round!'
             self.game_over_text = arcade.draw_text(game_over_text, self.screen_center_x, self.screen_center_y + 150,
                                                anchor_x='center',
                                                anchor_y='center', color=arcade.csscolor.WHITE, font_size=32,
                                                font_name='fonts/RobotoMono-Regular.ttf')
+            win_text = 'You got a stunning ' + str(self.coins) + '! Can you beat it?'
             self.game_over_text2 = arcade.draw_text(win_text, self.screen_center_x, self.screen_center_y + 100,
                                                     anchor_x='center',
                                                     anchor_y='center', color=arcade.csscolor.WHITE, font_size=32,
