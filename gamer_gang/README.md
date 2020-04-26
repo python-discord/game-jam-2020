@@ -1,4 +1,4 @@
-Ok judges!  
+k judges  
 This only works if your current working directory is my team repo  
 
 ###Running Directions   
