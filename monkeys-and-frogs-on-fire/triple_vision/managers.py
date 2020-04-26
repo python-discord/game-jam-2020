@@ -164,14 +164,13 @@ class CardManager:
             self.view.slow_down = False
 
     def process_mouse_press(self, x, y, button) -> bool:
-        if not self.card_manager_enabled:
-            return False
+        mouse_over_cards = (
+            self.cards[0].left < x < self.cards[-1].right and
+            self.cards[0].bottom < y < self.cards[-1].top
+        )
 
         if button == arcade.MOUSE_BUTTON_LEFT:
-            if (
-                self.cards[0].left < x < self.cards[-1].right and
-                self.cards[0].bottom < y < self.cards[-1].top
-            ):
+            if mouse_over_cards:
 
                 for idx, card in enumerate(self.cards):
                     if (
@@ -182,6 +181,10 @@ class CardManager:
                         self.show_cards = False
                         self.view.slow_down = False
 
+                return True
+        elif button == arcade.MOUSE_BUTTON_RIGHT:
+            # Ignore ability activation if we click on card
+            if mouse_over_cards:
                 return True
 
         return False
