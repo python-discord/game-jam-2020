@@ -13,7 +13,7 @@ class Ground(arcade.Sprite):
 
         self.center_x, self.center_y = x, y
 
-def makeLand(space, textures, scale, x, y):
+def makeLand(space, textures, scale, x, y, hit_box):
     pos_x, pos_y = x, y
     width, height = textures[0].width, textures[0].height
     body = pymunk.Body(body_type=pymunk.Body.STATIC)
@@ -22,6 +22,7 @@ def makeLand(space, textures, scale, x, y):
     shape.friction = 1
     space.add(body, shape)
     sprite = Ground(shape, textures, scale, pos_x, pos_y)
+    sprite.hit_box = hit_box
     return sprite
 
 def makeBox(mass, space, textures, hit_box, scale, x, y):
@@ -31,5 +32,4 @@ def makeBox(mass, space, textures, hit_box, scale, x, y):
     shape.friction = 0.8
     space.add(body, shape)
     sprite = Ground(shape, textures, scale, x, y)
-    sprite.hit_box = hit_box
     return sprite

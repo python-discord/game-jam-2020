@@ -83,7 +83,7 @@ class Level(arcade.View):
 
         ground_list = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/Ground", self.map))
         for i in ground_list:
-            self.ground.append(makeLand(self.space, i.textures, 1, i.center_x, i.center_y))
+            self.ground.append(makeLand(self.space, i.textures, 1, i.center_x, i.center_y, i.hit_box))
 
         pName = 1
         for i in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/Players", self.map)):
@@ -99,7 +99,7 @@ class Level(arcade.View):
 
         try:
             for s in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/sands", self.map)):
-                self.sands.append(makeLand(self.space, s.textures, s.scale, s.center_x, s.center_y))
+                self.sands.append(makeLand(self.space, s.textures, s.scale, s.center_x, s.center_y, s.hit_box))
         except AttributeError:
             pass
 
@@ -419,7 +419,7 @@ class Level(arcade.View):
                 metBoxes.extend(arcade.check_for_collision_with_list(s, spriteListPlayers))
                 collided = [True for char in self.sands if arcade.check_for_collision(s, char) and s != char]
                 if not metBoxes and not collided:
-                    newSands.append(makeLand(self.space, s.textures, 1, s.center_x, s.center_y))
+                    newSands.append(makeLand(self.space, s.textures, 1, s.center_x, s.center_y, s.hit_box))
                     self.space.remove(s.pymunk_shape, s.pymunk_shape.body)
                     s.kill()
                 else:
