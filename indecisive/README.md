@@ -11,10 +11,6 @@ This Game Jam have the theme `Three of a kind` with the addition requirements of
  Typically, this means that the assets are licensed under an OSI-approved or Creative Commons license, or is in the public domain.
  - All projects should start from scratch and all code must be written within the time constrictions of the jam.
 
-Making a Virtual Environment:
-    - python -m venv venv.
-    - venv/Scripts/pip.exe install arcade websockets.
-    - 
 
 To Play the Game:
     - There must be a host that run the Play as host section:
@@ -25,3 +21,8 @@ To Play the Game:
     - Then the host can start the game by pressing "Start".
     
     
+`python -m venv venv`
+
+activate virtual environment
+
+`pip install arcade websocket`
