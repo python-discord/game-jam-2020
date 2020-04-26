@@ -10,7 +10,15 @@ window.classes = {
     'Reggae': Reggae,
     'Sniper': Sniper,
     'Whiffle': Whiffle,
-    'Oontz': Oontz
+    'Oontz': Oontz,
+    'Heal': Heal,
+    'TribulletPowerup': TribulletPowerup,
+    'AttackPowerup': AttackPowerup,
+    'SpeedPowerup': SpeedPowerup,
+    'Mirror': Mirror,
+    'PortableHandMirror': PortableHandMirror,
+    'Wall': Wall,
+    'Star': Star,
+    'Boom': Boom
 }
-window.setup()
 arcade.run()
