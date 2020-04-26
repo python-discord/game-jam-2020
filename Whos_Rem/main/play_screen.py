@@ -468,7 +468,11 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                          start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 0.25)),
                          color=arcade.color.WHITE, align="center", font_size=50)
 
-
+        # Actual combo
+        arcade.draw_text(f"{self.combo}",
+                         start_x=self.combo_pic.center_x - (len(f"{self.combo}") * 20),
+                         start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 1.85)),
+                         color=arcade.color.WHITE, align="center", font_size=50)
 
         if self.paused:
             self.background.alpha = 255
