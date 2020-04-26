@@ -319,13 +319,9 @@ class Level(arcade.View):
             if p.name == self.players[self.controlled].name:
                 p.pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.userInputs[:2]), 0))  # horizontal movement
                 if p.can_jump:
-                    if arcade.check_for_collision_with_list(p, self.jumpPads):
-                        p.pymunk_shape.body.velocity += pymunk.Vec2d((0, 600))
-                        self.window.sfx['jump'].play()
-                    else:
-                        if self.userInputs[2]:
-                            p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.userInputs[2]))
-                            self.window.sfx['jump'].play(0.5)
+                    if self.userInputs[2]:
+                        p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.userInputs[2]))
+                        self.window.sfx['jump'].play(0.5)
                     p.can_jump = False
 
                 if p.pymunk_shape.body.velocity.x > 250:  # prevent from accelerating too fast
@@ -406,7 +402,16 @@ class Level(arcade.View):
 
         for _ in range(10):
             self.space.step(1 / 600)
-
+            
+        players = arcade.SpriteList()
+        for k in self.players:
+            players.append(k)
+        for i in self.jumpPads:
+            for k in arcade.check_for_collision_with_list(i,players):
+                if k.can_jump == True:
+                    k.pymunk_shape.body.velocity += pymunk.Vec2d((0,600))
+                    k.can_jump = False
+                    
         self.movement()  # move all the players (well, the characters)
         self.cameraShift(0.1)  # shift camera
         self.stackCheck()  # join into stacks if detected
