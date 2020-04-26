@@ -230,6 +230,9 @@ class Potion(arcade.Sprite):
         self.player.speed_multiplier += self.effect.speed
         self.player.resistance += self.effect.resistance
 
+        if self.duration is None:
+            self.kill()
+
     def on_update(self, delta_time: float = 1/60):
         if self.duration is None:
             return

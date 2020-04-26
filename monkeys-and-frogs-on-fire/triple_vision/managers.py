@@ -484,6 +484,7 @@ class LevelManager:
                 PotionEffect(
                     resistance=0.1
                 ),
+                duration=3.0,
                 filename="assets/dungeon/frames/flask_green.png"
             )
         for _ in range(random.randint(0, 3 - level)):
@@ -491,6 +492,7 @@ class LevelManager:
                 PotionEffect(
                     strength=0.1
                 ),
+                duration=3.0,
                 filename="assets/dungeon/frames/flask_big_red.png"
             )
         for _ in range(random.randint(0, 3 - level)):
@@ -498,6 +500,7 @@ class LevelManager:
                 PotionEffect(
                     speed=0.1
                 ),
+                duration=3.0,
                 filename="assets/dungeon/frames/flask_big_blue.png"
             )
 
