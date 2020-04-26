@@ -8,5 +8,8 @@ verify_ssl = true
 [packages]
 arcade = "==2.4a5"
 
+[scripts]
+game = 'python open_window_views.py'
+
 [requires]
 python_version = "3.8"

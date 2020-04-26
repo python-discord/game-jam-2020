@@ -602,8 +602,7 @@ class MyGame(arcade.View):
 def main():
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=True)
     start_menu = StartMenuView()
-    game_over = GameOver()
-    window.show_view(game_over)
+    window.show_view(start_menu)
     arcade.run()
 
 
