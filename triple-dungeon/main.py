@@ -227,6 +227,9 @@ class Game(arcade.Window):
     def on_update(self, delta_time):
         """ Movement and game logic """
 
+        if len(self.enemy_list) == 0 and len(self.active_enemies)==0:
+        	self.setup()
+
         # Update Mobs
         self.Mobs.update()
 

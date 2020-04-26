@@ -16,4 +16,4 @@ This game can be setup and run with:
 
 ## Instructions
 Use WASD to move and the mouse to aim and fire.
-Use left shift to cycle through different monster combinations and try to shoot the monsters in that order.
+Use left shift to cycle through different monster combinations and try to shoot the monsters in that order to recieve a speed boost. Once all the monsters are gone you will move onto another level. 
