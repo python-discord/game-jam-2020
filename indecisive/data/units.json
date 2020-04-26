@@ -6,7 +6,37 @@
         "assets/GreenSword.png",
         "assets/BlueSword.png"
       ],
-      "base_attack": 50,
-      "base_defense": 50
+      "base_attack": 10,
+      "base_defense": 10
+    },
+  "heavy": {
+      "name": "Heavy",
+      "icons": [
+        "assets/DoubleRedSwords.png",
+        "assets/DoubleGreenSwords.png",
+        "assets/DoubleBlueSwords.png"
+      ],
+      "base_attack": 30,
+      "base_defense": 10
+    },
+  "shield": {
+      "name": "Shield",
+      "icons": [
+        "assets/RedShield.png",
+        "assets/GreenShield.png",
+        "assets/BlueShield.png"
+      ],
+      "base_attack": 10,
+      "base_defense": 30
+    },
+    "settler": {
+      "name": "Settler",
+      "icons": [
+        "assets/RedSettler.png",
+        "assets/GreenSettler.png",
+        "assets/BlueSettler.png"
+      ],
+      "base_attack": -50,
+      "base_defense": -50
     }
 }
