@@ -3,10 +3,10 @@
   "units": ["basic", "shield", "heavy", "settler", null],
   "health": [100, 110, 121, 133, 146],
   "icons": [
-    ["assets/red_city.png", "assets/green_city.png", "assets/red_city.png"],
-    ["assets/red_city.png", "assets/green_city.png", "assets/red_city.png"],
-    ["assets/red_city.png", "assets/green_city.png", "assets/red_city.png"],
-    ["assets/red_city.png", "assets/green_city.png", "assets/red_city.png"],
-    ["assets/red_city.png", "assets/green_city.png", "assets/red_city.png"]
+    ["assets/red_city.png", "assets/green_city.png", "assets/blue_city.png"],
+    ["assets/red_city.png", "assets/green_city.png", "assets/blue_city.png"],
+    ["assets/red_city.png", "assets/green_city.png", "assets/blue_city.png"],
+    ["assets/red_city.png", "assets/green_city.png", "assets/blue_city.png"],
+    ["assets/red_city.png", "assets/green_city.png", "assets/blue_city.png"]
   ]
 }

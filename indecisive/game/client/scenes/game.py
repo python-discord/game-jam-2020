@@ -43,7 +43,12 @@ class Game(Base):
         self.selected = [None, None]
         self.ui_background = None
         self.city_ui = [arcade.SpriteList(), []]
+        self.city2_ui = [arcade.SpriteList(), []]
+        self.city3_ui = [arcade.SpriteList(), []]
+        self.city4_ui = [arcade.SpriteList(), []]
+        self.city5_ui = [arcade.SpriteList(), []]
         self.unit_ui = [arcade.SpriteList(), []]
+        self.settler_ui = [arcade.SpriteList(), []]
         self.current_ui = [arcade.SpriteList(), []]
         self.empty_ui = [arcade.SpriteList(), []]
         self.selectors = [arcade.SpriteList(), [lambda: None, lambda: None, lambda: None, lambda: None]]
@@ -108,6 +113,10 @@ class Game(Base):
                     self.server_kill_unit(data["data"])
                 elif data["type"] == "killCity":
                     self.server_kill_city(data["data"])
+                elif data["type"] == "upgradeCity":
+                    self.server_upgrade_city(data["data"])
+                elif data["type"] == "createCity":
+                    self.server_create_city(data["data"])
                 elif data["type"] == "turn":
                     self.turn = data["data"]
                     self.top_ui[1][self.top_ui[2]["currentTurn"]]["text"] = f"Current turn: {self.players[self.turn]['name']}"
@@ -164,7 +173,7 @@ class Game(Base):
 
     def _create_city(self, city):
         self.city_sprites.append(arcade.Sprite(
-            CITIES[city["owner"]],
+            self.city_types["icons"][city["level"]][city["owner"]],
             center_x=city["loc"][0] * self.square + self.x_buffer + self.square/2,
             center_y=city["loc"][1] * self.square + self.y_buffer_bottom + self.square/2
         ))
@@ -179,6 +188,8 @@ class Game(Base):
     def server_create_city(self, city):
         self.world["cities"].append(city)
         self._create_city(city)
+        self.selected = ["cities", len(self.world["cities"]) - 1]
+        self.update_ui()
 
     def client_create_city(self, city):
         self.send_queue.put({"type": "turnFinal", "actionType": "createCity", "data": city})
@@ -199,7 +210,7 @@ class Game(Base):
 
     def server_kill_unit(self, unit_id):
         self.unit_sprites[unit_id].position = self.get_xy_centre((-100, 1000))
-        self.world["units"].pop(unit_id)
+        self.world["units"][unit_id] = None
 
     def server_kill_city(self, city_id):
         self.city_sprites[city_id].position = self.get_xy_centre((-100, 1000))
@@ -212,17 +223,42 @@ class Game(Base):
         self.send_queue.put({"type": "turnFinal", "actionType": "attackCity", "data": data})
 
     def server_upgrade_city(self, data):
-        self.world["ciites"][data["city_id"]]["level"] += 1
+        self.world["cities"][data["city_id"]]["level"] += 1
+        self.update_ui()
+
+    def client_upgrade_city(self, data):
+        self.send_queue.put({"type": "turnFinal", "actionType": "upgradeCity", "data": data})
+
+    def client_settle_city(self, unit_id):
+        self.send_queue.put({"type": "turnFinal", "actionType": "settleCity", "data": unit_id})
 
     def setup_ui(self):
         # MAIN UI
         self.ui_background = arcade.create_rectangle_filled(640, 95, 1280, 190, color=(150, 150, 150))
 
-        create_unit = arcade.Sprite(
+        create_basic = arcade.Sprite(
             "assets/create_unit_button.png",
             scale=0.25,
             center_x=200,
             center_y=50
+        )
+        create_heavy = arcade.Sprite(
+            "assets/create_unit_button.png",
+            scale=0.25,
+            center_x=600,
+            center_y=50
+        )
+        create_shield = arcade.Sprite(
+            "assets/create_unit_button.png",
+            scale=0.25,
+            center_x=600,
+            center_y=100
+        )
+        create_settler = arcade.Sprite(
+            "assets/create_unit_button.png",
+            scale=0.25,
+            center_x=600,
+            center_y=150
         )
         move_unit = arcade.Sprite(
             "assets/move_button.png",
@@ -236,11 +272,23 @@ class Game(Base):
             center_x=200,
             center_y=100
         )
+        settle_city = arcade.Sprite(
+            "assets/attack_unit_button.png",
+            scale=0.25,
+            center_x=200,
+            center_y=100
+        )
         attack_city = arcade.Sprite(
             "assets/attack_city_button.png",
             scale=0.25,
             center_x=200,
             center_y=150
+        )
+        upgrade_city = arcade.Sprite(
+            "assets/simple_button.png",
+            scale=0.25,
+            center_x=200,
+            center_y=100
         )
 
         # selectors
@@ -253,12 +301,24 @@ class Game(Base):
             self.selectors[1][selector_number] = lambda: None
 
         # city UI
-        self.city_ui[0].append(create_unit)
-        self.city_ui[1] = [self.create_unit]
+        self.city_ui[0].extend([create_basic, upgrade_city])
+        self.city_ui[1] = [self.create_basic, self.upgrade_city]
+        self.city2_ui[0].extend([create_basic, upgrade_city, create_shield])
+        self.city2_ui[1] = [self.create_basic, self.upgrade_city, self.create_shield]
+        self.city3_ui[0].extend([create_basic, upgrade_city, create_shield, create_heavy])
+        self.city3_ui[1] = [self.create_basic, self.upgrade_city, self.create_shield, self.create_heavy]
+        self.city4_ui[0].extend([create_basic, upgrade_city, create_shield, create_heavy, create_settler])
+        self.city4_ui[1] = [self.create_basic, self.upgrade_city, self.create_shield, self.create_heavy, self.create_settler]
+        self.city5_ui[0].extend([create_basic, create_shield, create_heavy, create_settler])
+        self.city5_ui[1] = [self.create_basic, self.create_shield, self.create_heavy, self.create_settler]
 
         # unit UI
         self.unit_ui[0].extend([move_unit, attack_unit, attack_city])
         self.unit_ui[1].extend([self.move_unit, self.attack_unit, self.attack_city])
+
+        # settler UI
+        self.settler_ui[0].extend([move_unit, settle_city])
+        self.settler_ui[1].extend([self.move_unit, self.settle_city])
 
         # TOP BAR UI
         player_icon = arcade.Sprite(
@@ -303,8 +363,20 @@ class Game(Base):
         self.selected = selected
         self.update_ui()
 
-    def create_unit(self, city, city_id):
+    def create_basic(self, city, city_id):
         action_maker = self.action_maker_maker(self.client_create_unit, {"owner": self.player_id, "type": "basic"})
+        self.move_selectors_all_block(city["loc"], action_maker)
+
+    def create_shield(self, city, city_id):
+        action_maker = self.action_maker_maker(self.client_create_unit, {"owner": self.player_id, "type": "shield"})
+        self.move_selectors_all_block(city["loc"], action_maker)
+
+    def create_heavy(self, city, city_id):
+        action_maker = self.action_maker_maker(self.client_create_unit, {"owner": self.player_id, "type": "heavy"})
+        self.move_selectors_all_block(city["loc"], action_maker)
+
+    def create_settler(self, city, city_id):
+        action_maker = self.action_maker_maker(self.client_create_unit, {"owner": self.player_id, "type": "settler"})
         self.move_selectors_all_block(city["loc"], action_maker)
 
     def move_unit(self, unit, unit_id):
@@ -318,6 +390,12 @@ class Game(Base):
     def attack_city(self, unit, unit_id):
         action_maker = self.action_maker_maker(self.client_attack_city, {"unit_id": unit_id, "loc": [0, 0]})
         self.move_selectors_cites_only(unit["loc"], action_maker)
+
+    def upgrade_city(self, city, city_id):
+        self.client_upgrade_city({"city_id": city_id})
+
+    def settle_city(self, unit, unit_id):
+        self.client_settle_city(unit_id)
 
     def action_maker_maker(self, action, arg: dict, hide_ui=True):
         def _action_maker(**kwargs):
@@ -333,9 +411,22 @@ class Game(Base):
 
     def update_ui(self):
         if self.selected[0] == "cities" and self.world["cities"][self.selected[1]]["owner"] == self.player_id:
-            self.current_ui = self.city_ui
+            level = self.world["cities"][self.selected[1]]["level"]
+            if level == 0:
+                self.current_ui = self.city_ui
+            elif level == 1:
+                self.current_ui = self.city2_ui
+            elif level == 2:
+                self.current_ui = self.city3_ui
+            elif level == 3:
+                self.current_ui = self.city4_ui
+            elif level == 4:
+                self.current_ui = self.city5_ui
         elif self.selected[0] == "units" and self.world["units"][self.selected[1]]["owner"] == self.player_id:
-            self.current_ui = self.unit_ui
+            if self.world["units"][self.selected[1]]["type"] == "settler":
+                self.current_ui = self.settler_ui
+            else:
+                self.current_ui = self.unit_ui
         else:
             self.current_ui = self.empty_ui
 
@@ -418,6 +509,8 @@ class Game(Base):
 
     def is_xy_occupied(self, pos):
         for unit_num, unit in enumerate(self.world["units"]):
+            if unit is None:
+                continue
             if unit["loc"] == pos:
                 return ["units", unit_num]
         else:
