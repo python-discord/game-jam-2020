@@ -38,7 +38,7 @@ You can play on the same server as your friends if you'd like and share leaderbo
 
 - Input your name/password, click register again to confirm.
 
-- Once you have a account go back to login view by clicking login button.
+- Once you have an account go back to login view by clicking login button.
 
 - Input you username and password and press login again.
 
@@ -69,7 +69,7 @@ Get the highest score and compete with your friends!
 The mouse cursor will track your current state (character and speed) and change itself accordingly (color, scope / crosshair)
 The cursor will be your normal system cursor on main menus.
 
-### Game Peeks
+## Game Peeks
 <img src="https://cdn.discordapp.com/attachments/693177507683369010/704005792197640232/unknown.png">
 <img src="https://cdn.discordapp.com/attachments/693177507683369010/704006014554472498/unknown.png">
 <img src="https://cdn.discordapp.com/attachments/693177507683369010/704016339895058443/unknown.png">
