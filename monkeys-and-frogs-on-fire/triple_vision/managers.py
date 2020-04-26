@@ -10,7 +10,7 @@ from triple_vision.entities import (
     Enemies,
     StationaryEnemy
 )
-from triple_vision.entities import DamageIndicator, States
+from triple_vision.entities import TextIndicator, States
 from triple_vision.entities.sprites import Potion, PotionEffect
 from triple_vision.networking import client
 from triple_vision.entities import Melee
@@ -55,8 +55,12 @@ class GameManager:
         self.enemies.append(enemy)
 
     def create_dmg_indicator(self, dmg: float, position: Tuple[float, float]) -> None:
-        dmg_indicator = DamageIndicator(str(int(dmg)), *position)
+        dmg_indicator = TextIndicator(str(int(dmg)), *position)
         self.damage_indicators.append(dmg_indicator)
+
+    def create_text_indicator(self, text: str, position: Tuple[float, float]) -> None:
+        indicator = TextIndicator(text, *position)
+        self.damage_indicators.append(indicator)
 
     def on_update(self, delta_time) -> None:
         for enemy in self.enemies:
@@ -136,10 +140,12 @@ class GameManager:
             potion.on_update(delta_time)
 
         if len(self.enemies) == 0:
+            # TODO PLAY WIN SOUND
             self.view.level += 1
             self.view.sound_manager.play_song()
             self.view.create_level()
         elif not self.view.player.is_alive:
+            # TODO PLAY DEATH SOUND
             self.view.level += 0
             self.view.sound_manager.play_song()
             self.view.create_level()
