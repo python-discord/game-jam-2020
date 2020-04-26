@@ -1,4 +1,3 @@
-Salami/spritesheet.png
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -130,13 +129,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 .vscode/settings.json
-Salami/icon.png
-Salami/spritesheet-src.pdn
-Salami/ruins_0.png
-Salami/ruins_1.png
-Salami/load_screen.png
-Salami/load_screen.pdn
-Salami/thin_chars.pdn
-Salami/thin_chars.png
-Salami/chars.png
-Salami/welcome_screen.pdn
+
+resources
