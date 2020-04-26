@@ -11,7 +11,7 @@ class Engine:
 
         self.gravity = gravity
 
-    def update(self, delta):
+    def update(self):
         
         for entity in self.entities:
             if entity.removed:
