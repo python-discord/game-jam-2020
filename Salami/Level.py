@@ -14,8 +14,11 @@ from Entity import Entity, Texs, Tex
 from Projectile import Projectile
 from Mob import Mob
 from Player import Player
-from Ball import Ball
+from EnemyBall import EnemyBall
+from Enemy import Enemy
 from Tile import Tile
+from Slime import Slime
+from Boss import Boss
 
 from Constants import WIDTH, HEIGHT, \
     TILE_SIZE, GRAVITY, SQUARE_HIT_BOX, \
@@ -31,11 +34,13 @@ class Level:
         self.width = WIDTH // TILE_SIZE
         self.height = HEIGHT // TILE_SIZE
 
-        self.tile_list = arcade.SpriteList(use_spatial_hash=True, is_static=True)
-        self.entities = arcade.SpriteList()
+        self.tile_list = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=32, is_static=True)
+        self.entities = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=64)
+        self.particles = arcade.SpriteList(is_static=True)
+
         self.tiles = {}
 
-        self.rooms = []
+        self.reset = False
 
         # for i in range(100):
         #     ball = Ball(Textures.get_texture(2, 5), 128 * random.random(), 128 * random.random())
@@ -43,23 +48,12 @@ class Level:
         #     ball.change_y = random.randint(-8, 8)
         #     self.add_entity_to_list(ball, self.entities)
 
-        self.player = Player(Textures.SPRITESHEET[4 + 3 * 16], 64, 64, self.keyboard)
-        # self.player.flying = False
+        self.player = Player(64, 64, self.keyboard)
         self.add_entity_to_list(self.player, self.entities)
 
         self.level_gen = LevelGenerator.LevelGen(self)
-
-        self.generate_level(self.player.x, self.player.y)
-
-        # rooms = [(0, 0, 1), (1, 1, 1), (2, 2, 1), (3, 3, 1)]
-        # for i, room in enumerate(rooms):
-        #     LevelGenerator.generateRoom(self,
-        #         room[0] * ROOM_WIDTH + room[0],
-        #         room[1] * ROOM_HEIGHT + room[1], room[2])
-        
-        self.ball = Ball(Textures.SPRITESHEET[2 + 5 * 16], self.player.center_x, self.player.center_y)
-        self.ball.change_x = 2
-        self.add_entity_to_list(self.ball, self.entities)
+        self.paused = True
+        self.difficulty = 1
 
         self.engine = Engine(self.entities, self.tile_list, self, GRAVITY)
         
@@ -71,26 +65,39 @@ class Level:
         for i in range(3):
             heart = arcade.Sprite()
             heart.center_x = self.player.center_x - TILE_SIZE + i * TILE_SIZE
-            heart.center_y = self.player.center_y + TILE_SIZE
+            heart.center_y = self.player.center_y - TILE_SIZE * 1.5
             heart.texture = Textures.get_texture(4, 9)
             self.health_bar.append(heart)
 
+        self.setup()
+
+    def setup(self):
+    
+        self.generate_level(self.player.x, self.player.y)
+        # self.level_gen.rooms_to_draw.pop()
+
+        self.title_sprite = Tile(Textures.TITLE_TEXTURE, 0, 0, False)
+        self.flying = True
+        self.title_sprite.center_x = TILE_SIZE * 10 + 8
+        self.title_sprite.center_y = TILE_SIZE * 7 + 8
+        self.add_tile(self.title_sprite)
+
     def update(self, delta):
 
-        # e = Entity(Texs.ROCK_TILE, 0, 0)
-
-        # self.add_entity_to_list(e, self.entities)
-
-        # e.level = None
-        # self.entities.remove(e)
         self.level_gen.update()
 
-        self.engine.update(delta)
+        if not (self.level_gen.generating or self.level_gen.drawing or self.paused):
+            self.engine.update()
+
+        if self.reset:
+            self.difficulty += 1
+            self.reset_level()
+            self.generate_level(self.player.center_x, self.player.center_y)
         
         remainder = self.player.health if self.player.health > 0 else 0
         for i, health in enumerate(self.health_bar):
             health.center_x = self.player.center_x - TILE_SIZE + i * TILE_SIZE
-            health.center_y = self.player.center_y + TILE_SIZE
+            health.center_y = self.player.center_y - TILE_SIZE * 1.5
             if self.player.health < self.curr_health:
                 if remainder >= 3:
                     health.texture = Textures.get_texture(4, 9)
@@ -103,11 +110,12 @@ class Level:
     def draw(self):
         
         self.entities.draw(filter=gl.GL_NEAREST)
+        self.particles.draw(filter=gl.GL_NEAREST)
         self.tile_list.draw(filter=gl.GL_NEAREST)
 
         self.health_bar.draw(filter=gl.GL_NEAREST)
 
-        self.player.draw_hit_box(arcade.color.BLUE)
+        # self.player.draw_hit_box(arcade.color.BLUE)
 
     def add_entity_to_list(self, entity, list):
         entity.set_hit_box(SQUARE_HIT_BOX)
@@ -115,7 +123,6 @@ class Level:
         list.append(entity)
 
     def add_tile(self, tile):
-        print(f"{tile.left}, {tile.bottom}, {tile.width}")
         # tile.set_hit_box(SQUARE_HIT_BOX)
         tile.set_level(self)
         self._set_tile(int(tile.center_x // TILE_SIZE), int(tile.center_y // TILE_SIZE), tile)
@@ -149,9 +156,33 @@ class Level:
         return list
 
     def generate_level(self, x, y):
-        level_gen_x = int(x / TILE_SIZE / ROOM_WIDTH)
-        level_gen_y = int(x / TILE_SIZE / ROOM_HEIGHT)
+        level_gen_x = int(x // TILE_SIZE // ROOM_WIDTH)
+        level_gen_y = int(y // TILE_SIZE // ROOM_HEIGHT)
         
-        # self.level_gen.startGen(level_gen_x, level_gen_y)
+        self.level_gen.startGen(level_gen_x, level_gen_y)
 
-        LevelGenerator.generateLevel(self, int(level_gen_x), int(level_gen_y))
+        # LevelGenerator.generateLevel(self, int(level_gen_x), int(level_gen_y))
+
+    def reset_level(self):
+    
+        self.tile_list = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=32, is_static=True)
+        self.entities = arcade.SpriteList(use_spatial_hash=True, spatial_hash_cell_size=64)
+        self.tiles = {}
+        # self.engine.tiles = self.tile_list
+        # self.physics_engine.platforms = self.tile_list
+
+        self.add_entity_to_list(self.player, self.entities)
+
+        # for entity in self.entities:
+        #     # if entity == self.player:
+        #     #     continue
+        #     entity.removed = True
+
+        # self.engine.update()
+        # self.add_entity_to_list(self.player, self.entities)
+
+        self.level_gen.rooms = {}
+        self.level_gen.current_room = None
+        self.level_gen.rooms_to_draw = []
+        self.level_gen.generating = False
+        self.level_gen.drawing = False
