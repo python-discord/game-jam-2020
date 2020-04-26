@@ -34,8 +34,6 @@ class Display(arcade.Window):
         if self.music_bool:
             self.music_play()
 
-
-
     def on_draw(self):
         arcade.start_render()
         self.scenes[self.scene].draw()
@@ -48,7 +46,6 @@ class Display(arcade.Window):
                 self.music.stop()
             self.music = arcade.Sound(self.music_load[self.scene], streaming=True)
             self.music.play(0.01)
-
 
     def on_update(self, delta_time: float):
         self.scenes[self.scene].update(delta_time)
