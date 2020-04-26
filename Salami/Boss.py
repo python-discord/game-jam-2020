@@ -13,7 +13,7 @@ class Boss(Enemy):
         self.texture_idle = arcade.load_texture("resources/spritesheet.png", 128, 32, 32, 32)
         self.texture_active = arcade.load_texture("resources/spritesheet.png", 160, 32, 32, 32)
 
-        super().__init__(self.texture_idle, x, y, difficulty)
+        super().__init__(self.texture_active, x, y, difficulty)
 
         self.set_hit_box(Maths.create_hit_box(self.width, self.height))
         print(f"{self.width} {self.height}")
@@ -52,3 +52,8 @@ class Boss(Enemy):
             self.curr_attack_frame = self.max_attack_frame
         else:
             self.curr_attack_frame -= 1
+
+    def die(self):
+        self.level.reset_timer = 180
+
+        super().die()
