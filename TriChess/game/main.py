@@ -3,7 +3,7 @@ from os.path import join, dirname, realpath
 import arcade
 
 
-from TriTess.game.gui_elements import SkipTurnBtn, PlayHex2Btn, PlayTri3Btn
+from TriChess.game.gui_elements import SkipTurnBtn, PlayHex2Btn, PlayTri3Btn
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 800

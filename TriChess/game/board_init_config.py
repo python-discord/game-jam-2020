@@ -1,3 +1,7 @@
+"""this file contains some board configuration data to initialze the board with right grid shape and pieces"""
+
+from typing import Dict
+
 num_players = {'hex2': 2,
                'tri3': 3}
 
@@ -8,8 +12,8 @@ player_flag = {'hex2': [True, True],
                'tri3': [True, True, True]}
 
 
-def gen_hex2_grid_map(cell_width):
-    def is_valid_hex2_cell(x, y, r):
+def gen_hex2_grid_map(cell_width: int) -> Dict[(int, int, bool), 'TriCell']:
+    def is_valid_hex2_cell(x: int, y: int, r: bool) -> bool:
         if r and x + y == board_size['hex2'] - 1:
             return False
         elif r not in [True, False] or 0 < x >= 8 or 0 < y >= 8 or x + y + r <= 3:
@@ -25,8 +29,8 @@ def gen_hex2_grid_map(cell_width):
     return hex2_grid_map
 
 
-def gen_tri3_grid_map(cell_width):
-    def is_valid_trichess3_cell(x, y, r):
+def gen_tri3_grid_map(cell_width: int) -> Dict[(int, int, bool), 'TriCell']:
+    def is_valid_trichess3_cell(x: int, y: int, r: bool) -> bool:
         if (x, y, r) in trichess3_good_list:
             return True
         elif r in [True, False] and 10 > x >= 0 and 10 > y >= 0 and 18 > x + y + r > 7:
@@ -122,4 +126,5 @@ trichess3_good_list = {(0, 10, 0), (0, 10, 1), (1, 10, 0),
                        (10, 0, 0), (10, 0, 1), (10, 1, 0),
                        (10, 6, 0), (10, 6, 1), (10, 7, 0)}
 
+# This is added to the bottom to preven cyclical import
 from .trigrid import TriCell
