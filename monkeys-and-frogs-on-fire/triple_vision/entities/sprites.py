@@ -5,7 +5,8 @@ from typing import Optional
 import arcade
 
 from triple_vision.utils import get_change_vector, is_in_radius_positions
-
+from triple_vision.entities.entities import Entity
+from triple_vision.sound import SoundManager
 
 class MovingSprite(arcade.Sprite):
     def __init__(self, moving_speed, rotate=True, *args, **kwargs):
@@ -216,9 +217,9 @@ class PotionEffect:
         self.resistance = resistance
 
 
-class Potion(arcade.Sprite):
-    def __init__(self, player, effect: PotionEffect, duration: float = None, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class Potion(Entity):
+    def __init__(self, ctx, player, effect: PotionEffect, duration: float = None, *args, **kwargs):
+        super().__init__(ctx, *args, **kwargs)
         self.player = player
         self.effect = effect
         self.duration = duration
@@ -229,6 +230,9 @@ class Potion(arcade.Sprite):
         self.player.hp += self.effect.heal
         self.player.speed_multiplier += self.effect.speed
         self.player.resistance += self.effect.resistance
+
+        SoundManager.add_sound("pickup_0.wav")
+        SoundManager.play_sound("pickup_0.wav")
 
         if self.duration is None:
             self.kill()
