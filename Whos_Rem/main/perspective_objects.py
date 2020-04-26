@@ -22,6 +22,7 @@ class Shape:
         dims to [1, 0.5] because at its largest value, width will be 400*1 = 400
         and height will be 400*0.5 = 200
         """
+        self.screen_width_center = arcade.window_commands.get_window().width // 2
         self.end_x = x
         self.start_y = y
         self.scale_size = scale_size
@@ -85,7 +86,7 @@ class ShapeManager:
 
     @staticmethod
     def create_shape(note, total_notes=3, colour=(255, 0, 0), screen_width=1920) -> Shape:
-        final_spacing = int(screen_width * 0.4)
+        final_spacing = int(screen_width * (768 / screen_width))
         central_spacing = final_spacing // (total_notes - 1) if total_notes != 1 else 0
         width = int(central_spacing * 0.55)
         x_pos = int(central_spacing * note)
