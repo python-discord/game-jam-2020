@@ -147,7 +147,6 @@ class GameView(arcade.View):
         self.turret_list.draw()
         self.entity_list.draw()
         self.dmg_list.draw()
-        # Turrets layer
 
         # Player layer
         self.player_list.draw()
@@ -172,7 +171,6 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time: float):
         """ On Update method"""
-        self.animationDeltaTime += 1
 
         updateActualPos(self.player_sprite)
         movePlayer(self.player_sprite, delta_time)
@@ -198,10 +196,9 @@ class GameView(arcade.View):
 
         self.player_list.update_animation()
         self.dmg_list.update_animation()
-        if self.animationDeltaTime >= 10:
-            self.animationDeltaTime = 0
-            self.entity_list.update_animation()
-            self.turret_list.update_animation()
+
+        self.entity_list.update_animation()
+        self.turret_list.update_animation()
 
     def on_key_press(self, symbol: int, modifiers: int):
         """ Get keyboard's presses. """
@@ -233,6 +230,9 @@ class GameView(arcade.View):
                 self.shownRoundNumber += 1
                 self.spawnList = decomposeSpawnList(getSpawnList(self.roundNumber, self.generatedTimeSinceFirst))
                 self.betweenRounds = False
+
+        if symbol == arcade.key.X:
+            self.sound_dict['testsound.wav'].play()
 
     def on_key_release(self, symbol: int, modifiers: int):
         """ Get keyboard's releases. """
