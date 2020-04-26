@@ -40,10 +40,10 @@ class GameOver(arcade.View):
         self.screen_center_x = int(self.window.get_size()[0] / 2)
         self.screen_center_y = int(self.window.get_size()[1] / 2)
 
-        game_over_text = 'Game Over!'
+        game_over_text = 'Game Over! You Couldn\'t Get More Coins Than You Did On The Bar Round!'
         self.game_over_text = arcade.draw_text(game_over_text, self.screen_center_x, self.screen_center_y + 150,
                                            anchor_x='center',
-                                           anchor_y='center', color=arcade.csscolor.WHITE, font_size=32, font_name='fonts/RobotoMono-Regular.ttf')
+                                           anchor_y='center', color=arcade.csscolor.WHITE, font_size=16, font_name='fonts/RobotoMono-Regular.ttf')
 
         restart_text = 'Restart'
         self.restart_button = arcade.draw_text(restart_text, self.screen_center_x, self.screen_center_y,
@@ -56,7 +56,6 @@ class GameOver(arcade.View):
 
     def on_mouse_motion(self, x, y, dx, dy):
         if self.play_left + self.restart_button.width + 50 >= x >= self.play_left - 50 and self.play_bottom + self.restart_button.height + 25 >= y >= self.play_bottom - 25:
-            print('True')
             self.draw_restart_button_hover = True
             self.hovering = True
         else:
@@ -74,18 +73,20 @@ class GameOver(arcade.View):
     def on_mouse_release(self, x, y, button, modifiers):
         if self.play_left + self.restart_button.width + 50 >= x >= self.play_left - 50 and self.play_bottom + self.restart_button.height + 25 >= y >= self.play_bottom - 25:
             from open_window_views import MyGame
-            game = MyGame(2, 10)
+            game = MyGame(1, 0, 0)
             self.window.show_view(game)
 
     def on_draw(self):
         arcade.start_render()
+
+        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
 
         screen_width, screen_height = self.window.get_size()
         self.screen_center_x = int(screen_width / 2)
         self.screen_center_y = int(screen_height / 2)
 
         if self.old_screen_center_x != self.screen_center_x or self.old_screen_center_y != self.screen_center_y:
-            game_over_text = 'Game Over!'
+            game_over_text = 'Game Over! You Couldn\'t Get More Coins Than You Did On The Bar Round!'
             self.game_over_text = arcade.draw_text(game_over_text, self.screen_center_x, self.screen_center_y + 150,
                                                anchor_x='center',
                                                anchor_y='center', color=arcade.csscolor.WHITE, font_size=32,
@@ -104,10 +105,8 @@ class GameOver(arcade.View):
         if self.draw_restart_button_hover:
             if self.clicking:
                 arcade.draw_rectangle_filled(self.screen_center_x, self.screen_center_y, self.restart_button.width + 100, self.restart_button.height + 50, self.click_color)
-                print('Drawing')
             elif self.hovering:
                 arcade.draw_rectangle_filled(self.screen_center_x, self.screen_center_y, self.restart_button.width + 100, self.restart_button.height + 50, self.hover_color)
-                print('Drawing')
 
         self.play_bottom = self.restart_button.bottom
         self.play_left = self.restart_button.left

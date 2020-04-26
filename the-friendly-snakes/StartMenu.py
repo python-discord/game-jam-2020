@@ -75,11 +75,13 @@ class StartMenuView(arcade.View):
     def on_mouse_release(self, x, y, button, modifiers):
         if self.play_left + 134 + 50 >= x >= self.play_left - 50 and self.play_bottom + 80 + 25 >= y >= self.play_bottom - 25:
             from open_window_views import MyGame
-            game = MyGame(1, 0)
+            game = MyGame(1, 0, 0)
             self.window.show_view(game)
 
     def on_draw(self):
         arcade.start_render()
+
+        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
 
         screen_width, screen_height = self.window.get_size()
         self.screen_center_x = int(screen_width / 2)

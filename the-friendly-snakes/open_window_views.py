@@ -3,11 +3,7 @@ from pyglet import gl
 from StartMenu import StartMenuView
 import random
 from GameOver import GameOver
-
-# help-phosphorus
-# game-development
-
-GAME_OVER = GameOver()
+from YouWin import YouWin
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
@@ -109,13 +105,14 @@ class Potion(arcade.Sprite):
 
 
 class MyGame(arcade.View):
-    def __init__(self, run, previous_time):
+    def __init__(self, run, previous_time, previous_coins):
         super().__init__()
 
         self.window = None
 
         self.game_timer = 0
         self.previous_time = previous_time
+        self.previous_coins = previous_coins
         self.run = run
         self.drew_game_over = False
 
@@ -374,7 +371,7 @@ class MyGame(arcade.View):
 
         if self.draw_secret_tip:
             tip = 'Press E to Enter'
-            arcade.draw_text(tip, 81 * 96 + 48, 4 * 96 - 48, arcade.csscolor.WHITE, 32,
+            arcade.draw_text(tip, 81 * 96 - 24, 4 * 96 - 48, arcade.csscolor.WHITE, 32,
                              font_name='fonts/RobotoMono-Regular.ttf')
 
         if self.draw_portal_tip:
@@ -399,9 +396,15 @@ class MyGame(arcade.View):
         arcade.draw_text(timer_text, self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 100, arcade.csscolor.BLACK,
                          32, font_name='fonts/RobotoMono-Regular.ttf')
 
-        if self.previous_time > 0:
+        if self.run == 2:
             timer_text = f'Previous Time: {int(self.previous_time)}'
             arcade.draw_text(timer_text, self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 150,
+                             arcade.csscolor.BLACK,
+                             32, font_name='fonts/RobotoMono-Regular.ttf')
+
+        if self.run == 2:
+            timer_text = f'Previous Coins: {int(self.previous_coins)}'
+            arcade.draw_text(timer_text, self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 200,
                              arcade.csscolor.BLACK,
                              32, font_name='fonts/RobotoMono-Regular.ttf')
 
@@ -529,7 +532,7 @@ class MyGame(arcade.View):
             if self.draw_potion_2_tip:
                 if key == arcade.key.E:
                     if self.coin_counter >= 5:
-                        PLAYER_JUMP_SPEED += 1
+                        PLAYER_JUMP_SPEED += 4
                         self.coin_counter -= 5
 
             if self.draw_potion_3_tip:
@@ -556,7 +559,8 @@ class MyGame(arcade.View):
             if self.draw_portal_tip:
                 if key == arcade.key.E:
                     window = arcade.get_window()
-                    next_game = MyGame(2, self.game_timer)
+                    self.music.stop()
+                    next_game = MyGame(2, self.game_timer, self.coin_counter)
                     window.show_view(next_game)
 
         if key == arcade.key.ESCAPE:
@@ -712,7 +716,7 @@ class MyGame(arcade.View):
                 self.draw_potion_3_tip = False
 
             # Secret Tip
-            if self.player_sprite.left >= 83 * 96 and self.player_sprite.top <= 4 * 96 and self.player_sprite.bottom >= 0:
+            if self.player_sprite.left >= 81 * 96 and self.player_sprite.top <= 4 * 96 and self.player_sprite.bottom >= 0:
                 self.draw_secret_tip = True
             else:
                 self.draw_secret_tip = False
@@ -724,9 +728,13 @@ class MyGame(arcade.View):
                 self.draw_portal_tip = False
 
             if self.game_timer >= self.previous_time and self.run == 2 and not self.drew_game_over:
+                self.music.stop()
                 window = arcade.get_window()
-                game_over = GameOver()
-                window.show_view(game_over)
+                if self.coin_counter > self.previous_coins:
+                    window.show_view(YouWin(self.coin_counter))
+                else:
+                    window.show_view(GameOver())
+
 
         self.player_list.update_animation()
         self.potion_list.update_animation()
@@ -741,9 +749,8 @@ class MyGame(arcade.View):
 
 def main():
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=True)
-    game = MyGame(2, 10)
-    game_over = GameOver()
-    window.show_view(game_over)
+    start_menu = StartMenuView()
+    window.show_view(start_menu)
     arcade.run()
 
 
