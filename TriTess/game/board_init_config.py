@@ -21,7 +21,7 @@ def gen_hex2_grid_map(cell_width):
         for grid_y in range(board_size['hex2'] - grid_x):
             for grid_r in [False, True]:
                 if is_valid_hex2_cell(grid_x, grid_y, grid_r):
-                    hex2_grid_map[(grid_x, grid_y, grid_r)] = TriCell(grid_x, grid_y, grid_r, cell_width)
+                    hex2_grid_map[(grid_x, grid_y, grid_r)] = TriCell((grid_x, grid_y, grid_r), cell_width)
     return hex2_grid_map
 
 
@@ -39,7 +39,7 @@ def gen_tri3_grid_map(cell_width):
         for grid_y in range(board_size['tri3'] - grid_x):
             for grid_r in [False, True]:
                 if is_valid_trichess3_cell(grid_x, grid_y, grid_r):
-                    tri3_grid_map[(grid_x, grid_y, grid_r)] = TriCell(grid_x, grid_y, grid_r, cell_width)
+                    tri3_grid_map[(grid_x, grid_y, grid_r)] = TriCell((grid_x, grid_y, grid_r), cell_width)
     return tri3_grid_map
 
 
@@ -75,11 +75,11 @@ hex2_player2_init = [("pawn", (index, 6, 0), p2_orient, player_num) for index in
 
 player_orient = 0
 player_num = 0
-
 trichess3_player1_init = [("pawn", (index, 1, 0), player_orient, player_num) for index in range(6, 11)] + \
                          [("pawn", (index, 1, 1), player_orient, player_num) for index in range(6, 10)] + \
-                         [("rook", (6, 1, 0), player_orient, player_num),
-                          ("rook", (10, 1, 0), player_orient, player_num),
+                         [("rook", (6, 0, 1), player_orient, player_num),
+                          # ("rook", (10, 0, 1), player_orient, player_num),
+                            ("rook", (5, 5, 1), player_orient, player_num),
                           ("knight", (7, 0, 0), player_orient, player_num),
                           ("knight", (8, 0, 1), player_orient, player_num),
                           ("knight", (10, 0, 0), player_orient, player_num),
