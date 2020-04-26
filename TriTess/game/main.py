@@ -10,6 +10,7 @@ SCREEN_HEIGHT = 800
 
 SCREEN_TITLE = "TriChess"
 data_dir = join(dirname(realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
+party_horn = arcade.Sound(join(data_dir, 'party_horn.mp3'))
 
 
 class TriTess(arcade.Window):
@@ -66,6 +67,7 @@ class TriTess(arcade.Window):
                              align="left")
 
             if self.trigrid.finished:
+                party_horn.play()
                 arcade.draw_text(f"{self.trigrid.cur_player_name()} WINS",
                                  SCREEN_WIDTH / 2, SCREEN_HEIGHT * .9, arcade.color.WHITE, 30, bold=True,
                                  align="center", anchor_x="center", anchor_y="center")
