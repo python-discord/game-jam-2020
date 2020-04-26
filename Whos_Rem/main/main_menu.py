@@ -1,10 +1,37 @@
 from pathlib import Path
 import time
+import math
 
 import arcade
 import pyautogui
 from .display import Button
 from .display import ColourBlend as cb
+
+
+class SwayingNote:
+    width, height = pyautogui.size()
+
+    def __init__(self, x_pos, y_pos, path, rocking_rate=0.05):
+        self.image = arcade.Sprite(
+            filename=path,
+            scale=int(min(self.width, self.height) * 0.2) / 512,
+            center_x=x_pos,
+            center_y=y_pos,
+        )
+        self.rocker = self.rocking(rocking_rate, max_angle=12)
+
+    def draw(self, brightness):
+        self.image.alpha = int(255*brightness)
+        self.image.angle = next(self.rocker)
+        self.image.draw()
+
+    @staticmethod
+    def rocking(inc=0.1, max_angle=1):
+        val = 0
+        while True:
+            yield math.sin(val)*max_angle
+            val += inc
+            val %= math.pi * 2
 
 
 class MainMenu(arcade.View):
@@ -49,6 +76,13 @@ class MainMenu(arcade.View):
         center_y=int(height * 0.4),
     )
 
+    note_1 = SwayingNote(width*0.1, height*0.75,
+                         path=Path().cwd() / Path("main/Resources/main_menu/music_note_1.png"))
+    note_2 = SwayingNote(width * 0.2, height * 0.25,
+                         path=Path().cwd() / Path("main/Resources/main_menu/music_note_2.png"))
+    note_3 = SwayingNote(width * 0.7, height * 0.55,
+                         path=Path().cwd() / Path("main/Resources/main_menu/music_note_3.png"))
+
     def __init__(self, main):
         super().__init__()
         self.main = main
@@ -71,6 +105,9 @@ class MainMenu(arcade.View):
                                       border_width=min(self.width, self.height)*0.02)
 
         self.draw_text()
+        self.note_1.draw(self.main.brightness)
+        self.note_2.draw(self.main.brightness)
+        self.note_3.draw(self.main.brightness)
 
     def on_mouse_press(self, x, y, button, modifiers):
         if self.settings_button.pressed(x, y):

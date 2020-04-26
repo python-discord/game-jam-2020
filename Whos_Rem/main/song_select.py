@@ -13,6 +13,7 @@ class SongChoices:
         2: "Camellia - Light it up",
         3: "Getsix - Sky Fracture VIP (feat. Miss Lina)",
         4: "The Fat Rat - Stronger",
+        5: "xi - Akasha"
     }
     screen_size = pyautogui.size()
 
