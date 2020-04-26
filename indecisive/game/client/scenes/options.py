@@ -27,12 +27,7 @@ class Options(Base):
                 center_x=770,
                 center_y=580
             ),
-            "help": arcade.Sprite(
-                "./assets/help.png",
-                scale=0.5,
-                center_x=300,
-                center_y=120
-            ),
+
         }
         self.on_click()
         self.spritelist.extend(self.spritedict.values())
@@ -68,7 +63,7 @@ class Options(Base):
                 self.display.music.stop()
             self.display.music_bool = self.music_pressed
 
-        elif self.spritedict["help"].collides_with_point((x, y)) is True:
-            self.display.change_scenes("help")
+        #elif self.spritedict["help"].collides_with_point((x, y)) is True:
+            #self.display.change_scenes("help")
 
 

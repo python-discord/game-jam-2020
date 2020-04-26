@@ -1,4 +1,5 @@
 {
   "loading": "./assets/music2.mp3",
-  "game": "./assets/music1.mp3"
+  "game": "./assets/music1.mp3",
+  "victory": "./assets/music_victory.mp3"
 }
