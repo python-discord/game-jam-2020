@@ -46,6 +46,7 @@ class Game(arcade.Window):
             arcade.draw_text(f'Scores:', self._width/2, self._height/2+25, arcade.color.WHITE, font_size=15.0, anchor_x='center', anchor_y='bottom', font_name='./game/resources/uni0553.ttf')
             for i in range(3):
                 arcade.draw_text(f'{self.scores[i]}', self._width/2-(40*(i-1)), self._height/2, arcade.color.WHITE, font_size=15.0, anchor_x='center', anchor_y='bottom', font_name='./game/resources/uni0553.ttf')
+            arcade.draw_text(f'[space] return to main menu', self._width/2, self._height/2-75, arcade.color.WHITE, font_size=15.0, anchor_x='center', anchor_y='bottom', font_name='./game/resources/uni0553.ttf')
     def on_update(self, delta_time):
         if self.state == 'title_screen':
             if self.keypressed.get(arcade.key.KEY_1, False):
@@ -66,6 +67,8 @@ class Game(arcade.Window):
                     ))
             return
         elif self.state == 'game_over':
+            if self.keypressed.get(arcade.key.SPACE, False):
+                self.state = 'title_screen'
             return
         # if self.frame == 20:
         #     self.entity_list.append(self.classes['Wall'](150, self._height-50, 0))

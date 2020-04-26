@@ -33,7 +33,6 @@ class Entity(arcade.AnimatedTimeBasedSprite):
         # self.texture = window.textures[self.sprite+'0']
         self.draw()
     def take_damage(self, damage):
-        print(damage)
         self.hitpoints -= damage
         self.hitpoints = min(self.max_hitpoints, self.hitpoints)
         if self.hitpoints <= 0:
