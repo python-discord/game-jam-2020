@@ -8,7 +8,7 @@ PLAYER2_COLOR = arcade.color.BLACK
 PLAYER3_COLOR = arcade.color.BATTLESHIP_GREY
 color_dict = {0: PLAYER1_COLOR, 1: PLAYER2_COLOR, 2: PLAYER3_COLOR}
 data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
-DEFAULT_SPRITE_SIZE = 20
+DEFAULT_SPRITE_SIZE = 80
 chess_thump = arcade.Sound(os.path.join(data_dir, "chess_tap.mp3"))
 # TODO fix the fact that r changes depending on  orientation
 MOVE_DICT = {0: lambda x, y, r: (x + 1, y + 1, not r) if r else (x, y, not r),
@@ -136,12 +136,19 @@ class Rook(TriPiece):
     def list_valid_moves(self):
         valid_moves = []
 
-        rook_direction_list = [lambda r: 1 if r else 2,
-                               lambda r: 5 if r else 4,
-                               lambda r: 1 if r else 0,
-                               lambda r: 3 if r else 4,
-                               lambda r: 3 if r else 2,
-                               lambda r: 5 if r else 0]
+        # rook_direction_list = [lambda r: 1 if r else 2,
+        #                        lambda r: 5 if r else 4,
+        #                        lambda r: 1 if r else 0,
+        #                        lambda r: 3 if r else 4,
+        #                        lambda r: 3 if r else 2,
+        #                        lambda r: 5 if r else 0]
+
+        rook_direction_list = [lambda r: 0 if r else 5,
+                               lambda r: 2 if r else 3,
+                               lambda r: 0 if r else 1,
+                               lambda r: 4 if r else 3,
+                               lambda r: 2 if r else 1,
+                               lambda r: 4 if r else 5]
 
         for rook_direction in rook_direction_list:
             cur_pos = self.pos
