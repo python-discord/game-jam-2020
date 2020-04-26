@@ -4,7 +4,6 @@ from submission.gameConstants import *
 from submission.loadAnimatedChars import *
 from submission.tileMapLoader import *
 from submission.spell import pickUp
-from submission.sounds import loadSounds
 from submission.motion import moveEntities, updateActualPos, movePlayer
 from submission.waveManager import getSpawnList, manageEnemySpawn, decomposeSpawnList, generateASpawn, \
     EnemyGroup, SpawnOrder
@@ -133,8 +132,6 @@ class GameView(arcade.View):
                 ground.center_y = y + TILE_SIZE * TILE_SCALING / 2 + self.window_offset_y
                 self.ground_list.append(ground)
 
-        loadSounds(self.sound_dict)
-
     def on_draw(self):
         """ Renders the screen. """
 
@@ -224,7 +221,6 @@ class GameView(arcade.View):
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """ Get mouse's presses. """
-        # if not self.player_sprite.is_moving:
 
         self.mouse_click = [self.mouse_x, self.mouse_y]
         self.player_sprite.destination = getGridCase(self.mouse_click, self.window_offset_x, self.window_offset_y)
