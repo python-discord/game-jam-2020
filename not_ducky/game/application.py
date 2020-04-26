@@ -3,6 +3,7 @@ from game import SpriteList
 import arcade
 
 import os
+import pathlib
 import random
 
 
@@ -19,7 +20,13 @@ class Game(arcade.Window):
         super().__init__(self._width, self._height, 'qaqe')
         self.keypressed = {}
         self.classes = {}
+        self.sounds = {}
         self.state = 'title_screen'
+        for path, directories, files in os.walk(os.path.join('.', 'game', 'resources')):
+            for file in files:
+                name, extension = '.'.join(file.split('.')[:-1]), file.split('.')[-1]
+                if extension == 'wav':
+                    self.sounds[name] = arcade.Sound(os.path.join(path, file))
     def on_key_press(self, key, modifiers):
         self.keypressed[key] = True
     def on_key_release(self, key, modifiers):
@@ -29,8 +36,6 @@ class Game(arcade.Window):
         if self.state == 'title_screen':
             arcade.draw_text(f'not ducky', self._width/2, self._height/2+100, arcade.color.GREEN, font_size=25.0, anchor_x='center', anchor_y='bottom', font_name='./game/resources/uni0553.ttf')
             arcade.draw_text(f'[1] start the game', self._width/2, self._height/2+25, arcade.color.WHITE, font_size=15.0, anchor_x='center', anchor_y='bottom', font_name='./game/resources/uni0553.ttf')
-            arcade.draw_text(f'[2] host multiplayer', self._width/2, self._height/2, arcade.color.WHITE, font_size=15.0, anchor_x='center', anchor_y='bottom', font_name='./game/resources/uni0553.ttf')
-            arcade.draw_text(f'[3] join multiplayer', self._width/2, self._height/2-25, arcade.color.WHITE, font_size=15.0, anchor_x='center', anchor_y='bottom', font_name='./game/resources/uni0553.ttf')
         elif self.state == 'game_running':
             self.players.draw()
             self.entity_list.draw()
@@ -65,6 +70,7 @@ class Game(arcade.Window):
                         center_x=i*self._each_screen_width+self._each_screen_width/2, center_y = self.bottom_height+self.padding*2,
                         screen_number=i
                     ))
+                self.time = 1000000
             return
         elif self.state == 'game_over':
             if self.keypressed.get(arcade.key.SPACE, False):
@@ -73,6 +79,10 @@ class Game(arcade.Window):
         # if self.frame == 20:
         #     self.entity_list.append(self.classes['Wall'](150, self._height-50, 0))
         self.frame += 1
+        self.time += delta_time
+        if self.time > self.sounds['song'].get_length():
+            self.time = 0
+            self.sounds['song'].play(0.3)
         for player in self.players:
             player.change_x = 0
             player.change_y = 0
@@ -89,6 +99,8 @@ class Game(arcade.Window):
         if self.keypressed.get(arcade.key.A, False):
             self.players[0].change_x = -5
         if self.keypressed.get(arcade.key.SPACE, False):
+            self.sounds['laser'].stop()
+            self.sounds['laser'].play(0.01)
             for i in range(3):
                 self.players[i].fire_projectile()
         self.players.update()
@@ -126,3 +138,4 @@ class Game(arcade.Window):
             self.next_spawn_powerup[i] -= 1
         if len(self.players) != 3:
             self.state = 'game_over'
+            self.sounds['song'].stop()

@@ -2,6 +2,7 @@ from game import window
 
 import random
 import copy
+import pathlib
 
 import arcade
 
@@ -17,7 +18,7 @@ import arcade
 class Entity(arcade.AnimatedTimeBasedSprite):
     # def __init__(self, center_x, center_y, change_x, change_y, hitpoints, damage, projectile, screen_number, sprites, scale):
         # super().__init__(center_x=center_x, center_y=center_y, scale=scale)
-    def __init__(self, center_x, center_y, change_x, change_y, max_hitpoints, damage, screen_number, state_length=None, num_states=1):
+    def __init__(self, center_x, center_y, change_x, change_y, max_hitpoints, damage, screen_number, state_length=None, num_states=1, score=0):
         super().__init__(center_x=center_x, center_y=center_y)
         self.screen_number = screen_number
         self.change_x, self.change_y = change_x, change_y
@@ -28,6 +29,7 @@ class Entity(arcade.AnimatedTimeBasedSprite):
         self.state_length = state_length or window.animation_length
         self.num_states = num_states
         self.state = 0
+        self.score = score
         # self.sprite = sprites[0] # Sprites is tuple of base name and number of frames.
         # self.frames = sprites[1]
         # self.texture = window.textures[self.sprite+'0']
@@ -36,7 +38,7 @@ class Entity(arcade.AnimatedTimeBasedSprite):
         self.hitpoints -= damage
         self.hitpoints = min(self.max_hitpoints, self.hitpoints)
         if self.hitpoints <= 0:
-            self.die()
+            self.die(False)
         else:
             self.invincible = window.invincible_length
     def ramped_color(self):
@@ -45,8 +47,10 @@ class Entity(arcade.AnimatedTimeBasedSprite):
         elif self.hitpoints <= self.max_hitpoints/2:
             return arcade.color.AUREOLIN
         return arcade.color.WHITE
-    def die(self):
+    def die(self, no_score=False):
         self.remove_from_sprite_lists()
+        if not no_score:
+            window.scores[self.screen_number] += self.score
     def collide(self, other):
         if self.invincible > 0:
             return
@@ -58,9 +62,9 @@ class Entity(arcade.AnimatedTimeBasedSprite):
         self.center_y += self.change_y
         self.invincible -= 1
         if self.bottom < window.bottom_height:
-            self.die()
+            self.die(no_score=True)
         if self.top > window._height:
-            self.die()
+            self.die(no_score=True)
         if self.left < self.screen_number*window._each_screen_width+window.padding:
             self.left = self.screen_number*window._each_screen_width+window.padding
         if self.right > (self.screen_number+1)*window._each_screen_width-window.padding:
@@ -155,7 +159,7 @@ class TriBullet(Projectile):
         self.text_object = arcade.draw_text('###', self.center_x, self.center_y, arcade.color.FUCHSIA, font_size=15.0, anchor_x='center', anchor_y='center', font_name='./game/resources/uni0553.ttf')
         self.texture = self.text_object.texture
         self.set_hit_box(self.text_object.get_hit_box())
-    def die(self):
+    def die(self, no_score):
         window.entity_list.append(Bullet(self.center_x, self.center_y, 3, self.change_y, self.max_hitpoints, self.damage, self.screen_number, self.state_length, self.num_states))
         window.entity_list.append(Bullet(self.center_x, self.center_y, 0, self.change_y, self.max_hitpoints, self.damage, self.screen_number, self.state_length, self.num_states))
         window.entity_list.append(Bullet(self.center_x, self.center_y, -3, self.change_y, self.max_hitpoints, self.damage, self.screen_number, self.state_length, self.num_states))
@@ -225,8 +229,8 @@ class SpeedPowerup(Projectile):
 
 class AI(Entity):
     # Entities specifically with actual movements, firing, etc.
-    def __init__(self, center_x, center_y, change_x, change_y, max_hitpoints, damage, screen_number, state_length=None, num_states=1, projectile=None, fire_rate=25):
-        super().__init__(center_x, center_y, change_x, change_y, max_hitpoints, damage, screen_number, state_length, num_states)
+    def __init__(self, center_x, center_y, change_x, change_y, max_hitpoints, damage, screen_number, state_length=None, num_states=1, projectile=None, fire_rate=25, score=100):
+        super().__init__(center_x, center_y, change_x, change_y, max_hitpoints, damage, screen_number, state_length, num_states, score=score)
         self.projectile = projectile
         self.fire_rate = fire_rate
         self.cooldown = 0
@@ -246,14 +250,14 @@ class AI(Entity):
         self.cooldown -= 1
         if self.cooldown <= 0 and type(self).__name__ != 'Player' and self.projectile is not None:
             self.fire_projectile()
-    def die(self):
-        self.remove_from_sprite_lists()
+    def die(self, no_score=False):
         window.effect_list.append(Boom(self.center_x, self.center_y, self.screen_number, 0, 10))
+        super().die(no_score)
 
 
 class Player(AI):
     def __init__(self, center_x, center_y, screen_number):
-        super().__init__(center_x, center_y, 0, 0, 100, 100, screen_number, projectile={'type': Bullet, 'change_x': 0, 'change_y': 10, 'max_hitpoints': 25, 'damage': 25}, fire_rate=10)
+        super().__init__(center_x, center_y, 0, 0, 100, 100, screen_number, projectile={'type': Bullet, 'change_x': 0, 'change_y': 10, 'max_hitpoints': 25, 'damage': 25}, fire_rate=25)
     def draw(self):
         self.text_object = arcade.draw_text('shp', self.center_x, self.center_y, arcade.color.GREEN, font_size=15.0, anchor_x='center', anchor_y='center', font_name='./game/resources/uni0553.ttf')
         self.texture = self.text_object.texture
@@ -263,7 +267,7 @@ class Player(AI):
 
 class Waffle(AI):
     def __init__(self, center_x, center_y, screen_number):
-        super().__init__(center_x, center_y, 0, 0, 100, 100, screen_number, 125, 2, None, None)
+        super().__init__(center_x, center_y, 0, 0, 100, 100, screen_number, 125, 2, None, None, score=100)
     def draw(self):
         if self.state == 0:
             self.text_object = arcade.draw_text('/wfl/', self.center_x, self.center_y, self.ramped_color(), font_size=15.0, anchor_x='center', anchor_y='center', font_name='./game/resources/uni0553.ttf')
@@ -282,7 +286,7 @@ class Waffle(AI):
 
 class Reggae(AI):
     def __init__(self, center_x, center_y, screen_number):
-        super().__init__(center_x, center_y, 0, 0, 50, 50, screen_number, 25, 2, None, None)
+        super().__init__(center_x, center_y, 0, 0, 50, 50, screen_number, 25, 2, None, None, score=250)
     def draw(self):
         if self.state == 0:
             self.text_object = arcade.draw_text('(@@@)', self.center_x, self.center_y, self.ramped_color(), font_size=15.0, anchor_x='center', anchor_y='center', font_name='./game/resources/uni0553.ttf')
@@ -313,7 +317,7 @@ class Reggae(AI):
 
 class Sniper(AI):
     def __init__(self, center_x, center_y, screen_number):
-        super().__init__(center_x, center_y, 0, 0, 100, 100, screen_number, projectile={'type': Bullet, 'change_x': 0, 'change_y': -10, 'max_hitpoints': 50, 'damage': 25}, fire_rate=50)
+        super().__init__(center_x, center_y, 0, 0, 100, 100, screen_number, projectile={'type': Bullet, 'change_x': 0, 'change_y': -10, 'max_hitpoints': 50, 'damage': 25}, fire_rate=50, score=500)
     def draw(self):
         self.text_object = arcade.draw_text('-PEW-', self.center_x, self.center_y, self.ramped_color(), font_size=15.0, anchor_x='center', anchor_y='center', font_name='./game/resources/uni0553.ttf')
         self.texture = self.text_object.texture
@@ -325,7 +329,7 @@ class Sniper(AI):
 
 class Whiffle(AI):
     def __init__(self, center_x, center_y, screen_number):
-        super().__init__(center_x, center_y, 0, 0, 150, 150, screen_number, projectile={'type': Bullet, 'change_x': 0, 'change_y': -20, 'max_hitpoints': 50, 'damage': 25}, fire_rate=75)
+        super().__init__(center_x, center_y, 0, 0, 150, 150, screen_number, projectile={'type': Bullet, 'change_x': 0, 'change_y': -20, 'max_hitpoints': 50, 'damage': 25}, fire_rate=75, score=750)
     def draw(self):
         if self.state == 0:
             self.text_object = arcade.draw_text('#POW#', self.center_x, self.center_y, self.ramped_color(), font_size=15.0, anchor_x='center', anchor_y='center', font_name='./game/resources/uni0553.ttf')
@@ -344,7 +348,7 @@ class Whiffle(AI):
 
 class Oontz(AI):
     def __init__(self, center_x, center_y, screen_number):
-        super().__init__(center_x, center_y, 0, 0, 100, 100, screen_number, 15, 2, projectile={'type': Bullet, 'change_x': 0, 'change_y': -20, 'max_hitpoints': 50, 'damage': 25}, fire_rate=35)
+        super().__init__(center_x, center_y, 0, 0, 100, 100, screen_number, 15, 2, projectile={'type': Bullet, 'change_x': 0, 'change_y': -20, 'max_hitpoints': 50, 'damage': 25}, fire_rate=35, score=1000)
     def draw(self):
         if self.state == 0:
             self.text_object = arcade.draw_text('[@@@]', self.center_x, self.center_y, self.ramped_color(), font_size=15.0, anchor_x='center', anchor_y='center', font_name='./game/resources/uni0553.ttf')
@@ -375,7 +379,7 @@ class Oontz(AI):
 
 class Mirror(AI):
     def __init__(self, center_x, center_y, screen_number):
-        super().__init__(center_x, center_y, 0, 0, 150, 150, screen_number)
+        super().__init__(center_x, center_y, 0, 0, 150, 150, screen_number, score=500)
     def draw(self):
         self.text_object = arcade.draw_text('^___^', self.center_x, self.center_y, self.ramped_color(), font_size=15.0, anchor_x='center', anchor_y='center', font_name='./game/resources/uni0553.ttf')
         self.texture = self.text_object.texture
@@ -395,7 +399,7 @@ class Mirror(AI):
 
 class PortableHandMirror(AI):
     def __init__(self, center_x, center_y, screen_number):
-        super().__init__(center_x, center_y, 0, 0, 100, 100, screen_number, 125, 2, None, None)
+        super().__init__(center_x, center_y, 0, 0, 100, 100, screen_number, 125, 2, None, None, score=750)
     def draw(self):
         if self.state == 0:
             self.text_object = arcade.draw_text('/___/', self.center_x, self.center_y, self.ramped_color(), font_size=15.0, anchor_x='center', anchor_y='center', font_name='./game/resources/uni0553.ttf')
@@ -419,7 +423,7 @@ class PortableHandMirror(AI):
 
 class Wall(AI):
     def __init__(self, center_x, center_y, screen_number):
-        super().__init__(center_x, center_y, 0, 0, 500, 500, screen_number)
+        super().__init__(center_x, center_y, 0, 0, 500, 500, screen_number, score=100)
     def draw(self):
         self.text_object = arcade.draw_text('----', self.center_x, self.center_y, self.ramped_color(), font_size=15.0, anchor_x='center', anchor_y='center', font_name='./game/resources/uni0553.ttf')
         self.texture = self.text_object.texture
