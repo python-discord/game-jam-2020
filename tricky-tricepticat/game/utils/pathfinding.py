@@ -48,16 +48,24 @@ def find_path(matrix, start_x, start_y, end_x, end_y, tile_size, map_height):
 
     # For some reason the y value is inverted. Probably has to do with the grid
     # Hence map_height - ...,
-    start = grid.node(int(
-        start_x / tile_size), map_height - int(start_y / tile_size) - 1
-    )
 
-    end = grid.node(int(
-        end_x / tile_size), map_height - int(end_y / tile_size)
-    )
+    # TODO: Figure out why bottom of the map causes IndexError
 
-    finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
-    path, runs = finder.find_path(start, end, grid)
+    try:
+        start = grid.node(int(
+            start_x / tile_size), map_height - int(start_y / tile_size) - 1
+        )
+
+        end = grid.node(int(
+            end_x / tile_size), map_height - int(end_y / tile_size)
+        )
+
+        finder = AStarFinder(diagonal_movement=DiagonalMovement.always)
+        path, runs = finder.find_path(start, end, grid)
+    except IndexError:
+        print("Out of range.")
+        path = []
+
 
     # Again, subtracting by the tile height otherwise the path is flipped
     path_resized = [

@@ -42,7 +42,7 @@ MUSIC_VOLUME = 0.2
 
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
-SCREEN_TITLE = "Game Jam 2020"
+SCREEN_TITLE = "Brawn, Brain, and Bald"
 
 # File paths for project and resources
 path = {}
