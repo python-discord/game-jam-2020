@@ -65,10 +65,6 @@ class Shape:
 
     def draw(self, brightness):
         arcade.draw_rectangle_filled(self.x, self.y,
-                                     int(self.dims[0] * self.size*1.01),
-                                     int(self.dims[1] * self.size*1.01),
-                                     [0, 0, 0])
-        arcade.draw_rectangle_filled(self.x, self.y,
                                      int(self.dims[0] * self.size),
                                      int(self.dims[1] * self.size),
                                      cb.brightness(self.colour, brightness))
