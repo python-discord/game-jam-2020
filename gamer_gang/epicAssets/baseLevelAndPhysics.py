@@ -410,7 +410,7 @@ class Level(arcade.View):
                 p.update()
                 p.update_animation(dt)
                 metGround = [g for g in arcade.check_for_collision_with_list(p, self.ground)
-                             if abs(p.bottom - g.top) < 5 and abs(p.center_x - g.center_x) < 10]
+                             if abs(p.bottom - g.top) < 5 and abs(p.center_x - g.center_x) < 30]
                 metBoxes = [b for b in arcade.check_for_collision_with_list(p, self.boxes) if abs(p.bottom - b.top) < 5]
                 metSand = [s for s in arcade.check_for_collision_with_list(p, self.sands)
                            if abs(p.bottom - s.top) < 5 and abs(p.center_x - s.center_x) < 10]
