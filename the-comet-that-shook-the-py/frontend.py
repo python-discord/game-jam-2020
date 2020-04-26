@@ -216,7 +216,7 @@ class MyGame(arcade.Window):
         """
         Set the game up for play. Call this to reset the game.
         """
-        (answers, shuffled_list, clues, _,) = start_new_game()  # TODO, properly load the game
+        (answers, shuffled_list, clues, _,) = start_new_game()
         self.clues = ClueTextBox(clues)
         self.answers = answers
         self.submission_grid = SubmissionGrid(answers)
@@ -227,6 +227,7 @@ class MyGame(arcade.Window):
         done_button = Button("assets/done_button.png", (1130, 110))
         done_button.on_click = self.submit_game
         exit_button = Button("assets/exit_button.png", (1380 + 30, 110))
+        exit_button.on_click = exit
         self.button_list.extend([timer, done_button, exit_button])
         self.red_x.center_x, self.red_x.center_y = (
             self.submission_grid.center_x,
