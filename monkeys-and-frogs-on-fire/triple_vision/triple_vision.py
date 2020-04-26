@@ -14,7 +14,7 @@ from triple_vision.sound import SoundManager, SoundtrackManager
 class TripleVision(arcade.View):
     def __init__(self, main_view) -> None:
         super().__init__()
-        self.level = 1
+        self.level = 3
         self.seed = None
 
         self.main_view = main_view
@@ -36,8 +36,8 @@ class TripleVision(arcade.View):
         self.card_manager = None
         self.game_manager = None
         self.cursor_manager: CursorManager = None
-        self.sound_manager = SoundtrackManager(ss.SOUNDTRACK_LIST)
-        self.sound_manager.setup()
+        self.soundtrack_manager = SoundtrackManager(ss.SOUNDTRACK_LIST)
+        self.soundtrack_manager.setup()
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -73,6 +73,7 @@ class TripleVision(arcade.View):
     def on_key_press(self, key, modifiers) -> None:
         if key == arcade.key.ESCAPE:
             arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
+            self.soundtrack_manager.stop()
             self.window.set_mouse_visible(True)
             self.window.show_view(self.main_view)
         else:
@@ -185,6 +186,6 @@ class TripleVision(arcade.View):
         self.player.update_health_bars(delta_time)
 
         SoundManager.update(self.slow_down or self.time_slow_ability)
-        self.sound_manager.update(self.slow_down or self.time_slow_ability)
+        self.soundtrack_manager.update(self.slow_down or self.time_slow_ability)
         self.cursor_manager.update()
         self.player.update_health_bars(delta_time)

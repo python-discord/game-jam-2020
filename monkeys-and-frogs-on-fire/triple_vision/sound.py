@@ -108,8 +108,7 @@ class SoundtrackManager:
     def play_song(self):
         """ Play the song. """
         # Stop what is currently playing.
-        if self.curr_sound:
-            self.curr_sound.stop()
+        self.stop()
 
         # Play the next song
         print(f"Playing {self.music_list[self.current_song_position]}")
@@ -145,4 +144,8 @@ class SoundtrackManager:
         if position == 0.0:
             self.advance_song()
             self.play_song()
+
+    def stop(self):
+        if self.curr_sound:
+            self.curr_sound.stop()
 
