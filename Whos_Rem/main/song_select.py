@@ -6,6 +6,54 @@ from .display import Button
 from .display import ColourBlend as cb
 
 
+class SongChoices:
+
+    names_dict = {}
+    screen_size = pyautogui.size()
+
+    def __init__(self, song_id: int, colour: list):
+        self.song_id = song_id
+        self.name = f"{self.song_id}: {self.names_dict.get(song_id, '')}"
+        self.width = self.screen_size[0]*0.5
+        self.height = self.screen_size[1]*0.08
+        self.font_size = 40
+        self.x_pos = self.screen_size[0]*0.05
+        self.y_pos = self.screen_size[1]*(0.7 - 0.12*song_id)
+        self.colour = colour
+
+    def draw(self, brightness):
+        arcade.draw_lrtb_rectangle_filled(self.x_pos, self.x_pos + self.width,
+                                          self.y_pos + self.height, self.y_pos,
+                                          cb.brightness(self.colour, brightness))
+        arcade.draw_text(self.name, self.x_pos + self.width*0.03, self.y_pos + self.height*0.17,
+                         cb.brightness(cb.invert(self.colour), brightness), self.font_size)
+
+    def clicked(self, mouse_x, mouse_y):
+        if 0 <= mouse_x - self.x_pos <= self.width:
+            if 0 <= mouse_y - self.y_pos <= self.height:
+                return True
+
+        return False
+
+    def generate_song_data(self):
+        return SongSelection.load_song_data(self.song_id)
+
+    @classmethod
+    def manage_song_selections(cls, song_list: "list of SongChoices instances", mouse_x, mouse_y):
+        song_dict = None
+        for item in song_list:
+            if item.clicked(mouse_x, mouse_y):
+                song_dict = item.generate_song_data()
+                print(song_dict)
+
+        return song_dict
+
+    @classmethod
+    def draw_song_choices(cls, song_list: "list of SongChoices instances", brightness):
+        for song in song_list:
+            song.draw(brightness)
+
+
 class SongSelection(arcade.View):
 
     width, height = pyautogui.size()
@@ -26,6 +74,8 @@ class SongSelection(arcade.View):
     return_button = Button(width * 0.03, height * 0.86, width * 0.09, height * 0.08,
                            activation=lambda: None, draw_func=lambda: None, name="menu button")
 
+    songs = [SongChoices(num, [0, 0, 0]) for num in range(1, 6)]
+
     def __init__(self, main):
         super().__init__()
         self.main = main
@@ -41,9 +91,13 @@ class SongSelection(arcade.View):
         self.return_button_image.alpha = int(255*self.main.brightness)
         self.return_button_image.draw()
 
+        SongChoices.draw_song_choices(self.songs, self.main.brightness)
+
     def on_mouse_press(self, x, y, button, modifiers):
         if self.return_button.pressed(x, y):
             self.main.window.show_view(self.main.menu)
+
+        SongChoices.manage_song_selections(self.songs, x, y)
 
     @staticmethod
     def load_song_data(song_choice, base_path=Path.cwd() / Path("main/tracks")):
@@ -57,26 +111,3 @@ class SongSelection(arcade.View):
         }
 
         return track_dict
-
-
-class song_choice:
-
-    names_dict = {}
-    screen_size = pyautogui.size()
-
-    def __init__(self, song_id: int, colour: list):
-        self.song_is = song_id
-        self.name = self.names_dict[song_id]
-        self.width = self.screen_size[0]*0.5
-        self.height = self.screen_size[1]*0.15
-        self.font_size = 20
-        self.x_pos = self.screen_size[0]*0.3
-        self.y_pos = self.screen_size[1]*(0.8 - 0.15*song_id)
-        self.colour = colour
-
-    def draw(self, brightness):
-        arcade.draw_lrtb_rectangle_filled(self.x_pos, self.x_pos + self.width,
-                                          self.y_pos + self.height, self.y_pos,
-                                          cb.brightness(self.colour, brightness))
-        arcade.draw_text(self.name, self.x_pos, self.y_pos,
-                         cb.brightness(self.colour, brightness), self.font_size)

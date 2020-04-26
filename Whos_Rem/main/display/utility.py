@@ -107,3 +107,6 @@ class ColourBlend:
                 colour[index] = min(colour[index], 255)
                 colour[index] = max(colour[index], 0)
 
+    @staticmethod
+    def invert(colour):
+        return [255 - col for col in colour]
