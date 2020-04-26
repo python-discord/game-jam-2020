@@ -251,7 +251,8 @@ class Potion(Entity):
 
                 self.ctx.create_text_indicator(
                     msg,
-                    (self.center_x, start_y)
+                    (self.center_x, start_y),
+                    color=(0, 255, 0)
                 )
                 start_y += 20
 
