@@ -6,12 +6,12 @@ import arcade
 
 from triple_vision import Settings as s
 from triple_vision import Tile
+from triple_vision.entities.abilities import Abilities
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import ManaBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile
-from triple_vision.utils import pixels_to_tile, tile_to_pixels
 from triple_vision.sound import SoundManager
-from triple_vision.entities.abilities import Abilities
+from triple_vision.utils import pixels_to_tile, tile_to_pixels
 
 
 class States(Enum):
@@ -189,12 +189,13 @@ class Player(LivingEntity, MovingSprite):
         bullet.play_activate_sound()
         self.view.game_manager.player_projectiles.append(bullet)
         self.last_shot = time.time()
-        print(charge)
-        if charge >= 70:
+        if charge >= 90:
+            self.mana_bar.clear(3)
+        elif charge >= 70:
             self.mana_bar.clear(2)
-        if charge >= 50:
-            # Remove mana only for charged attack
+        elif charge >= 50:
             self.mana_bar.remove_filling_part()
+
         self.state = States.ATTACKING_RANGED
 
     def process_right_mouse_press(self, x, y) -> None:
