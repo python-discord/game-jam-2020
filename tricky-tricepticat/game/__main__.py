@@ -147,12 +147,12 @@ class EnemyShip(arcade.Sprite):
 
         self.scale = SHIP_SCALING
 
-        self.speed = 10
+        self.speed = 20
 
         self.SAIL_SPEED_FACTOR = 0.5
 
         self.set_position(
-            random.randint(1000, 1200), random.randint(700, 800)
+            random.randint(800, 2000), random.randint(400, 1000)
         )
 
         self.target = (self.center_x, self.center_y)
@@ -445,7 +445,7 @@ class Enemy_SpriteSheet(arcade.Sprite):
         self.cur_hit_texture = 0
         self.cur_death_texture = 0
 
-        self.center_x, self.center_y = 300, 300
+        self.center_x, self.center_y = random.randint(300, 350), random.randint(450, 500)
 
         self.path = []
         self.path_position = 1
@@ -701,12 +701,8 @@ class ShipView(arcade.View):
         self.physics_engine = arcade.PhysicsEngineSimple(
             self.player_ship, self.map_layers[2])
 
-        self.enemy_engines = [arcade.PhysicsEngineSimple(
-            enemy, self.map_layers[2]) for enemy in self.enemy_list]
-
-        for enemy in self.enemy_list:
-            self.physics_engine = arcade.PhysicsEngineSimple(
-                self.player_ship, self.map_layers[2])
+        # self.enemy_engines = [arcade.PhysicsEngineSimple(
+        #     enemy, self.map_layers[2]) for enemy in self.enemy_list]
 
         # Used to keep track of our scrolling
         self.view_right = 0
@@ -749,8 +745,8 @@ class ShipView(arcade.View):
     def scroll(self):
         # --- Manage Scrolling ---
 
-        if self.viewport_scale < 0.5:
-            self.viewport_scale = 0.5
+        if self.viewport_scale < 1:
+            self.viewport_scale = 1
 
         if self.viewport_scale > 3.0:
             self.viewport_scale = 3.0
@@ -1214,7 +1210,7 @@ class PlayerView(arcade.View):
         self.view_bottom = 0
         self.view_left = 0
 
-        self.viewport_scale = 1
+        self.viewport_scale = 0.5
 
         self.level_sprites = arcade.SpriteList()
         self.player_sprite.weapon = Weapon('sword')
