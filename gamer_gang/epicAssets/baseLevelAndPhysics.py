@@ -363,7 +363,7 @@ class Level(arcade.View):
             self.totalTime += dt
 
         for _ in range(10):
-            self.space.step(dt/10)
+            self.space.step(1/600)
 
         self.movement()  # move all the players (well, the characters)
         self.cameraShift(dt)  # shift camera
