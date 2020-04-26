@@ -366,7 +366,7 @@ class Level(arcade.View):
             self.space.step(1/600)
 
         self.movement()  # move all the players (well, the characters)
-        self.cameraShift(dt)  # shift camera
+        self.cameraShift(0.1)  # shift camera
         self.stackCheck()  # join into stacks if detected
         self.entityInteractionCheck()  # check for interaction with any enemies, bad stuff, etc.
 
