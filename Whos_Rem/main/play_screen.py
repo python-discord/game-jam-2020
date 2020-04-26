@@ -426,7 +426,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         # Renders pressed keys if NOT paused
         if not self.paused and self.started:
             if self.left_button_active:
-                self.key_1.center_x = self.WIDTH / 2 - (self.WIDTH / (200 / 21))
+                self.key_1.center_x = self.WIDTH / 2 - (self.WIDTH / (200 / 30))
                 self.key_1.center_y = self.HEIGHT / 10
                 self.key_1.scale = ((self.WIDTH / self.HEIGHT) / (20 / 3)) * (self.HEIGHT / 600)
                 self.key_1.draw()
@@ -438,7 +438,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                 self.key_2.draw()
 
             if self.right_button_active:
-                self.key_3.center_x = self.WIDTH / 2 + (self.WIDTH / (200 / 21))
+                self.key_3.center_x = self.WIDTH / 2 + (self.WIDTH / (200 / 30))
                 self.key_3.center_y = self.HEIGHT / 10
                 self.key_3.scale = ((self.WIDTH / self.HEIGHT) / (20 / 3)) * (self.HEIGHT / 600)
                 self.key_3.draw()
