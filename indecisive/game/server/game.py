@@ -12,6 +12,8 @@ class Game:
         self.turn = 0
         with open("data/units.json") as file:
             self.unit_types = json.load(file)
+        with open("data/cities.json") as file:
+            self.city_types = json.load(file)
 
     def start(self):
         starting = True
@@ -67,7 +69,9 @@ class Game:
             world["cities"].append({
                 "loc": [i * 11 + 5, 5],
                 "level": 0,
-                "owner": i
+                "owner": i,
+                "health": self.city_types["health"][0],
+                "max_health": self.city_types["health"][0]
             })
 
         self.world = world
@@ -77,7 +81,9 @@ class Game:
         city = {
             "loc": unit["loc"],
             "owner": unit["owner"],
-            "level": 0
+            "level": 0,
+            "health": self.city_types["health"][0],
+            "max_health": self.city_types["health"][0]
         }
         self.world["cities"].append(city)
         self.send_queue.put({"type": "createCity", "data": city})
@@ -99,8 +105,9 @@ class Game:
         attacking = self.world["units"][data["unit_id"]]
         defending = self.world["cities"][data["attack"]]
         attack = random.randint(1, 101) + self.unit_types[attacking["type"]]["base_attack"]
-        defend = 100
-        if attack >= defend:
+        defending["health"] -= attack
+        print(defending["health"])
+        if defending["health"] <= 0:
             self.send_queue.put({"type": "killCity", "data": data["attack"]})
             self.world["units"][data["attack"]] = None
             self.send_queue.put({"type": "moveUnit", "data": data})
@@ -109,8 +116,12 @@ class Game:
             print("Attack failed")
 
     def upgrade_city(self, data):
-        self.world["cities"][data["city_id"]]["level"] += 1
+        city = self.world["cities"][data["city_id"]]
+        city["level"] += 1
         self.send_queue.put({"type": "upgradeCity", "data": data})
+        health = city["health"]/city["max_health"]
+        city["max_health"] = self.city_types["health"][city["level"]]
+        city["health"] = health * city["max_health"]
 
 
 def run(receive: multiprocessing.Queue, send: multiprocessing.Queue):
