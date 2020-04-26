@@ -30,3 +30,8 @@ go to the portal at the top left of the shop and travel through to the next roun
 more coins than in the last round, but in the same amount of time. If you can, you win! If you can't, you lose. Try
 out potions, some will allow you to get to coins that you haven't before, or some will make other places easier
 to get the coins from. There is even a potion that takes you to a secret room. Note: every 5 seconds you lose 1 coin!
+
+### Adhering to the theme
+I adhered to this awesome theme by:
+* Implementing three types of coins
+* Implementing three types of potions
