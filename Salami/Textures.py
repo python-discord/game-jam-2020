@@ -60,7 +60,7 @@ def get_texture(x, y, mirrored=False):
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 TITLE_TEXTURE = arcade.load_texture("resources/title.png")
-CHARACTERS = Textures.load_textures("resources/chars.png", 0, 0, 8, 27)
+CHARACTERS = arcade.load_spritesheet("resources/chars.png", 8, 8, 27, 27 * 3)
 SYMBOLS = Textures.load_textures("resources/chars.png", 0, 1, 8, 21)
 SPRITESHEET = arcade.load_spritesheet("resources/spritesheet.png", 16, 16, 16, 16 * 16)
 THIN_CHARS = arcade.load_spritesheet("resources/thin_chars.png", 6, 8, 27, 27 * 3)
