@@ -32,7 +32,7 @@ class Shape:
 
     @property
     def x(self):
-        if self.dist != 0:
+        if self.dist > 0:
             return self.screen_width_center + int(self.end_x**(1 - self.dist/self.start_dist))
         else:
             return self.end_x + self.screen_width_center
@@ -40,14 +40,14 @@ class Shape:
     @property
     def y(self):
         offset = int(-self.dims[1]*self.scale_size)
-        if self.dist != 0:
+        if self.dist > 0:
             return self.start_y - int(self.start_y**(1 - self.dist/self.start_dist)) + offset
         else:
             return offset
 
     @property
     def size(self):
-        if self.dist != 0:
+        if self.dist > 0:
             return int(self.scale_size**(1 - self.dist/self.start_dist))
         else:
             return self.scale_size
