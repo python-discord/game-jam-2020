@@ -41,12 +41,12 @@ class Audio:
         self.volume = self.main.settings.volume
 
     @classmethod
-    def _setup(cls, _track: dict):
+    def _setup(cls, _track: dict, _main):
         cls.track = _track
 
         path = f"{cls.BASE_DIR}/main/tracks/{cls.track['path'].upper()}.{cls.track['type']}"
         cls.player = vlc.MediaPlayer(path)
-        cls.player.audio_set_volume(cls.main.volume * 100)
+        cls.player.audio_set_volume(_main.volume * 100)
 
         if not SAMPLING:
             with open(f"{cls.BASE_DIR}/main/tracks/{cls.track['path']}.json", 'r') as file:
@@ -270,7 +270,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                                        scale=0.75)
         self.delta_time = 0
 
-    def setup(self, _track):
+    def setup(self, _track, _main):
         """
         This Adds the background image, Keys 1 -> 3 sprites, and countdown sprites,
         this also setups the audio system and gets that ready as well as the pause-
@@ -281,7 +281,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         """
 
         arcade.schedule(self.on_note_change, 1 / 16)
-        self.audio._setup(_track)
+        self.audio._setup(_track, _main)
         self.pause_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
         self.score_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
         self.key_binds = self.settings.key_binds
@@ -373,8 +373,12 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             self.score += points_to_add
             self.combo = (self.combo + combos) if combos != -1 else 0
 
-        #if not self.audio.player.is_playing() and self.started and self.audio.started and not self.paused and self.audio.thread_end:
-        #    self.ended = True
+        if not self.audio.player.is_playing() and \
+                self.started and \
+                self.audio.started and not\
+                self.paused and \
+                self.audio.thread_end:
+            self.ended = True
 
     def on_draw(self, time_delta=None, count_down=None):
         """ In charge of rendering the notes at current time. """
