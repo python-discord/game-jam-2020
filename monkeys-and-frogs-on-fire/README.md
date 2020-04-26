@@ -65,8 +65,9 @@ Kill all enemies in order to win and climb up levels, once all your hearts are e
 ### Multiplayer
 Get the highest score and compete with your friends!
 
-### Cursor
-- The cursor will track your current state (character and speed) and change itself accordingly (color, scope / crosshair)
+### Mouse
+The mouse cursor will track your current state (character and speed) and change itself accordingly (color, scope / crosshair)
+The cursor will be your normal system cursor on main menus.
 
 ### Game Peeks
 <img src="https://cdn.discordapp.com/attachments/693177507683369010/704005792197640232/unknown.png">
