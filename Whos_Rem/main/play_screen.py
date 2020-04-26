@@ -369,8 +369,8 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             self.score += points_to_add
             self.combo = (self.combo + combos) if combos != -1 else 0
 
-        #if not self.audio.player.is_playing() and self.started and self.audio.started and not self.paused and self.audio.thread_end:
-        #    self.ended = True
+        if not self.audio.player.is_playing() and self.started and self.audio.started and not self.paused and self.audio.thread_end:
+            self.ended = True
 
     def on_draw(self, time_delta=None, count_down=None):
         """ In charge of rendering the notes at current time. """
