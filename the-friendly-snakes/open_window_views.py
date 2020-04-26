@@ -2,6 +2,8 @@ import arcade
 from pyglet import gl
 from Math import Maths
 from StartMenu import StartMenuView
+import random
+# from GameOver import GameOver
 
 # help-phosphorus
 # game-development
@@ -113,6 +115,8 @@ class MyGame(arcade.View):
         self.wall_list = None
         self.dont_touch_list = None
         self.coin_list = None
+        self.coin_2_list = None
+        self.coin_5_list = None
         self.ladder_list = None
         self.ignore_list = None
 
@@ -134,6 +138,14 @@ class MyGame(arcade.View):
         self.draw_shop_tip = False
         self.draw_back_tip = False
         self.draw_jungle_tp = False
+        self.draw_door_1_tip = False
+        self.draw_door_2_tip = False
+        self.draw_door_3_tip = False
+        self.draw_potion_1_tip = False
+        self.draw_potion_2_tip = False
+        self.draw_potion_3_tip = False
+
+        self.delta_track = 0
 
         self.should_be_in_menu = None
 
@@ -160,16 +172,25 @@ class MyGame(arcade.View):
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
+        self.coin_2_list = arcade.SpriteList()
+        self.coin_5_list = arcade.SpriteList()
         self.potion_list = arcade.SpriteList()
 
         self.view_bottom = 0
         self.view_left = 0
 
         self.coin_counter = 0
+        self.delta_track = 0
 
         self.draw_shop_tip = False
         self.draw_back_tip = False
         self.draw_jungle_tp = False
+        self.draw_door_1_tip = False
+        self.draw_door_2_tip = False
+        self.draw_door_3_tip = False
+        self.draw_potion_1_tip = False
+        self.draw_potion_2_tip = False
+        self.draw_potion_3_tip = False
 
         potion_path = 'images/items/jump_boost_potion'
         potions_in_anim = 6
@@ -196,6 +217,8 @@ class MyGame(arcade.View):
         background_layer_name = 'Background'
         platforms_layer_name = 'Platforms'
         coins_layer_name = 'Coins'
+        coins_2_layer_name = 'Coins2'
+        coins_5_layer_name = 'Coins5'
         ladder_layer_name = 'Ladders'
         dont_touch_layer_name = 'Dont Touch'
         ignore_layer_name = 'ig'
@@ -205,6 +228,8 @@ class MyGame(arcade.View):
         self.background_list = arcade.tilemap.process_layer(my_map, background_layer_name)
         self.wall_list = arcade.tilemap.process_layer(my_map, platforms_layer_name)
         self.coin_list = arcade.tilemap.process_layer(my_map, coins_layer_name)
+        self.coin_2_list = arcade.tilemap.process_layer(my_map, coins_2_layer_name)
+        self.coin_5_list = arcade.tilemap.process_layer(my_map, coins_5_layer_name)
         self.ladder_list = arcade.tilemap.process_layer(my_map, ladder_layer_name)
         self.dont_touch_list = arcade.tilemap.process_layer(my_map, dont_touch_layer_name)
         self.ignore_list = arcade.tilemap.process_layer(my_map, ignore_layer_name)
@@ -231,6 +256,8 @@ class MyGame(arcade.View):
         self.potion_list.draw(filter=gl.GL_NEAREST)
         self.player_list.draw(filter=gl.GL_NEAREST)
         self.coin_list.draw(filter=gl.GL_NEAREST)
+        self.coin_2_list.draw(filter=gl.GL_NEAREST)
+        self.coin_5_list.draw(filter=gl.GL_NEAREST)
 
         image_source = 'images/player_1/player_idle.png'
         self.player_sprite = PlayerCharacter()
@@ -254,6 +281,7 @@ class MyGame(arcade.View):
         self.dont_touch_list.draw(filter=gl.GL_NEAREST)
         self.wall_list.draw(filter=gl.GL_NEAREST)
 
+
         if self.draw_shop_tip:
             shop_tip = 'Press E to open the shop'
             arcade.draw_text(shop_tip, 31 * 96 + 48, 17 * 96 - 48, arcade.csscolor.BLACK, 32, font_name='fonts/RobotoMono-Regular.ttf')
@@ -266,10 +294,42 @@ class MyGame(arcade.View):
             tip = 'Press E to Enter'
             arcade.draw_text(tip, 74 * 96, 24 * 96 - 48, arcade.csscolor.WHITE, 32, font_name='fonts/RobotoMono-Regular.ttf')
 
+        if self.draw_door_1_tip:
+            tip = 'Press E to Enter'
+            arcade.draw_text(tip, 86 * 96, 60 * 96 - 48, arcade.csscolor.WHITE, 32,
+                             font_name='fonts/RobotoMono-Regular.ttf')
+
+        if self.draw_door_2_tip:
+            tip = 'Press E to Enter'
+            arcade.draw_text(tip, 91 * 96, 60 * 96 - 48, arcade.csscolor.WHITE, 32,
+                             font_name='fonts/RobotoMono-Regular.ttf')
+
+        if self.draw_door_3_tip:
+            tip = 'Press E to Enter'
+            arcade.draw_text(tip, 96 * 96, 60 * 96 - 48, arcade.csscolor.WHITE, 32,
+                             font_name='fonts/RobotoMono-Regular.ttf')
+
+        if self.draw_potion_1_tip:
+            tip = 'Press E to Buy Speed Boost for 5 Coins'
+            arcade.draw_text(tip, 84 * 96 + 48, 21 * 96 - 48, arcade.csscolor.WHITE, 32,
+                             font_name='fonts/RobotoMono-Regular.ttf')
+
+        if self.draw_potion_2_tip:
+            tip = 'Press E to Buy Jump Boost for 5 Coins'
+            arcade.draw_text(tip, 84 * 96 + 48, 26 * 96 - 48, arcade.csscolor.WHITE, 32,
+                             font_name='fonts/RobotoMono-Regular.ttf')
+
+        if self.draw_potion_3_tip:
+            tip = 'Press E to Buy for 10 Coins'
+            arcade.draw_text(tip, 85 * 96 + 48, 31 * 96 - 48, arcade.csscolor.WHITE, 32,
+                             font_name='fonts/RobotoMono-Regular.ttf')
+
         self.ladder_list.draw(filter=gl.GL_NEAREST)
         self.potion_list.draw(filter=gl.GL_NEAREST)
         self.player_list.draw(filter=gl.GL_NEAREST)
         self.coin_list.draw(filter=gl.GL_NEAREST)
+        self.coin_2_list.draw(filter=gl.GL_NEAREST)
+        self.coin_5_list.draw(filter=gl.GL_NEAREST)
 
         coin_text = f'Coins: {self.coin_counter}'
         arcade.draw_text(coin_text, self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 50, arcade.csscolor.BLACK, 32, font_name='fonts/RobotoMono-Regular.ttf')
@@ -330,6 +390,9 @@ class MyGame(arcade.View):
                 self.window.close()
 
     def on_key_press(self, key, modifiers):
+        global  PLAYER_JUMP_SPEED
+        global  PLAYER_MOVEMENT_SPEED
+
         if not self.should_be_in_menu:
             if key == arcade.key.A:
                 self.left_pressed = True
@@ -366,6 +429,38 @@ class MyGame(arcade.View):
                     arcade.set_viewport(self.view_left, self.view_left + SCREEN_WIDTH, self.view_bottom,
                                         self.view_bottom + SCREEN_HEIGHT)
 
+            if self.draw_jungle_tp:
+                if key == arcade.key.E:
+                    self.player_sprite.center_x = 81 * 96
+                    self.player_sprite.center_y = 59 * 96
+                    self.view_left = self.player_sprite.center_x - SCREEN_WIDTH / 2
+                    self.view_bottom = self.player_sprite.center_y - SCREEN_HEIGHT / 2
+                    arcade.set_viewport(self.view_left, self.view_left + SCREEN_WIDTH, self.view_bottom,
+                                        self.view_bottom + SCREEN_HEIGHT)
+
+            if self.draw_door_1_tip or self.draw_door_2_tip or self.draw_door_3_tip:
+                if key == arcade.key.E:
+                    self.player_sprite.center_x = 74.5 * 96
+                    self.player_sprite.center_y = 23 * 96
+                    self.view_left = self.player_sprite.center_x - SCREEN_WIDTH / 2
+                    self.view_bottom = self.player_sprite.center_y - SCREEN_HEIGHT / 2
+                    arcade.set_viewport(self.view_left, self.view_left + SCREEN_WIDTH, self.view_bottom,
+                                        self.view_bottom + SCREEN_HEIGHT)
+                    if random.randint(0, 100) < 33:
+                        self.coin_counter = self.coin_counter // 2
+
+            if self.draw_potion_1_tip:
+                if key == arcade.key.E:
+                    if self.coin_counter >= 5:
+                        PLAYER_MOVEMENT_SPEED += 2
+                        self.coin_counter -= 5
+
+            if self.draw_potion_2_tip:
+                if key == arcade.key.E:
+                    if self.coin_counter >= 5:
+                        PLAYER_JUMP_SPEED += 1
+                        self.coin_counter -= 5
+
         if key == arcade.key.ESCAPE:
             if self.should_be_in_menu:
                 self.should_be_in_menu = False
@@ -390,12 +485,30 @@ class MyGame(arcade.View):
     def on_update(self, delta_time):
         self.physics_engine.update()
 
+        self.delta_track += delta_time
+        if self.delta_track >= 5:
+            if self.coin_counter >= 1:
+                self.coin_counter -= 1
+            self.delta_track = 0
+
         coin_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
+        coin_2_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_2_list)
+        coin_5_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_5_list)
 
         for coin in coin_hit_list:
             coin.remove_from_sprite_lists()
             arcade.play_sound(self.collect_coin_sound)
             self.coin_counter += 1
+
+        for coin in coin_2_hit_list:
+            coin.remove_from_sprite_lists()
+            arcade.play_sound(self.collect_coin_sound)
+            self.coin_counter += 2
+
+        for coin in coin_5_hit_list:
+            coin.remove_from_sprite_lists()
+            arcade.play_sound(self.collect_coin_sound)
+            self.coin_counter += 5
 
         self.player_sprite.change_x = 0
 
@@ -406,6 +519,8 @@ class MyGame(arcade.View):
             self.player_sprite.center_x = 40 * 96
             self.player_sprite.center_y = 15 * 96
 
+            self.coin_counter = self.coin_counter // 2
+
         if not self.should_be_in_menu:
             if self.left_pressed and not self.right_pressed:
                 self.player_sprite.change_x = -PLAYER_MOVEMENT_SPEED
@@ -413,20 +528,63 @@ class MyGame(arcade.View):
             if self.right_pressed and not self.left_pressed:
                 self.player_sprite.change_x = PLAYER_MOVEMENT_SPEED
 
+            # Go To Shop
             if self.player_sprite.right <= 96 * 37 and self.player_sprite.left >= 31 * 96 and self.player_sprite.top <= 16 * 96 and self.player_sprite.bottom >= 12 * 96:
                 self.draw_shop_tip = True
             else:
                 self.draw_shop_tip = False
 
+            # Leave Shop
             if self.player_sprite.left >= 88 * 96 and self.player_sprite.right <= 94 * 96 and self.player_sprite.top <= 16 * 96 and self.player_sprite.bottom >= 12 * 96:
                 self.draw_back_tip = True
             else:
                 self.draw_back_tip = False
 
-            if  self.player_sprite.left >= 72 * 96 and self.player_sprite.right <= 77 * 96 and self.player_sprite.top <= 24 * 96 and self.player_sprite.bottom >= 21 * 96:
+            # Go To Jungle Secret Thing
+            if self.player_sprite.left >= 73 * 96 and self.player_sprite.right <= 79 * 96 and self.player_sprite.top <= 24 * 96 and self.player_sprite.bottom >= 21 * 96:
                 self.draw_jungle_tp = True
             else:
                 self.draw_jungle_tp = False
+
+            # Go Away From Jungle 1
+            if self.player_sprite.left >= 85 * 96 and self.player_sprite.right <= 90 * 96 and self.player_sprite.top <= 62 * 96 and self.player_sprite.bottom >= 57 * 96:
+                self.draw_door_1_tip = True
+            else:
+                self.draw_door_1_tip = False
+
+            # Go Away From Jungle 2
+            if self.player_sprite.left >= 90 * 96 and self.player_sprite.right <= 95 * 96 and self.player_sprite.top <= 62 * 96 and self.player_sprite.bottom >= 57 * 96:
+                self.draw_door_2_tip = True
+            else:
+                self.draw_door_2_tip = False
+
+            # Go Away From Jungle 3
+            if self.player_sprite.left >= 96 * 96 and self.player_sprite.right <= 100 * 96 and self.player_sprite.top <= 62 * 96 and self.player_sprite.bottom >= 57 * 96:
+                self.draw_door_3_tip = True
+            else:
+                self.draw_door_3_tip = False
+
+            # Get Potion 1
+            if self.player_sprite.left >= 88 * 96 and self.player_sprite.right <= 94 * 96 and self.player_sprite.top <= 21 * 96 and self.player_sprite.bottom >= 18 * 96:
+                self.draw_potion_1_tip = True
+            else:
+                self.draw_potion_1_tip = False
+
+            # Get Potion 2
+            if self.player_sprite.left >= 88 * 96 and self.player_sprite.right <= 94 * 96 and self.player_sprite.top <= 26 * 96 and self.player_sprite.bottom >= 23 * 96:
+                self.draw_potion_2_tip = True
+            else:
+                self.draw_potion_2_tip = False
+
+            # Get Potion 3
+            if self.player_sprite.left >= 88 * 96 and self.player_sprite.right <= 94 * 96 and self.player_sprite.top <= 31 * 96 and self.player_sprite.bottom >= 28 * 96:
+                self.draw_potion_3_tip = True
+            else:
+                self.draw_potion_3_tip = False
+
+            # if len(self.coin_list) + len(self.coin_2_list) + len(self.coin_5_list) == 0:
+            #     game_over = GameOver()
+            #     self.window.show_view(game_over)
 
         self.player_list.update_animation()
         self.potion_list.update_animation()
