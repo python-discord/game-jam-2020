@@ -212,7 +212,7 @@ class MyGame(arcade.Window):
         self.archer_sprite.center_y = 200
         self.player_list.append(self.archer_sprite)
         # wizard
-        self.wizard_sprite = Player(":resources:images/animated_characters/zombie/zombie_idle.png", self.wall_list, self.ladder_list)
+        self.wizard_sprite = Player(":resources:images/animated_characters/male_person/malePerson_walk0.png", self.wall_list, self.ladder_list)
         self.wizard_sprite.center_x = 50
         self.wizard_sprite.center_y = 200
         self.player_list.append(self.wizard_sprite)
@@ -357,7 +357,7 @@ class MyGame(arcade.Window):
             # enemy spawning
             # Zombie
             if self.enemy_spawn_cooldown > 5:
-                zombie = Player(":resources:images/enemies/wormGreen.png", self.wall_list, self.ladder_list)
+                zombie = Player(":resources:images/animated_characters/zombie/zombie_idle.png", self.wall_list, self.ladder_list)
                 if random.randint(0, 1) == 0:
                     zombie.center_x = ENEMY_SPAWN_LOCATION_LEFT[0]
                     zombie.center_y = ENEMY_SPAWN_LOCATION_LEFT[1]
