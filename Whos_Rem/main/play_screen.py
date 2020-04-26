@@ -202,7 +202,7 @@ class GameLogic:
         for loc, key in enumerate(keys_list):
             if key:
                 if notes[loc] is not None:
-                    points = cls.get_points(notes[loc], key_data[loc])
+                    points = cls.get_points(notes[loc].y, key_data[loc].height)
                     if points != -1:
                         total_points += points
                         combos += 1
@@ -212,7 +212,7 @@ class GameLogic:
                     combos = -1
             else:
                 if notes[loc] is not None:
-                    if cls.check_miss(notes[loc], key_data[loc]):
+                    if cls.check_miss(notes[loc].y, key_data[loc].height):
                         combos = -1
         return total_points, combos
 
@@ -360,7 +360,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         """ In charge of registering if a user had hit or missed a note. """
 
         self.delta_time = delta_time
-        if self.started and not self.paused and False:  # todo not fuck this
+        if self.started and not self.paused:  # todo not fuck this
             points_to_add, combos = GameLogic.get_data(
                 (self.left_button_active, self.middle_button_active, self.right_button_active),
                 (self.key_1, self.key_2, self.key_3),
