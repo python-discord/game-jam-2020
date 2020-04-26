@@ -21,61 +21,52 @@ class Pipe:
         except (ConnectionResetError, ConnectionRefusedError):
             return False
 
-    def login(self, entry: str, room_name: str, username: str) -> tuple:
-        self.username = username
+    def login(self) -> bool:
+
         if not self.connected:
             success = self.connect()
             if not success:
-                return False, "error in connection"
+                return False
 
-        self.tcp.send(f"{entry},,{room_name},,{username}".encode())
+        self.tcp.send(f"play request,,1234509876".encode())
         response = self.tcp.recv(100)
 
-        if entry == "create":
-            if response == b"Rename":
-                return False, "rename"
-
-            elif response == b"Done":
-                return True, "created"
-
-            else:
-                return False, "invalid"
-
+        if response == b"Pended":
+            return True
         else:
-            if response == b"Missing":
-                return False, "missing"
-
-            elif response == b"Full":
-                return False, "full"
-
-            else:
-                return True, "joined"
+            return False
 
     def await_response(self) -> list:
         try:
             data = self.tcp.recv(1000)
-            data = data.decode().split(",,")
+            data = data.decode().split("||")
+            full_data = []
 
-            if data[0] == "Start":
-                self.game_port = int(data[1])
-                self.udp_password = int(data[2])
+            for seg in data:
+                seg = seg.split(",,")
+                full_data += seg
+                if seg[0] == "Start":
+                    self.username = seg[1]
+                    self.game_port = int(seg[2])
 
-            return data
+            print(full_data, 111111111111)
+            return full_data
         except ConnectionResetError:
             return [False]
 
     def transport(self, game_data: list) -> tuple:
-        game_data = [self.udp_password, self.username] + game_data
+        game_data = [self.username] + game_data
 
         game_data = (dumps(game_data)) + b"||||"
 
         self.udp.sendto(game_data, (self.server, self.game_port))
 
-        data, _ = self.udp.recvfrom(1024)
+        data, _ = self.udp.recvfrom(100)
         data = data.split(b"||||")
 
         if len(data) > 1:
-            data = loads(data[0])
+            data = data[0].split(b"||")
+            data = [loads(game) for game in data]
 
             return True, data
         else:

@@ -1,6 +1,6 @@
 import arcade
 
-from multiprocessing import Process, Queue
+from multiprocessing import Queue
 import random
 
 from ..gameconstants import (
@@ -81,7 +81,7 @@ class Build:
 class GameView(arcade.View):
     """Main application class."""
 
-    def __init__(self, player_connection, assigned_player: int):
+    def __init__(self):
         """ Initializer """
         # Call the parent class initializer
         super().__init__()
@@ -94,21 +94,21 @@ class GameView(arcade.View):
         self.player_list = None
         self.wall_list = None
 
-        self.jet_sound = arcade.sound.load_sound(":resources:sounds/laser2.wav")
-        self.jet_gun = arcade.sound.load_sound(":resources:sounds/explosion2.wav")
+        self.jump = arcade.sound.load_sound(f"{DATA_DIR}/jump.mp3")
+        self.falling = arcade.sound.load_sound(f"{DATA_DIR}/falling.mp3")
 
         arcade.set_background_color(arcade.color.BLACK)
         self.background = None
         self.physics_engine = None
         self.view_bottom = 0
+        self.fell = False
 
         self.forward = Queue()
         self.feedback = Queue()
 
-        self.player_connection = player_connection
-        self.assigned_player = assigned_player
+        self.assigned_player = 1
 
-    def setup(self):
+    def setup(self, forward, feedback):
         """ Set up the game and initialize the variables. """
         self.background = arcade.load_texture(f"{DATA_DIR}/14.png")
 
@@ -141,11 +141,8 @@ class GameView(arcade.View):
             getattr(self, f"player{self.assigned_player}"), self.wall_list, GRAVITY
         )
 
-        sync = Process(
-            target=networking,
-            args=(self.forward, self.feedback, self.player_connection,),
-        )
-        sync.start()
+        self.forward = forward
+        self.feedback = feedback
 
         arcade.schedule(self.stream, 2)
 
@@ -176,10 +173,8 @@ class GameView(arcade.View):
         """Called whenever a key is pressed. """
         if key == arcade.key.SPACE or key == arcade.key.W:
             if self.physics_engine.can_jump():
-                getattr(
-                    self, f"player{self.assigned_player}"
-                ).change_y = PLAYER_JUMP_SPEED
-                # arcade.play_sound(self.jump_sound)
+                self.player1.change_y = PLAYER_JUMP_SPEED
+                self.jump.play(volume=0.5)
         elif key == arcade.key.LEFT or key == arcade.key.A:
             getattr(
                 self, f"player{self.assigned_player}"
@@ -206,6 +201,10 @@ class GameView(arcade.View):
         """Movement and game logic."""
 
         self.physics_engine.update()
+
+        if self.player1.position[1] < 0 and not self.fell:
+            self.falling.play(volume=0.5)
+            self.fell = True
 
         for i, wall in enumerate(self.wall_list):
             if wall.bottom > SCREEN_HEIGHT:
@@ -242,6 +241,7 @@ class GameView(arcade.View):
         if not self.feedback.empty():
             data = self.feedback.get()
             if data[0]:
-                for seg in data[1]:
+                print(data, 999999999999999999)
+                for seg in data[1][0]:
                     print(f"wall position ...{seg[1]}")
                     self.add_wall(pos=seg[1])
