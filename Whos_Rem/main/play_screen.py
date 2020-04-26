@@ -98,6 +98,7 @@ class PauseScreen:
 
     @classmethod
     def pause_menu(cls, brightness):
+        cls.pause_sprite_list = arcade.SpriteList()
         cls.pause_sprite_list.append(  # Game Paused text
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Game-Paused.png",
                           center_x=cls.WIDTH / 2,
@@ -141,7 +142,8 @@ class ScoreScreen:
         cls.HEIGHT = height
 
     @classmethod
-    def score_menu(cls):
+    def score_menu(cls, brightness):
+        cls.score_sprite_list = arcade.SpriteList()
         cls.score_sprite_list.append(  # Game ended
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Your-score.png",
                           center_x=cls.WIDTH / 2,
@@ -177,6 +179,9 @@ class ScoreScreen:
                           center_x=cls.WIDTH / 2.75,
                           center_y=cls.HEIGHT / 5.0,
                           scale=0.50))
+
+        for sprite in cls.score_sprite_list:
+            sprite.alpha = int(255 * brightness)
 
         return cls.score_sprite_list
 
@@ -388,6 +393,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
     def on_draw(self, time_delta=None, count_down=None):
         """ In charge of rendering the notes at current time. """
         arcade.start_render()
+        alpha = int(255 * self.main.brightness)
 
         # Background rendering
         self.background.center_x = self.WIDTH / 2
@@ -410,7 +416,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         self.background_sprite.center_y = self.HEIGHT / 2
         self.background_sprite.scale = 1
         self.background_sprite.width = self.WIDTH / 2
-        self.background_sprite.alpha = int(160*self.main.brightness)
+        self.background_sprite.alpha = int(255*self.main.brightness)
         self.background_sprite.draw()
 
         # If un pausing render  todo finish
@@ -466,9 +472,13 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             (self.HEIGHT / 2) + ((self.HEIGHT / 10) * 1.5), (self.HEIGHT / 2) + ((self.HEIGHT / 10) * 3),\
             (self.HEIGHT / 2) + ((self.HEIGHT / 10) * -1), (self.HEIGHT / 2) + ((self.HEIGHT / 10) * -2.5),
 
+        self.score_pic.alpha = alpha
         self.score_pic.draw()
+        self.combo_pic.alpha = alpha
         self.combo_pic.draw()
+        self.notes_hit_pic.alpha = alpha
         self.notes_hit_pic.draw()
+        self.notes_missed_pic.alpha = alpha
         self.notes_missed_pic.draw()
 
         # Actual score
@@ -508,7 +518,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             self.on_end()
             self.background.alpha = 255
             self.background.draw()
-            self.score_menu().draw()
+            self.score_menu(self.main.brightness).draw()
 
     def on_key_press(self, symbol: int, modifiers: int):
         """ This is only for registering if keys are pressed and to change the relevant buttons """
