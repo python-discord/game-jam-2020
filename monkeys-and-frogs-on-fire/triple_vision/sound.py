@@ -49,12 +49,13 @@ class SoundManager:
     def play_sound(cls, sound_name: str) -> None:
         path = cls.get_sound_path(sound_name)
         if path not in cls._loaded_sounds:
-            # TODO Can we just add it automatically?
-            print(f"Can't play sound {path} add it first!")
-            return
+            cls.add_sound(sound_name)
 
-        cls._loaded_sounds[path].play()
-        cls._loaded_sounds[path].set_volume(cls._volume)
+        try:
+            cls._loaded_sounds[path].play()
+            cls._loaded_sounds[path].set_volume(cls._volume)
+        except KeyError as e:
+            print(e)
 
     @classmethod
     def update(cls, slow_mode: bool = False) -> None:
@@ -104,6 +105,12 @@ class SoundtrackManager:
         if self.current_song_position >= len(self.music_list):
             self.current_song_position = 0
         print(f"Advancing song to {self.current_song_position}.")
+
+    def play_external_sound(self, sound_name: str):
+        self.stop()
+        sound = arcade.Sound(sound_name, streaming=True)
+        sound.play()
+        self.play_song()
 
     def play_song(self):
         """ Play the song. """

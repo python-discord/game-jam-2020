@@ -243,7 +243,16 @@ class Potion(Entity):
         for attribute in self._effect.__dict__.keys():
             value = self._effect.__getattribute__(attribute)
             if value > 0:
-                self.ctx.create_text_indicator(f"+{int(value)} {attribute}", (self.center_x, start_y))
+                if value % 1 == 0:
+                    msg = f"+{value} {attribute}"
+                else:
+                    percentage = value * 100
+                    msg = f"+{int(percentage)}% {attribute}"
+
+                self.ctx.create_text_indicator(
+                    msg,
+                    (self.center_x, start_y)
+                )
                 start_y += 20
 
         SoundManager.add_sound("pickup_0.wav")
