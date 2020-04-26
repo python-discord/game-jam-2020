@@ -24,8 +24,8 @@ def load_texture_pack(filename: str, upFilename: str, e_type: int):  # à revoir
 
     if e_type > 7:  # si tourelle (load 4 directions)
         return [
-            arcade.load_texture(PATH['img'] / upFilename, flipped=True),  # UP
-            arcade.load_texture(PATH['img'] / upFilename),  # DOWN
+            #arcade.load_texture(PATH['img'] / upFilename, flipped=True),  # UP
+            #arcade.load_texture(PATH['img'] / upFilename),  # DOWN
             arcade.load_texture(PATH['img'] / filename),  # RIGHT
             arcade.load_texture(PATH['img'] / filename, mirrored=True)  # LEFT
         ]
@@ -93,7 +93,7 @@ class AnimatedEntity(arcade.Sprite):
             main_path = PATH['img'] / 'sprite' / 'vacuum'
 
         if e_type > 7:
-            self.character_face_direction = DOWN_FACING
+            self.character_face_direction = TL
             self.cooldown = 0
             self.target = None
             self.dmg = T_DMG
@@ -119,11 +119,17 @@ class AnimatedEntity(arcade.Sprite):
         self.texture = self.basic_textures[0][0]
 
     def update_animation(self, delta_time: float = 1 / 60):
-
         self.cur_texture_index += 1
-        if self.cur_texture_index >= self.numberFrames * self.update_rate:
-            self.cur_texture_index = 0
-        self.texture = self.basic_textures[self.cur_texture_index // self.update_rate][self.character_face_direction]
+
+        if self.e_type < 7:
+            if self.cur_texture_index >= self.numberFrames * self.update_rate:
+                self.cur_texture_index = 0
+            self.texture = self.basic_textures[self.cur_texture_index // self.update_rate][self.character_face_direction]
+
+        elif self.e_type > 7:
+            if self.cur_texture_index >= self.numberFrames * self.update_rate:
+                self.cur_texture_index = 0
+            self.texture = self.basic_textures[self.cur_texture_index // self.update_rate][self.character_face_direction]
 
 
 class AnimatedPlayer(arcade.Sprite):
