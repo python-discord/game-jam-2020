@@ -1,4 +1,5 @@
 
+import os
 import arcade
 import PIL
 
@@ -56,7 +57,10 @@ def get_texture(x, y, mirrored=False):
         tex.image = PIL.ImageOps.mirror(tex.image)
     return tex
 
-CHARACTERS = Textures.load_textures("Salami/chars.png", 0, 0, 8, 27)
-SYMBOLS = Textures.load_textures("Salami/chars.png", 0, 1, 8, 21)
-SPRITESHEET = arcade.load_spritesheet("Salami/spritesheet.png", 16, 16, 16, 16 * 16)
-THIN_CHARS = arcade.load_spritesheet("Salami/thin_chars.png", 6, 8, 27, 27 * 3)
+os.chdir(os.path.dirname(os.path.abspath(__file__)))
+
+TITLE_TEXTURE = arcade.load_texture("resources/title.png")
+CHARACTERS = Textures.load_textures("resources/chars.png", 0, 0, 8, 27)
+SYMBOLS = Textures.load_textures("resources/chars.png", 0, 1, 8, 21)
+SPRITESHEET = arcade.load_spritesheet("resources/spritesheet.png", 16, 16, 16, 16 * 16)
+THIN_CHARS = arcade.load_spritesheet("resources/thin_chars.png", 6, 8, 27, 27 * 3)
