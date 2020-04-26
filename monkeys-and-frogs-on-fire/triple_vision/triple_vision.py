@@ -36,7 +36,8 @@ class TripleVision(arcade.View):
         self.card_manager = None
         self.game_manager = None
         self.cursor_manager: CursorManager = None
-        self.sound_manager: SoundtrackManager = None
+        self.sound_manager = SoundtrackManager(ss.SOUNDTRACK_LIST)
+        self.sound_manager.setup()
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -59,8 +60,6 @@ class TripleVision(arcade.View):
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
         self.cursor_manager = CursorManager(self, self.player)
-        self.sound_manager = SoundtrackManager(ss.SOUNDTRACK_LIST)
-        self.sound_manager.setup()
 
         self.map = Map(self, s.MAP_SIZE)
         self.map.setup()
