@@ -39,7 +39,7 @@ class GameState:
         with open("config.json") as file:
             self.data = json.load(file)
 
-        self.level = 0
+        self.level = 1
 
         self.player = Player(scale=0.99)
         for tile in (
@@ -52,6 +52,10 @@ class GameState:
 
         self.explosion_sounds = arcade.load_sound("assets/explosion-1.mp3"), arcade.load_sound("assets/explosion-2.mp3")
         self.background_music = arcade.load_sound("assets/Retro_Platforming_-_David_Fesliyan.mp3")
+        self.pickup_sound = arcade.load_sound("assets/pick_up_sound.mp3")
+        self.mode_switch_sound = arcade.load_sound("assets/mode_switch.mp3")
+        self.jump_sound = arcade.load_sound("assets/jump.mp3")
+        self.teleport_sound = arcade.load_sound("assets/teleport.wav")
 
         self.player.set_color("white")
 
@@ -187,7 +191,10 @@ class GameState:
         saves = self.player.collides_with_list(self.saves)
 
         if saves:
-            self.start = saves.pop()
+            new_save = saves.pop()
+            if self.start != new_save:
+                self.pickup_sound.play(volume=.001)
+                self.start = new_save
 
         if is_touching(self.player, self.danger):
             self.emitters.append(explosion_factory((self.player.center_x, self.player.center_y), self.player.get_color()))
@@ -230,8 +237,10 @@ class GameState:
             self.player.set_color(
                 all_colors[(all_colors.index(self.player.str_color) + 1) % len(all_colors)]
             )
+            self.mode_switch_sound.play(volume=.001)
         if key in colors:
             self.player.set_color(colors[key])
+            self.mode_switch_sound.play(volume=.001)
 
         # Pre
         if self.engine.can_jump():
@@ -251,13 +260,14 @@ class GameState:
                         can_dash = False
 
                 if can_dash:
+                    self.teleport_sound.play(volume=.001)
                     self.player.left += DASH_DISTANCE * self.player.direction
                     old_pos = self.player.center_x, self.player.center_y
                     # make player dash
                     self.player.left += DASH_DISTANCE * self.player.direction
                     # create a particle emitter
                     new_pos = self.player.center_x, self.player.center_y
-    
+
                     self.emitters.extend(
                         dash_emitter_factory(self.player.get_color(), old_pos, new_pos)
                     )
@@ -266,6 +276,7 @@ class GameState:
         if key == arcade.key.SPACE:
             self.player.jump_count += 1
             if self.player.jump_count <= JUMP_COUNT:
+                self.jump_sound.play(volume=.005)
                 self.player.change_y = 0
                 self.player.is_jumping = True
                 self.player.jump_force = (
