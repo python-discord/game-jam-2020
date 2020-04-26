@@ -133,7 +133,6 @@ class Level(arcade.View):
 
         try:
             for t in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/torches", self.map)):
-                t.center_y -= 5
                 self.torchs.append(t)
         except AttributeError:
             pass
