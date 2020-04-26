@@ -1,8 +1,9 @@
 import json
 import logging
+import random
 
 import arcade
-
+import pyglet
 from PIL import Image
 
 from .constants import (
@@ -49,12 +50,18 @@ class GameState:
         ):
             self.player.append_texture(tile.texture)
 
+        self.explosion_sounds = arcade.load_sound("assets/explosion-1.mp3"), arcade.load_sound("assets/explosion-2.mp3")
+        self.background_music = arcade.load_sound("assets/Retro_Platforming_-_David_Fesliyan.mp3")
+
         self.player.set_color("white")
 
         self.player.center_x = 200
         self.player.center_y = 200
 
         self.load_level(self.level)
+
+        self.background_music.play(volume=.001)
+        pyglet.clock.schedule_interval(lambda: self.background_music.play(volume=.001), self.background_music.get_length())
 
         self.emitters = []
 
@@ -184,6 +191,7 @@ class GameState:
 
         if is_touching(self.player, self.danger):
             self.emitters.append(explosion_factory((self.player.center_x, self.player.center_y), self.player.get_color()))
+            random.choice(self.explosion_sounds).play(volume=.001)
             self.move_to_start()
 
         colors = {"red", "green", "blue"}
@@ -191,6 +199,7 @@ class GameState:
         for color in colors:
             if is_touching(self.player, self.colored_geometry[color]):
                 self.emitters.append(explosion_factory((self.player.center_x, self.player.center_y), self.player.get_color()))
+                random.choice(self.explosion_sounds).play(volume=.001)
                 self.move_to_start()
 
         self.player.update()
