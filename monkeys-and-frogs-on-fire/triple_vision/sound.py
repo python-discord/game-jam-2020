@@ -1,6 +1,6 @@
-import itertools
+import time
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 
 import arcade
 
@@ -77,70 +77,63 @@ class SoundManager:
 
 
 class SoundtrackManager:
-    def __init__(self, sounds: List[arcade.Sound] = []) -> None:
+    def __init__(self, music_list: List[str]):
+        # Variables used to manage our music. See setup() for giving them
+        # values.
         self._volume = ss.DEFAULT_VOLUME
-        self._sounds = sounds
-        self._sounds_cycle = itertools.cycle(self._sounds)
-        self.curr_sound: SoundTrack = None
-        self.tick_delta = 0.0
-        self.playing = False
+        self._sound_assets_path = Path("./assets/audio/soundtracks")
+        self.music_list = [self.get_sound_path(file_name) for file_name in music_list]
+        self.current_song_position = 0
+        self.curr_sound = None
 
-    def add_sound(self, sound_name: str, faded: bool = False, max_volume: float = 1.0) -> None:
-        self._sounds.append(SoundTrack(sound_name, is_faded=faded, max_volume=max_volume))
-        self.update_cycle()
+    def get_sound_path(self, sound_name: str) -> str:
+        return str(self._sound_assets_path / sound_name)
 
-    def remove_sound(self, sound_name: str):
-        self._sounds = [sound for sound in self._sounds if sound.file_name != sound_name]
-        self.update_cycle()
+    def add_sound(self, file_name: str):
+        self.music_list.append(self.get_sound_path(file_name))
 
-    def play_external_sound(
-        self, sound_name: str = None, faded: bool = False, max_volume: float = 1.0
-    ) -> None:
-        self.curr_sound = SoundTrack(sound_name, is_faded=faded, max_volume=max_volume)
-        self.playing = False
-
-    def play_sound_from_list(self, index):
-        self.curr_sound = (
-            self._sounds[index]
-            if index - len(self._sounds) <= index < len(self._sounds)
-            else self.curr_sound
-        )
-        self.playing = False
-
-    def toggle_next_sound(self) -> None:
-        self.curr_sound = next(self._sounds_cycle)
-        self.playing = False
-
-    def update_cycle(self):
-        self._sounds_cycle = itertools.cycle(self._sounds)
-
-    @staticmethod
-    def load_sound(
-        file_name: str, is_faded: bool = False, max_volume: float = 1.0
-    ) -> Optional[SoundTrack]:
-
-        try:
-            sound = SoundTrack(file_name, is_faded=is_faded, max_volume=max_volume)
-            return sound
-        except Exception as e:
-            print(f'Unable to load sound file: "{file_name}". Exception: {e}')
-            return None
-
-    def update(self, delta_time: float) -> None:
-        self.tick_delta += delta_time
-
-        if self.curr_sound is None:
+    def remove_sound(self, file_name: str):
+        if file_name not in self.music_list:
             return
+        self.music_list.remove(file_name)
 
-        if not self.playing:
-            arcade.play_sound(self.curr_sound)
-            self.playing = True
+    def advance_song(self):
+        """ Advance our pointer to the next song. This does NOT start the song. """
+        self.current_song_position += 1
+        if self.current_song_position >= len(self.music_list):
+            self.current_song_position = 0
+        print(f"Advancing song to {self.current_song_position}.")
 
-        if not self.curr_sound.faded:
-            return
+    def play_song(self):
+        """ Play the song. """
+        # Stop what is currently playing.
+        if self.curr_sound:
+            self.curr_sound.stop()
 
-        if self.tick_delta < ss.FADE_FREQUENCY:
-            return
-        print(self.curr_sound.get_volume() + ss.FADE_AMOUNT)
-        self.curr_sound.set_volume(self.curr_sound.get_volume() + ss.FADE_AMOUNT)
-        self.tick_delta = 0.0
+        # Play the next song
+        print(f"Playing {self.music_list[self.current_song_position]}")
+        self.curr_sound = arcade.Sound(self.music_list[self.current_song_position], streaming=True)
+        self.curr_sound.play(self._volume)
+        # This is a quick delay. If we don't do this, our elapsed time is 0.0
+        # and on_update will think the music is over and advance us to the next
+        # song before starting this one.
+        time.sleep(0.03)
+
+    def setup(self):
+        """ Set up the game here. Call this function to restart the game. """
+        # Array index of what to play
+        self.current_song_position = 0
+        # Play the song
+        self.play_song()
+
+    def update(self):
+
+        position = self.curr_sound.get_stream_position()
+
+        # The position pointer is reset to 0 right after we finish the song.
+        # This makes it very difficult to figure out if we just started playing
+        # or if we are doing playing.
+        if position == 0.0:
+            self.advance_song()
+            self.play_song()
+
