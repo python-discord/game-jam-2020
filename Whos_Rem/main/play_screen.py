@@ -144,7 +144,7 @@ class ScoreScreen:
         cls.HEIGHT = height
 
     @classmethod
-    def score_menu(cls, brightness):
+    def score_menu(cls, brightness, notes_hit, notes_total, score):
         cls.score_sprite_list = arcade.SpriteList()
         cls.score_sprite_list.append(  # Game ended
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Your-score.png",
@@ -174,12 +174,6 @@ class ScoreScreen:
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Notes-hit.png",
                           center_x=cls.WIDTH / 2.75,
                           center_y=cls.HEIGHT / 4.0,
-                          scale=0.50))
-
-        cls.score_sprite_list.append(
-            arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Notes-missed.png",
-                          center_x=cls.WIDTH / 2.75,
-                          center_y=cls.HEIGHT / 5.0,
                           scale=0.50))
 
         for sprite in cls.score_sprite_list:
@@ -519,13 +513,6 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                          color=cb.brightness(arcade.color.WHITE, self.main.brightness),
                          align="center", font_size=50)
 
-        # Actual combo
-        # arcade.draw_text(f"{self.combo}",
-        #                 start_x=self.combo_pic.center_x - (len(f"{self.combo}") * 20),
-        #                 start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 1.90)),
-        #                 color=cb.brightness(arcade.color.WHITE, self.main.brightness),
-        #                 align="center", font_size=50)
-
         # Actual total hits
         arcade.draw_text(f"{self.notes_hit}",
                          start_x=self.notes_hit_pic.center_x - (len(f"{self.notes_hit}") * 15),
@@ -542,7 +529,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             self.on_end()
             self.background.alpha = 255
             self.background.draw()
-            self.score_menu(self.main.brightness).draw()
+            self.score_menu(self.main.brightness, self.notes_hit, self.notes_total, self.score).draw()
 
     def on_key_press(self, symbol: int, modifiers: int):
         """ This is only for registering if keys are pressed and to change the relevant buttons """
