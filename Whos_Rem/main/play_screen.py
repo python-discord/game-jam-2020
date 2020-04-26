@@ -12,8 +12,11 @@ TESTING = False
 SAMPLING = True
 
 if SAMPLING:
-    track_file = open('track_1.json', 'w+')
-
+    with open('track_1.json', 'w+') as file:
+        pass
+    sample_list = []
+    sample_sec = []
+    prev = 0
 
 class Audio:
     BASE_DIR = os.getcwd()
@@ -45,8 +48,9 @@ class Audio:
         media = cls.vlc_instance.media_new(path)
         cls.player.set_media(media)
 
-        with open(f"{cls.BASE_DIR}/main/tracks/{cls.track['path']}.json", 'r') as file:
-            cls.notes = json.load(file)
+        if not SAMPLING:
+            with open(f"{cls.BASE_DIR}/main/tracks/{cls.track['path']}.json", 'r') as file:
+                cls.notes = json.load(file)
 
     @classmethod
     def _play(cls):
@@ -312,18 +316,29 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                     self.notes_list.append(ShapeManager.create_shape(1))
 
             else:
-
-
-
+                global sample_sec, sample_list
+                section, frame = divmod(next(self.audio.frame_count), 16)
+                if section != prev:
+                    sample_list.append(sample_sec)
+                    sample_sec = []
+                sample_sec.append((self.left_button_active, self.middle_button_active, self.right_button_active))
 
     def on_start(self):
+        """ On game start """
         self.started = True
         self.audio._play()
         time.sleep(0.03)
 
     def on_pause(self):
+        """ On game pause """
         self.paused = not self.paused
         self.audio._pause()
+
+    def on_end(self):
+        """ On game end """
+        if SAMPLING:
+            with open('track_1.json', 'w+') as file:
+                json.dump(sample_list, file)
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
@@ -431,6 +446,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             self.pause_menu().draw()
 
         if self.ended:
+            self.on_end()
             self.background.alpha = 255
             self.background.draw()
             self.score_menu().draw()
