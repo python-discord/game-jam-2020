@@ -27,12 +27,15 @@ class CharSprite(arcade.Sprite):
         super().__init__()
         self.character = character
 
-def create_text_list(str, x, y):
+def create_text_list(str, x, y, thick = False):
     list = arcade.SpriteList()
     for i, char in enumerate(str):
         if char in CHARS_COMBINED:
             char_sprite = get_char_sprite(char)
-            char_sprite.texture = Textures.THIN_CHARS[CHARS_COMBINED.find(char)]
+            if thick:
+                char_sprite.texture = Textures.CHARACTERS[CHARS_COMBINED.find(char)]
+            else:
+                char_sprite.texture = Textures.THIN_CHARS[CHARS_COMBINED.find(char)]
             char_sprite.left = x + i * char_sprite.texture.width
             char_sprite.bottom = y
             list.append(char_sprite)
