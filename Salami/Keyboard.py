@@ -40,6 +40,7 @@ class Keyboard:
         self.add_key("zoom_in", arcade.key.EQUAL)
         self.add_key("fullscreen", arcade.key.F10)
         self.add_key("esc", arcade.key.ESCAPE)
+        self.add_key("enter", arcade.key.ENTER)
 
     def on_key_press(self, key: int, modifiers: int):
         if self.key_codes_list.get(key):
