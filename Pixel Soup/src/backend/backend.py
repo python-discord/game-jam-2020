@@ -133,7 +133,6 @@ def game_room(team_port: int, password: int, players: list) -> None:
     wall_pos = 400
 
     while True:
-
         data, address = udp.recvfrom(1024)
         data = data.split(b"||||")
 
@@ -156,7 +155,7 @@ def game_room(team_port: int, password: int, players: list) -> None:
                             pipe[player].append(data[1:])
 
                 # checking if viable data is available to be sent
-                if pipe[data[1]]:
+                if pipe.get(data[1]):
                     udp.sendto(
                         dumps([packet.append(wall_pos) for packet in pipe[data[1]]])
                         + b"||||",
