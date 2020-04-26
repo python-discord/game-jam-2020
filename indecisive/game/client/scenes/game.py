@@ -223,7 +223,9 @@ class Game(Base):
         self.send_queue.put({"type": "turnFinal", "actionType": "attackCity", "data": data})
 
     def server_upgrade_city(self, data):
-        self.world["cities"][data["city_id"]]["level"] += 1
+        city = self.world["cities"][data["city_id"]]
+        city["level"] += 1
+        self.city_sprites[data["city_id"]].texture = arcade.load_texture(self.city_types["icons"][city["level"]][city["owner"]])
         self.update_ui()
 
     def client_upgrade_city(self, data):
@@ -243,19 +245,19 @@ class Game(Base):
             center_y=50
         )
         create_heavy = arcade.Sprite(
-            "assets/create_unit_button.png",
+            "assets/create_heavy_button.png",
             scale=0.25,
             center_x=600,
             center_y=50
         )
         create_shield = arcade.Sprite(
-            "assets/create_unit_button.png",
+            "assets/create_shield_button.png",
             scale=0.25,
             center_x=600,
             center_y=100
         )
         create_settler = arcade.Sprite(
-            "assets/create_unit_button.png",
+            "assets/create_settler_button.png",
             scale=0.25,
             center_x=600,
             center_y=150
@@ -273,7 +275,7 @@ class Game(Base):
             center_y=100
         )
         settle_city = arcade.Sprite(
-            "assets/attack_unit_button.png",
+            "assets/create_city_button.png",
             scale=0.25,
             center_x=200,
             center_y=100
@@ -285,7 +287,7 @@ class Game(Base):
             center_y=150
         )
         upgrade_city = arcade.Sprite(
-            "assets/simple_button.png",
+            "assets/upgrade_city_button.png",
             scale=0.25,
             center_x=200,
             center_y=100
