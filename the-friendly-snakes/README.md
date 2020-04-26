@@ -15,4 +15,4 @@ folder that you just created.
 2) Open up a terminal by clicking `Win + R` (Windows Button + R) and then typing `cmd` and pressing `Enter`. Then, install `pipenv` by typing
 `pip install pipenv` in the terminal you just opened and then pressing enter `Enter`. You can close this window.
 3) Open the `the-friendly-snakes` folder that is inside of the folder you made above. Click in the top bar and type `cmd`
-and then click `Enter`. It looks like this: [Gif Instructions](StuffForREADME/cmd.gif)
+and then click `Enter`. It looks like this: (![How To Open CMD](StuffForREADME/cmd.gif))
