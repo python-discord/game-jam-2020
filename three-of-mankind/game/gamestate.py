@@ -176,9 +176,9 @@ class GameState:
     def on_draw(self) -> None:
         """Handle draw event."""
         arcade.start_render()
-        self.player.draw()
         self.level_geometry.draw()
         self.level_objects.draw()
+        self.player.draw()
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed."""

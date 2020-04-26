@@ -14,7 +14,8 @@ Running the game is quite simple:
     $ python -m game
 
     # with pipenv
-    ...
+    $ pipenv sync
+    $ pipenv run start
 
 Controls
 --------
