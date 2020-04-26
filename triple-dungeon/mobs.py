@@ -70,7 +70,7 @@ class MobHandler:
             distance = self.get_distance(enemy)
             enemy.collisions.update()
             if distance < 100 :
-                self.player.health -= 1
+                self.player.health -= (2 - self.player.armor)
             if (distance < 300):
                 enemy.speed = Config.MONSTER_MOVEMENT_SPEED
                 try:
@@ -126,7 +126,7 @@ class Mob(arcade.Sprite):
     Represents a Mob. No defined behaviour, it has no intelligence.
     """
 
-    def __init__(self, dungeon: Dungeon, max_health=100, max_armor=0, *args, **kwargs) -> None:
+    def __init__(self, dungeon: Dungeon, max_health=200, max_armor=0, *args, **kwargs) -> None:
         # Set up parent class
         super(Mob, self).__init__(*args, **kwargs)
 
