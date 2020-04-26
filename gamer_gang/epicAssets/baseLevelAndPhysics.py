@@ -330,7 +330,7 @@ class Level(arcade.View):
                 continue
 
             if arcade.check_for_collision_with_list(p, self.spikes):  # if you touch a spike, you DIE
-                # self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
+                self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
                 self.window.sfx['spike'].play()
                 self.window.deathCause = 'a spike that looks an awfully lot like a GD spike'
                 continue
@@ -375,6 +375,7 @@ class Level(arcade.View):
                 else:
                     self.window.sfx['win'].play()
                     self.window.sfx['level music'].stop()
+                    self.window.setup()
                     self.window.show_view(self.window.menuView)
 
     def on_update(self, dt):
