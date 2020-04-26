@@ -103,7 +103,9 @@ class GameManager:
         spikes_hit = arcade.check_for_collision_with_list(self.view.player, self.spikes)
         for spike in spikes_hit:
             if 0 < spike.ticks < 7:
-                self.view.player.hit(spike)
+                if spike.can_deal_dmg:
+                    self.view.player.hit(spike)
+                    spike.can_deal_dmg = False
 
         enemy_collision_with_player = arcade.check_for_collision_with_list(
             self.view.player,
