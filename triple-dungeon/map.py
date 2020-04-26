@@ -43,8 +43,10 @@ class Dungeon(object):
 
         center = "resources/levels/map1/center.json"
         self.levels = [
-            [Level.load_file(x, y, center) for y in range(size)] for x in range(size)
+            [Level.load_file(x, y) for y in range(size)] for x in range(size)
         ]
+        print('--------------------------------------------------')
+        print(self.levels)
         self.matrix = [[1 for yy in range(size * 10)] for xx in range(10 * size)]
         for column in self.levels:
             for level in column:
@@ -125,7 +127,7 @@ class Level:
         self.wall_list = []
 
     @staticmethod
-    def load_file(level_x: int, level_y: int, path: str) -> Level:
+    def load_file(level_x: int, level_y: int) -> Level:
         """
         Builds a Level from a given file path.
 
@@ -134,6 +136,8 @@ class Level:
         :param path: Path to the Level file.
         :return: The new generated Level file.
         """
+
+        path = f'resources/levels/map1/{random.randint(1, 9)}.json'
 
         level = Level(level_x, level_y)
         with open(path) as file:
