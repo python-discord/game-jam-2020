@@ -10,12 +10,13 @@ class Game:
         self.players = [{}, {}, {}]
         self.world = None
         self.turn = 0
+        with open("data/units.json") as file:
+            self.unit_types = json.load(file)
 
     def start(self):
         starting = True
         while starting:
             data = self.receive_queue.get()
-            print(data)
             if data["type"] == "newConnection":
                 self.players[data["connection"]] = {"connected": True, "name": ""}
                 self.send_queue.put({"type": "playersUpdate", "data": self.players})
@@ -38,6 +39,14 @@ class Game:
                 elif data["actionType"] == "createUnit":
                     self.send_queue.put({"type": "newUnit", "data": data["data"]})
                     self.world["units"].append(data["data"])
+                    print(self.world)
+                elif data["actionType"] == "attackUnit":
+                    self.attack_unit(data["data"])
+                elif data["actionType"] == "attackCity":
+                    self.attack_city(data["data"])
+                elif data["actionType"] == "upgradeCity":
+                    self.upgrade_city(data["data"])
+
                 self.next_turn()
 
     def next_turn(self):
@@ -60,6 +69,32 @@ class Game:
             })
 
         self.world = world
+
+    def attack_unit(self, data):
+        defending = self.world["units"][data["attack"]]
+        attacking = self.world["units"][data["unit_id"]]
+        attack = random.randint(1, 101) + self.unit_types[attacking["type"]]["base_attack"]
+        defend = random.randint(1, 101) + self.unit_types[defending["type"]]["base_defense"]
+        if attack >= defend:
+            self.send_queue.put({"type": "killUnit", "data": data["attack"]})
+            self.send_queue.put({"type": "moveUnit", "data": data})
+        else:
+            print("Attack failed")
+
+    def attack_city(self, data):
+        attacking = self.world["units"][data["unit_id"]]
+        defending = self.world["cities"][data["attack"]]
+        attack = random.randint(1, 101) + self.unit_types[attacking["type"]]["base_attack"]
+        defend = 100
+        if attack >= defend:
+            self.send_queue.put({"type": "killCity", "data": data["attack"]})
+            self.send_queue.put({"type": "moveUnit", "data": data})
+        else:
+            print("Attack failed")
+
+    def upgrade_city(self, data):
+        self.world["ciites"][data["city_id"]]["level"] += 1
+        self.send_queue.put({"type": "upgradeCity", "data": data})
 
 
 def run(receive: multiprocessing.Queue, send: multiprocessing.Queue):

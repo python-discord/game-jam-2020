@@ -52,6 +52,9 @@ class Game(Base):
         with open("data/units.json") as file:
             self.unit_types = json.load(file)
 
+        with open("data/cities.json") as file:
+            self.city_types = json.load(file)
+
     def reset(self, network_thread: multiprocessing.Process, receive: multiprocessing.Queue, send: multiprocessing.Queue, players, player_id) \
             -> None:
         print("Game view!")
@@ -101,6 +104,10 @@ class Game(Base):
                     self.server_create_unit(data["data"])
                 elif data["type"] == "moveUnit":
                     self.server_move_unit(data["data"])
+                elif data["type"] == "killUnit":
+                    self.server_kill_unit(data["data"])
+                elif data["type"] == "killCity":
+                    self.server_kill_city(data["data"])
                 elif data["type"] == "turn":
                     self.turn = data["data"]
                     self.top_ui[1][self.top_ui[2]["currentTurn"]]["text"] = f"Current turn: {self.players[self.turn]['name']}"
@@ -190,6 +197,23 @@ class Game(Base):
         self.world["units"][data["unit_id"]]["loc"] = data["loc"]
         self.unit_sprites[data["unit_id"]].position = self.get_xy_centre(data["loc"])
 
+    def server_kill_unit(self, unit_id):
+        self.unit_sprites[unit_id].position = self.get_xy_centre((-100, 1000))
+        self.world["units"].pop(unit_id)
+
+    def server_kill_city(self, city_id):
+        self.city_sprites[city_id].position = self.get_xy_centre((-100, 1000))
+        self.world["cities"][city_id] = None
+
+    def client_attack_unit(self, data):
+        self.send_queue.put({"type": "turnFinal", "actionType": "attackUnit", "data": data})
+
+    def client_attack_city(self, data):
+        self.send_queue.put({"type": "turnFinal", "actionType": "attackCity", "data": data})
+
+    def server_upgrade_city(self, data):
+        self.world["ciites"][data["city_id"]]["level"] += 1
+
     def setup_ui(self):
         # MAIN UI
         self.ui_background = arcade.create_rectangle_filled(640, 95, 1280, 190, color=(150, 150, 150))
@@ -201,16 +225,22 @@ class Game(Base):
             center_y=50
         )
         move_unit = arcade.Sprite(
-            "assets/simple_button.png",
+            "assets/move_button.png",
             scale=0.25,
             center_x=200,
             center_y=50
         )
         attack_unit = arcade.Sprite(
-            "assets/simple_button.png",
+            "assets/attack_unit_button.png",
             scale=0.25,
             center_x=200,
             center_y=100
+        )
+        attack_city = arcade.Sprite(
+            "assets/attack_city_button.png",
+            scale=0.25,
+            center_x=200,
+            center_y=150
         )
 
         # selectors
@@ -227,9 +257,8 @@ class Game(Base):
         self.city_ui[1] = [self.create_unit]
 
         # unit UI
-        self.unit_ui[0].extend([move_unit, attack_unit])
-        self.unit_ui[1].extend([self.move_unit, self.attack_unit])
-
+        self.unit_ui[0].extend([move_unit, attack_unit, attack_city])
+        self.unit_ui[1].extend([self.move_unit, self.attack_unit, self.attack_city])
 
         # TOP BAR UI
         player_icon = arcade.Sprite(
@@ -258,16 +287,15 @@ class Game(Base):
     # UI
 
     def mouse_release(self, x: float, y: float, button: int, modifiers: int) -> None:
+        for selector_number in range(4):
+            if self.selectors[0][selector_number].collides_with_point((x, y)) is True:
+                self.selectors[1][selector_number]()
+                return
         selected = self.map_sprite_clicked(x, y)
         if selected is False:
             for ui_num, ui in enumerate(self.current_ui[0]):
                 if ui.collides_with_point((x, y)) is True:
                     self.current_ui[1][ui_num](self.world[self.selected[0]][self.selected[1]], self.selected[1])
-                    return
-
-            for selector_number in range(4):
-                if self.selectors[0][selector_number].collides_with_point((x, y)) is True:
-                    self.selectors[1][selector_number]()
                     return
 
             # did not click something new so end statement and hence no need to update ui
@@ -283,19 +311,24 @@ class Game(Base):
         action_maker = self.action_maker_maker(self.client_move_unit, {"unit_id": unit_id, "loc": [0, 0]})
         self.move_selectors_all_block(unit["loc"], action_maker)
 
-    def attack_unit(self, unit):
-        pass
+    def attack_unit(self, unit, unit_id):
+        action_maker = self.action_maker_maker(self.client_attack_unit, {"unit_id": unit_id, "loc": [0, 0]})
+        self.move_selectors_units_only(unit["loc"], action_maker)
+
+    def attack_city(self, unit, unit_id):
+        action_maker = self.action_maker_maker(self.client_attack_city, {"unit_id": unit_id, "loc": [0, 0]})
+        self.move_selectors_cites_only(unit["loc"], action_maker)
 
     def action_maker_maker(self, action, arg: dict, hide_ui=True):
-
         def _action_maker(**kwargs):
             def _action():
-                unit = {**arg, **kwargs}
-                action(unit)
+
+                obj = {**arg, **kwargs}
+                action(obj)
                 if hide_ui is True:
                     self.hide_selectors()
-            return _action
 
+            return _action
         return _action_maker
 
     def update_ui(self):
@@ -331,17 +364,43 @@ class Game(Base):
                 self.set_xy_centre(self.selectors[0][selector_number], new_pos)
                 self.selectors[1][selector_number] = action_maker(loc=new_pos)
 
-    @staticmethod
-    def _selectors_new_position(pos, index):
+    def move_selectors_units_only(self, pos, action_maker):
+        for selector_number in range(4):
+            new_pos = self._selectors_new_position(pos, selector_number)
+            tile = self.is_xy_occupied(new_pos)
+            if tile is not False and tile[0] == "units":
+                self.set_xy_centre(self.selectors[0][selector_number], new_pos)
+                self.selectors[1][selector_number] = action_maker(loc=new_pos, attack=tile[1])
+
+    def move_selectors_cites_only(self, pos, action_maker):
+        for selector_number in range(4):
+            try:
+                new_pos = self._selectors_new_position(pos, selector_number)
+            except IndexError:
+                continue
+            tile = self.is_xy_occupied(new_pos)
+            if tile is not False and tile[0] == "cities":
+                self.set_xy_centre(self.selectors[0][selector_number], new_pos)
+                self.selectors[1][selector_number] = action_maker(loc=new_pos, attack=tile[1])
+
+    def _selectors_new_position(self, pos, index):
         new_pos = pos.copy()
         if index == 0:
             new_pos[0] += 1
+            if new_pos[0] >= self.world["dim"][0]:
+                new_pos[0] = 0
         elif index == 1:
             new_pos[1] -= 1
+            if new_pos[1] < 0:
+                new_pos[1] = self.world["dim"][1] - 1
         elif index == 2:
             new_pos[0] -= 1
+            if new_pos[0] < 0:
+                new_pos[0] = self.world["dim"][0] - 1
         elif index == 3:
             new_pos[1] += 1
+            if new_pos[1] >= self.world["dim"][1]:
+                new_pos[1] = 0
         else:
             raise IndexError(f"There are only four Cardinal directions (0-3) yet {index} was given")
         return new_pos
@@ -363,6 +422,8 @@ class Game(Base):
                 return ["units", unit_num]
         else:
             for city_num, city in enumerate(self.world["cities"]):
+                if city is None:
+                    continue
                 if city["loc"] == pos:
                     return ["cities", city_num]
             else:
