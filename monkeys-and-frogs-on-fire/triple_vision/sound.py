@@ -56,7 +56,7 @@ class SoundManager:
     def update(cls, slow_mode: bool = False) -> None:
         if slow_mode:
             cls._slow_mode_activated = True
-            cls.update_volumes(0.1)
+            cls.update_volumes(0.025)
         elif cls._slow_mode_activated:
             cls._slow_mode_activated = False
             cls.update_volumes(cls._volume)
