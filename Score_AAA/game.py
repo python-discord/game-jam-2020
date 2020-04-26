@@ -116,7 +116,7 @@ class MyGame(arcade.Window):
             SCREEN_WIDTH,
             "./ressources/W_Idle.png",
             w_run_textures,
-            {0: 0, 1: 0, 2: 1, 3: 2, 4: 3, 5:4}
+            {0: 0, 1: 0, 2: 1, 3: 1, 4: 2, 5: 2, 6: 3, 7: 4}
         )
         self.char_list.append(self.lane_middle.char)
         self.floor_list.append(self.lane_middle.floor)
