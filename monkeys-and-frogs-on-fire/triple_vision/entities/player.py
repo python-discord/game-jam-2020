@@ -186,10 +186,12 @@ class Player(LivingEntity, MovingSprite):
         elif charge >= 50 and len(self.mana_bar) >= 1:
             to_shoot = True
             self.mana_bar.remove_filling_part()
-        else:
+        elif charge < 50:
             to_shoot = True
 
         if not to_shoot:
+            SoundManager.add_sound("mana_empty.wav")
+            SoundManager.play_sound("mana_empty.wav")
             return
 
         bullet = ChargedLaserProjectile(
