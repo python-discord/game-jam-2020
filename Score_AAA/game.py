@@ -58,6 +58,7 @@ class MyGame(arcade.Window):
         self.life = 5
         self.stage = [60000, 20000, 2500]
         self.music = None
+        self.music_timer = 0
         self.obstacle_queue = deque([[], [], [], [], []])
         self.score_screen = None
 
@@ -200,6 +201,7 @@ class MyGame(arcade.Window):
 
         # Play the music
         self.music = None
+        self.music_timer = 0
         if self.music:
             self.music.stop()
         self.music = arcade.Sound(
@@ -267,6 +269,7 @@ class MyGame(arcade.Window):
             self.game_state = EnumGameState.game
             self.setup()
             self.music.play(0.5)
+            time.sleep(0.03)
 
         elif self.game_state == EnumGameState.game:
             if key == arcade.key.A or key == arcade.key.Q:
@@ -310,6 +313,12 @@ class MyGame(arcade.Window):
         self.char_list.update()
         self.splash_list.update()
 
+        # Music Loop
+        self.music_timer += delta_time
+        if self.music_timer > self.music.get_length():
+            self.music.play()
+            self.music_timer = 0
+
         if self.game_state == EnumGameState.game:
             self.time += delta_time
             self.frame += 1
@@ -348,6 +357,7 @@ class MyGame(arcade.Window):
                 self.lane_middle.difficulty += 3
                 self.lane_down.difficulty += 3
                 self.stage.pop()
+
 
             # Launch Game Over
             if self.life <= 0:
