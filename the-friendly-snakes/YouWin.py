@@ -81,7 +81,7 @@ class YouWin(arcade.View):
     def on_mouse_release(self, x, y, button, modifiers):
         if self.play_left + self.restart_button.width + 50 >= x >= self.play_left - 50 and self.play_bottom + self.restart_button.height + 25 >= y >= self.play_bottom - 25:
             from open_window_views import MyGame
-            game = MyGame(1, 0)
+            game = MyGame(1, 0, 0)
             self.window.show_view(game)
 
     def on_draw(self):
@@ -130,7 +130,7 @@ class YouWin(arcade.View):
 def main(gm=False):
     if not gm:
         window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, 'Help', resizable=True)
-        window.show_view(GameOver())
+        window.show_view(GameOver(1, 0, 0))
         arcade.run()
 
 if __name__ == "__main__":

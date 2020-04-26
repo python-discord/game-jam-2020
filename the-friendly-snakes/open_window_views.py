@@ -748,7 +748,7 @@ class MyGame(arcade.View):
 
 
 def main():
-    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=True)
+    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=False)
     start_menu = StartMenuView()
     window.show_view(start_menu)
     arcade.run()

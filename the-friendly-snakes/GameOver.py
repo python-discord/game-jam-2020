@@ -19,6 +19,7 @@ class GameOver(arcade.View):
         self.restart_left = None
 
         self.game_over_text = None
+        self.game_over_text2 = None
         self.restart_button = None
 
         self.old_screen_center_x = None
@@ -40,10 +41,15 @@ class GameOver(arcade.View):
         self.screen_center_x = int(self.window.get_size()[0] / 2)
         self.screen_center_y = int(self.window.get_size()[1] / 2)
 
-        game_over_text = 'Game Over! You Couldn\'t Get More Coins Than You Did On The Bar Round!'
+        game_over_text = 'Game Over!'
         self.game_over_text = arcade.draw_text(game_over_text, self.screen_center_x, self.screen_center_y + 150,
                                            anchor_x='center',
-                                           anchor_y='center', color=arcade.csscolor.WHITE, font_size=16, font_name='fonts/RobotoMono-Regular.ttf')
+                                           anchor_y='center', color=arcade.csscolor.WHITE, font_size=32, font_name='fonts/RobotoMono-Regular.ttf')
+        game_over_text = 'You Couldn\'t Get More Coins Than You Did On The Bar Round!'
+        self.game_over_text2 = arcade.draw_text(game_over_text, self.screen_center_x, self.screen_center_y + 100,
+                                                anchor_x='center',
+                                                anchor_y='center', color=arcade.csscolor.WHITE, font_size=32,
+                                                font_name='fonts/RobotoMono-Regular.ttf')
 
         restart_text = 'Restart'
         self.restart_button = arcade.draw_text(restart_text, self.screen_center_x, self.screen_center_y,
@@ -86,11 +92,16 @@ class GameOver(arcade.View):
         self.screen_center_y = int(screen_height / 2)
 
         if self.old_screen_center_x != self.screen_center_x or self.old_screen_center_y != self.screen_center_y:
-            game_over_text = 'Game Over! You Couldn\'t Get More Coins Than You Did On The Bar Round!'
+            game_over_text = 'Game Over!'
             self.game_over_text = arcade.draw_text(game_over_text, self.screen_center_x, self.screen_center_y + 150,
                                                anchor_x='center',
                                                anchor_y='center', color=arcade.csscolor.WHITE, font_size=32,
                                                font_name='fonts/RobotoMono-Regular.ttf')
+            game_over_text = 'You Couldn\'t Get More Coins Than You Did On The Bar Round!'
+            self.game_over_text2 = arcade.draw_text(game_over_text, self.screen_center_x, self.screen_center_y + 100,
+                                                   anchor_x='center',
+                                                   anchor_y='center', color=arcade.csscolor.WHITE, font_size=32,
+                                                   font_name='fonts/RobotoMono-Regular.ttf')
 
             restart_text = 'Restart'
             self.restart_button = arcade.draw_text(restart_text, self.screen_center_x,
@@ -112,6 +123,7 @@ class GameOver(arcade.View):
         self.play_left = self.restart_button.left
 
         self.game_over_text.draw()
+        self.game_over_text2.draw()
         self.restart_button.draw()
 
 def main(gm=False):
