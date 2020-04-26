@@ -33,6 +33,15 @@ The player and some specific enemies are able to shoot laser projectiles at each
 
 You can play on the same server as your friends if you'd like and share leaderboards!
 
+## Main screen
+- Click Register to go to register screen (you can see screen name at top).
+
+- Input your name/password, click register again to confirm.
+
+- Once you have a account go back to login view by clicking login button.
+
+- Input you username and password and press login again.
+
 ### Movement
 - Your player moves with the WASD keys.
 
@@ -53,8 +62,11 @@ You can play on the same server as your friends if you'd like and share leaderbo
 ### Game ending
 Kill all enemies in order to win and climb up levels, once all your hearts are empty, you die.
 
-### Multiplayer??
+### Multiplayer
 Get the highest score and compete with your friends!
+
+### Cursor
+- The cursor will track your current state (character and speed) and change itself accordingly (color, scope / crosshair)
 
 ### Game Peeks
 <img src="https://cdn.discordapp.com/attachments/693177507683369010/704005792197640232/unknown.png">
