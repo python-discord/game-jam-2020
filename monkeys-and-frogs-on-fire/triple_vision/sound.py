@@ -105,6 +105,12 @@ class SoundtrackManager:
             self.current_song_position = 0
         print(f"Advancing song to {self.current_song_position}.")
 
+    def play_external_sound(self, sound_name: str):
+        self.stop()
+        sound = arcade.Sound(sound_name, streaming=True)
+        sound.play()
+        self.play_song()
+
     def play_song(self):
         """ Play the song. """
         # Stop what is currently playing.

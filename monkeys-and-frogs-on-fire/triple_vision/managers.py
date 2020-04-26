@@ -14,6 +14,7 @@ from triple_vision.entities import TextIndicator, States
 from triple_vision.entities.sprites import Potion, PotionEffect
 from triple_vision.networking import client
 from triple_vision.entities import Melee
+from triple_vision.sound import SoundManager
 
 
 class GameManager:
@@ -139,14 +140,15 @@ class GameManager:
         for potion in self.hidden_active_potions:
             potion.on_update(delta_time)
 
+        #SoundManager.update_volumes(1)
         if len(self.enemies) == 0:
-            # TODO PLAY WIN SOUND
             self.view.level += 1
+            #self.view.soundtrack_manager.play_external_sound("assets/audio/sounds/win.wav")
             self.view.soundtrack_manager.play_song()  # plays the next soundtrack
             self.view.create_level()
         elif not self.view.player.is_alive:
-            # TODO PLAY DEATH SOUND
             self.view.level += 0
+            #self.view.soundtrack_manager.play_external_sound("assets/audio/sounds/death.wav")
             self.view.soundtrack_manager.play_song()  # plays the next soundtrack
             self.view.create_level()
 
@@ -379,7 +381,7 @@ class LevelManager:
     @classmethod
     def create_level(cls, game_manager: GameManager, player, level: int):
         """Deals with how many enemies and what types spawn"""
-        
+
         # Goblins have low hp but are fast and big in numbers.
         # Very small dmg
         # level1 3

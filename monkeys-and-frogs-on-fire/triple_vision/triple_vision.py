@@ -14,7 +14,7 @@ from triple_vision.sound import SoundManager, SoundtrackManager
 class TripleVision(arcade.View):
     def __init__(self, main_view) -> None:
         super().__init__()
-        self.level = 3
+        self.level = 1
         self.seed = None
 
         self.main_view = main_view
