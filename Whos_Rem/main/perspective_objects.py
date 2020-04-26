@@ -85,7 +85,7 @@ class ShapeManager:
 
     @staticmethod
     def create_shape(note, total_notes=3, colour=(255, 0, 0), screen_width=1920) -> Shape:
-        final_spacing = int(screen_width * 0.5)
+        final_spacing = int(screen_width * 0.4)
         central_spacing = final_spacing // (total_notes - 1) if total_notes != 1 else 0
         width = int(central_spacing * 0.45)
         x_pos = int(central_spacing * note)
