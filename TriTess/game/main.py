@@ -1,17 +1,15 @@
 import os
-
+from os.path import join, dirname, realpath
 import arcade
-from arcade import Theme
+
 
 from TriTess.game.gui_elements import SkipTurnBtn, PlayHex2Btn, PlayTri3Btn
-
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 800
 
-
 SCREEN_TITLE = "TriChess"
-data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
+data_dir = join(dirname(realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
 
 
 class TriTess(arcade.Window):
@@ -30,35 +28,16 @@ class TriTess(arcade.Window):
         self.info_text = None
         self.info_player = None
         self.background = None
-        self.theme = None
         self.button_list = None
 
     def setup(self):
-        self.background = arcade.load_texture(os.path.join(data_dir, "background.png"))
-        self.info_text = arcade.TextLabel("Left click to select piece,"
-                                          "right click to move piece,"
-                                          "be last player with a king to win.", 60, 700)
-        self.info_player = None
-        self.setup_theme()
+        self.background = arcade.load_texture(join(data_dir, "background.png"))
         self.set_buttons()
 
     def set_buttons(self):
-        self.button_list = []
-        self.button_list.append(PlayHex2Btn(self, 60, 625, 110, 50, theme=self.theme))
-        self.button_list.append(PlayTri3Btn(self, 60, 570, 110, 50, theme=self.theme))
-        self.button_list.append(SkipTurnBtn(self, 60, 515, 110, 50, theme=self.theme))
-
-    def set_button_textures(self):
-        normal = ":resources:gui_themes/Fantasy/Buttons/Normal.png"
-        hover = ":resources:gui_themes/Fantasy/Buttons/Hover.png"
-        clicked = ":resources:gui_themes/Fantasy/Buttons/Clicked.png"
-        locked = ":resources:gui_themes/Fantasy/Buttons/Locked.png"
-        self.theme.add_button_textures(normal, hover, clicked, locked)
-
-    def setup_theme(self):
-        self.theme = Theme()
-        self.theme.set_font(24, arcade.color.WHITE)
-        self.set_button_textures()
+        self.button_list = [PlayHex2Btn(self, 90, 740, 165, 75),
+                            PlayTri3Btn(self, 90, 640, 165, 75),
+                            SkipTurnBtn(self, 90, 540, 165, 75)]
 
     def on_draw(self):
         """
@@ -78,7 +57,22 @@ class TriTess(arcade.Window):
             self.trigrid.on_draw(grid_coord=False)
 
         if self.trigrid is not None:
-            arcade.draw_text(f"{self.trigrid.cur_player_name}", 60, 750, arcade.color.BLACK, 24)
+            self.button_list[2].active = True
+            arcade.draw_text(f"Instructions:\n\n"
+                             f"left click to select\n\n"
+                             f"right click to move\n\n"
+                             f"kill their king to win",
+                             20, SCREEN_HEIGHT*.04, arcade.color.WHITE, 24, bold=True,
+                             align="left")
+
+            if self.trigrid.finished:
+                arcade.draw_text(f"{self.trigrid.cur_player_name()} WINS",
+                                 SCREEN_WIDTH / 2, SCREEN_HEIGHT * .9, arcade.color.WHITE, 30, bold=True,
+                                 align="center", anchor_x="center", anchor_y="center")
+            else:
+                arcade.draw_text(f"{self.trigrid.cur_player_name()}'s turn",
+                                 SCREEN_WIDTH / 2, SCREEN_HEIGHT * .95, arcade.color.WHITE, 30, bold=True,
+                                 align="center", anchor_x="center", anchor_y="center")
 
     def on_mouse_press(self, coord_x, coord_y, button, modifiers):
         """
@@ -86,7 +80,6 @@ class TriTess(arcade.Window):
         """
         self.check_mouse_press_for_buttons(coord_x, coord_y)
         self.trigrid.on_mouse_press(coord_x, coord_y, button, modifiers)
-        self.info_player.text = f"{self.trigrid.PLAYER_COLOR[self.trigrid.cur_player]}'s turn"
         self.on_draw()
 
     def check_mouse_press_for_buttons(self, x, y):
