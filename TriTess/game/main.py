@@ -1,41 +1,16 @@
-"""
-Array Backed Grid
-
-Show how to use a two-dimensional list/array to back the display of a
-grid on-screen.
-
-Note: Regular drawing commands are slow. Particularly when drawing a lot of
-items, like the rectangles in this example.
-
-For faster drawing, create the shapes and then draw them as a batch.
-See array_backed_grid_buffered.py
-
-If Python and Arcade are installed, this example can be run from the command line with:
-python -m arcade.examples.array_backed_grid
-"""
 import os
 
 import arcade
+from arcade import Theme
 
-# Set how many rows and columns we will have
-from TriTess.game import trigrid
+from TriTess.game.gui_elements import SkipTurnBtn, PlayHex2Btn, PlayTri3Btn
 
 
-BOARD_SIZE = 18
-
-# This sets the WIDTH of each grid location
-WIDTH = 40
-
-# This sets the margin between each cell
-# and on the edges of the screen.
-MARGIN = 5
-
-# Do the math to figure out our screen dimensions
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 800
-CELL_WIDTH = int(SCREEN_WIDTH/BOARD_SIZE)
 
-SCREEN_TITLE = "TriTess Grid example"
+
+SCREEN_TITLE = "TriChess"
 data_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
 
 
@@ -50,18 +25,40 @@ class TriTess(arcade.Window):
         """
 
         super().__init__(width, height, title)
-
-        self.trigrid = trigrid.TriGrid(BOARD_SIZE, CELL_WIDTH, 'trichess3')
+        self.game_type = None
+        self.trigrid = None  # gets initialized when PlayTri3Btn or PlayHex2Btn is pressed
+        self.info_text = None
+        self.info_player = None
         self.background = None
-        self.cur_player = 0
-        self.cur_cell = None
-        self.cur_valid_moves = None
-        self.cur_valid_attacks = None
-
-        # arcade.set_background_color(arcade.color.WHITE)
+        self.theme = None
+        self.button_list = None
 
     def setup(self):
         self.background = arcade.load_texture(os.path.join(data_dir, "background.png"))
+        self.info_text = arcade.TextLabel("Left click to select piece,"
+                                          "right click to move piece,"
+                                          "be last player with a king to win.", 60, 700)
+        self.info_player = None
+        self.setup_theme()
+        self.set_buttons()
+
+    def set_buttons(self):
+        self.button_list = []
+        self.button_list.append(PlayHex2Btn(self, 60, 625, 110, 50, theme=self.theme))
+        self.button_list.append(PlayTri3Btn(self, 60, 570, 110, 50, theme=self.theme))
+        self.button_list.append(SkipTurnBtn(self, 60, 515, 110, 50, theme=self.theme))
+
+    def set_button_textures(self):
+        normal = ":resources:gui_themes/Fantasy/Buttons/Normal.png"
+        hover = ":resources:gui_themes/Fantasy/Buttons/Hover.png"
+        clicked = ":resources:gui_themes/Fantasy/Buttons/Clicked.png"
+        locked = ":resources:gui_themes/Fantasy/Buttons/Locked.png"
+        self.theme.add_button_textures(normal, hover, clicked, locked)
+
+    def setup_theme(self):
+        self.theme = Theme()
+        self.theme.set_font(24, arcade.color.WHITE)
+        self.set_button_textures()
 
     def on_draw(self):
         """
@@ -72,61 +69,38 @@ class TriTess(arcade.Window):
         arcade.start_render()
 
         # Draw the background texture
-        arcade.draw_lrwh_rectangle_textured(0, 0,
-                                            SCREEN_WIDTH, SCREEN_HEIGHT,
-                                            self.background)
+        arcade.draw_lrwh_rectangle_textured(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, self.background)
+
+        super().on_draw()
 
         # Draw the grid
-        self.trigrid.on_draw(grid_coord=True)
+        if self.game_type is not None:
+            self.trigrid.on_draw(grid_coord=False)
+
+        if self.trigrid is not None:
+            arcade.draw_text(f"{self.trigrid.cur_player_name}", 60, 750, arcade.color.BLACK, 24)
 
     def on_mouse_press(self, coord_x, coord_y, button, modifiers):
         """
         Called when the user presses a mouse button.
         """
-        pos = self.trigrid.get_grid_position(coord_x, coord_y)
-        if pos in self.trigrid.grid_map:
-            print(f"Click coordinates: ({coord_x}, {coord_y}). Grid coordinates: ({pos})")
+        self.check_mouse_press_for_buttons(coord_x, coord_y)
+        self.trigrid.on_mouse_press(coord_x, coord_y, button, modifiers)
+        self.info_player.text = f"{self.trigrid.PLAYER_COLOR[self.trigrid.cur_player]}'s turn"
+        self.on_draw()
 
-            if button == arcade.MOUSE_BUTTON_LEFT:
-                self.trigrid.clear_highlights()
-                self.cur_cell = self.trigrid.get_cell(*pos)
-                if self.cur_cell.piece is not None and self.cur_cell.piece.player == self.cur_player:
-                    self.cur_valid_attacks = self.cur_cell.piece.list_valid_attacks()
-                    for attack in self.cur_valid_attacks:
-                        self.trigrid.get_cell(*attack).set_highlight("attackable")
-
-                    self.cur_valid_moves = self.cur_cell.piece.list_valid_moves()
-                    for move in self.cur_valid_moves:
-                        self.trigrid.get_cell(*move).set_highlight("movable")
-
-                else:
-                    self.clear_selection()
-
-            elif button == arcade.MOUSE_BUTTON_RIGHT:
-                if self.cur_cell is not None:
-                    new_cell = self.trigrid.get_cell(*pos)
-                    if new_cell.piece is not None and self.cur_cell.piece.player != new_cell.piece.player:
-                        if pos in self.cur_valid_attacks:
-                            new_cell.piece.remove_from_sprite_lists()
-                            new_cell.piece = None
-                            self.cur_cell.piece.move_to(*pos)
-                            self.cur_player = (self.cur_player + 1) % self.trigrid.num_players
-
-                    elif pos in self.cur_valid_moves:
-                        self.trigrid.get_cell(*pos).piece = self.cur_cell.piece
-
-                        self.cur_cell.piece.move_to(*pos)
-                        self.cur_player = (self.cur_player + 1) % self.trigrid.num_players
-
-                    self.clear_selection()
-
-            self.on_draw()
-
-    def clear_selection(self):
-        self.cur_cell = None
-        self.cur_valid_moves = None
-        self.cur_valid_attacks = None
-        self.trigrid.clear_highlights()
+    def check_mouse_press_for_buttons(self, x, y):
+        """ Given an x, y, see if we need to register any button clicks. """
+        for button in self.button_list:
+            if x > button.center_x + button.width / 2:
+                continue
+            if x < button.center_x - button.width / 2:
+                continue
+            if y > button.center_y + button.height / 2:
+                continue
+            if y < button.center_y - button.height / 2:
+                continue
+            button.on_press()
 
 
 def main():
