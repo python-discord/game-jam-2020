@@ -120,7 +120,7 @@ class MultiplayerGame(View):
                 left=self.left, right=WIDTH + self.left, top=HEIGHT, bottom=0,
                 color=(255, 255, 255, 100)
             )
-            super().on_draw()
+            super().on_draw(start_render=False)
             if not self.pause_screen:
                 self.pause_screen = views.Paused(
                     self, lambda: MultiplayerGame(len(self.players))
