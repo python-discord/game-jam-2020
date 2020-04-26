@@ -379,6 +379,7 @@ class LevelManager:
     @classmethod
     def create_level(cls, game_manager: GameManager, player, level: int):
         """Deals with how many enemies and what types spawn"""
+        
         # Goblins have low hp but are fast and big in numbers.
         # Very small dmg
         # level1 3
@@ -570,5 +571,3 @@ class LevelManager:
                 duration=3.0,
                 filename="assets/dungeon/frames/flask_big_blue.png"
             )
-
-
