@@ -33,6 +33,7 @@ class Shape:
     @property
     def x(self):
         if self.dist > 0:
+            print(self.end_x, self.dist, self.start_dist)
             return self.screen_width_center + int(self.end_x**(1 - self.dist/self.start_dist))
         else:
             return self.end_x + self.screen_width_center
