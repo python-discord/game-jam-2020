@@ -1,6 +1,5 @@
 import arcade
 from pyglet import gl
-from Math import Maths
 from StartMenu import StartMenuView
 import random
 from GameOver import GameOver
@@ -114,9 +113,11 @@ class MyGame(arcade.View):
         self.background_list = None
         self.wall_list = None
         self.dont_touch_list = None
+        self.super_lava = None
         self.coin_list = None
         self.coin_2_list = None
         self.coin_5_list = None
+        self.coin_secret_list = None
         self.ladder_list = None
         self.ignore_list = None
 
@@ -144,8 +145,12 @@ class MyGame(arcade.View):
         self.draw_potion_1_tip = False
         self.draw_potion_2_tip = False
         self.draw_potion_3_tip = False
+        self.draw_secret_tip = False
 
         self.delta_track = 0
+
+        self.got_potion_3 = False
+        self.delta_track2 = 0
 
         self.should_be_in_menu = None
 
@@ -179,6 +184,9 @@ class MyGame(arcade.View):
         self.coin_counter = 0
         self.delta_track = 0
 
+        self.got_potion_3 = False
+        self.delta_track2 = 0
+
         self.draw_shop_tip = False
         self.draw_back_tip = False
         self.draw_jungle_tp = False
@@ -188,6 +196,7 @@ class MyGame(arcade.View):
         self.draw_potion_1_tip = False
         self.draw_potion_2_tip = False
         self.draw_potion_3_tip = False
+        self.draw_secret_tip = False
 
         potion_path = 'images/items/jump_boost_potion'
         potions_in_anim = 6
@@ -216,8 +225,10 @@ class MyGame(arcade.View):
         coins_layer_name = 'Coins'
         coins_2_layer_name = 'Coins2'
         coins_5_layer_name = 'Coins5'
+        secret_coins_layer_name = 'SuperSecret'
         ladder_layer_name = 'Ladders'
         dont_touch_layer_name = 'Dont Touch'
+        super_lava_layer_name = 'SuperLava'
         ignore_layer_name = 'ig'
 
         my_map = arcade.tilemap.read_tmx(map_name)
@@ -227,8 +238,10 @@ class MyGame(arcade.View):
         self.coin_list = arcade.tilemap.process_layer(my_map, coins_layer_name)
         self.coin_2_list = arcade.tilemap.process_layer(my_map, coins_2_layer_name)
         self.coin_5_list = arcade.tilemap.process_layer(my_map, coins_5_layer_name)
+        self.coin_secret_list = arcade.tilemap.process_layer(my_map, secret_coins_layer_name)
         self.ladder_list = arcade.tilemap.process_layer(my_map, ladder_layer_name)
         self.dont_touch_list = arcade.tilemap.process_layer(my_map, dont_touch_layer_name)
+        self.super_lava = arcade.tilemap.process_layer(my_map, super_lava_layer_name)
         self.ignore_list = arcade.tilemap.process_layer(my_map, ignore_layer_name)
 
         self.screen_width, self.screen_height = self.window.get_size()
@@ -248,6 +261,7 @@ class MyGame(arcade.View):
         self.background_list.draw(filter=gl.GL_NEAREST)
         self.ignore_list.draw(filter=gl.GL_NEAREST)
         self.dont_touch_list.draw(filter=gl.GL_NEAREST)
+        self.super_lava.draw(filter=gl.GL_NEAREST)
         self.wall_list.draw(filter=gl.GL_NEAREST)
         self.ladder_list.draw(filter=gl.GL_NEAREST)
         self.potion_list.draw(filter=gl.GL_NEAREST)
@@ -255,6 +269,7 @@ class MyGame(arcade.View):
         self.coin_list.draw(filter=gl.GL_NEAREST)
         self.coin_2_list.draw(filter=gl.GL_NEAREST)
         self.coin_5_list.draw(filter=gl.GL_NEAREST)
+        self.coin_secret_list.draw(filter=gl.GL_NEAREST)
 
         image_source = 'images/player_1/player_idle.png'
         self.player_sprite = PlayerCharacter()
@@ -323,16 +338,23 @@ class MyGame(arcade.View):
                              font_name='fonts/RobotoMono-Regular.ttf')
 
         if self.draw_potion_3_tip:
-            tip = 'Press E to Buy for 10 Coins'
-            arcade.draw_text(tip, 85 * 96 + 48, 31 * 96 - 48, arcade.csscolor.WHITE, 32,
+            tip = 'Press E to Buy Secret Potion for 7 Coins'
+            arcade.draw_text(tip, 84 * 96 + 48, 31 * 96 - 48, arcade.csscolor.WHITE, 32,
                              font_name='fonts/RobotoMono-Regular.ttf')
 
+        if self.draw_secret_tip:
+            tip = 'Press E to Enter'
+            arcade.draw_text(tip, 81 * 96 + 48, 4 * 96 - 48, arcade.csscolor.WHITE, 32,
+                             font_name='fonts/RobotoMono-Regular.ttf')
+
+        self.super_lava.draw(filter=gl.GL_NEAREST)
         self.ladder_list.draw(filter=gl.GL_NEAREST)
         self.potion_list.draw(filter=gl.GL_NEAREST)
         self.player_list.draw(filter=gl.GL_NEAREST)
         self.coin_list.draw(filter=gl.GL_NEAREST)
         self.coin_2_list.draw(filter=gl.GL_NEAREST)
         self.coin_5_list.draw(filter=gl.GL_NEAREST)
+        self.coin_secret_list.draw(filter=gl.GL_NEAREST)
 
         coin_text = f'Coins: {self.coin_counter}'
         arcade.draw_text(coin_text, self.view_left + 10, self.view_bottom + SCREEN_HEIGHT - 50, arcade.csscolor.BLACK, 32, font_name='fonts/RobotoMono-Regular.ttf')
@@ -464,6 +486,27 @@ class MyGame(arcade.View):
                         PLAYER_JUMP_SPEED += 1
                         self.coin_counter -= 5
 
+            if self.draw_potion_3_tip:
+                if key == arcade.key.E:
+                    if self.coin_counter >= 7:
+                        self.got_potion_3 = True
+                        self.coin_counter -= 7
+                        self.player_sprite.center_x = 70 * 96 + 48
+                        self.player_sprite.center_y = 8 * 96
+                        self.view_left = self.player_sprite.center_x - SCREEN_WIDTH / 2
+                        self.view_bottom = self.player_sprite.center_y - SCREEN_HEIGHT / 2
+                        arcade.set_viewport(self.view_left, self.view_left + SCREEN_WIDTH, self.view_bottom,
+                                            self.view_bottom + SCREEN_HEIGHT)
+
+            if self.draw_secret_tip:
+                if key == arcade.key.E:
+                    self.player_sprite.center_x = 33 * 96
+                    self.player_sprite.center_y = 15 * 96
+                    self.view_left = self.player_sprite.center_x - SCREEN_WIDTH / 2
+                    self.view_bottom = self.player_sprite.center_y - SCREEN_HEIGHT / 2
+                    arcade.set_viewport(self.view_left, self.view_left + SCREEN_WIDTH, self.view_bottom,
+                                        self.view_bottom + SCREEN_HEIGHT)
+
         if key == arcade.key.ESCAPE:
             if self.should_be_in_menu:
                 self.should_be_in_menu = False
@@ -494,9 +537,20 @@ class MyGame(arcade.View):
                 self.coin_counter -= 1
             self.delta_track = 0
 
+        if self.got_potion_3:
+            self.delta_track2 += delta_time
+            if self.delta_track2 >= 1:
+                for lava in self.super_lava:
+                    if lava.right < 96 * 105:
+                        lava.change_x = 5
+                self.delta_track2 = 0
+
+        self.super_lava.update()
+
         coin_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_list)
         coin_2_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_2_list)
         coin_5_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_5_list)
+        coin_secret_hit_list = arcade.check_for_collision_with_list(self.player_sprite, self.coin_secret_list)
 
         for coin in coin_hit_list:
             coin.remove_from_sprite_lists()
@@ -513,10 +567,24 @@ class MyGame(arcade.View):
             arcade.play_sound(self.collect_coin_sound)
             self.coin_counter += 5
 
+        for coin in coin_secret_hit_list:
+            coin.remove_from_sprite_lists()
+            arcade.play_sound(self.collect_coin_sound)
+            self.coin_counter += 5
+
         self.player_sprite.change_x = 0
 
         if arcade.check_for_collision_with_list(self.player_sprite,
                                                 self.dont_touch_list):
+            self.player_sprite.change_x = 0
+            self.player_sprite.change_y = 0
+            self.player_sprite.center_x = 40 * 96
+            self.player_sprite.center_y = 15 * 96
+
+            self.coin_counter = self.coin_counter // 2
+
+        if arcade.check_for_collision_with_list(self.player_sprite,
+                                                self.super_lava):
             self.player_sprite.change_x = 0
             self.player_sprite.change_y = 0
             self.player_sprite.center_x = 40 * 96
@@ -584,6 +652,12 @@ class MyGame(arcade.View):
                 self.draw_potion_3_tip = True
             else:
                 self.draw_potion_3_tip = False
+
+            # Secret Tip
+            if self.player_sprite.left >= 83 and self.player_sprite.top <= 4 * 96 and self.player_sprite.bottom >= 0:
+                self.draw_secret_tip = True
+            else:
+                self.draw_secret_tip = False
 
             if len(self.coin_list) + len(self.coin_2_list) + len(self.coin_5_list) == 0:
                 game_over = GameOver()
