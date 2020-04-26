@@ -65,7 +65,7 @@ class GameState:
             return False
 
         self.level_objects = arcade.SpriteList()
-        self.level_geometry = arcade.SpriteList()
+        self.level_geometry = arcade.SpriteList(use_spatial_hash=True)
         self.danger = arcade.SpriteList()
         self.saves = arcade.SpriteList()
         self.start, self.end = None, None

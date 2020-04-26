@@ -241,7 +241,7 @@ class VCRDistortionWindow(arcade.Window):
                 float vignette = (1.-vigAmt*(uv.y-.5)*(uv.y-.5))*(1.-vigAmt*(uv.x-.5)*(uv.x-.5));
             
                 video += stripes(uv, iTime);
-                video += noise(uv*2., iTime)/10.;
+                video += noise(uv*2., iTime)/20.;
                 video *= vignette;
                 video *= (12.+mod(uv.y*30.+iTime,1.))/13.;
             
