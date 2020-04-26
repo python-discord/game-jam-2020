@@ -8,7 +8,7 @@ import utils
 FILE = 'data/scores.json'
 
 
-def data_util(fun: typing.Callable):
+def data_util(fun: typing.Callable) -> typing.Callable:
     """Use specific file."""
     return utils.data_util(fun, FILE)
 

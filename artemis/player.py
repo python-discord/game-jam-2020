@@ -10,7 +10,7 @@ import engine
 import game
 import multiplayer
 from scores import add_award
-from utils import play_sound_effect
+from sound import play_sound_effect
 
 
 class Player(arcade.Sprite):
@@ -240,7 +240,7 @@ class Player(arcade.Sprite):
                 removed += 1
                 if removed == 3:
                     return
-    
+
     def add_award(self, num: int):
         """Add an award if this is not multiplayer."""
         if isinstance(self.game, game.Game):

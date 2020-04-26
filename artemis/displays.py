@@ -10,14 +10,6 @@ import player
 from ui import IconButton
 
 
-def game_type() -> typing.Type:
-    """Game or MultiplayerGame typing annotation.
-
-    Function rather than variable to prevent circular imports.
-    """
-    return typing.Union[game.Game, multiplayer.MultiplayerGame]
-
-
 class Box(arcade.Sprite):
     """Display for an inventory slot."""
 
@@ -75,7 +67,9 @@ class BoxGem(arcade.Sprite):
 class PausePlay(IconButton):
     """Button for pausing/playing the game."""
 
-    def __init__(self, x: int, y: int, game: game_type()):
+    def __init__(self,
+                 x: int, y: int,
+                game: typing.Union[game.Game, multiplayer.MultiplayerGame]):
         """Set up the button."""
         super().__init__(game, x, y, 'pause', self.go, 32)
         self.game = game
