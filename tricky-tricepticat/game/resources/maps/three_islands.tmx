@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.3.3" orientation="orthogonal" renderorder="right-down" width="100" height="50" tilewidth="64" tileheight="64" infinite="0" nextlayerid="11" nextobjectid="6">
+ <tileset firstgid="1" name="pirate_pack" tilewidth="64" tileheight="64" tilecount="96" columns="0">
+  <grid orientation="orthogonal" width="1" height="1"/>
+  <terraintypes>
+   <terrain name="Island" tile="71"/>
+   <terrain name="sea foam" tile="79"/>
+  </terraintypes>
+  <tile id="0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_28.png"/>
+  </tile>
+  <tile id="1">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_29.png"/>
+  </tile>
+  <tile id="2">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_30.png"/>
+  </tile>
+  <tile id="3">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_31.png"/>
+  </tile>
+  <tile id="4">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_32.png"/>
+  </tile>
+  <tile id="5" terrain=",0,,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_33.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="2.33333" y="0.333333">
+     <polygon points="0,0 4,23 13.6667,47.3333 22,56.3333 40,62.3333 61,63 61.3333,-0.333333"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="6" terrain="0,0,,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_34.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.333333" y="0.333333" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="7" terrain="0,,,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_35.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="63.3333" y="0">
+     <polygon points="0,0 -1.66667,27 -8.33333,42.6667 -37,56 -64,63.3333 -63.3333,0.333333"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="8" terrain="0,0,0,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_36.png"/>
+  </tile>
+  <tile id="9" terrain="0,0,,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_37.png"/>
+  </tile>
+  <tile id="10" terrain=",0,,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_38.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="0" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="11" terrain="0,0,0,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_39.png"/>
+  </tile>
+  <tile id="12" terrain="0,0,0,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_40.png"/>
+  </tile>
+  <tile id="13" terrain="0,,0,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_41.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.333333" y="0.333333" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="14" terrain=",1,,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_42.png"/>
+  </tile>
+  <tile id="15" terrain="1,1,,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_43.png"/>
+  </tile>
+  <tile id="16" terrain="1,,,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_44.png"/>
+  </tile>
+  <tile id="17">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_45.png"/>
+  </tile>
+  <tile id="18">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_46.png"/>
+  </tile>
+  <tile id="19">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_47.png"/>
+  </tile>
+  <tile id="20">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_48.png"/>
+  </tile>
+  <tile id="21">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_49.png"/>
+  </tile>
+  <tile id="22">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_50.png"/>
+  </tile>
+  <tile id="23">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_51.png"/>
+  </tile>
+  <tile id="24" terrain="0,,0,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_52.png"/>
+  </tile>
+  <tile id="25" terrain=",0,0,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_53.png"/>
+  </tile>
+  <tile id="26" terrain=",0,,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_54.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.333333" y="0.333333">
+     <polygon points="0,0 11,35.6667 17,49.6667 24.3333,56.6667 44.3333,62.6667 63,63.3333 63.6667,-0.666667"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="27" terrain="0,0,,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_55.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="0.333333" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="28" terrain="0,0,,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_56.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0.333333" y="0.333333" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="29" terrain="0,,,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_57.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="63.6667" y="0">
+     <polygon points="0,0 -2,25 -6.66667,39.3333 -17,48 -44.6667,58.3333 -63.6667,63.6667 -64,-0.333333"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="30" terrain="1,1,1,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_58.png"/>
+  </tile>
+  <tile id="31" terrain="1,1,,1">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_59.png"/>
+  </tile>
+  <tile id="32">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_60.png"/>
+  </tile>
+  <tile id="33">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_61.png"/>
+  </tile>
+  <tile id="34">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_62.png"/>
+  </tile>
+  <tile id="35">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_63.png"/>
+  </tile>
+  <tile id="36">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_64.png"/>
+  </tile>
+  <tile id="37">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_65.png"/>
+  </tile>
+  <tile id="38">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_66.png"/>
+  </tile>
+  <tile id="39">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_67.png"/>
+  </tile>
+  <tile id="40">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_68.png"/>
+  </tile>
+  <tile id="41">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_69.png"/>
+  </tile>
+  <tile id="42">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_70.png"/>
+  </tile>
+  <tile id="43">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_71.png"/>
+  </tile>
+  <tile id="44">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_72.png"/>
+  </tile>
+  <tile id="45">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_73.png"/>
+  </tile>
+  <tile id="46" terrain="1,,1,1">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_74.png"/>
+  </tile>
+  <tile id="47" terrain=",1,1,1">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_75.png"/>
+  </tile>
+  <tile id="48">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_76.png"/>
+  </tile>
+  <tile id="49">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_77.png"/>
+  </tile>
+  <tile id="50">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_78.png"/>
+  </tile>
+  <tile id="51">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_79.png"/>
+  </tile>
+  <tile id="52">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_80.png"/>
+  </tile>
+  <tile id="53">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_81.png"/>
+  </tile>
+  <tile id="54">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_82.png"/>
+  </tile>
+  <tile id="55">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_83.png"/>
+  </tile>
+  <tile id="56">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_84.png"/>
+  </tile>
+  <tile id="57">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_85.png"/>
+  </tile>
+  <tile id="58">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_86.png"/>
+  </tile>
+  <tile id="59">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_87.png"/>
+  </tile>
+  <tile id="60">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_88.png"/>
+  </tile>
+  <tile id="61">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_89.png"/>
+  </tile>
+  <tile id="62">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_90.png"/>
+  </tile>
+  <tile id="63">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_91.png"/>
+  </tile>
+  <tile id="64">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_92.png"/>
+  </tile>
+  <tile id="65">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_93.png"/>
+  </tile>
+  <tile id="66">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_94.png"/>
+  </tile>
+  <tile id="67">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_95.png"/>
+  </tile>
+  <tile id="68">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_96.png"/>
+  </tile>
+  <tile id="69" terrain=",,,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_01.png"/>
+  </tile>
+  <tile id="70" terrain=",,0,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_02.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.333333" y="0.333333" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="71" terrain=",,0,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_03.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.333333" y="0">
+     <polygon points="0,0 26.6667,2 39.3333,7.66667 47.3333,13.6667 63.3333,62.6667 63.3333,64 0.333333,63.6667"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="72" terrain="0,0,0,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_04.png"/>
+  </tile>
+  <tile id="73" terrain="0,0,,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_05.png"/>
+  </tile>
+  <tile id="74" terrain=",,,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_06.png"/>
+   <objectgroup draworder="index" id="3">
+    <object id="2" x="62.6667" y="1">
+     <polygon points="1,-0.333333 -45.6667,14.6667 -55,21.6667 -58.6667,30.6667 -61,38.6667 -62.6667,62.3333 0.666667,63"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="75" terrain=",,0,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_07.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="0.333333" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="76" terrain=",,0,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_08.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="2" x="0" y="0" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="77" terrain=",,0,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_09.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="62.3333" y="62.6667">
+     <polygon points="0,1.66667 -16.3333,-49.3333 -24.6667,-57 -39.3333,-62 -62.6667,-62.6667 -62.6667,0.333333"/>
+    </object>
+   </objectgroup>
+  </tile>
+  <tile id="78" terrain=",,,1">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_10.png"/>
+  </tile>
+  <tile id="79" terrain=",,1,1">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_11.png"/>
+  </tile>
+  <tile id="80" terrain=",,1,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_12.png"/>
+  </tile>
+  <tile id="81">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_13.png"/>
+  </tile>
+  <tile id="82">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_14.png"/>
+  </tile>
+  <tile id="83">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_15.png"/>
+  </tile>
+  <tile id="84">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_16.png"/>
+  </tile>
+  <tile id="85" terrain=",0,,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_17.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.333333" y="0.333333" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="86">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_18.png"/>
+  </tile>
+  <tile id="87" terrain="0,,0,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_19.png"/>
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="-0.333333" y="0.333333" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="88" terrain="0,,0,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_20.png"/>
+  </tile>
+  <tile id="89" terrain=",0,0,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_21.png"/>
+  </tile>
+  <tile id="90" terrain=",0,,0">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_22.png"/>
+   <objectgroup draworder="index" id="6">
+    <object id="5" x="-0.333333" y="0.333333" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="91">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_23.png"/>
+  </tile>
+  <tile id="92">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_24.png"/>
+  </tile>
+  <tile id="93" terrain="0,,0,">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_25.png"/>
+   <objectgroup draworder="index" id="4">
+    <object id="3" x="0" y="0" width="64" height="64"/>
+   </objectgroup>
+  </tile>
+  <tile id="94" terrain=",1,,1">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_26.png"/>
+  </tile>
+  <tile id="95" terrain="1,1,1,1">
+   <image width="64" height="64" source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/kenney_piratepack/PNG/Default size/Tiles/tile_27.png"/>
+  </tile>
+ </tileset>
+ <tileset firstgid="97" name="obj_misk_atlas_64x64" tilewidth="64" tileheight="64" tilecount="1024" columns="32">
+  <image source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/Atlas2/obj_misk_atlas_64x64.png" width="2048" height="2048"/>
+ </tileset>
+ <layer id="2" name="ocean" width="100" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztw0ENAAAMA6FTVP/yJmMfSFg1VVVVVVVVVVVVVVVVVVVVVVVVVd8fkzqCng==
+  </data>
+ </layer>
+ <layer id="3" name="sea foam" width="100" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztWutxwzAI9gZJJog3SDdpM0G7/xS178KVoyAJBKrs8t3xK46EeIO0LIlEInEOvG/0sdHzrxmZACCLEkXJCfZ+2+hro0dhP8rn2XRHZVGikpx69t/3vm90fdGK9nui7zg+gaeR9hMB6XxYLlQ+QF56AV3AmrDe5bXnzsuNfKehCPuJAHc+0MON+f6yyHrpOesn2R9kD3byWH7bDGcvo+zHG5xPlPRAweml56ygD9AF7IHXx4S/0/IJvM6kE2yPQC3no6Aya5UThhSrYH3O7rV7SPYzC6g+7h1rYZ1YfISLVVHAfngN3EcLbxn0rMfFqijAXjPFK5rDPXIc9RGLfwAfUeDOPQO43OHtIxodU9+KAt1nlnjF6QP3UlZYczunR++ejvONWeIVjtfr4pfXd1jiFmcfHFnjGdVFa13fMjfy6GXg/Ds/WH5e+VSbn0t9Bkdam6H6brETzRwA+3RP74VnEpaavra+JiZIfQbtGbQ2I8m1lstrPsvFFlhXq5Pomo/mA+/1rL0NUM2/SjMk3I9iG1qdePTWCXeWXvTEVK7vrf1fqndKcqIxVxsbrP+tIaqmpD1Ka7yu9ak4Zz/Jf4D/lewtoUeuXI7r7cWwb3j32lLOr+XSUiyQ+KXxXNMfWXVSm51aEBkHd0iz2p0k/ZdqK6k2p/Wh9lzWPozTSY9dUz+PmkVJs1oqJykvY75wTpb8w5K/PGYV2v9ilGbmUeBiA84tcPcL31hliWNWq3w4W2/1rdI9Wil34lxI+9/oOS2g1ks+lh+9tPJEbdTaN1vqNEApNuO1qP1J342cDZV6Scv9lVSTefgI/N/aJ3PrUeLusUf5RwSk+zWLj3johK7naXtHgVSXWWZL3jr5j+Bk2GN3qZN+eNWeAC5Hj6x9jo5a7WnVS3TffHZ4x5qR72nOitr8rBWzvqk4IqT7Ds28j+sRE/2wvhmb9Y3L0aHt1XdkrIqDJSenb8RBW7NG3tUl5Fm/pJfsOeLReg/I3Ytl7ohBze6lt5GZO2LQckcJv2XeGIOW966pi7FouTfOHD4WXH4/+73d7ODeDyUSiUTCD9/NQSHZ
+  </data>
+ </layer>
+ <layer id="4" name="islands" width="100" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztW9ty00AM3SdSoOW9F/gc2tKGRwbKDP//GVhDzkRRJO161+tsgs6MJnGc2tLqcrRymlIgEAgEAoHeeJlkO8njJK87offfV7r30yRfdzpY93xhem0z3z1n0DrcTXKzk2v2/lfa29/Ddlrjt9197nb3/qPo98jOQ0i/23Ton6cOOq4F2EnrwW2UfsErrdnS9v4Q95X+gL803aR+1+kwfs4pf8gX3E75quUKj8cl7IQON+n4HlhPmRNcT+lH7bPbhXTtBfAE6pNno/QTP09x2Grn73Tsc3l/b+01X2jXkvVvJFB98NYgZxuXFp+As6wYyK15qc4knyp17A3O21r+ezmifbeFU8Ab2jU1XTR/aDGiXWvU/KD6YNln2ZT7Pr3/WaHLR+XauVy11t/TfWR/0BqUxHzOPvl3Nf6Q3OHl51x95DVq9FsD0h9Wjuc4Vp6r4RHoot3n/SQPk3xLvi8s3ufnnie5mqnbWkC98qQkV7TvzeVM5Ae/Lq0d+QHrp9U0j1Okv+h6X2bqtSYsf2h1osRPLTXr3SQbJp/TcRznOCYXQzV1inqe17Sfy1CvgjnNNi27l/Hyw6rLpdzSgzPJZ7xmWZyvxRDVvJo6JWs67Sff2DH2/0vMKeRsIucDq6/RPu/R4/P9e2ket8YHz0lvHZaYHXn38rjb8gk/7uEP3oOV9Fyt/pD7Myv/uE+ojtXWMFmvrLX1aoH1vkdPyfO5JGb48Vx9MLe07LPikoRqWk2u3E/ywbGhNP6k1NbqHIg/iOfR++ZqKv/cylfM73hM89mqFXcWh7XGI+criz/m2O3ZviTkfCXHH9b6wMe8D0Ydt/JAi9Wl+BP6IN68HqWE0z3blwT03qTDXLHWa45O6OOsGCyJ39bnEPdp30tqtuXyZO380HS3fFKzD5S9gxWjVt2CtPT93Ce5PLHylbjjFHtg5Av4Ba+bSn00bs3VBm1dsD9pyRPskWEX9ssP7HPoyv02+jxiLvizoZJa5fWgeMbZ69kkxSP8g7gcdU5XC8kjHpfk/MH9MvLz4tFh9XEWf3p7g9b9SeBfjmh7NOu9V8v4uVGfGZ8DZO9p1SOPR2TOjPqM8lwgZ31WLpT0XGvt0S4ZqFs1e3btbyI/2kF1i+9ttL7f8xc/Dv7oA+2ZRQmnR71aHnIO7M1NpE/CH8tD+w1GCZdf2hxjFGjzPssH/DvB5f2g/c7V24Ocat76v4DP+j2+wHHwRn9oc2Ctbo3828hLgvY/G1quxJ5jHUhe13wRvLEuPJ9Ef3sa4Bkd5lzop4IzTgv4hSTyIhAIBAKXjL/EsHSd
+  </data>
+ </layer>
+ <layer id="5" name="Top" width="100" height="50">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20ND6AAAAAAAAAAAAAAAAAAAAAAAAAAeDBOIAAB
+  </data>
+ </layer>
+</map>
