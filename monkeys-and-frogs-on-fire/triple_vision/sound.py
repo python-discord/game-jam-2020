@@ -6,12 +6,14 @@ from triple_vision import SoundSettings as ss
 
 
 class SoundTrack(arcade.Sound):
+    _sound_track_assets_path = Path("./assets/audio/soundtracks")
+
     def __init__(
-        self, *args, is_faded: bool = False, max_volume: float = 1.0, **kwargs
+        self, file_name, is_faded: bool = False, max_volume: float = 1.0, **kwargs
     ) -> None:
         self.faded = is_faded
         self.max_volume = max_volume
-        super().__init__(*args, **kwargs)
+        super().__init__(file_name=self._sound_track_assets_path / file_name, **kwargs)
 
     def set_volume(self, volume):
         if volume > self.max_volume:
