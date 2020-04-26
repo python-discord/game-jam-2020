@@ -11,6 +11,7 @@ class Projectile(Mob):
         self.change_y = dy
 
         self.life = 600
+        self.damage = 1
     
     def update(self):
         
