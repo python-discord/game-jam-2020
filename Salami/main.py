@@ -17,6 +17,9 @@ import os
 from TextInput import TextInput
 from Constants import WIDTH, HEIGHT, TITLE
 
+LOADING = 0
+PLAYING = 1
+
 class PyGameJam2020(arcade.Window):
 
     def __init__(self):
@@ -31,14 +34,14 @@ class PyGameJam2020(arcade.Window):
         self.debug = True
         self.debug_text_list = Graphics.create_text_list(self.debug_text, 12, 12)
 
+        os.chdir(os.path.dirname(os.path.abspath(__file__)))
         self.process = psutil.Process(os.getpid())
-
-        self.set_icon(pyglet.image.load("Salami/icon.png"))
+        self.set_icon(pyglet.image.load("resources/icon.png"))
 
         self.text_input = TextInput()
 
         self.camera = Camera.Camera(WIDTH, HEIGHT)
-        self.camera.zoom(1)
+        self.camera.zoom(20)
         self.keyboard = Keyboard.Keyboard()
 
         self.set_min_size(WIDTH, HEIGHT)
@@ -50,11 +53,18 @@ class PyGameJam2020(arcade.Window):
 
     def setup(self):
         
+        self.game_state = LOADING
         self.level = Level.Level(self.camera, self.keyboard)
 
     def on_update(self, delta):
-
+        # if self.game_state == PLAYING:
         self.level.update(delta)
+        if self.game_state == LOADING:
+            if self.camera.zoom_width > self.camera.width:
+                self.camera.zoom(0.98)
+            else:
+                self.game_state = PLAYING
+                self.level.paused = False
 
         self.camera.scroll_to(self.level.player.center_x, self.level.player.center_y)
 
@@ -76,8 +86,11 @@ class PyGameJam2020(arcade.Window):
 
                 Graphics.empty_text_list(self.debug_text_list)
                 Graphics.add_to_text_list(self.debug_text, self.debug_text_list, 12, 12)
-                player_pos = (f"<{round(self.level.player.left, 2)}, {round(self.level.player.bottom, 2)}>"
-                    f" <{self.level.player.center_x // 16}, {self.level.player.center_y // 16}>")
+                x0 = self.level.level_gen.current_room.x if self.level.level_gen.current_room else -1
+                y0 = self.level.level_gen.current_room.y if self.level.level_gen.current_room else -1
+                player_pos = (f"<{round(x0, 2)}, {round(y0, 2)}>"
+                    f" <Entities: {len(self.level.entities)}>")
+
                 Graphics.add_to_text_list(player_pos, self.debug_text_list, 12, 24)
                 
                 self.time -= 1
@@ -122,6 +135,7 @@ class PyGameJam2020(arcade.Window):
     def on_resize(self, width: float, height: float):
         self.camera.resize(width, height)
 
+        # Resize to Aspect Ratio
         # scale_x = width / self.prev_size[0]
         # scale_y = height / self.prev_size[1]
         # scale = min(scale_x, scale_y)
