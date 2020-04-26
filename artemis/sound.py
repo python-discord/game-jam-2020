@@ -37,6 +37,6 @@ def play_sound_effect(name: str, volume: float = 1.0):
     """Play a sound effect."""
     player = Player()
     player.queue(load(f'{ASSETS}audio/{name}.wav'))
-    player.volume = volume * settings.get_sfx_volume() * 2
+    player.volume = volume * settings.get_sfx_volume()
     player.play()
     sfxs.append(player)

@@ -1,23 +1,26 @@
 """Module for the physics engine."""
 import arcade
 
+import player
+
 
 def check_for_collision(sprite1: arcade.Sprite,
                         sprite2: arcade.Sprite) -> bool:
     """Check for collision between two sprites.
 
     Used instead of Arcade's default implementation as we need a hack to
-    return False if there is just a one pixel overlap.
+    return False if there is just a one pixel overlap, if it's a block...
     """
+    allowed_overlap = int(not isinstance(sprite2, player.Player))
     x_collision = (
-        sprite1.right - 1 > sprite2.left + 1
-        and sprite1.left + 1 < sprite2.right - 1
+        sprite1.right - allowed_overlap > sprite2.left + allowed_overlap
+        and sprite1.left + allowed_overlap < sprite2.right - allowed_overlap
     )
     if not x_collision:
         return False
     return (
-        sprite1.top - 1 > sprite2.bottom + 1
-        and sprite1.bottom + 1 < sprite2.top - 1
+        sprite1.top - allowed_overlap > sprite2.bottom + allowed_overlap
+        and sprite1.bottom + allowed_overlap < sprite2.top - allowed_overlap
     )
 
 
@@ -26,7 +29,7 @@ def check_for_collision_with_list(sprite: arcade.Sprite,
     """Check for collision between a sprite and a spritelist.
 
     Used instead of Arcade's default implementation as we need a hack to
-    return False if there is just a one pixel overlap.
+    return False if there is just a one pixel overlap, if it's a block...
     """
     overlapping = arcade.SpriteList()
     for other in sprite_list:
