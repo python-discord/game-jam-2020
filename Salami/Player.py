@@ -1,4 +1,5 @@
 
+import arcade
 import math
 
 import LevelGenerator
@@ -10,8 +11,7 @@ from Projectile import Projectile
 
 class Player(Mob):
 
-    def __init__(self, texture, x, y, keyboard):
-        super().__init__(texture, x, y)
+    def __init__(self, x, y, keyboard):
 
         self.keyboard = keyboard
 
@@ -33,12 +33,16 @@ class Player(Mob):
         self.not_mirrored = True
 
         self.curr_dash_frame = 0
-        self.max_dash_frame = 12
+        self.dash_frame_speed = 12
         self.dashing = False
 
         self.crawling = False
+        self.curr_crawl_frame = 0
+        self.crawl_frame_speed = 16
 
         self.health = 9
+        self.curr_invis_frame = 0
+        self.invis_frame = 90
 
         # Textures
         self.idle_texture = Textures.get_texture(0, 4)
@@ -47,8 +51,10 @@ class Player(Mob):
         self.walking_textures_mirrored = Textures.get_textures(1, 5, 4)
         self.dash_textures = Textures.get_textures(5, 4, 3)
         self.dash_textures_mirrored = Textures.get_textures(5, 5, 3)
-        self.crawl_textures = Textures.get_textures(8, 4, 3)
-        self.crawl_textures_mirrored = Textures.get_textures(8, 5, 3)
+        self.crawl_textures = Textures.get_textures(7, 4, 4)
+        self.crawl_textures_mirrored = Textures.get_textures(7, 5, 4)
+
+        super().__init__(self.idle_texture, x, y)
     
     def update(self):
 
@@ -64,7 +70,7 @@ class Player(Mob):
             self.dashing = True
         
         if self.keyboard.is_pressed("l"):
-            self.level.generate_level(self.center_x, self.center_y)
+            self.level.reset = True
 
         if self.keyboard.is_pressed("down"):
             # if not self.crawling:
@@ -76,15 +82,17 @@ class Player(Mob):
 
         if self.keyboard.is_pressed("attack"):
             if self.curr_attack_speed == 0:
+
                 extra_y_dir = 0
                 if self.keyboard.is_pressed("up"):
                     extra_y_dir = 4
                 elif self.keyboard.is_pressed("down"):
                     extra_y_dir = -4
+
                 attack_x = (self.change_x) * 4
                 attack_y = (self.change_y + extra_y_dir) * 3
                 attack_angle = int(math.atan2(attack_y, attack_x)/math.pi*180)
-                print(attack_angle)
+
                 card = Projectile(
                     Textures.SPRITESHEET[3 + int((attack_angle % 360) / 45) + 16],
                     self.center_x,
@@ -93,10 +101,6 @@ class Player(Mob):
                     attack_y)
                 self.level.add_entity_to_list(card, self.level.entities)
                 self.curr_attack_speed = self.max_attack_speed
-            # self.level.ball.center_x = self.center_x
-            # self.level.ball.center_y = self.center_y
-            # self.level.ball.change_x = self.change_x * 1.5
-            # self.level.ball.change_y = self.change_y * 2
 
         if self.curr_attack_speed > 0:
             self.curr_attack_speed -= 1
@@ -115,17 +119,13 @@ class Player(Mob):
                 self.jumping = False
                 self.curr_jump_height = 0
 
-        elif (self.curr_jump_height >= self.min_jump_height):
+        elif self.curr_jump_height >= self.min_jump_height:
             self.jumping = False
             self.curr_jump_height = 0
         
         if self.jumping:
             self.change_y = self.jump_height
             self.curr_jump_height += self.jump_height
-
-            # if self.curr_jump_height > self.max_jump_height:
-            #     self.jumping = False
-            #     self.curr_jump_height = 0
 
         if self.keyboard.is_pressed("left"):
             self.change_x = -self.movespeed * speed_mult
@@ -148,28 +148,35 @@ class Player(Mob):
                 self.change_x = -self.movespeed * speed_mult * 2
 
             self.curr_dash_frame += 1
-            if self.curr_dash_frame >= self.max_dash_frame * len(self.dash_textures):
+            if self.curr_dash_frame >= self.dash_frame_speed * len(self.dash_textures):
                 self.curr_dash_frame = 0
                 self.dashing = False
+
+        elif self.crawling:
+            self.curr_crawl_frame += 1
+            if self.curr_crawl_frame >= self.crawl_frame_speed * len(self.crawl_textures):
+                self.curr_crawl_frame = 0
         else:
             self.walk_count += 1
             if self.walk_count >= len(self.walking_textures) * self.walk_frame_speed:     
                 self.walk_count = 0
         
-        if self.change_x > 0:
+        if self.curr_invis_frame > 0 and self.curr_invis_frame % 12 < 6:
+            self.texture = Textures.get_texture(15, 15)
+        elif self.change_x > 0:
             if self.dashing:
-                self.texture = self.dash_textures[self.curr_dash_frame // self.max_dash_frame]
+                self.texture = self.dash_textures[self.curr_dash_frame // self.dash_frame_speed]
             elif self.crawling:
-                self.texture = self.crawl_textures[0]
+                self.texture = self.crawl_textures[self.curr_crawl_frame // self.crawl_frame_speed]
             else:
                 self.texture = self.walking_textures[self.walk_count // self.walk_frame_speed]
             # self.player_dir = True
 
         elif self.change_x < 0:
             if self.dashing:
-                self.texture = self.dash_textures_mirrored[self.curr_dash_frame // self.max_dash_frame]
+                self.texture = self.dash_textures_mirrored[self.curr_dash_frame // self.dash_frame_speed]
             elif self.crawling:
-                self.texture = self.crawl_textures_mirrored[0]
+                self.texture = self.crawl_textures_mirrored[self.curr_crawl_frame // self.crawl_frame_speed]
             else:
                 self.texture = self.walking_textures_mirrored[self.walk_count // self.walk_frame_speed]
             # self.player_dir = False
@@ -189,3 +196,15 @@ class Player(Mob):
 
     def collided(self, entity, dx, dy):
         super().collided(entity, dx, dy)
+
+    def hurt(self, damage, knockback):
+        if damage == 0:
+            return
+        if self.curr_invis_frame <= 0:
+            self.health -= damage
+            self.change_x += knockback
+            self.curr_invis_frame = self.invis_frame
+
+        if self.health <= 0:
+            # Die
+            pass
