@@ -75,6 +75,9 @@ class TriTess(arcade.Window):
                 arcade.draw_text(f"{self.trigrid.cur_player_name()}'s turn",
                                  SCREEN_WIDTH / 2, SCREEN_HEIGHT * .95, arcade.color.WHITE, 30, bold=True,
                                  align="center", anchor_x="center", anchor_y="center")
+        else:
+            arcade.draw_text(f"Welcome to TriChess\n please select a game type to play", 512, 750, arcade.color.WHITE,
+                             30, bold=True, align="center", anchor_x="center", anchor_y="center")
 
     def on_mouse_press(self, coord_x, coord_y, button, modifiers):
         """
