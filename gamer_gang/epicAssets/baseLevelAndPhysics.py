@@ -47,6 +47,17 @@ class Level(arcade.View):
         arcade.set_background_color(arcade.color.LIGHT_BLUE)
         self.ln = levelNum  # ln stands for level number
 
+        if self.ln == 1:  # tutorial tex
+            self.positions = [[944.0, 1264.0],
+                              [1730.0, 1380.0],
+                              [2850.0, 1296.0],
+                              [3568.0, 1350.0]]
+
+            self.text = ["WAD or Arrow keys to jump, S and Down Arrow key to split when stacked.",
+                         "Boxes can be pushed around",
+                         "Spikes, Bees, and Torches are dangerous",
+                         "Gravel blocks can't be pushed, but they are affected by gravity"]
+
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
         self.debugging = False
@@ -160,6 +171,12 @@ class Level(arcade.View):
         self.sands.draw()
         self.stars.draw()
         self.torchs.draw()
+        if self.ln == 1:
+
+            for x, i in enumerate(self.positions):
+                arcade.draw_text(self.text[x], i[0], i[1], font_name=str(Path(__file__).parent) + "/pixelFont.TTF",
+                                 font_size=20, color=arcade.color.BLACK)
+
         if self.msg is not None: self.msg.draw()
 
         if self.collectedStars != self.neededStars:
