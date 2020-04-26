@@ -8,8 +8,7 @@ from triple_vision import Settings as s
 from triple_vision import Tile
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import ManaBar, MovingSprite
-from triple_vision.entities.weapons import ChargedLaserProjectile, Melee
-from triple_vision.pathfinding import PathFinder
+from triple_vision.entities.weapons import ChargedLaserProjectile
 from triple_vision.utils import pixels_to_tile, tile_to_pixels
 from triple_vision.sound import SoundManager
 from triple_vision.entities.abilities import Abilities
@@ -53,9 +52,6 @@ class Player(LivingEntity, MovingSprite):
         self.dexterity = 0.75
 
         self._curr_color = self.curr_color
-
-        self.path_finder = PathFinder()
-        self.path = None
 
         self.mana_bar: ManaBar = None
         self.health_bar: PlayerLiveManager = None

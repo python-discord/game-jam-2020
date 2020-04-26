@@ -1,6 +1,5 @@
 import enum
 
-
 from triple_vision.entities.weapons import FloorStompMelee
 from triple_vision.sound import SoundManager
 
