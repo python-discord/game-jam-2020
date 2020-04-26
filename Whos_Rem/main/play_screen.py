@@ -40,7 +40,7 @@ class Audio:
     def __init__(self, main_):
         self.main = main_
         self.settings = self.main.settings
-        self.volume = self.settings.volume * 0.1
+        self.volume = self.main.settings.volume
 
     @classmethod
     def _setup(cls, _track: dict):
@@ -48,6 +48,7 @@ class Audio:
 
         path = f"{cls.BASE_DIR}/main/tracks/{cls.track['path'].upper()}.{cls.track['type']}"
         cls.player = vlc.MediaPlayer(path)
+        cls.player.audio_set_volume(cls.main.volume * 100)
 
         if not SAMPLING:
             with open(f"{cls.BASE_DIR}/main/tracks/{cls.track['path']}.json", 'r') as file:
@@ -413,7 +414,8 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             count_down.draw()
 
         # notes
-        ShapeManager.manage_shapes(self.notes_list, self.main.brightness, speed=256/(1.5/self.delta_time))
+        if not self.paused and self.started:
+            ShapeManager.manage_shapes(self.notes_list, self.main.brightness, speed=256/(1.5/self.delta_time))
 
         # White box behind the keys
         arcade.draw_rectangle_filled(
