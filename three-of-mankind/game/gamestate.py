@@ -1,29 +1,27 @@
 import logging
 
-from PIL import Image
 import arcade
 
 from .constants import (
+    AIR_CONTROL,
     BLOCK_LEN,
-    FLOOR_LENGTH,
-    TEXTURE_SIZE,
+    DASH_COUNT,
+    DASH_DISTANCE,
     GRAVITY,
     GROUND_CONTROL,
-    AIR_CONTROL,
-    PLAYER_MOVEMENT_SPEED,
-    JUMP_FORCE,
     JUMP_COUNT,
-    DASH_DISTANCE,
-    RIGHT,
-    LEFT,
+    JUMP_FORCE,
     JUMP_VELOCITY_BONUS,
-    DASH_COUNT,
+    LEFT,
+    PLAYER_MOVEMENT_SPEED,
+    RIGHT,
+    TEXTURE_SIZE,
     VIEWPORT_MARGIN,
 )
 from .player import Player
 from .sprite import Sprite
 from .tile_image import tiles
-from .utils import sweep_trace, is_touching
+from .utils import dash_emitter_factory, is_touching, sweep_trace
 
 
 class GameState:
@@ -32,6 +30,42 @@ class GameState:
     def __init__(self, game):
         self.view_left = 0
         self.view_bottom = 0
+        self.game = game
+
+        self.level_geometry = arcade.SpriteList()  # Have collisions
+        self.level_objects = arcade.SpriteList()  # Doesn't have collision
+        self.colored_geometry = {
+            "red": arcade.SpriteList(),
+            "green": arcade.SpriteList(),
+            "blue": arcade.SpriteList(),
+            "white": arcade.SpriteList(),
+        }
+
+        self.player = Player(scale=0.99)
+        for tile in (
+            tiles.player_white,
+            tiles.player_red,
+            tiles.player_green,
+            tiles.player_blue,
+        ):
+            self.player.append_texture(tile.texture)
+        self.player.set_texture(0)
+
+        self.player.center_x = 200
+        self.player.center_y = 200
+
+        self.load_level(0)
+
+        self.engine = arcade.PhysicsEnginePlatformer(
+            self.player, self.level_geometry, GRAVITY
+        )
+
+        self.dash_emitters = []
+
+    def load_level(self, level_id: int) -> None:
+        self.level_objects = arcade.SpriteList()
+        self.level_geometry = arcade.SpriteList()
+        self.danger = arcade.SpriteList()
         self.level = 0
         self.game = game
 
@@ -179,6 +213,11 @@ class GameState:
         self.level_geometry.draw()
         self.level_objects.draw()
         self.player.draw()
+        for emitter in self.dash_emitters:
+            emitter.draw()
+        self.player.draw()
+        self.level_geometry.draw()
+        self.level_objects.draw()
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed."""
@@ -216,6 +255,14 @@ class GameState:
 
                 if can_dash:
                     self.player.left += DASH_DISTANCE * self.player.direction
+                    old_pos = self.player.center_x, self.player.center_y
+                    # make player dash
+                    self.player.left += DASH_DISTANCE * self.player.direction
+                    # create a particle emitter
+                    new_pos = self.player.center_x, self.player.center_y
+                    self.dash_emitters.extend(
+                        dash_emitter_factory(self.player.color, old_pos, new_pos)
+                    )
 
         # Jumping
         if key == arcade.key.SPACE:

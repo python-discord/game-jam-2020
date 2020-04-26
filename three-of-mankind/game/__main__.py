@@ -19,11 +19,22 @@ class Game(ColorIsolationWindow):
         super().__init__(*args, **kwargs)
         self.ingame = False
         self.gamestate = None
+<<<<<<< HEAD
         self.set_isolation_color((49, 119, 255))
 
     def on_update(self, delta_time: float) -> None:
         """Send update event to the gamestate."""
         if not self.ingame:  # Temporarily automatically start the game if it isn't running
+=======
+        # self.set_isolation_color((49, 119, 255))
+        self.set_isolation_threshold(10.0)
+
+    def on_update(self, delta_time: float) -> None:
+        """Send update event to the gamestate."""
+        if (
+            not self.ingame
+        ):  # Temporarily automatically start the game if it isn't running
+>>>>>>> dash-effect
             self.start_game()
         if self.gamestate:
             self.gamestate.on_update(delta_time)

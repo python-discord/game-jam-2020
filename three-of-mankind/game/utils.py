@@ -1,10 +1,28 @@
 import os
+import math
 from math import floor
 from itertools import zip_longest
 from pathlib import Path
 from typing import Tuple
 
+import random
+import os
 import arcade
+from PIL import Image
+import time
+from .constants import (
+    DEFAULT_ALPHA,
+    DEFAULT_EMIT_DURATION,
+    DEFAULT_PARTICLE_LIFETIME,
+    LINE_EMIT_INTERVAL,
+    LINE_SCALE,
+    NUM_COLORS,
+    PARTICLE_SPEED_SLOW,
+    PLUME_EMIT_INTERVAL,
+    PLUME_PARTICLE_LIFETIME,
+    PLUME_SCALE,
+    PLUME_EMIT_DURATION,
+)
 
 
 def sweep_trace(
@@ -82,3 +100,105 @@ def is_touching(
         if check_touch(sprite, geometry, *map(lambda x, y: x * y, dir, displacement)):
             return True
     return False
+
+
+# color conversion
+def hsv2rgb(h, s, v):
+    h = float(h)
+    s = float(s)
+    v = float(v)
+    h60 = h / 60.0
+    h60f = math.floor(h60)
+    hi = int(h60f) % 6
+    f = h60 - h60f
+    p = v * (1 - s)
+    q = v * (1 - f * s)
+    t = v * (1 - (1 - f) * s)
+    r, g, b = 0, 0, 0
+    if hi == 0:
+        r, g, b = v, t, p
+    elif hi == 1:
+        r, g, b = q, v, p
+    elif hi == 2:
+        r, g, b = p, v, t
+    elif hi == 3:
+        r, g, b = p, q, v
+    elif hi == 4:
+        r, g, b = t, p, v
+    elif hi == 5:
+        r, g, b = v, p, q
+    r, g, b = int(r * 255), int(g * 255), int(b * 255)
+    return r, g, b
+
+
+def rgb2hsv(r, g, b):
+    r, g, b = r / 255.0, g / 255.0, b / 255.0
+    mx = max(r, g, b)
+    mn = min(r, g, b)
+    df = mx - mn
+    if mx == mn:
+        h = 0
+    elif mx == r:
+        h = (60 * ((g - b) / df) + 360) % 360
+    elif mx == g:
+        h = (60 * ((b - r) / df) + 120) % 360
+    elif mx == b:
+        h = (60 * ((r - g) / df) + 240) % 360
+    if mx == 0:
+        s = 0
+    else:
+        s = df / mx
+    v = mx
+    return h, s, v
+
+
+def rand_color(c, scale=0.25):
+    as_hsv = rgb2hsv(*c)
+    clamp = lambda my_value, max_v: max(min(my_value, max_v), 0)
+    for _ in range(NUM_COLORS):
+        yield hsv2rgb(
+            *(
+                clamp(as_hsv[0] + (random.random() - 0.5) * scale, 360),
+                clamp(as_hsv[1] + (random.random() - 0.5) * scale, 1.0),
+                clamp(as_hsv[2] + (random.random() - 0.5) * scale, 1.0),
+            )
+        )
+
+
+def dash_emitter_factory(color, pos_a, pos_b):
+    """Interval, emit on line"""
+    if pos_a[0] > pos_b[0]:
+        angle = 0
+    else:
+        angle = 180
+    textures = [
+        arcade.Texture(f"{time.time()}", Image.new("RGBA", (10, 10), p))
+        for p in rand_color(color)
+    ]
+    line_e = arcade.Emitter(
+        center_xy=(0.0, 0.0),
+        emit_controller=arcade.EmitterIntervalWithTime(
+            LINE_EMIT_INTERVAL, DEFAULT_EMIT_DURATION
+        ),
+        particle_factory=lambda emitter: arcade.LifetimeParticle(
+            filename_or_texture=random.choice(textures),
+            change_xy=arcade.rand_in_circle((0.0, 0.0), PARTICLE_SPEED_SLOW),
+            lifetime=DEFAULT_PARTICLE_LIFETIME,
+            center_xy=arcade.rand_on_line(pos_a, pos_b),
+            scale=LINE_SCALE,
+            alpha=DEFAULT_ALPHA,
+        ),
+    )
+    exhaust_plume_e = arcade.Emitter(
+        center_xy=pos_a,
+        emit_controller=arcade.EmitterIntervalWithTime(
+            PLUME_EMIT_INTERVAL, PLUME_EMIT_DURATION
+        ),
+        particle_factory=lambda emitter: arcade.FadeParticle(
+            filename_or_texture=random.choice(textures),
+            change_xy=arcade.rand_vec_spread_deg(angle, 25, 4.0),
+            lifetime=PLUME_PARTICLE_LIFETIME,
+            scale=PLUME_SCALE,
+        ),
+    )
+    return line_e, exhaust_plume_e
