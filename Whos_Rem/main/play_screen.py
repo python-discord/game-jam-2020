@@ -304,6 +304,10 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                                        scale=0.75)
         self.delta_time = 0
 
+        self.progress_bar = ProgressBar(self.main.size[0]*0.9, self.main.size[1]*0.2,
+                                        self.main.size[0]*0.04, self.main.size[1]*0.6,
+                                        [255, 0, 0], [0, 0, 0])
+
     def setup(self, _track, _main):
         """
         This Adds the background image, Keys 1 -> 3 sprites, and countdown sprites,
@@ -414,6 +418,8 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             self.notes_hit += notes_passed
             self.combo = (self.combo + combos) if combos != -1 else 0
 
+            self.progress_bar.progress = self.audio.player.get_position()
+
         if not self.audio.player.is_playing() and \
                 self.started and \
                 self.audio.started and not\
@@ -504,6 +510,8 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         self.notes_hit_pic.alpha = alpha
         self.notes_hit_pic.draw()
 
+        self.progress_bar.draw(self.main.brightness)
+
         # Actual score
         arcade.draw_text(f"{self.score}",
                          start_x=self.score_pic.center_x - (len(f"{self.score}") * 15),
@@ -567,3 +575,32 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
 
         elif symbol == self.key_binds['right']:
             self.right_button_active = False
+
+
+class ProgressBar:
+
+    def __init__(self, x, y, width, height, primary_colour, secondary_colour):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.primary_colour = primary_colour
+        self.secondary_colour = secondary_colour
+        self.progress = 0.0
+
+    def draw(self, brightness):
+        primary_colour = cb.brightness(self.primary_colour, brightness)
+        secondary_colour = cb.brightness(self.secondary_colour, brightness)
+        self.progress = max(0, self.progress)
+
+        arcade.draw_circle_filled(self.x, self.y, self.width//2, secondary_colour)
+        arcade.draw_circle_filled(self.x, self.y+self.height, self.width // 2, secondary_colour)
+        arcade.draw_lrtb_rectangle_filled(self.x - self.width//2, self.x + self.width//2,
+                                          self.y + self.height, self.y,
+                                          secondary_colour)
+
+        arcade.draw_circle_filled(self.x, self.y, self.width // 2 * 0.9, primary_colour)
+        arcade.draw_circle_filled(self.x, self.y + self.height*self.progress, self.width // 2 * 0.9, primary_colour)
+        arcade.draw_lrtb_rectangle_filled(self.x - self.width//2 * 0.9, self.x + self.width//2 * 0.9,
+                                          self.y + self.height*self.progress, self.y,
+                                          primary_colour)
