@@ -23,7 +23,7 @@ class Game(arcade.Window):
     def on_key_press(self, key, modifiers):
         self.keypressed[key] = True
     def on_key_release(self, key, modifiers):
-        self.keypressed[key] = False
+        del self.keypressed[key]
     def on_draw(self):
         arcade.start_render()
         if self.state == 'title_screen':
