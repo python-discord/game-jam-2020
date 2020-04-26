@@ -46,10 +46,7 @@ class Audio:
         cls.track = _track
 
         path = f"{cls.BASE_DIR}/main/tracks/{cls.track['path'].upper()}.{cls.track['type']}"
-        cls.vlc_instance = vlc.Instance('--input-repeat=-1')
-        cls.player = cls.vlc_instance.media_player_new()
-        media = cls.vlc_instance.media_new(path)
-        cls.player.set_media(media)
+        cls.player = vlc.MediaPlayer(path)
 
         if not SAMPLING:
             with open(f"{cls.BASE_DIR}/main/tracks/{cls.track['path']}.json", 'r') as file:
@@ -82,7 +79,6 @@ class Audio:
     @classmethod
     def get_notes(cls, frame):
         section, frame = divmod(frame, cls.FPS)
-        #print(section, frame, "Track time:", timedelta(milliseconds=cls.player.get_time()),)
         return cls.notes[section][frame]
 
 
