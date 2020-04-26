@@ -16,8 +16,6 @@ from triple_vision.networking import client
 from triple_vision.entities import Melee
 
 
-
-
 class GameManager:
 
     def __init__(self, view) -> None:
@@ -61,7 +59,11 @@ class GameManager:
     def on_update(self, delta_time) -> None:
         for enemy in self.enemies:
 
-            projectile_hit_enemy = arcade.check_for_collision_with_list(enemy, self.player_projectiles)
+            projectile_hit_enemy = arcade.check_for_collision_with_list(
+                enemy,
+                self.player_projectiles
+            )
+
             for projectile in projectile_hit_enemy:
                 self.create_dmg_indicator(
                     projectile.dmg * self.view.player.attack_multiplier,
@@ -82,7 +84,11 @@ class GameManager:
                 )
                 enemy.hit(player_melee_attack, self.view.player.attack_multiplier)
 
-        projectiles_hit_player = arcade.check_for_collision_with_list(self.view.player, self.enemy_projectiles)
+        projectiles_hit_player = arcade.check_for_collision_with_list(
+            self.view.player,
+            self.enemy_projectiles
+        )
+
         for projectile in projectiles_hit_player:
             self.view.player.hit(projectile)
             projectile.destroy()
@@ -92,7 +98,11 @@ class GameManager:
             if 0 < spike.ticks < 7:
                 self.view.player.hit(spike)
 
-        enemy_collision_with_player = arcade.check_for_collision_with_list(self.view.player, self.enemies)
+        enemy_collision_with_player = arcade.check_for_collision_with_list(
+            self.view.player,
+            self.enemies
+        )
+
         for enemy in enemy_collision_with_player:
             if enemy.can_melee_attack:
                 self.view.player.hit(enemy.melee_weapon)

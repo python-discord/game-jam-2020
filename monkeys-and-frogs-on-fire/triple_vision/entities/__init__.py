@@ -18,6 +18,7 @@ __all__ = (
     'Enemies',
     'LaserProjectile',
     'ChargedLaserProjectile',
+    'Melee',
     'LivingEntity',
     'SoundEntity',
     'MovingSprite',

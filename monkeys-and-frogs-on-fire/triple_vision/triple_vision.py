@@ -3,7 +3,7 @@ import time
 
 import arcade
 
-from triple_vision import Settings as s
+from triple_vision import Settings as s, SoundSettings as ss
 from triple_vision.camera import Camera
 from triple_vision.entities import Player
 from triple_vision.managers import CardManager, GameManager, CursorManager, LevelManager
@@ -14,7 +14,7 @@ from triple_vision.sound import SoundManager, SoundtrackManager
 class TripleVision(arcade.View):
     def __init__(self, main_view) -> None:
         super().__init__()
-        self.level = 1
+        self.level = 4
         self.seed = None
 
         self.main_view = main_view
@@ -59,7 +59,7 @@ class TripleVision(arcade.View):
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
         self.cursor_manager = CursorManager(self, self.player)
-        self.sound_manager = SoundtrackManager(["Monplaisir_-_06_-_Level_3.mp3"])
+        self.sound_manager = SoundtrackManager(ss.SOUNDTRACK_LIST)
         self.sound_manager.setup()
 
         self.map = Map(self, s.MAP_SIZE)
