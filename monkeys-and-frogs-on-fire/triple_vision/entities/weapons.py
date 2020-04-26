@@ -36,6 +36,7 @@ class LaserProjectile(Projectile):
         color: str,
         dmg: float = random.randrange(60, 70),
         moving_speed: float = 5.0,
+        lifetime: float = 2,
         **kwargs: Any
     ) -> None:
         super().__init__(
@@ -43,7 +44,7 @@ class LaserProjectile(Projectile):
             throwback_force=8,
             activate_sounds=self.activate_sounds,
             hit_sounds=self.hit_sounds,
-            lifetime=2,
+            lifetime=lifetime,
             moving_speed=moving_speed,
             filename=f'assets/lasers/{color}_laser.png',
             **kwargs

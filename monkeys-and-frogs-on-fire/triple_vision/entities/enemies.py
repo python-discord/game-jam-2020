@@ -21,6 +21,11 @@ class Enemies(enum.Enum):
     chort = 100
     imp = 300
     wogol = 512
+    big_zombie = 512
+    tiny_zombie = 100
+    goblin = 64
+    ice_zombie = 256
+    muddy = 2048
 
 
 class BaseEnemy(LivingEntity):
