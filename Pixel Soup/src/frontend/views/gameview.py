@@ -1,6 +1,5 @@
 import arcade
 
-import os
 from multiprocessing import Process, Queue
 import random
 
@@ -82,17 +81,10 @@ class Build:
 class GameView(arcade.View):
     """Main application class."""
 
-    def __init__(self):
+    def __init__(self, player_connection, assigned_player: int):
         """ Initializer """
         # Call the parent class initializer
         super().__init__()
-
-        # Set the working directory (where we expect to find files) to the same
-        # directory this .py file is in. You can leave this out of your own
-        # code, but it is needed to easily run the examples using "python -m"
-        # as mentioned at the top of this program.
-        file_path = os.path.dirname(os.path.abspath(__file__))
-        os.chdir(file_path)
 
         # Variables that will hold sprite lists
         self.player1 = None
@@ -113,6 +105,9 @@ class GameView(arcade.View):
         self.forward = Queue()
         self.feedback = Queue()
 
+        self.player_connection = player_connection
+        self.assigned_player = assigned_player
+
     def setup(self):
         """ Set up the game and initialize the variables. """
         self.background = arcade.load_texture(f"{DATA_DIR}/14.png")
@@ -124,6 +119,7 @@ class GameView(arcade.View):
         self.player1 = arcade.Sprite(f"{DATA_DIR}/player1.png", SPRITE_SCALING_PLAYER)
         self.player2 = arcade.Sprite(f"{DATA_DIR}/player2.png", SPRITE_SCALING_PLAYER)
         self.player3 = arcade.Sprite(f"{DATA_DIR}/player3.png", SPRITE_SCALING_PLAYER)
+
         self.player1.center_x = 100
         self.player1.center_y = 100
 
@@ -142,11 +138,12 @@ class GameView(arcade.View):
         self.wall_list = build.blocks
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(
-            self.player1, self.wall_list, GRAVITY
+            getattr(self, f"player{self.assigned_player}"), self.wall_list, GRAVITY
         )
 
         sync = Process(
-            target=networking, args=(self.forward, self.feedback, self.window.pl,)
+            target=networking,
+            args=(self.forward, self.feedback, self.player_connection,),
         )
         sync.start()
 
@@ -165,7 +162,7 @@ class GameView(arcade.View):
         self.wall_list.draw()
 
     def add_wall(self, pos=None):
-        if pos:
+        if not pos:
             pos = random.randint(10, 650)
 
         wall = arcade.Sprite(f"{DATA_DIR}/11.png", 0.15)
@@ -175,23 +172,27 @@ class GameView(arcade.View):
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed. """
-
         if key == arcade.key.SPACE or key == arcade.key.W:
             if self.physics_engine.can_jump():
-                self.player1.change_y = PLAYER_JUMP_SPEED
+                getattr(
+                    self, f"player{self.assigned_player}"
+                ).change_y = PLAYER_JUMP_SPEED
                 # arcade.play_sound(self.jump_sound)
         elif key == arcade.key.LEFT or key == arcade.key.A:
-            self.player1.change_x = -PLAYER_MOVEMENT_SPEED
+            getattr(
+                self, f"player{self.assigned_player}"
+            ).change_x = -PLAYER_MOVEMENT_SPEED
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player1.change_x = PLAYER_MOVEMENT_SPEED
+            getattr(
+                self, f"player{self.assigned_player}"
+            ).change_x = PLAYER_MOVEMENT_SPEED
 
     def on_key_release(self, key, modifiers):
         """Called when the user releases a key. """
-
         if key == arcade.key.LEFT or key == arcade.key.A:
-            self.player1.change_x = 0
+            getattr(self, f"player{self.assigned_player}").change_x = 0
         elif key == arcade.key.RIGHT or key == arcade.key.D:
-            self.player1.change_x = 0
+            getattr(self, f"player{self.assigned_player}").change_x = 0
 
     def on_mouse_press(self, x, y, button, modifiers):
         """
@@ -211,14 +212,18 @@ class GameView(arcade.View):
         changed = False
         # Scroll up
         top_boundary = self.view_bottom + SCREEN_HEIGHT - TOP_VIEWPORT_MARGIN
-        if self.player1.top > top_boundary:
-            self.view_bottom += self.player1.top - top_boundary
+        if getattr(self, f"player{self.assigned_player}").top > top_boundary:
+            self.view_bottom += (
+                getattr(self, f"player{self.assigned_player}").top - top_boundary
+            )
             changed = True
 
         # Scroll down
         bottom_boundary = self.view_bottom + BOTTOM_VIEWPORT_MARGIN
-        if self.player1.bottom < bottom_boundary:
-            self.view_bottom -= bottom_boundary - self.player1.bottom
+        if getattr(self, f"player{self.assigned_player}").bottom < bottom_boundary:
+            self.view_bottom -= (
+                bottom_boundary - getattr(self, f"player{self.assigned_player}").bottom
+            )
             changed = True
 
         if changed:

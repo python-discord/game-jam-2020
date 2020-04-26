@@ -79,7 +79,10 @@ def login_entry(conn) -> None:
                                     for player in room_section:
                                         player[0].send(
                                             f"Start,,{team_udp_port},"
-                                            f",{room_password}".encode()
+                                            f",{room_password},"
+                                            f",{room_section[0][1]} "
+                                            f"{room_section[1][1]} "
+                                            f"{room_section[2][1]}".encode()
                                         )
 
                                     # creates a thread for players room

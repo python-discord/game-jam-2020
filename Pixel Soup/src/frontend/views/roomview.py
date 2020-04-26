@@ -114,7 +114,8 @@ class RoomView(arcade.View):
             if packet[0] == "Start":
                 logging.info("Starting the game...")
 
-                game_view = GameView()
+                char = packet[3].split().index(str(self.username)) + 1
+                game_view = GameView(self.pipe, char)
                 game_view.setup()
                 self.window.show_view(game_view)
 
