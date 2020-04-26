@@ -1,12 +1,12 @@
 Ok judges!  
 This only works if your current working directory is my team repo  
 
-###Running Directions 
+###Running Directions   
 Your file path has to be like C:/Users/stuff/game-jam-2020 for this game to work  
 So yea you're gonna have to run: "python gamer_gang/triple_blocks.py"  
 Maybe requirements.txt too
 
-###Game Mechanics 
+###Game Mechanics   
 Up, Left, Right arrows OR WAD keys to move  
 1, 2, 3 to control the green, red, and purple squares/cubes whatever you wanna call 'em   
 Down arrow or S key to split the stack that you're currently in  
