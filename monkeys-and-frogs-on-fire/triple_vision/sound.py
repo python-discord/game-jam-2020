@@ -136,3 +136,6 @@ class SoundtrackManager:
         if position == 0.0:
             self.advance_song()
             self.play_song()
+
+    def update_volumes(self, volume: float):
+        self._volume = volume
