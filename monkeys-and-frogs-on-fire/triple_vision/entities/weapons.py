@@ -98,7 +98,6 @@ class Melee(Weapon):
 
 
 class FloorStompMelee(Projectile):
-    # TODO SOUNDS
     activate_sounds = ("fireball.wav",)
     hit_sounds = ("laser_hit_1.wav",)
 
