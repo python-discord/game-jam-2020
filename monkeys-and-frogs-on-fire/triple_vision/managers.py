@@ -106,10 +106,10 @@ class CardManager:
         self.colors = ('red', 'green', 'blue')
         self.card_manager_enabled = True
 
-        card_scale = s.SCALING / 6
+        card_scale = s.SCALING / 5.75
 
-        self.MIN_CARD_HEIGHT = -132 * card_scale
-        self.MAX_CARD_HEIGHT = 84 * card_scale
+        self.MIN_CARD_HEIGHT = -242 * card_scale
+        self.MAX_CARD_HEIGHT = 108 * card_scale
         self.MAX_CARD_HOVER_HEIGHT = 280 * card_scale
         self.DISABLED_COLOR = (255, 0, 0)
         self.ENABLED_COLOR = (255, 255, 255)
@@ -119,7 +119,7 @@ class CardManager:
                 arcade.Sprite(
                     filename=f'assets/wizard/{color}_card.png',
                     scale=card_scale,
-                    center_x=s.WINDOW_SIZE[0] / 1.35 + (idx - 1) * 400 * card_scale,
+                    center_x=20 + s.WINDOW_SIZE[0] / 1.35 + (idx - 1) * 400 * card_scale,
                     center_y=self.MIN_CARD_HEIGHT
                 )
             )
@@ -269,6 +269,7 @@ class SoundtrackManager:
 
     def toggle_next_sound(self) -> None:
         self.curr_sound = next(self._sounds_cycle)
+        self.playing = False
 
     def update_cycle(self):
         self._sounds_cycle = itertools.cycle(self._sounds)
