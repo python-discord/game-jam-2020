@@ -78,9 +78,9 @@ class MainMenu(arcade.View):
 
     note_1 = SwayingNote(width*0.1, height*0.75,
                          path=Path().cwd() / Path("main/Resources/main_menu/music_note_1.png"))
-    note_2 = SwayingNote(width * 0.2, height * 0.25,
+    note_2 = SwayingNote(width * 0.19, height * 0.25,
                          path=Path().cwd() / Path("main/Resources/main_menu/music_note_2.png"))
-    note_3 = SwayingNote(width * 0.7, height * 0.55,
+    note_3 = SwayingNote(width * 0.9, height * 0.55,
                          path=Path().cwd() / Path("main/Resources/main_menu/music_note_3.png"))
 
     def __init__(self, main):
