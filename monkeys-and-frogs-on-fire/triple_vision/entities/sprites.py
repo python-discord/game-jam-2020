@@ -168,9 +168,9 @@ class ManaBar(arcade.Sprite):
             return
         self.fill_part_list.pop()
 
-    def clear(self):
-        for _ in range(len(self.fill_part_list)):
-            self.fill_part_list.pop()
+    def clear(self, amount):
+        for _ in range(amount):
+            self.remove_filling_part()
 
     def add_filling_part(self):
         if len(self.fill_part_list) < self.max_fillers:
