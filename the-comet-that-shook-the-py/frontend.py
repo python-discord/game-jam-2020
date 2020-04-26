@@ -7,6 +7,7 @@ from typing import (
     Tuple,
     Set,
 )
+import time
 
 import arcade
 
@@ -125,7 +126,6 @@ class TileSprite(arcade.Sprite):
 
     def reset(self,):
         """Resets the sprite back to its original starting position"""
-        print(f"{self.tile_value} is resetting")
         self.center_x = self.starting_x
         self.center_y = self.starting_y
         self.set_bounds()
@@ -207,6 +207,9 @@ class MyGame(arcade.Window):
         self.button_list: Optional[arcade.SpriteList] = None
         self.clues: Optional[ClueTextBox] = None
         self.answers: Optional[List[str]] = None
+        self.red_x: Optional[arcade.sprite] = None
+        self._flash_red_x_end: Optional[int] = None
+        self._red_x_visible = False
         arcade.set_background_color((100, 100, 100,))
 
     def setup(self,):
@@ -219,11 +222,16 @@ class MyGame(arcade.Window):
         self.submission_grid = SubmissionGrid(answers)
         self.tile_sprites = arcade.SpriteList()
         self.button_list = arcade.SpriteList()
+        self.red_x = arcade.Sprite("assets/red_x.png")
         timer = Button("assets/blank_button.png", (850, 110))
         done_button = Button("assets/done_button.png", (1130, 110))
         done_button.on_click = self.submit_game
         exit_button = Button("assets/exit_button.png", (1380 + 30, 110))
         self.button_list.extend([timer, done_button, exit_button])
+        self.red_x.center_x, self.red_x.center_y = (
+            self.submission_grid.center_x,
+            self.submission_grid.center_y,
+        )
         for ((x, y,), asset_path,) in zip(self.get_boneyard_starting_positions(), shuffled_list,):
             tile_sprite = TileSprite(f"assets/{asset_path}", int(x), int(y),)
             self.tile_sprites.append(tile_sprite)
@@ -237,6 +245,15 @@ class MyGame(arcade.Window):
         self.tile_sprites.draw()
         self.clues.draw()
         self.button_list.draw()
+        if self._red_x_visible:
+            self.red_x.draw()
+
+    def update(self, delta_time):
+        super(MyGame, self).update(delta_time)
+        if not self._red_x_visible:
+            return
+        if time.time() > self._flash_red_x_end:
+            self._red_x_visible = False
 
     def get_boneyard_starting_positions(self,):
         """
@@ -311,9 +328,16 @@ class MyGame(arcade.Window):
     def submit_game(self):
         game_values = self.submission_grid.extract_value()
         if check_results(game_values, self.answers):
-            print("You win")
+            self.handle_win()
         else:
-            print("No win")
+            self.handle_incorrect_submission()
+
+    def handle_win(self):
+        print("You win")
+
+    def handle_incorrect_submission(self):
+        self._red_x_visible = True
+        self._flash_red_x_end = time.time() + 1
 
 
 def check_bounds(
