@@ -59,8 +59,8 @@ class GameManager:
         dmg_indicator = TextIndicator(str(int(dmg)), *position)
         self.damage_indicators.append(dmg_indicator)
 
-    def create_text_indicator(self, text: str, position: Tuple[float, float]) -> None:
-        indicator = TextIndicator(text, *position)
+    def create_text_indicator(self, text: str, position: Tuple[float, float], color) -> None:
+        indicator = TextIndicator(text, *position, color)
         self.damage_indicators.append(indicator)
 
     def on_update(self, delta_time) -> None:
@@ -98,6 +98,10 @@ class GameManager:
 
         for projectile in projectiles_hit_player:
             self.view.player.hit(projectile)
+            self.create_dmg_indicator(
+                projectile.dmg - projectile.dmg * self.view.player.resistance,
+                (self.view.player.position[0], self.view.player.position[1] + 20)
+            )
             projectile.destroy()
 
         spikes_hit = arcade.check_for_collision_with_list(self.view.player, self.spikes)
@@ -105,6 +109,10 @@ class GameManager:
             if 0 < spike.ticks < 7:
                 if spike.can_deal_dmg:
                     self.view.player.hit(spike)
+                    self.create_dmg_indicator(
+                        spike.dmg - spike.dmg * self.view.player.resistance,
+                        (self.view.player.position[0], self.view.player.position[1] + 20)
+                    )
                     spike.can_deal_dmg = False
 
         enemy_collision_with_player = arcade.check_for_collision_with_list(
@@ -115,6 +123,10 @@ class GameManager:
         for enemy in enemy_collision_with_player:
             if enemy.can_melee_attack:
                 self.view.player.hit(enemy.melee_weapon)
+                self.create_dmg_indicator(
+                    enemy.melee_weapon.dmg - enemy.melee_weapon.dmg * self.view.player.resistance,
+                    (self.view.player.position[0], self.view.player.position[1] + 20)
+                )
                 enemy.can_melee_attack = False
 
         self.enemies.on_update(delta_time)
