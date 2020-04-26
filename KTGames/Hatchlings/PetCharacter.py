@@ -247,6 +247,7 @@ class PetCharacter(arcade.AnimatedTimeSprite):
         """ Hunger Logic """
         self.hunger_meter = 0
         self.full = False
+        self.is_eating = False
 
         """ Mood Logic """
         self.mood_meter = 0
@@ -500,68 +501,108 @@ class PetCharacter(arcade.AnimatedTimeSprite):
             # baby
             if self.age < 2:
                 self.scale = BABY_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.mouse_baby_full_textures[random.randrange(len(self.mouse_baby_full_textures))]
+                    else:
+                        self.texture = self.mouse_baby_normal_textures[
+                            random.randrange(len(self.mouse_baby_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.mouse_baby_normal_textures[
                             random.randrange(len(self.mouse_baby_normal_textures))]
+
                     elif self.sick is True:
                         self.texture = self.mouse_baby_sick_textures[
                             random.randrange(len(self.mouse_baby_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.mouse_baby_full_textures[random.randrange(len(self.mouse_baby_full_textures))]
+
 
             # toddler
             if self.age >= 2 and self.age < 5:
                 self.scale = TODDLER_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.mouse_toddler_full_textures[
+                            random.randrange(len(self.mouse_toddler_full_textures))]
+                    else:
+                        self.texture = self.mouse_toddler_normal_textures[
+                            random.randrange(len(self.mouse_toddler_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.mouse_toddler_normal_textures[
                             random.randrange(len(self.mouse_toddler_normal_textures))]
                     elif self.sick is True:
                         self.texture = self.mouse_toddler_sick_textures[
                             random.randrange(len(self.mouse_toddler_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.mouse_toddler_full_textures[
-                        random.randrange(len(self.mouse_toddler_full_textures))]
+
+
 
             # kid
             if self.age >= 5 and self.age < 7:
                 self.scale = KID_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.mouse_kid_full_textures[random.randrange(len(self.mouse_kid_full_textures))]
+                    else:
+                        self.texture = self.mouse_kid_normal_textures[
+                            random.randrange(len(self.mouse_kid_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.mouse_kid_normal_textures[
                             random.randrange(len(self.mouse_kid_normal_textures))]
+
                     elif self.sick is True:
                         self.texture = self.mouse_kid_sick_textures[random.randrange(len(self.mouse_kid_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.mouse_kid_full_textures[random.randrange(len(self.mouse_kid_full_textures))]
+
+
 
             # young adult
             if self.age >= 7 and self.age < 9:
                 self.scale = YOUNG_ADULT_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.mouse_young_adult_full_textures[
+                            random.randrange(len(self.mouse_young_adult_full_textures))]
+                    else:
+                        self.texture = self.mouse_young_adult_normal_textures[
+                            random.randrange(len(self.mouse_young_adult_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.mouse_young_adult_normal_textures[
                             random.randrange(len(self.mouse_young_adult_normal_textures))]
+
                     elif self.sick is True:
                         self.texture = self.mouse_young_adult_sick_textures[
                             random.randrange(len(self.mouse_young_adult_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.mouse_young_adult_full_textures[
-                        random.randrange(len(self.mouse_young_adult_full_textures))]
+
 
             # adult
             if self.age >= 9:
                 self.scale = ADULT_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.mouse_adult_full_textures[random.randrange(len(self.mouse_adult_full_textures))]
+                    else:
+                        self.texture = self.mouse_adult_normal_textures[
+                            random.randrange(len(self.mouse_adult_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.mouse_adult_normal_textures[
                             random.randrange(len(self.mouse_adult_normal_textures))]
+
                     elif self.sick is True:
                         self.texture = self.mouse_adult_sick_textures[
                             random.randrange(len(self.mouse_adult_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.mouse_adult_full_textures[random.randrange(len(self.mouse_adult_full_textures))]
 
         """ DUCK """
         if self.pet_species_key is 1:
@@ -569,119 +610,181 @@ class PetCharacter(arcade.AnimatedTimeSprite):
             # baby
             if self.age < 2:
                 self.scale = BABY_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.duck_baby_full_textures[random.randrange(len(self.duck_baby_full_textures))]
+                    else:
+                        self.texture = self.duck_baby_normal_textures[
+                            random.randrange(len(self.duck_baby_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.duck_baby_normal_textures[
                             random.randrange(len(self.duck_baby_normal_textures))]
+
                     elif self.sick is True:
                         self.texture = self.duck_baby_sick_textures[random.randrange(len(self.duck_baby_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.duck_baby_full_textures[random.randrange(len(self.duck_baby_full_textures))]
+
 
             # toddler
             if self.age >= 2 and self.age < 5:
                 self.scale = TODDLER_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.duck_toddler_full_textures[
+                            random.randrange(len(self.duck_toddler_full_textures))]
+                    else:
+                        self.texture = self.duck_toddler_normal_textures[
+                            random.randrange(len(self.duck_toddler_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.duck_toddler_normal_textures[
                             random.randrange(len(self.duck_toddler_normal_textures))]
+
                     elif self.sick is True:
                         self.texture = self.duck_toddler_sick_textures[
                             random.randrange(len(self.duck_toddler_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.duck_toddler_full_textures[
-                        random.randrange(len(self.duck_toddler_full_textures))]
+
 
             # kid
             if self.age >= 5 and self.age < 7:
                 self.scale = KID_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.duck_kid_full_textures[random.randrange(len(self.duck_kid_full_textures))]
+                    else:
+                        self.texture = self.duck_kid_normal_textures[
+                            random.randrange(len(self.duck_kid_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.duck_kid_normal_textures[
                             random.randrange(len(self.duck_kid_normal_textures))]
+
                     elif self.sick is True:
                         self.texture = self.duck_kid_sick_textures[random.randrange(len(self.duck_kid_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.duck_kid_full_textures[random.randrange(len(self.duck_kid_full_textures))]
 
             # young adult
             if self.age >= 7 and self.age < 9:
                 self.scale = YOUNG_ADULT_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.duck_young_adult_full_textures[
+                            random.randrange(len(self.duck_young_adult_full_textures))]
+                    else:
+                        self.texture = self.duck_young_adult_normal_textures[
+                            random.randrange(len(self.duck_young_adult_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.duck_young_adult_normal_textures[
                             random.randrange(len(self.duck_young_adult_normal_textures))]
                     elif self.sick is True:
                         self.texture = self.duck_young_adult_sick_textures[
                             random.randrange(len(self.duck_young_adult_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.duck_young_adult_full_textures[
-                        random.randrange(len(self.duck_young_adult_full_textures))]
 
             # adult
             if self.age >= 9:
                 self.scale = ADULT_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.duck_adult_full_textures[
+                            random.randrange(len(self.duck_adult_full_textures))]
+                    else:
+                        self.texture = self.duck_adult_normal_textures[
+                            random.randrange(len(self.duck_adult_normal_textures))]
+                else:
                     if self.sick is False:
                         self.texture = self.duck_adult_normal_textures[
                             random.randrange(len(self.duck_adult_normal_textures))]
+
                     elif self.sick is True:
                         self.texture = self.duck_adult_sick_textures[
                             random.randrange(len(self.duck_adult_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.duck_adult_full_textures[random.randrange(len(self.duck_adult_full_textures))]
+
 
         """ SEA CREATURE """
         if self.pet_species_key is 2:
 
             if self.age < 2:
                 self.scale = BABY_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.sea_baby_full_textures[random.randrange(len(self.sea_baby_full_textures))]
+                    else:
+                        self.texture = self.sea_baby_normal_textures[
+                            random.randrange(len(self.sea_baby_normal_textures))]
+                else:
                     if self.sick is False:
                         self.texture = self.sea_baby_normal_textures[
                             random.randrange(len(self.sea_baby_normal_textures))]
+
                     elif self.sick is True:
                         self.texture = self.sea_baby_sick_textures[random.randrange(len(self.sea_baby_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.sea_baby_full_textures[random.randrange(len(self.sea_baby_full_textures))]
+
 
             # toddler
             if self.age >= 2 and self.age < 5:
                 self.scale = TODDLER_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.sea_toddler_full_textures[random.randrange(len(self.sea_toddler_full_textures))]
+                    else:
+                        self.texture = self.sea_toddler_normal_textures[
+                            random.randrange(len(self.sea_toddler_normal_textures))]
+                else:
                     if self.sick is False:
                         self.texture = self.sea_toddler_normal_textures[
                             random.randrange(len(self.sea_toddler_normal_textures))]
                     elif self.sick is True:
                         self.texture = self.sea_toddler_sick_textures[
                             random.randrange(len(self.sea_toddler_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.sea_toddler_full_textures[random.randrange(len(self.sea_toddler_full_textures))]
+
 
             # Sea Creature does not have kid phase
-            # young adult - PICK UP HERE CHANGING TEXTURES TO SEA CREATURE
             if self.age >= 5 and self.age < 9:
                 self.scale = YOUNG_ADULT_SCALE
-                if self.hunger_meter <= 4:
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.sea_young_adult_full_textures[
+                            random.randrange(len(self.sea_young_adult_full_textures))]
+                    else:
+                        self.texture = self.sea_young_adult_normal_textures[
+                            random.randrange(len(self.sea_young_adult_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.sea_young_adult_normal_textures[
                             random.randrange(len(self.sea_young_adult_normal_textures))]
                     elif self.sick is True:
                         self.texture = self.sea_young_adult_sick_textures[
                             random.randrange(len(self.sea_young_adult_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.sea_young_adult_full_textures[
-                        random.randrange(len(self.sea_young_adult_full_textures))]
+
 
             if self.age >= 9:
                 self.scale = ADULT_SCALE
-                if self.hunger_meter <= 4:
+
+                if self.is_eating:
+                    if self.hunger_meter > 4:
+                        self.texture = self.sea_adult_full_textures[random.randrange(len(self.sea_adult_full_textures))]
+                    else:
+                        self.texture = self.sea_adult_normal_textures[
+                            random.randrange(len(self.sea_adult_normal_textures))]
+
+                else:
                     if self.sick is False:
                         self.texture = self.sea_adult_normal_textures[
                             random.randrange(len(self.sea_adult_normal_textures))]
                     elif self.sick is True:
                         self.texture = self.sea_adult_sick_textures[random.randrange(len(self.sea_adult_sick_textures))]
-                elif self.hunger_meter > 4:
-                    self.texture = self.sea_adult_full_textures[random.randrange(len(self.sea_adult_full_textures))]
+
 
 

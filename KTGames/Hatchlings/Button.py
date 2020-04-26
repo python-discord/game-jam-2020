@@ -122,14 +122,7 @@ class TextButton(Button):
 
     def draw(self):
         super().draw()
-        """
-        x = self.center_x
-        y = self.center_y
-         Eliminating text due to performance 4.23 
-        arcade.draw_text(self.text, x, y, arcade.color.BLACK, font_size=self.font_size,
-                         width=self.width, align="center", anchor_x="center", anchor_y="center")
 
-        """
 
 
 

@@ -244,13 +244,6 @@ class SuperView(arcade.View):
         print("hit attention")
 
     def hit_eat(self):
-        if self.pet.hunger_meter <= 4:
-            self.pet.hunger_meter += 1
-            print(self.pet.hunger_meter)
-
-        elif self.pet.hunger_meter == 4:
-            pass
-
-
+        print("hit eat")
 
 

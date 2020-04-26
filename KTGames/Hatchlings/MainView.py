@@ -233,7 +233,7 @@ class MainView(SuperView):
                 self.pet.needs_attention = True
             elif rand_int == 17:
                 self.pet.needs_attention = True
-
+        """ 
         # cusp of YA/adult
         if 8 < minutes <= 9:
             if rand_int == 14:
@@ -247,7 +247,7 @@ class MainView(SuperView):
 
         if self.pet.needs_attention:
             arcade.play_sound(self.attention_sound)
-
+        """
 
 
     """ Main Game Loop Logic"""
@@ -261,11 +261,14 @@ class MainView(SuperView):
         self.window.show_view(main_view)
 
     def hit_eat(self):
-        super().hit_eat()
         if self.game_start:
+            self.pet.is_eating = True
 
-            if self.pet.hunger_meter <=4:
+            if self.pet.hunger_meter <= 4:
                 self.pet.care_score += 1
+                self.pet.hunger_meter += 1
+
+            if self.pet.hunger_meter <= 4:
                 eat_view = EatView(self.pet)
                 eat_view.setup()
                 self.window.show_view(eat_view)
@@ -274,6 +277,7 @@ class MainView(SuperView):
                 full_view = FullView(self.pet)
                 full_view.setup()
                 self.window.show_view(full_view)
+
 
     def hit_light(self):
         if self.game_start:
@@ -374,10 +378,13 @@ class EatView(SuperView):
         self.window.show_view(main_view)
 
     def hit_eat(self):
-        super().hit_eat()
+        self.pet.is_eating = True
 
-        if self.pet.hunger_meter <=4:
+        if self.pet.hunger_meter <= 4:
             self.pet.care_score += 1
+            self.pet.hunger_meter += 1
+
+        if self.pet.hunger_meter <= 4:
             eat_view = EatView(self.pet)
             eat_view.setup()
             self.window.show_view(eat_view)
@@ -483,18 +490,7 @@ class FullView(SuperView):
         self.window.show_view(main_view)
 
     def hit_eat(self):
-        super().hit_eat()
-
-        if self.pet.hunger_meter <=4:
-            self.pet.care_score += 1
-            eat_view = EatView(self.pet)
-            self.window.show_view(eat_view)
-            eat_view.setup()
-
-        elif self.pet.hunger_meter > 4:
-            full_view = FullView(self.pet)
-            self.window.show_view(full_view)
-            full_view.setup()
+        pass
 
     def hit_light(self):
         self.pet.hunger_meter = 4
@@ -639,10 +635,12 @@ class GameView(SuperView):
         self.window.show_view(main_view)
 
     def hit_eat(self):
-        super().hit_eat()
-
+        self.pet.is_eating = True
         if self.pet.hunger_meter <= 4:
             self.pet.care_score += 1
+            self.pet.hunger_meter += 1
+
+        if self.pet.hunger_meter <= 4:
             eat_view = EatView(self.pet)
             eat_view.setup()
             self.window.show_view(eat_view)
@@ -844,13 +842,6 @@ class StatsView(SuperView):
         self.stats_view_sprites.draw()
         self.pet_list.draw()
 
-        # draw stat titles/discipline/age stats
-        """ 4.23 elimiate draw_text() due to memory issues with caching 
-        arcade.draw_text("Hunger Meter:", 180, 460, arcade.color.BLACK, 12)
-        arcade.draw_text("Mood: ", 225, 410, arcade.color.BLACK, 12)
-        arcade.draw_text("Age: " + str(self.pet.age), 350, 410, arcade.color.BLACK, 12)
-        arcade.draw_text("Discipline Level: " + self.discipline_level, 350, 380, arcade.color.BLACK, 12)
-        """
         if self.pet.needs_attention:
             arcade.draw_rectangle_outline(505, 160, 75, 50, arcade.color.RED)
 
@@ -872,10 +863,13 @@ class StatsView(SuperView):
         self.window.show_view(main_view)
 
     def hit_eat(self):
-        super().hit_eat()
+        self.pet.is_eating = True
 
         if self.pet.hunger_meter <= 4:
             self.pet.care_score += 1
+            self.pet.hunger_meter += 1
+
+        if self.pet.hunger_meter <= 4:
             eat_view = EatView(self.pet)
             eat_view.setup()
             self.window.show_view(eat_view)
