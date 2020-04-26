@@ -72,7 +72,6 @@ class Player(LivingEntity, MovingSprite):
         }
 
         self.selected_ability = None
-        self.current_cool_down = 0.0
         self._ability_duration_left = 0.0
 
         self.regenerating_hp = False
@@ -200,8 +199,10 @@ class Player(LivingEntity, MovingSprite):
     def process_right_mouse_press(self, x, y) -> None:
         if len(self.mana_bar) == self.mana_bar.max_fillers:
             self.mana_bar.clear()
+            self._ability_duration_left = self.selected_ability.duration
             self.selected_ability.activate(x, y, self.view)
         else:
+            print(f"No mana")
             # TODO empty mana sound
             pass
 
@@ -242,16 +243,12 @@ class Player(LivingEntity, MovingSprite):
         if not arcade.get_sprites_at_exact_point(dest, self.view.collision_list):
             self.move_to(dest[0], dest[1] + s.PLAYER_CENTER_Y_COMPENSATION)
             # self.state = States.MOVING
-        if self.current_cool_down > 0:
-            self.current_cool_down -= delta_time
-            self._ability_duration_left -= delta_time
 
-        if self._ability_duration_left < 0:
+        if self._ability_duration_left > 0:
+            self._ability_duration_left -= delta_time
+        elif self._ability_duration_left < 0:
             self._ability_duration_left = 0
             self.selected_ability.deactivate(self.view)
-
-        if self.current_cool_down < 0:
-            self.current_cool_down = 0.0
 
         super().on_update(delta_time)
 
