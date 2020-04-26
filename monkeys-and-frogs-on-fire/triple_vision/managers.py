@@ -45,8 +45,8 @@ class GameManager:
         self.damage_indicators.draw()
         self.potions.draw()
 
-    def create_potion(self, effect: PotionEffect):
-        self.potions.append(Potion(self.view.player, effect))
+    def create_potion(self, effect: PotionEffect, *args, **kwargs):
+        self.potions.append(Potion(self.view.player, effect, *args, **kwargs))
 
     def create_enemy(self, enemy_class, *args, **kwargs) -> None:
         enemy = enemy_class(ctx=self, *args, **kwargs)
@@ -341,7 +341,7 @@ class LevelManager:
     BIG_SHOOTER_RADIUS = Tile.SCALED * 12
 
     @classmethod
-    def create_level(cls, game_manager, player, level: int):
+    def create_level(cls, game_manager: GameManager, player, level: int):
         """Deals with how many enemies and what types spawn"""
 
         # Goblins have low hp but are fast and big in numbers.
@@ -464,3 +464,41 @@ class LevelManager:
                 cls.HUGE_CHASING_DETECTION_RADIUS,
                 moving_speed=cls.LOW_SPEED
             )
+
+        game_manager.create_potion(
+            PotionEffect(
+                heal=100.0
+            ),
+            filename="assets/dungeon/frames/flask_yellow.png"
+        )
+
+        for _ in range(random.randint(0, 3 - level)):
+            game_manager.create_potion(
+                PotionEffect(
+                    heal=200.0
+                ),
+                filename="assets/dungeon/frames/flask_big_yellow.png"
+            )
+        for _ in range(random.randint(0, 3 - level)):
+            game_manager.create_potion(
+                PotionEffect(
+                    resistance=0.1
+                ),
+                filename="assets/dungeon/frames/flask_green.png"
+            )
+        for _ in range(random.randint(0, 3 - level)):
+            game_manager.create_potion(
+                PotionEffect(
+                    strength=0.1
+                ),
+                filename="assets/dungeon/frames/flask_big_red.png"
+            )
+        for _ in range(random.randint(0, 3 - level)):
+            game_manager.create_potion(
+                PotionEffect(
+                    speed=0.1
+                ),
+                filename="assets/dungeon/frames/flask_big_blue.png"
+            )
+
+
