@@ -1,7 +1,7 @@
 import arcade
 
 from triple_vision import Settings as s
-from triple_vision.views import LoginView
+from triple_vision.views.auth_views import LoginView
 
 
 def main() -> None:

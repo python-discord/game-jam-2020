@@ -8,6 +8,7 @@ from triple_vision.camera import Camera
 from triple_vision.entities import Player
 from triple_vision.managers import CardManager, GameManager, CursorManager, LevelManager
 from triple_vision.map import Map
+from triple_vision.networking import client
 from triple_vision.sound import SoundManager, SoundtrackManager
 
 
@@ -72,6 +73,8 @@ class TripleVision(arcade.View):
 
     def on_key_press(self, key, modifiers) -> None:
         if key == arcade.key.ESCAPE:
+            client.new_score(self.game_manager.points)
+
             arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
             self.soundtrack_manager.stop()
             self.window.set_mouse_visible(True)

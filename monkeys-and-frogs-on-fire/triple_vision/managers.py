@@ -14,7 +14,7 @@ from triple_vision.entities import TextIndicator, States
 from triple_vision.entities.sprites import Potion, PotionEffect
 from triple_vision.networking import client
 from triple_vision.entities import Melee
-from triple_vision.sound import SoundManager
+from triple_vision.views.end_view import GameOverView
 
 
 class GameManager:
@@ -130,6 +130,13 @@ class GameManager:
         if not self.view.player.is_alive and not self.prev_sent:
             client.new_score(self.points)
             self.prev_sent = True
+
+            arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
+            self.view.soundtrack_manager.stop()
+            self.view.window.set_mouse_visible(True)
+
+            self.view.window.show_view(GameOverView(self.view.main_view, self.points))
+            return
 
         hit_list = arcade.check_for_collision_with_list(self.view.player, self.potions)
         for potion in hit_list:
