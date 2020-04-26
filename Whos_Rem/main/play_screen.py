@@ -13,8 +13,6 @@ TESTING = False
 SAMPLING = False
 
 if SAMPLING:
-    with open('track_2.json', 'w+') as file:
-        pass
     sample_list = []
     sample_sec = []
     prev = 0
@@ -56,7 +54,8 @@ class Audio:
 
     @classmethod
     def _play_in_thread(cls):
-        time.sleep(1.5)
+        if not SAMPLING:
+            time.sleep(1.5)
         cls.player.play()
         time.sleep(0.03)
         cls.started = True
@@ -81,7 +80,10 @@ class Audio:
     @classmethod
     def get_notes(cls, frame):
         section, frame = divmod(frame, cls.FPS)
-        return cls.notes[section][frame]
+        try:
+            return cls.notes[section][frame]
+        except:
+            return False, False, False
 
 
 class PauseScreen:
@@ -289,8 +291,14 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         :param _track:
         :return:
         """
-
-        arcade.schedule(self.on_note_change, 1 / 16)
+        track_timings = {
+            'track_1': 17,
+            'track_2': 16,
+            'track_3': 17,
+            'track_4': 16,
+            'track_5': 17,
+        }
+        arcade.schedule(self.on_note_change, 1 / track_timings[_track['path']])
         self.audio._setup(_track, _main)
         self.pause_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
         self.score_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
