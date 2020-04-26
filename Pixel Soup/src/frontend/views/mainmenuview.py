@@ -70,7 +70,7 @@ class MainMenuView(arcade.View):
 
     def setup(self) -> None:
         """Initialize the menu."""
-        self.background = arcade.load_texture(f"{DATA_PATH}/23.png")
+        self.background = arcade.load_texture(f"{DATA_PATH}/b2.gif")
         sync = Process(target=networking, args=(self.forward, self.feedback,))
         sync.start()
 

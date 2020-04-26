@@ -1,10 +1,12 @@
 import arcade
 from pyglet.input.base import Joystick
 
-from ..gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT
+from ..gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT, GAME_PATH
 from .mainmenuview import MainMenuView
 
 from textwrap import dedent
+
+DATA_PATH = f"{GAME_PATH}/data"
 
 
 class MainView(arcade.View):
@@ -44,9 +46,7 @@ class MainView(arcade.View):
 
     def setup(self) -> None:
         """Setup the view and initialize the variables."""
-        self.background = arcade.load_texture(
-            ":resources:images/backgrounds/abstract_1.jpg"
-        )
+        self.background = arcade.load_texture(f"{DATA_PATH}/bg.gif")
 
     def _to_main_menu(self) -> None:
         """Switch to the Main Menu View."""
