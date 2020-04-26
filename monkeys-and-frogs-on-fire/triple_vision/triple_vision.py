@@ -1,3 +1,6 @@
+import time
+import random
+
 import arcade
 
 from triple_vision import Settings as s
@@ -17,6 +20,8 @@ from triple_vision.sound import SoundManager
 class TripleVision(arcade.View):
     def __init__(self, main_view) -> None:
         super().__init__()
+        self.level = 1
+        self.seed = None
 
         self.main_view = main_view
 
@@ -41,6 +46,16 @@ class TripleVision(arcade.View):
         arcade.set_background_color(arcade.color.BLACK)
 
     def on_show(self) -> None:
+        self.crete_level()
+
+    def crete_level(self, *, seed=None):
+        if seed is None:
+            self.seed = time.time()
+            random.seed(self.seed)
+        else:
+            self.seed = seed
+            random.seed(seed)
+
         self.bullet_list = arcade.SpriteList()
 
         self.player = Player(self, 'm')
@@ -57,6 +72,8 @@ class TripleVision(arcade.View):
         self.charge = 0.0
         self.charging = False
 
+        # Deals with how many enemies and what types spawn
+        # No time for additional manager an code is a bit tangled.
         for _ in range(3):
             self.game_manager.create_enemy(
                 ChasingEnemy,
@@ -97,6 +114,8 @@ class TripleVision(arcade.View):
             arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
             self.window.set_mouse_visible(True)
             self.window.show_view(self.main_view)
+        elif key == arcade.key.R:
+            self.crete_level(seed=self.seed)
         else:
             self.player.process_key_press(key)
 
