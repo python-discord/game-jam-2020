@@ -1,5 +1,4 @@
 import arcade
-from arcade.gui import Theme
 
 import socket
 import os
@@ -11,21 +10,6 @@ from threading import Thread
 from .gameview import GameView
 from ..networking.net_interface import Pipe
 from ..gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT
-
-
-class StartGame(arcade.TextButton):
-    def __init__(
-        self, view_reference, x=0, y=0, width=100, height=40, text="Start!", theme=None
-    ):
-        super().__init__(x, y, width, height, text, theme=Theme)
-        self.view_reference = view_reference
-
-    def on_press(self):
-        self.pressed = True
-
-    def on_release(self) -> None:
-        if self.pressed:
-            self.pressed = False
 
 
 class RoomView(arcade.View):
@@ -120,31 +104,3 @@ class RoomView(arcade.View):
                 self.window.show_view(game_view)
 
                 break
-
-    def set_button_textures(self) -> None:
-        """Give the same style to all the buttons using self.theme."""
-        normal = ":resources:gui_themes/Fantasy/Buttons/Normal.png"
-        hover = ":resources:gui_themes/Fantasy/Buttons/Hover.png"
-        clicked = ":resources:gui_themes/Fantasy/Buttons/Clicked.png"
-        locked = ":resources:gui_themes/Fantasy/Buttons/Locked.png"
-        self.theme.add_button_textures(normal, hover, clicked, locked)
-
-    def set_buttons(self) -> None:
-        """Initialize the Start Game button."""
-        self.window.button_list.append(
-            StartGame(
-                self,
-                0.5 * SCREEN_WIDTH,
-                0.1 * SCREEN_HEIGHT,
-                int(0.3 * SCREEN_WIDTH),
-                int(0.1 * SCREEN_HEIGHT),
-                theme=self.theme,
-            )
-        )
-
-    def setup_theme(self) -> None:
-        self.theme = Theme()
-        self.theme.set_font = arcade.color.BLACK
-
-        self.set_button_textures()
-        self.set_buttons()
