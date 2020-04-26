@@ -234,13 +234,15 @@ class Potion(Entity):
     def collected(self):
         self.player.attack_multiplier += self.effect.strength
         self.player.hp += self.effect.heal
+        if self.player.hp >= self.player.MAX_HP:
+            self.player.hp = self.player.MAX_HP
         self.player.speed_multiplier += self.effect.speed
         self.player.resistance += self.effect.resistance
 
         start_y = self.center_y
         for attribute in self._effect.__dict__.keys():
             value = self._effect.__getattribute__(attribute)
-            if value >= 0:
+            if value > 0:
                 self.ctx.create_text_indicator(f"+{int(value)} {attribute}", (self.center_x, start_y))
                 start_y += 20
 
