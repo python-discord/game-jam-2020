@@ -14,9 +14,6 @@ The idea was to make a tower defense game, where you only have three towers that
 ## Screenshots
 
 ## Setup
-You should be able to run the game easily on Windows by using these commands:
+Once you have a virtual environnement with pipenv, you should be able to run the game easily on Windows by using these commands:
 `pipenv install`
 `pipenv run start`
-
-## License
-
