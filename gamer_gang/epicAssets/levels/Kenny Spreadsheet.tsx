@@ -70,6 +70,16 @@
    </object>
   </objectgroup>
  </tile>
+ <tile id="517">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="6" width="20" height="20"/>
+  </objectgroup>
+ </tile>
+ <tile id="518">
+  <objectgroup draworder="index" id="2">
+   <object id="1" x="6" y="6" width="20" height="20"/>
+  </objectgroup>
+ </tile>
  <tile id="544">
   <objectgroup draworder="index" id="2">
    <object id="1" x="0" y="0" width="32" height="32"/>
