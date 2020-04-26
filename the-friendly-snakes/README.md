@@ -2,7 +2,7 @@
 Welcome to the famed FLimsy Billy's Coin Dash! In this game you battle against time to collect 50 coins, but 1 coin
 disappears from your inventory every second! Explore the different parts of the map and buy exciting potions! But, 
 beware, choose the wrong door when you leave the mysterious Jungle Room and you will lose half of your coins! Use the
-potions wisely. Sometimes it is more efficient to use the potions.
+potions wisely. Sometimes it is more efficient to use the potions. For rules and installation instructions read below.
 
 ### Installation
 To download and install *Flimsy Billy's Coin Dash 3: Super Tag 3 Electric Tree* there are a few simple steps that you
