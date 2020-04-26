@@ -14,7 +14,7 @@ The idea was to make a tower defense game, where you only have three towers that
 ## Setup
 1. Download this repository.
 2. Make sure you have the latest versions of pip, wheel and setuptools.
-3. Create a virtual environnement and install pipenv: `pip install pipenv`
+3. Create a virtual environment and install pipenv: `pip install pipenv`
 4. Install the dependencies: `pipenv install`
 5. Run the game: `pipenv run start`
 
