@@ -87,6 +87,10 @@ hex2_player2_init = [("pawn", (index, 6, 0), p2_orient, player_num) for index in
                      ("king", (1, 7, 1), p2_orient, player_num),
                      ("queen", (2, 7, 1), p2_orient, player_num)]
 
+# hex2_player1_init = [("rook", (3, 4, 0), 0, 0)]
+# hex2_player2_init = [] #[("bishop", (3, 4, 1), 3, 1)]
+
+
 player_orient = 0
 player_num = 0
 trichess3_player1_init = [("pawn", (index, 1, 0), player_orient, player_num) for index in range(6, 11)] + \

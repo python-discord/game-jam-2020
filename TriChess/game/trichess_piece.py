@@ -108,10 +108,10 @@ class Pawn(TriPiece):
     def list_valid_moves(self):
         valid_moves = []
         first_step = self.get_neighbor_pos(0)
-        if self.trigrid.get_cell(first_step).piece is None and self.trigrid.is_valid_cell(first_step):
+        if self.trigrid.is_valid_cell(first_step) and self.trigrid.get_cell(first_step).piece is None:
             valid_moves.append(first_step)
             second_step = self.get_neighbor_pos(0, first_step)
-            if self.trigrid.get_cell(second_step).piece is None and self.trigrid.is_valid_cell(second_step):
+            if self.trigrid.is_valid_cell(second_step) and self.trigrid.get_cell(second_step).piece is None:
                 valid_moves.append(second_step)
         return valid_moves
 
@@ -136,19 +136,24 @@ class Rook(TriPiece):
     def list_valid_moves(self):
         valid_moves = []
 
-        # rook_direction_list = [lambda r: 1 if r else 2,
-        #                        lambda r: 5 if r else 4,
-        #                        lambda r: 1 if r else 0,
-        #                        lambda r: 3 if r else 4,
-        #                        lambda r: 3 if r else 2,
-        #                        lambda r: 5 if r else 0]
+        rook_direction_list_r = [lambda r: 1 if r else 2,
+                               lambda r: 5 if r else 4,
+                               lambda r: 1 if r else 0,
+                               lambda r: 3 if r else 4,
+                               lambda r: 3 if r else 2,
+                               lambda r: 5 if r else 0]
 
-        rook_direction_list = [lambda r: 0 if r else 5,
+        rook_direction_list_not_r = [lambda r: 0 if r else 5,
                                lambda r: 2 if r else 3,
                                lambda r: 0 if r else 1,
                                lambda r: 4 if r else 3,
                                lambda r: 2 if r else 1,
                                lambda r: 4 if r else 5]
+
+        if self.orientation % 2:
+            rook_direction_list = rook_direction_list_r
+        else:
+            rook_direction_list = rook_direction_list_not_r
 
         for rook_direction in rook_direction_list:
             cur_pos = self.pos
@@ -258,12 +263,23 @@ class Queen(TriPiece):
                     break
                 cur_pos = next_pos
 
-        rook_direction_list = [lambda r: 1 if r else 2,
+        rook_direction_list_r = [lambda r: 1 if r else 2,
                                lambda r: 5 if r else 4,
                                lambda r: 1 if r else 0,
                                lambda r: 3 if r else 4,
                                lambda r: 3 if r else 2,
                                lambda r: 5 if r else 0]
+
+        rook_direction_list_not_r = [lambda r: 0 if r else 5,
+                               lambda r: 2 if r else 3,
+                               lambda r: 0 if r else 1,
+                               lambda r: 4 if r else 3,
+                               lambda r: 2 if r else 1,
+                               lambda r: 4 if r else 5]
+        if self.orientation % 2:
+            rook_direction_list = rook_direction_list_r
+        else:
+            rook_direction_list = rook_direction_list_not_r
 
         for rook_direction in rook_direction_list:
             cur_pos = self.pos

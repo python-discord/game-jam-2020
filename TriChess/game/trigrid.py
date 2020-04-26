@@ -144,6 +144,19 @@ class TriGrid:
                         self.cur_selected_cell.piece.move_to(pos)
                         self.next_player()
                 self.clear_selection()
+            # test function to show all possible moves
+            # elif button == arcade.MOUSE_BUTTON_MIDDLE:
+            #     self.clear_selection()
+            #     for cell in self.grid_map.values():
+            #         if cell.piece is not None:
+            #             if cell.piece.piece_name == "pawn":
+            #                 possible_attacks = [cell.piece.get_neighbor_pos(5), cell.piece.get_neighbor_pos(1)]
+            #                 for attack_pos in possible_attacks:
+            #                     self.get_cell(attack_pos).set_highlight("attackable")
+            #
+            #             cur_valid_moves = cell.piece.list_valid_moves()
+            #             for move_pos in cur_valid_moves:
+            #                 self.get_cell(move_pos).set_highlight("movable")
 
     def clear_selection(self):
         self.cur_selected_cell = None
@@ -152,6 +165,7 @@ class TriGrid:
         self.clear_highlights()
 
     def on_draw(self, grid_coord=False):
+
         self.update_grid_cell_list()
         self.grid_cell_list.draw()
         self.piece_list.draw()
