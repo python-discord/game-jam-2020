@@ -9,9 +9,9 @@ from .display import ColourBlend as cb
 
 
 class SwayingNote:
-    width, height = pyautogui.size()
 
-    def __init__(self, x_pos, y_pos, path, rocking_rate=0.05):
+    def __init__(self, x_pos, y_pos, path, size, rocking_rate=0.05):
+        self.width, self.height = size
         self.image = arcade.Sprite(
             filename=path,
             scale=int(min(self.width, self.height) * 0.2) / 512,
@@ -82,11 +82,14 @@ class MainMenu(arcade.View):
         )
 
         self.note_1 = SwayingNote(width * 0.1, height * 0.75,
-                             path=Path().cwd() / Path("main/Resources/main_menu/music_note_1.png"))
-        self.note_2 = SwayingNote(width * 0.19, height * 0.25,
-                             path=Path().cwd() / Path("main/Resources/main_menu/music_note_2.png"))
+                             path=Path().cwd() / Path("main/Resources/main_menu/music_note_1.png"),
+                             size=self.main.size)
+        self.note_2 = SwayingNote(width * 0.15, height * 0.25,
+                             path=Path().cwd() / Path("main/Resources/main_menu/music_note_2.png"),
+                             size=self.main.size)
         self.note_3 = SwayingNote(width * 0.9, height * 0.55,
-                             path=Path().cwd() / Path("main/Resources/main_menu/music_note_3.png"))
+                             path=Path().cwd() / Path("main/Resources/main_menu/music_note_3.png"),
+                             size=self.main.size)
 
     def on_update(self, delta_time):
         time.sleep(max(0, 0.1 - delta_time))
