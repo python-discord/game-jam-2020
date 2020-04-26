@@ -5,7 +5,7 @@ EVEN_GRID_COLOR = arcade.color.JASMINE
 ODD_GRID_COLOR = arcade.color.LIGHT_PASTEL_PURPLE
 ATTACKABLE_GRID_COLOR = arcade.color.CARMINE_RED
 MOVABLE_GRID_COLOR = arcade.color.ASPARAGUS
-PLAYER_COLOR = {0: 'black', 1: "white", 2: "red"}
+PLAYER_COLOR = {0: "White", 1: 'Black', 2: "Red"}
 
 
 class TriGrid:
@@ -24,6 +24,10 @@ class TriGrid:
         self.cur_selected_cell = None
         self.cur_valid_moves = None
         self.cur_valid_attacks = None
+        self.finished = False
+
+    def cur_player_name(self):
+        return PLAYER_COLOR[self.cur_player]
 
     def init_grid(self):
         return board_init_config.grid_map[self.grid_type](self.cell_width)
@@ -86,7 +90,7 @@ class TriGrid:
 
     def next_player(self):
         if sum(self.player_status) == 1:
-            return None
+            self.finished = True
         else:
             # select next player cycle through if player is dead
             next_player = (self.cur_player + 1) % self.num_players
@@ -165,23 +169,22 @@ class TriGrid:
 
 
 class TriCell:
-    def __init__(self, x, y, r, cell_width, highlight=None, piece=None):
-        self.x = x
-        self.y = y
-        self.r = r
+    def __init__(self, pos, cell_width, highlight=None, piece=None):
+        self.pos = pos
         self.cell_width = cell_width
         self.highlight = highlight
         self.bound_coords, self.center_coord = self.calc_cell_world_coords()
         self.piece = piece
 
     def calc_cell_world_coords(self):
-        if self.r:
-            x_list = np.array([self.x + 1, self.x, self.x + 1]) * self.cell_width
-            y_list = np.array([self.y + 1, self.y + 1, self.y]) * self.cell_width
+        x, y, r = self.pos
+        if r:
+            x_list = np.array([x + 1, x, x + 1]) * self.cell_width
+            y_list = np.array([y + 1, y + 1, y]) * self.cell_width
             x_list_skewed = x_list + y_list * .5
         else:
-            x_list = np.array([self.x, self.x, self.x + 1]) * self.cell_width
-            y_list = np.array([self.y, self.y + 1, self.y]) * self.cell_width
+            x_list = np.array([x, x, x + 1]) * self.cell_width
+            y_list = np.array([y, y + 1, y]) * self.cell_width
             x_list_skewed = x_list + y_list * .5
 
         x_center, y_center = np.mean(x_list_skewed), np.mean(y_list)
@@ -190,7 +193,7 @@ class TriCell:
     def create_cell_poly(self):
         coord = self.bound_coords
         if self.highlight is None:
-            cell_color = EVEN_GRID_COLOR if self.r else ODD_GRID_COLOR
+            cell_color = EVEN_GRID_COLOR if self.pos[2] else ODD_GRID_COLOR
         elif self.highlight == 'movable':
             cell_color = MOVABLE_GRID_COLOR
         elif self.highlight == 'attackable':
