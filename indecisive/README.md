@@ -14,7 +14,7 @@ This Game Jam have the theme `Three of a kind` with the addition requirements of
 
 To Play the Game:
     - There must be a host that run the Play as host section:
-        - The host must open the TCP port 1000 in order for the game to work.
+        - The host must open the TCP port 10000 in order for the game to work.
     - The other two players connect to the game via the Play as a client menu.
     - In order for the client to connect to the server the ip address must be entered in the black box on the screen.
     - Then all players must enter a name in the black box of the next screen.
