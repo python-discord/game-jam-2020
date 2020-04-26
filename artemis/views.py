@@ -70,10 +70,10 @@ class Paused(View):
         self.game.on_draw()
         arcade.draw_text(
             'Paused', self.game.left + WIDTH / 2, HEIGHT / 2 + 50,
-            arcade.color.BLACK, font_size=50, anchor_x='center',
+            (0, 0, 0), font_size=50, anchor_x='center',
             font_name=FONT.format(type='b')
         )
-        super().on_draw()
+        super().on_draw(start_render=False)
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         """Check own buttons and game buttons."""

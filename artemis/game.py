@@ -88,7 +88,7 @@ class Game(View):
                 left=self.left, right=WIDTH + self.left, top=HEIGHT, bottom=0,
                 color=(255, 255, 255, 100)
             )
-            super().on_draw()
+            super().on_draw(start_render=False)
             if not self.pause_screen:
                 self.pause_screen = views.Paused(self, Game)
                 self.window.show_view(self.pause_screen)
