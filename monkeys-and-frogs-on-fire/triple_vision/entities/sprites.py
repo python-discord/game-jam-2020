@@ -243,8 +243,14 @@ class Potion(Entity):
         for attribute in self._effect.__dict__.keys():
             value = self._effect.__getattribute__(attribute)
             if value > 0:
+                if value % 1 == 0:
+                    msg = f"+{value} {attribute}"
+                else:
+                    percentage = value * 100
+                    msg = f"+{int(percentage)}% {attribute}"
+
                 self.ctx.create_text_indicator(
-                    f"+{int(value)} {attribute}",
+                    msg,
                     (self.center_x, start_y)
                 )
                 start_y += 20
