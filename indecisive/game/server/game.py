@@ -55,7 +55,7 @@ class Game:
                 self.next_turn()
 
     def next_turn(self):
-        self.turn += 0
+        self.turn += 1
         if self.lost is not None and self.turn == self.lost:
             self.turn += 1
         if self.turn >= len(self.players):
@@ -69,7 +69,7 @@ class Game:
             "units": [],
             "dim": [x, y]
         }
-        for i in range(1):
+        for i in range(3):
             # noinspection PyTypeChecker
             world["cities"].append({
                 "loc": [i * 11 + 5, 5],
