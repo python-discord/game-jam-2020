@@ -9,8 +9,10 @@ from Projectile import Projectile
 
 class Enemy(Mob):
 
-    def __init__(self, texture, x, y):
+    def __init__(self, texture, x, y, difficulty):
         super().__init__(texture, x, y)
+
+        self.difficulty = difficulty
 
         self.damage = 1
         self.movespeed = 1
@@ -72,3 +74,18 @@ class Enemy(Mob):
                 self.jumping = False
 
         super().collided(entity, dx, dy)
+    
+    def hurt(self, damage, knockback):
+        import Sounds
+        if self.curr_invis_frame <= 0:
+            Sounds.play(Sounds.SKELETON_HIT)
+
+        super().hurt(damage, knockback)
+
+    def die(self):
+        import random, Heart
+        chance = random.randrange(0, 100)
+        if chance > 90:
+            heart = Heart.Heart(self.center_x, self.center_y)
+            self.level.add_entity_to_list(heart, self.level.entities)
+        super().die()

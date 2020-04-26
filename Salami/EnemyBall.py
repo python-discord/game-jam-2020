@@ -7,12 +7,18 @@ from Enemy import Enemy
 
 class EnemyBall(Enemy):
 
-    def __init__(self, x, y):
-        super().__init__(Textures.get_texture(3, 8), x, y)
+    def __init__(self, texture, x, y, difficulty):
+        super().__init__(texture, x, y, difficulty)
+
+        self.life = 300
 
     def update(self):
 
         super().update()
+
+        self.life -= 0
+        if abs(self.change_x) < 0.1 and abs(self.change_y) <= 0.1 or self.life <= 0:
+            self.removed = True
         # print(f"{self.change_x} {self.change_y}")
 
     def move_to(self, entity):
@@ -24,3 +30,6 @@ class EnemyBall(Enemy):
         if dy != 0:
             self.change_y *= -0.8
             self.change_x *= 0.8
+
+    def hurt(self, damage, knockback):
+        super().hurt(damage, 0)

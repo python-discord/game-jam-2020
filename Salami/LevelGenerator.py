@@ -215,7 +215,7 @@ class LevelGen:
             if room.type == BOSS_ROOM:
                 entity_x = random.randrange(room_x - 1, room_x + ROOM_WIDTH - 1) * TILE_SIZE
                 entity_y = random.randrange(room_y - 1, room_y + ROOM_HEIGHT - 1) * TILE_SIZE
-                boss = Boss(entity_x, entity_y)
+                boss = Boss(entity_x, entity_y, self.level.difficulty)
                 self.level.add_entity_to_list(boss, self.level.entities)
                 difficulty -= 5
             else:
@@ -224,15 +224,15 @@ class LevelGen:
                 entity_x = random.randrange(room_x + 1, room_x + ROOM_WIDTH - 1) * TILE_SIZE
                 entity_y = random.randrange(room_y + 1, room_y + ROOM_HEIGHT - 1) * TILE_SIZE
                 if enemy_type == 0:
-                    slem = Slime(Textures.get_texture(3, 2), entity_x, entity_y)
+                    slem = Slime(Textures.get_texture(3, 2), entity_x, entity_y, self.level.difficulty)
                     self.level.add_entity_to_list(slem, self.level.entities)
                     difficulty -= 1
                 elif enemy_type == 1:
-                    enemy = Enemy(Textures.get_texture(0, 2), entity_x, entity_y)
+                    enemy = Enemy(Textures.get_texture(0, 2), entity_x, entity_y, self.level.difficulty)
                     self.level.add_entity_to_list(enemy, self.level.entities)
                     difficulty -= 1
                 else:
-                    spiky_ball = SpikyBall(entity_x, entity_y)
+                    spiky_ball = SpikyBall(entity_x, entity_y, self.level.difficulty)
                     self.level.add_entity_to_list(spiky_ball, self.level.entities)
                     difficulty -= 1
 
