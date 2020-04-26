@@ -1,11 +1,14 @@
 import arcade
 from arcade.gui import Theme
 
+import socket
 import os
 import string
 import random
 import logging
+from threading import Thread
 
+from .gameview import GameView
 from ..networking.net_interface import Pipe
 from ..gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT
 
@@ -26,7 +29,9 @@ class StartGame(arcade.TextButton):
 
 
 class RoomView(arcade.View):
-    def __init__(self, main_menu_view, room_name: str, username: str, mode: str):
+    def __init__(
+        self, main_menu_view: arcade.View, room_name: str, username: str, mode: str
+    ):
         super().__init__()
         self.room_name = room_name
         self.username = username
@@ -56,11 +61,10 @@ class RoomView(arcade.View):
         """
         logging.error(error)
         self.main_menu_view.setup()
-        self.window.switch_to(self.main_menu_view)
+        self.window.show_view(self.main_menu_view)
 
     def setup(self, count: int = 0) -> None:
         error = None
-
         """
         This count is to avoid recursion errors in case the room_name already
         exists after trying to rename it 5 times
@@ -68,7 +72,7 @@ class RoomView(arcade.View):
         if count >= 5:
             self.switch_back_with_error(error)
 
-        self.pipe = Pipe(os.getenv("SERVER"), int(os.getenv("PORT")))
+        self.pipe = Pipe(socket.gethostname(), int(os.getenv("PORT")))
         is_login_successful, response = self.pipe.login(
             self.mode, self.room_name, self.username
         )
@@ -77,7 +81,7 @@ class RoomView(arcade.View):
             if response == "rename":
                 logging.error("Room name already exists. Renaming...")
                 alphabet = string.ascii_letters
-                self.room_name = f"{''.join(random.choices(alphabet, k=16))}"
+                self.room_name = f"{''.join(random.choices(alphabet, k=6))}"
 
                 count += 1
                 self.setup(count)
@@ -93,9 +97,28 @@ class RoomView(arcade.View):
 
         else:
             if response == "created":
-                logging.info("Login successful")
+                logging.info("Room created successfully")
             elif response == "joined":
                 logging.info("Successfully joined in a room")
+
+            self.waiting_room_thread = Thread(
+                target=self.await_start, args=[self.pipe, response]
+            )
+            self.waiting_room_thread.start()
+
+    def await_start(self, pipe: Pipe, response: str) -> None:
+        while True:
+            packet = self.pipe.await_response()
+            logging.debug(f"Receiving packet in RoomView: {packet}")
+
+            if packet[0] == "Start":
+                logging.info("Starting the game...")
+
+                game_view = GameView()
+                game_view.setup()
+                self.window.show_view(game_view)
+
+                break
 
     def set_button_textures(self) -> None:
         """Give the same style to all the buttons using self.theme."""
