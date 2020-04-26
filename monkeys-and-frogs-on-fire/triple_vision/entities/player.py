@@ -226,7 +226,8 @@ class Player(LivingEntity, MovingSprite):
 
     def hit(self, weapon, attack_multiplier: float = 1.0):
         if self.resistance >= 1.0:
-            # TODO some indestructible sound?
+            SoundManager.add_sound("armor.mp3")
+            SoundManager.play_sound("armor.mp3")
             pass
         else:
             super().hit(weapon, attack_multiplier)

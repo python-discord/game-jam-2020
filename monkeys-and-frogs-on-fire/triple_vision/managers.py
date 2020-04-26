@@ -332,7 +332,6 @@ class CursorManager:
         self._curr_cursor.center_y = y + self.view.camera.viewport_bottom
 
     def update(self):
-        # TODO save player states by current weapon and update cursor
         if self.player.is_moving():
             self.curr_cursor = "moving"
             self._curr_cursor.angle += 1
