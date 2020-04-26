@@ -24,4 +24,9 @@ any time that you want to play in the future you only have to type `pipenv run g
 
 ### How To Play
 To play *Flimsy Billy's Coin Dash 3: Super Tag 3 Electric Tree* you must control Flimsy Billy around the game world
-with the `W` `A` `S` and `D` keys. When you click play you are loaded into the prebar 
+with the `W` `A` `S` and `D` keys. When you click play you are loaded into the Bar Round. Here you set the bar
+for the next round. Try to get as many coins as possible in as small amount of time as possible. When you are done,
+go to the portal at the top left of the shop and travel through to the next round. In this round you will have to get
+more coins than in the last round, but in the same amount of time. If you can, you win! If you can't, you lose. Try
+out potions, some will allow you to get to coins that you haven't before, or some will make other places easier
+to get the coins from. There is even a potion that takes you to a secret room. Note: every 5 seconds you lose 1 coin!
