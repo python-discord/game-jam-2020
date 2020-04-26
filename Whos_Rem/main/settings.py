@@ -7,83 +7,7 @@ from .display import ColourBlend as cb
 
 
 class Settings(arcade.View):
-    width, height = pyautogui.size()
     mouse_pressing = False
-
-    background_image = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/background.png"),
-        scale=max(width / 6400, height / 3600),
-        center_x=int(width * 0.5),
-        center_y=int(height * 0.5),
-    )
-
-    brightness_slide = Slider(int(width * 0.1), int(height * 0.57), int(width * 0.3), int(height * 0.01),
-                              name="Brightness")
-    volume_slide = Slider(int(width * 0.1), int(height * 0.7), int(width * 0.3), int(height * 0.01),
-                          name="Volume")
-
-    left_key_button = Button(width * 0.2, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
-                             activation=lambda self: setattr(self, "binding_key", "left"), name="left_button")
-    center_key_button = Button(width * 0.475, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
-                             activation=lambda self: setattr(self, "binding_key", "center"), name="center_button")
-    right_key_button = Button(width * 0.75, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
-                             activation=lambda self: setattr(self, "binding_key", "right"), name="right_button")
-
-    return_button_image = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/settings_menu/return_button.png"),
-        scale=int(min(width, height)*0.15) / 512,
-        center_x=int(width*0.075),
-        center_y=int(height * 0.9),)
-
-    return_button = Button(width*0.03, height*0.86, width*0.09, height*0.08,
-                           activation=lambda: None, draw_func=lambda: None, name="menu button")
-
-    settings_title = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/settings_menu/settings-title.png"),
-        scale=int(min(width, height) * 0.2) / 128,
-        center_x=int(width * 0.5),
-        center_y=int(height * 0.87),
-    )
-    brightness_text = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/settings_menu/brightness.png"),
-        scale=int(min(width, height) * 0.1) / 128,
-        center_x=int(width * 0.8),
-        center_y=int(height * 0.56),
-    )
-    volume_text = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/settings_menu/volume.png"),
-        scale=int(min(width, height) * 0.14) / 128,
-        center_x=int(width * 0.8),
-        center_y=int(height * 0.68),
-    )
-
-    left_text = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/settings_menu/Left.png"),
-        scale=int(min(width, height) * 0.15) / 128,
-        center_x=int(width * 0.23),
-        center_y=int(height * 0.25),
-    )
-    center_text = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/settings_menu/Center.png"),
-        scale=int(min(width, height) * 0.15) / 128,
-        center_x=int(width * 0.51),
-        center_y=int(height * 0.25),
-    )
-    right_text = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/settings_menu/Right.png"),
-        scale=int(min(width, height) * 0.15) / 128,
-        center_x=int(width * 0.78),
-        center_y=int(height * 0.25),
-    )
-    key_binds_text = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/settings_menu/Key-Binds.png"),
-        scale=int(min(width, height) * 0.17) / 128,
-        center_x=int(width * 0.5),
-        center_y=int(height * 0.45),
-    )
-
-    text_objects = [settings_title, brightness_text, volume_text, left_text,
-                    right_text, center_text, key_binds_text, return_button_image]
 
     binding_key = None
     key_binds = {"left": arcade.key.A, "center": arcade.key.S, "right": arcade.key.D}
@@ -91,6 +15,83 @@ class Settings(arcade.View):
     def __init__(self, main):
         super().__init__()
         self.main = main
+        self.width, self.height = self.main.size
+        width, height = self.main.size
+
+        self.background_image = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/background.png"),
+            scale=max(width / 6400, height / 3600),
+            center_x=int(width * 0.5),
+            center_y=int(height * 0.5),
+        )
+
+        self.brightness_slide = Slider(int(width * 0.1), int(height * 0.57), int(width * 0.3), int(height * 0.01),
+                                  name="Brightness")
+        self.volume_slide = Slider(int(width * 0.1), int(height * 0.7), int(width * 0.3), int(height * 0.01),
+                              name="Volume")
+
+        self.left_key_button = Button(width * 0.2, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
+                                 activation=lambda self: setattr(self, "binding_key", "left"), name="left_button")
+        self.center_key_button = Button(width * 0.475, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
+                                   activation=lambda self: setattr(self, "binding_key", "center"), name="center_button")
+        self.right_key_button = Button(width * 0.75, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
+                                  activation=lambda self: setattr(self, "binding_key", "right"), name="right_button")
+
+        return_button_image = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/settings_menu/return_button.png"),
+            scale=int(min(width, height) * 0.15) / 512,
+            center_x=int(width * 0.075),
+            center_y=int(height * 0.9), )
+
+        self.return_button = Button(width * 0.03, height * 0.86, width * 0.09, height * 0.08,
+                               activation=lambda: None, draw_func=lambda: None, name="menu button")
+
+        settings_title = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/settings_menu/settings-title.png"),
+            scale=int(min(width, height) * 0.2) / 128,
+            center_x=int(width * 0.5),
+            center_y=int(height * 0.87),
+        )
+        brightness_text = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/settings_menu/brightness.png"),
+            scale=int(min(width, height) * 0.1) / 128,
+            center_x=int(width * 0.8),
+            center_y=int(height * 0.56),
+        )
+        volume_text = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/settings_menu/volume.png"),
+            scale=int(min(width, height) * 0.14) / 128,
+            center_x=int(width * 0.8),
+            center_y=int(height * 0.68),
+        )
+
+        left_text = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/settings_menu/Left.png"),
+            scale=int(min(width, height) * 0.15) / 128,
+            center_x=int(width * 0.23),
+            center_y=int(height * 0.25),
+        )
+        center_text = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/settings_menu/Center.png"),
+            scale=int(min(width, height) * 0.15) / 128,
+            center_x=int(width * 0.51),
+            center_y=int(height * 0.25),
+        )
+        right_text = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/settings_menu/Right.png"),
+            scale=int(min(width, height) * 0.15) / 128,
+            center_x=int(width * 0.78),
+            center_y=int(height * 0.25),
+        )
+        key_binds_text = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/settings_menu/Key-Binds.png"),
+            scale=int(min(width, height) * 0.17) / 128,
+            center_x=int(width * 0.5),
+            center_y=int(height * 0.45),
+        )
+
+        self.text_objects = [settings_title, brightness_text, volume_text, left_text,
+                        right_text, center_text, key_binds_text, return_button_image]
 
     def on_draw(self):
         arcade.start_render()

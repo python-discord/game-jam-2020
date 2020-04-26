@@ -15,9 +15,9 @@ class SongChoices:
         4: "The Fat Rat - Stronger",
         5: "xi - Akasha"
     }
-    screen_size = pyautogui.size()
 
-    def __init__(self, song_id: int, colour: list):
+    def __init__(self, song_id: int, colour: list, screen_size: list):
+        self.screen_size = screen_size
         self.song_id = song_id
         self.name = f"{self.song_id}: {self.names_dict.get(song_id, '')}"
         self.width = self.screen_size[0]*0.7
@@ -50,7 +50,6 @@ class SongChoices:
         for item in song_list:
             if item.clicked(mouse_x, mouse_y):
                 song_dict = item.generate_song_data()
-                print(song_dict)
 
         return song_dict
 
@@ -62,29 +61,30 @@ class SongChoices:
 
 class SongSelection(arcade.View):
 
-    width, height = pyautogui.size()
-
-    return_button_image = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/settings_menu/return_button.png"),
-        scale=int(min(width, height) * 0.15) / 512,
-        center_x=int(width * 0.075),
-        center_y=int(height * 0.9),
-    )
-    background_image = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/background.png"),
-        scale=max(width/6400, height/3600),
-        center_x=int(width * 0.5),
-        center_y=int(height * 0.5),
-    )
-
-    return_button = Button(width * 0.03, height * 0.86, width * 0.09, height * 0.08,
-                           activation=lambda: None, draw_func=lambda: None, name="menu button")
-
-    songs = [SongChoices(num, [0, 0, 0]) for num in range(1, 6)]
-
     def __init__(self, main):
         super().__init__()
         self.main = main
+        self.width, self.height = self.main.size
+
+        width, height = self.main.size
+
+        self.return_button_image = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/settings_menu/return_button.png"),
+            scale=int(min(width, height) * 0.15) / 512,
+            center_x=int(width * 0.075),
+            center_y=int(height * 0.9),
+        )
+        self.background_image = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/background.png"),
+            scale=max(width / 6400, height / 3600),
+            center_x=int(width * 0.5),
+            center_y=int(height * 0.5),
+        )
+
+        self.return_button = Button(width * 0.03, height * 0.86, width * 0.09, height * 0.08,
+                               activation=lambda: None, draw_func=lambda: None, name="menu button")
+
+        self.songs = [SongChoices(num, [0, 0, 0], self.main.size) for num in range(1, 6)]
 
     def on_draw(self):
         arcade.start_render()

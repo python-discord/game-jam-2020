@@ -35,57 +35,58 @@ class SwayingNote:
 
 
 class MainMenu(arcade.View):
-    width, height = pyautogui.size()
 
     mouse_x = 0
     mouse_y = 0
     mouse_pressing = False
 
-    background_image = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/background.png"),
-        scale=max(width/6400, height/3600),
-        center_x=int(width * 0.5),
-        center_y=int(height * 0.5),
-    )
-
-    settings_button = Button(int(width*0.9), int(height*0.85),
-                             int(width*0.1), int(height*0.1),
-                             draw_func=lambda: None,
-                             activation=lambda: None)
-
-    settings_button_image = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/main_menu/settings_button.png"),
-        scale=int(min(width, height)*0.15) / 256,
-        center_x=int(width*0.925),
-        center_y=int(height * 0.9),)
-
-    select_song_button = Button(int(width*0.3), int(height*0.2), int(width*0.4), int(height*0.35),
-                                draw_func=lambda: None,
-                                activation=lambda: None)
-
-    menu_title = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/main_menu/3-Strings.png"),
-        scale=int(min(width, height)*0.5) / 256,
-        center_x=int(width*0.5),
-        center_y=int(height * 0.75),
-    )
-    select_song_text = arcade.Sprite(
-        filename=Path().cwd() / Path("main/Resources/main_menu/Select-Song.png"),
-        scale=int(min(width, height) * 0.4) / 256,
-        center_x=int(width * 0.5),
-        center_y=int(height * 0.4),
-    )
-
-    note_1 = SwayingNote(width*0.1, height*0.75,
-                         path=Path().cwd() / Path("main/Resources/main_menu/music_note_1.png"))
-    note_2 = SwayingNote(width * 0.19, height * 0.25,
-                         path=Path().cwd() / Path("main/Resources/main_menu/music_note_2.png"))
-    note_3 = SwayingNote(width * 0.9, height * 0.55,
-                         path=Path().cwd() / Path("main/Resources/main_menu/music_note_3.png"))
-
     def __init__(self, main):
         super().__init__()
         self.main = main
+        self.width, self.height = self.main.size
+        width, height = self.main.size
+
+        self.background_image = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/background.png"),
+            scale=max(width / 6400, height / 3600),
+            center_x=int(width * 0.5),
+            center_y=int(height * 0.5),
+        )
+
+        self.settings_button = Button(int(width * 0.9), int(height * 0.85),
+                                 int(width * 0.1), int(height * 0.1),
+                                 draw_func=lambda: None,
+                                 activation=lambda: None)
+
+        self.settings_button_image = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/main_menu/settings_button.png"),
+            scale=int(min(width, height) * 0.15) / 256,
+            center_x=int(width * 0.925),
+            center_y=int(height * 0.9), )
+
+        self.select_song_button = Button(int(width * 0.3), int(height * 0.2), int(width * 0.4), int(height * 0.35),
+                                    draw_func=lambda: None,
+                                    activation=lambda: None)
+
+        self.menu_title = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/main_menu/3-Strings.png"),
+            scale=int(min(width, height) * 0.5) / 256,
+            center_x=int(width * 0.5),
+            center_y=int(height * 0.75),
+        )
+        self.select_song_text = arcade.Sprite(
+            filename=Path().cwd() / Path("main/Resources/main_menu/Select-Song.png"),
+            scale=int(min(width, height) * 0.4) / 256,
+            center_x=int(width * 0.5),
+            center_y=int(height * 0.4),
+        )
+
+        self.note_1 = SwayingNote(width * 0.1, height * 0.75,
+                             path=Path().cwd() / Path("main/Resources/main_menu/music_note_1.png"))
+        self.note_2 = SwayingNote(width * 0.19, height * 0.25,
+                             path=Path().cwd() / Path("main/Resources/main_menu/music_note_2.png"))
+        self.note_3 = SwayingNote(width * 0.9, height * 0.55,
+                             path=Path().cwd() / Path("main/Resources/main_menu/music_note_3.png"))
 
     def on_update(self, delta_time):
         time.sleep(max(0, 0.1 - delta_time))
