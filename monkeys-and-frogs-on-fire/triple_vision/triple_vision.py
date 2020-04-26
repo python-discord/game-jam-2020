@@ -14,7 +14,7 @@ from triple_vision.sound import SoundManager, SoundtrackManager
 class TripleVision(arcade.View):
     def __init__(self, main_view) -> None:
         super().__init__()
-        self.level = 4
+        self.level = 1
         self.seed = None
 
         self.main_view = main_view
@@ -185,10 +185,7 @@ class TripleVision(arcade.View):
         self.camera.update()
         self.card_manager.update()
 
-        if self.time_slow_ability:
-            self.player.update_health_bars(delta_time * s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
-        else:
-            self.player.update_health_bars(delta_time)
+        self.player.update_health_bars(delta_time)
 
         SoundManager.update(self.slow_down or self.time_slow_ability)
         self.sound_manager.update(self.slow_down or self.time_slow_ability)
