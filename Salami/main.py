@@ -39,6 +39,7 @@ class PyGameJam2020(arcade.Window):
         self.set_icon(pyglet.image.load("resources/icon.png"))
 
         self.text_input = TextInput()
+        self.typing = False
 
         self.camera = Camera.Camera(WIDTH, HEIGHT)
         self.camera.zoom(20)
@@ -104,7 +105,8 @@ class PyGameJam2020(arcade.Window):
 
         self.level.draw()
 
-        # self.text_input.draw()
+        if self.typing:
+            self.text_input.draw()
 
         self.camera.reset_viewport()
 
@@ -118,12 +120,16 @@ class PyGameJam2020(arcade.Window):
         if self.keyboard.is_pressed("fullscreen"):
             self.set_fullscreen(not self.fullscreen)
 
-        if self.keyboard.is_pressed("esc") and self.fullscreen:
-            self.set_fullscreen(False)
+        if self.keyboard.is_pressed("esc"):
+            self.level.paused = not self.level.paused
+        
+        if self.keyboard.is_pressed("enter"):
+            self.typing = not self.typing
     
     def on_key_release(self, key, modifiers):
         self.keyboard.on_key_release(key, modifiers)
-        # self.text_input.on_key_press(key, modifiers)
+        if self.typing:
+            self.text_input.on_key_press(key, modifiers)
 
     def on_mouse_motion(self, x, y, dx, dy):
         self.mouse_x = x
