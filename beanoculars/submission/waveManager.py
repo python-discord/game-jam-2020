@@ -158,10 +158,6 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(15, E_MOSQUITO, MID_ROW, 10, 1.5))
             spawnList.append(EnemyGroup(18, E_SPIDER, TOP_ROW, 10, 1.5))
 
-            spawnList.append(EnemyGroup(31, E_ANT, MID_ROW, 10, 1.5))
-            spawnList.append(EnemyGroup(28, E_MOSQUITO, TOP_ROW, 10, 1.5))
-            spawnList.append(EnemyGroup(25, E_SPIDER, BOT_ROW, 10, 1.5))
-
         elif waveNumber == 14:
             spawnList.append(EnemyGroup(0, E_MOSQUITO, TOP_ROW, 10, 1))
             spawnList.append(EnemyGroup(0.5, E_SPIDER, TOP_ROW, 10, 1))
@@ -170,9 +166,9 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(4.5, E_SPIDER, BOT_ROW, 10, 1))
 
         elif waveNumber == 15:
-            spawnList.append(EnemyGroup(10, E_SPIDER, TOP_ROW, 10, 0.25))
-            spawnList.append(EnemyGroup(10, E_ANT, BOT_ROW, 10, 0.25))
-            spawnList.append(EnemyGroup(10, E_MOSQUITO, MID_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(10, E_SPIDER, TOP_ROW, 6, 0.25))
+            spawnList.append(EnemyGroup(10, E_ANT, BOT_ROW, 6, 0.25))
+            spawnList.append(EnemyGroup(10, E_MOSQUITO, MID_ROW, 6, 0.25))
 
         elif waveNumber == 16:
             spawnList.append(EnemyGroup(0, E_SPIDER, BOT_ROW, 10, 0.5))
@@ -193,7 +189,7 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(0, E_MOSQUITO, BOT_ROW, 10, 1))
 
             spawnList.append(EnemyGroup(11, E_MOSQUITO, TOP_ROW, 10, 1))
-            spawnList.append(EnemyGroup(11, E_SPIDER, BOT_ROW, 10, 1))
+            spawnList.append(EnemyGroup(11, E_ANT, MID_ROW, 10, 1))
             spawnList.append(EnemyGroup(11, E_SPIDER, BOT_ROW, 10, 1))
 
         elif waveNumber == 18:
@@ -251,14 +247,14 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(6.25, E_MOSQUITO, MID_ROW, 5, 0.5))
 
         elif waveNumber == 24:
-            spawnList.append(EnemyGroup(0, E_SPIDER, MID_ROW, 100, 0.75))
+            spawnList.append(EnemyGroup(0, E_SPIDER, MID_ROW, 20, 0.75))
 
         elif waveNumber == 25:
-            spawnList.append(EnemyGroup(0, E_MOSQUITO, BOT_ROW, 100, 0.75))
+            spawnList.append(EnemyGroup(0, E_MOSQUITO, BOT_ROW, 20, 0.75))
 
         elif waveNumber == 26:
-            spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 100, 0.75))
-            spawnList.append(EnemyGroup(55, E_MOSQUITO, TOP_ROW, 10, 0.1))
+            spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 20, 0.75))
+            spawnList.append(EnemyGroup(55, E_MOSQUITO, TOP_ROW, 5, 0.1))
 
         elif waveNumber == 27:
             spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.25))
@@ -303,9 +299,9 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(10, E_MOSQUITO, MID_ROW, 10, 0.25))
 
         elif waveNumber == 35:
-            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.25))
-            spawnList.append(EnemyGroup(3, E_ANT, MID_ROW, 10, 0.25))
-            spawnList.append(EnemyGroup(6, E_ANT, BOT_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 6, 0.25))
+            spawnList.append(EnemyGroup(3, E_ANT, MID_ROW, 6, 0.25))
+            spawnList.append(EnemyGroup(6, E_ANT, BOT_ROW, 6, 0.25))
 
         elif waveNumber == 36:
             spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 5, 1))
@@ -321,8 +317,8 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
 
         elif waveNumber == 38:
             spawnList.append(EnemyGroup(2, E_ANT, TOP_ROW, 15, 1))
-            spawnList.append(EnemyGroup(4, E_MOSQUITO, MID_ROW, 15, 1))
-            spawnList.append(EnemyGroup(6, E_SPIDER, BOT_ROW, 15, 1))
+            spawnList.append(EnemyGroup(2, E_MOSQUITO, MID_ROW, 15, 0.75))
+            spawnList.append(EnemyGroup(2, E_SPIDER, BOT_ROW, 15, 1))
 
         elif waveNumber == 39:
 
@@ -340,9 +336,9 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(0.25, E_ANT, TOP_ROW, 10, 0.75))
             spawnList.append(EnemyGroup(0.5, E_MOSQUITO, TOP_ROW, 10, 0.75))
 
-            spawnList.append(EnemyGroup(10, E_MOSQUITO, BOT_ROW, 10, 0.25))
-            spawnList.append(EnemyGroup(10.25, E_ANT, BOT_ROW, 10, 0.25))
-            spawnList.append(EnemyGroup(10.5, E_SPIDER, BOT_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(17, E_MOSQUITO, BOT_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(17.25, E_ANT, BOT_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(17.5, E_SPIDER, BOT_ROW, 10, 0.25))
 
         elif waveNumber == 42:
             spawnList.append(EnemyGroup(2, E_ANT, TOP_ROW, 15, 2))
@@ -356,8 +352,8 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(0, E_SPIDER, MID_ROW, 10, 0.5))
             spawnList.append(EnemyGroup(5.5, E_SPIDER, TOP_ROW, 10, 0.5))
             spawnList.append(EnemyGroup(10.5, E_SPIDER, BOT_ROW, 10, 0.5))
-            spawnList.append(EnemyGroup(20.5, E_SPIDER, BOT_ROW, 10, 1))
-            spawnList.append(EnemyGroup(20.5, E_SPIDER, TOP_ROW, 10, 1))
+            spawnList.append(EnemyGroup(20.5, E_SPIDER, BOT_ROW, 3, 1))
+            spawnList.append(EnemyGroup(20.5, E_SPIDER, TOP_ROW, 3, 1))
 
         elif waveNumber == 44:
             spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 5, 0.75))
@@ -383,9 +379,9 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(12.25, E_ANT, BOT_ROW, 10, 0.5))
 
         elif waveNumber == 46:
-            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.1))
-            spawnList.append(EnemyGroup(1, E_SPIDER, MID_ROW, 10, 0.1))
-            spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 10, 0.1))
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 6, 0.1))
+            spawnList.append(EnemyGroup(1, E_SPIDER, MID_ROW, 7, 0.1))
+            spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 6, 0.1))
 
         elif waveNumber == 47:
             spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 12, 0.5))
@@ -393,8 +389,8 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(20, E_ANT, MID_ROW, 12, 0.5))
 
             spawnList.append(EnemyGroup(35, E_ANT, BOT_ROW, 12, 0.5))
-            spawnList.append(EnemyGroup(45, E_ANT, TOP_ROW, 12, 0.5))
-            spawnList.append(EnemyGroup(55, E_ANT, MID_ROW, 12, 0.5))
+            spawnList.append(EnemyGroup(45, E_ANT, MID_ROW, 6, 0.5))
+            spawnList.append(EnemyGroup(55, E_ANT, TOP_ROW, 3, 0.5))
 
             spawnList.append(EnemyGroup(70, E_ANT, TOP_ROW, 12, 0.4))
             spawnList.append(EnemyGroup(70, E_MOSQUITO, MID_ROW, 12, 0.4))
@@ -418,10 +414,10 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(15, E_ANT, MID_ROW, 5, 1))
             spawnList.append(EnemyGroup(15, E_MOSQUITO, TOP_ROW, 5, 0.5))
 
-            spawnList.append(EnemyGroup(20, E_SPIDER, TOP_ROW, 10, 0.25))
-            spawnList.append(EnemyGroup(20, E_MOSQUITO, BOT_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(20, E_SPIDER, TOP_ROW, 6, 0.25))
+            spawnList.append(EnemyGroup(20, E_MOSQUITO, BOT_ROW, 6, 0.25))
 
-            spawnList.append(EnemyGroup(35, E_SPIDER, MID_ROW, 35, 0.75))
+            spawnList.append(EnemyGroup(35, E_SPIDER, MID_ROW, 35, 0.90))
             spawnList.append(EnemyGroup(35, E_ANT, TOP_ROW, 10, 0.1))
             spawnList.append(EnemyGroup(35, E_MOSQUITO, BOT_ROW, 10, 0.1))
 
@@ -432,9 +428,9 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(75, E_MOSQUITO, MID_ROW, 20, 1))
             spawnList.append(EnemyGroup(75, E_SPIDER, BOT_ROW, 20, 1))
 
-            spawnList.append(EnemyGroup(100, E_MOSQUITO, TOP_ROW, 20, 0.5))
-            spawnList.append(EnemyGroup(100, E_SPIDER, MID_ROW, 20, 0.5))
-            spawnList.append(EnemyGroup(100, E_ANT, BOT_ROW, 20, 0.5))
+            spawnList.append(EnemyGroup(115, E_MOSQUITO, TOP_ROW, 15, 0.5))
+            spawnList.append(EnemyGroup(115, E_SPIDER, MID_ROW, 15, 0.5))
+            spawnList.append(EnemyGroup(115, E_ANT, BOT_ROW, 15, 0.5))
 
     else:
         # return the generated enemies
