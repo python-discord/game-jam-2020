@@ -4,6 +4,7 @@ from frost.client import Status
 from triple_vision import Settings as s
 from triple_vision.networking import client, get_status
 from triple_vision.text_input import TextInput
+from triple_vision.views.auth_failure import AuthenticationFailure
 from triple_vision.views.main_view import MainView
 
 
@@ -225,11 +226,12 @@ class LoginView(AuthView):
         self.window.button_list.clear()
 
         client.login(self.username.text, self.password.text)
+        status = get_status('login')
 
-        if get_status('login') == Status.SUCCESS:
+        if status == Status.SUCCESS:
             self.window.show_view(MainView())
         else:
-            self.window.show_view(LoginView())
+            self.window.show_view(AuthenticationFailure(self, status))
 
     def register(self) -> None:
         self.window.button_list.clear()
@@ -255,11 +257,12 @@ class RegisterView(AuthView):
         self.window.button_list.clear()
 
         client.register(self.username.text, self.password.text)
+        status = get_status('register')
 
-        if get_status('register') == Status.SUCCESS:
+        if status == Status.SUCCESS:
             self.window.show_view(LoginView())
         else:
-            self.window.show_view(RegisterView())
+            self.window.show_view(AuthenticationFailure(self, status))
 
     def on_show(self) -> None:
         super().on_show()
