@@ -9,9 +9,9 @@ from triple_vision.entities import (
     Player,
     StationaryEnemy
 )
-from triple_vision.managers import CardManager, GameManager, CursorManager, SoundtrackManager
+from triple_vision.managers import CardManager, GameManager, CursorManager
 from triple_vision.map import Map
-from triple_vision.sound import SoundManager
+from triple_vision.sound import SoundManager, SoundtrackManager
 
 
 class TripleVision(arcade.View):
