@@ -9,7 +9,7 @@ import player
 from scores import add_award, add_score, add_time, get_hiscore
 from sprites import Block, Gem, RandomBlock
 from ui import View
-from sound import play_sound_effect
+from sound import music, play_sound_effect
 import views
 
 
@@ -59,6 +59,7 @@ class Game(View):
         self.sprite_lists = [
             self.blocks, self.gems, self.boxes, self.others, self.spikes
         ]
+        music.switch_track('game')
 
     def on_draw(self):
         """Draw all the sprites and UI elements."""

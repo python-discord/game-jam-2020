@@ -40,15 +40,18 @@ class Paused(View):
         self.buttons.append(
             IconButton(self, x + 70, y, 'restart', self.restart)
         )
+        music.volume *= 0.5
 
     def home(self):
         """Show the menu view."""
         self.game.save()
         self.window.show_view(Menu())
+        music.volume *= 2
 
     def play(self):
         """Go back to the game."""
         self.game.pauseplay.go()
+        music.volume *= 2
 
     def restart(self):
         """Start a new game."""
@@ -59,6 +62,7 @@ class Paused(View):
                 add_award(1)
         self.game.save()
         self.window.show_view(self.create_new())
+        music.volume *= 2
 
     def on_draw(self):
         """Draw buttons, game and title."""
@@ -122,6 +126,7 @@ class Tutorial(View):
         self.buttons.append(
             IconButton(self, WIDTH - 70, HEIGHT - 70, 'home', self.home)
         )
+        music.switch_track('tutorial')
 
     def get_textures(self, file: str
                      ) -> typing.Iterable[typing.Tuple[arcade.Texture,
@@ -194,6 +199,8 @@ class Menu(View):
         self.buttons.append(IconButton(
             self, x + 70, y, 'quit', self.window.close
         ))
+        if music.track != 'menu':
+            music.switch_track('menu')
 
     def on_draw(self):
         """Display the buttons and title."""
@@ -364,6 +371,7 @@ class GameOver(View):
         self.scores = scores
         self.create_new = new
         super().__init__()
+        music.switch_track('gameover')
 
     def on_draw(self):
         """Draw text."""

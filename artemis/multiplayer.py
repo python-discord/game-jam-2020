@@ -10,7 +10,7 @@ from engine import PhysicsEngine
 import player as player_module
 from sprites import Block, Gem, RandomBlock
 from ui import View
-from sound import play_sound_effect
+from sound import music, play_sound_effect
 import views
 
 
@@ -73,6 +73,7 @@ class MultiplayerGame(View):
         self.sprite_lists = [
             self.blocks, self.gems, self.others, self.spikes
         ]
+        music.switch_track('game')
 
     def on_draw(self):
         """Draw all the sprites and UI elements."""

@@ -12,13 +12,21 @@ class BackgroundMusic(Player):
         """Start playing the music."""
         super().__init__()
         self.loop = True
-        self.queue(load(ASSETS + 'audio/music.wav'))
         self.volume = settings.get_music_volume()
+        self.track = None
         self.play()
 
     def update_vol(self):
         """Update the volume if it changed."""
         self.volume = settings.get_music_volume()
+
+    def switch_track(self, new: str):
+        """Switch to a new track."""
+        self.track = new
+        had_source = bool(self._source)
+        self.queue(load(f'{ASSETS}audio/{new}.wav'))
+        if had_source:
+            self.next_source()
 
 
 music = BackgroundMusic()
