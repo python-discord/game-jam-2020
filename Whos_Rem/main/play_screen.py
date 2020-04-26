@@ -455,7 +455,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         self.score_pic.center_y, self.combo_pic.center_y,\
         self.notes_hit_pic.center_y, self.notes_missed_pic.center_y = \
             (self.HEIGHT / 2) + ((self.HEIGHT / 10) * 1.5), (self.HEIGHT / 2) + ((self.HEIGHT / 10) * 3),\
-            (self.HEIGHT / 2) + ((self.HEIGHT / 10) * -1), (self.HEIGHT / 2) + ((self.HEIGHT / 10) * -2),
+            (self.HEIGHT / 2) + ((self.HEIGHT / 10) * -1), (self.HEIGHT / 2) + ((self.HEIGHT / 10) * -2.5),
 
         self.score_pic.draw()
         self.combo_pic.draw()
@@ -465,14 +465,27 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         # Actual score
         arcade.draw_text(f"{self.score}",
                          start_x=self.score_pic.center_x - (len(f"{self.score}") * 20),
-                         start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 0.25)),
+                         start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 0.35)),
                          color=arcade.color.WHITE, align="center", font_size=50)
 
         # Actual combo
         arcade.draw_text(f"{self.combo}",
                          start_x=self.combo_pic.center_x - (len(f"{self.combo}") * 20),
-                         start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 1.85)),
+                         start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 1.90)),
                          color=arcade.color.WHITE, align="center", font_size=50)
+
+        # Actual total hits
+        arcade.draw_text(f"{self.notes_hit}",
+                         start_x=self.notes_hit_pic.center_x - (len(f"{self.notes_hit}") * 20),
+                         start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * -2)),
+                         color=arcade.color.WHITE, align="center", font_size=50)
+
+        # Actual total misses
+        arcade.draw_text(f"{self.notes_missed}",
+                         start_x=self.notes_missed_pic.center_x - (len(f"{self.notes_missed}") * 20),
+                         start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * -3.5)),
+                         color=arcade.color.WHITE, align="center", font_size=50)
+
 
         if self.paused:
             self.background.alpha = 255
