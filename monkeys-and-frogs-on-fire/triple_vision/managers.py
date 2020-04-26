@@ -177,7 +177,10 @@ class CardManager:
                         card.left < x < card.right and
                         card.bottom < y < card.top
                     ):
-                        self.view.player.curr_color = self.colors[idx]
+                        if self.card_manager_enabled:
+                            # Only allow player to change players if it's enabled
+                            self.view.player.curr_color = self.colors[idx]
+
                         self.show_cards = False
                         self.view.slow_down = False
 
@@ -215,31 +218,30 @@ class CardManager:
         max_height = self.MAX_CARD_HEIGHT + viewport[1]
         min_height = self.MIN_CARD_HEIGHT + viewport[1]
 
-        if self.card_manager_enabled:
-            for card in self.cards:
-                max_card_height = max_hover_height if card == self.hover_card else max_height
+        for card in self.cards:
+            max_card_height = max_hover_height if card == self.hover_card else max_height
 
-                if (
-                    self.show_cards and
-                    card == self.prev_hover_card and
-                    card.center_y >= max_height
-                ):
-                    card.change_y = -10
+            if (
+                self.show_cards and
+                card == self.prev_hover_card and
+                card.center_y >= max_height
+            ):
+                card.change_y = -10
 
-                elif (
-                    (self.show_cards and card.center_y >= max_card_height) or
-                    (not self.show_cards and card.center_y <= min_height)
-                ):
-                    card.change_y = 0
+            elif (
+                (self.show_cards and card.center_y >= max_card_height) or
+                (not self.show_cards and card.center_y <= min_height)
+            ):
+                card.change_y = 0
 
-                elif card == self.prev_hover_card:
-                    self.prev_hover_card = None
+            elif card == self.prev_hover_card:
+                self.prev_hover_card = None
 
-                elif self.show_cards:
-                    card.change_y = 10
+            elif self.show_cards:
+                card.change_y = 10
 
-                else:
-                    card.change_y = -10
+            else:
+                card.change_y = -10
 
         self._update_colors()
         self.cards.update()
