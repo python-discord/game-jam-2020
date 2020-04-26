@@ -1,4 +1,4 @@
-# Log-3
+# Log-33
 Our entry to the Python Discord code jam is the brain twisting, head scratching, hopefully somewhat interesting puzzle 
 game that is log-3
 
@@ -18,8 +18,7 @@ There are three rows with three categories:
 When you've figured out the clues, you can submit the game - if you got it right, you can try again - and try to do it faster
 ![Winning screen](https://github.com/CharlieADavies/game-jam-2020/blob/dev/the-comet-that-shook-the-py/screenshot_2.png)
 ## How to play the game (install/setup)
-* Arcade is the only dependancy. Simply run `pip install arcade` to install
-* To run the game, run `py __init__.py` from our team folder
+
 
 ## Assets
 * All of our logo assets are from from the Wikimedia commons
