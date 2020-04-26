@@ -51,7 +51,7 @@ class TripleVision(arcade.View):
         self.game_manager = GameManager(self)
         self.cursor_manager = CursorManager(self, self.player)
         self.sound_manager = SoundtrackManager()
-        self.sound_manager.add_sound("assets/audio/soundtracks/Monplaisir_-_06_-_Level_3.mp3", max_volume=0.1)
+        self.sound_manager.add_sound("Monplaisir_-_06_-_Level_3.mp3", max_volume=0.1)
         self.sound_manager.toggle_next_sound()
 
         self.map = Map(self, s.MAP_SIZE)
