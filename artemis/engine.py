@@ -2,6 +2,39 @@
 import arcade
 
 
+def check_for_collision(sprite1: arcade.Sprite,
+                        sprite2: arcade.Sprite) -> bool:
+    """Check for collision between two sprites.
+
+    Used instead of Arcade's default implementation as we need a hack to
+    return False if there is just a one pixel overlap.
+    """
+    x_collision = (
+        sprite1.right - 1 > sprite2.left + 1
+        and sprite1.left + 1 < sprite2.right - 1
+    )
+    if not x_collision:
+        return False
+    return (
+        sprite1.top - 1 > sprite2.bottom + 1
+        and sprite1.bottom + 1 < sprite2.top - 1
+    )
+
+
+def check_for_collision_with_list(sprite: arcade.Sprite,
+                                  sprite_list: arcade.SpriteList) -> bool:
+    """Check for collision between a sprite and a spritelist.
+
+    Used instead of Arcade's default implementation as we need a hack to
+    return False if there is just a one pixel overlap.
+    """
+    overlapping = arcade.SpriteList()
+    for other in sprite_list:
+        if check_for_collision(sprite, other):
+            overlapping.append(other)
+    return overlapping
+
+
 def _circular_check(player: arcade.Sprite, walls: arcade.SpriteList):
     """Guess our way out of a collision."""
     original_x = player.center_x
@@ -9,6 +42,8 @@ def _circular_check(player: arcade.Sprite, walls: arcade.SpriteList):
 
     vary = 1
     while True:
+        last_x = player.center_x
+        last_y = player.center_y
         try_list = [[original_x + vary, original_y],
                     [original_x - vary, original_y],
                     ]
@@ -17,19 +52,21 @@ def _circular_check(player: arcade.Sprite, walls: arcade.SpriteList):
             x, y = my_item
             player.center_x = x
             player.center_y = y
-            check_hit_list = arcade.check_for_collision_with_list(
+            check_hit_list = check_for_collision_with_list(
                 player, walls
             )
             if len(check_hit_list) == 0:
                 return
-        vary *= 2
+        vary += 1
+    player.center_x = last_x
+    player.center_y = last_y
 
 
 def _move_sprite(moving_sprite: arcade.Sprite, walls: arcade.SpriteList):
     # Rotate
     moving_sprite.angle += moving_sprite.change_angle
 
-    hit_list = arcade.check_for_collision_with_list(moving_sprite, walls)
+    hit_list = check_for_collision_with_list(moving_sprite, walls)
 
     if len(hit_list) > 0:
         # Resolve any collisions by this weird kludge
@@ -39,23 +76,17 @@ def _move_sprite(moving_sprite: arcade.Sprite, walls: arcade.SpriteList):
     moving_sprite.center_y += moving_sprite.change_y
 
     # Check for wall hit
-    hit_list_x = arcade.check_for_collision_with_list(moving_sprite, walls)
+    hit_list_x = check_for_collision_with_list(moving_sprite, walls)
     # print(f"Post-y move {hit_list_x}")
 
     # If we hit a wall, move so the edges are at the same point
     if len(hit_list_x) > 0:
         if moving_sprite.change_y > 0:
-            while arcade.check_for_collision_with_list(moving_sprite, walls):
+            while check_for_collision_with_list(moving_sprite, walls):
                 moving_sprite.center_y -= 1
-            # print(f"Spot X ({self.player_sprite.center_x}, {se
         elif moving_sprite.change_y < 0:
-            # Reset number of jumps
-            for item in hit_list_x:
-                while arcade.check_for_collision(moving_sprite, item):
-                    moving_sprite.center_y += 0.25
-
-                if item.change_x != 0:
-                    moving_sprite.center_x += item.change_x
+            while check_for_collision_with_list(moving_sprite, walls):
+                moving_sprite.center_y += 1
 
         moving_sprite.change_y = min(0.0, hit_list_x[0].change_y)
 
@@ -68,18 +99,18 @@ def _move_sprite(moving_sprite: arcade.Sprite, walls: arcade.SpriteList):
     while check_again:
         check_again = False
         # Check for wall hit
-        hit_list_y = arcade.check_for_collision_with_list(moving_sprite, walls)
+        hit_list_y = check_for_collision_with_list(moving_sprite, walls)
 
         # If we hit a wall, move so the edges are at the same point
         if len(hit_list_y) > 0:
             change_x = moving_sprite.change_x
             if change_x > 0:
-                while arcade.check_for_collision_with_list(moving_sprite,
+                while check_for_collision_with_list(moving_sprite,
                                                            walls):
                     moving_sprite.center_x -= 1
 
             elif change_x < 0:
-                while arcade.check_for_collision_with_list(moving_sprite,
+                while check_for_collision_with_list(moving_sprite,
                                                            walls):
                     moving_sprite.center_x += 1
 
@@ -109,7 +140,7 @@ class PhysicsEngine(arcade.PhysicsEnginePlatformer):
             return super().can_jump()
 
         self.player_sprite.center_y += y_distance
-        hit_list = arcade.check_for_collision_with_list(
+        hit_list = check_for_collision_with_list(
             self.player_sprite, self.platforms
         )
         self.player_sprite.center_y -= y_distance

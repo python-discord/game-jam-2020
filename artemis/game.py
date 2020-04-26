@@ -128,6 +128,8 @@ class Game(View):
         self.left += self.player.speed
         arcade.set_viewport(self.left, WIDTH + self.left, 0, HEIGHT)
         if self.left > self.player.right:
+            print('bruh')
+            print(self.left, self.player.right, self.player.center_x, self.player.center_y)
             self.game_over('Got Stuck')
 
     def on_key_press(self, _key: int, _modifiers: int):
