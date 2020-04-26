@@ -204,18 +204,6 @@ class GameView(arcade.View):
         if symbol == arcade.key.Q:
             pickUp(self.player_sprite, self.player_list, self.path_list, self.turret_list)
 
-        if symbol == arcade.key.D:
-            self.entity_list.append(AnimatedEntity(E_ANT, [0, 13]))
-            self.entity_list.append(AnimatedEntity(E_MOSQUITO, [0, 8]))
-            self.entity_list.append(AnimatedEntity(E_SPIDER, [0, 3]))
-
-        if symbol == arcade.key.F:
-            for i in range(len(self.entity_list)):
-                self.entity_list[0].kill()
-
-        if symbol == arcade.key.S:
-            self.sound_dict['test1.wav'].play()
-
         if symbol == arcade.key.ENTER:
             if self.firstRound:
                 self.roundTime = 0
@@ -229,9 +217,6 @@ class GameView(arcade.View):
                 self.shownRoundNumber += 1
                 self.spawnList = decomposeSpawnList(getSpawnList(self.roundNumber, self.generatedTimeSinceFirst))
                 self.betweenRounds = False
-
-        if symbol == arcade.key.X:
-            self.sound_dict['testsound.wav'].play()
 
     def on_key_release(self, symbol: int, modifiers: int):
         """ Get keyboard's releases. """
