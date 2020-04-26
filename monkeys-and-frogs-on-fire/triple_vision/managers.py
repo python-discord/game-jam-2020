@@ -104,12 +104,15 @@ class CardManager:
 
         self.cards = arcade.SpriteList()
         self.colors = ('red', 'green', 'blue')
+        self.card_manager_enabled = True
 
         card_scale = s.SCALING / 6
 
         self.MIN_CARD_HEIGHT = -132 * card_scale
         self.MAX_CARD_HEIGHT = 84 * card_scale
         self.MAX_CARD_HOVER_HEIGHT = 280 * card_scale
+        self.DISABLED_COLOR = (255, 0, 0)
+        self.ENABLED_COLOR = (255, 255, 255)
 
         for idx, color in enumerate(self.colors):
             self.cards.append(
@@ -133,6 +136,9 @@ class CardManager:
             self.hover_card = card
 
     def check_mouse_motion(self, x, y) -> None:
+        if not self.card_manager_enabled:
+            return
+
         if (
             self.cards[0].left < x < self.cards[-1].right and
             self.cards[0].bottom < y < self.cards[-1].top
@@ -153,6 +159,9 @@ class CardManager:
             self.view.slow_down = False
 
     def process_mouse_press(self, x, y, button) -> bool:
+        if not self.card_manager_enabled:
+            return False
+
         if button == arcade.MOUSE_BUTTON_LEFT:
             if (
                 self.cards[0].left < x < self.cards[-1].right and
@@ -175,6 +184,15 @@ class CardManager:
     def draw(self) -> None:
         self.cards.draw()
 
+    def _update_colors(self):
+        for card in self.cards:
+            if self.card_manager_enabled:
+                if card.color == self.DISABLED_COLOR:  # don't change color if not necessary
+                    card.color = self.ENABLED_COLOR
+            else:
+                if card.color == self.ENABLED_COLOR:  # don't change color if not necessary
+                    card.color = self.DISABLED_COLOR
+
     def update(self, delta_time: float = 1/60):
         viewport = (self.view.camera.viewport_left, self.view.camera.viewport_bottom)
 
@@ -189,31 +207,33 @@ class CardManager:
         max_height = self.MAX_CARD_HEIGHT + viewport[1]
         min_height = self.MIN_CARD_HEIGHT + viewport[1]
 
-        for card in self.cards:
-            max_card_height = max_hover_height if card == self.hover_card else max_height
+        if self.card_manager_enabled:
+            for card in self.cards:
+                max_card_height = max_hover_height if card == self.hover_card else max_height
 
-            if (
-                self.show_cards and
-                card == self.prev_hover_card and
-                card.center_y >= max_height
-            ):
-                card.change_y = -10
+                if (
+                    self.show_cards and
+                    card == self.prev_hover_card and
+                    card.center_y >= max_height
+                ):
+                    card.change_y = -10
 
-            elif (
-                (self.show_cards and card.center_y >= max_card_height) or
-                (not self.show_cards and card.center_y <= min_height)
-            ):
-                card.change_y = 0
+                elif (
+                    (self.show_cards and card.center_y >= max_card_height) or
+                    (not self.show_cards and card.center_y <= min_height)
+                ):
+                    card.change_y = 0
 
-            elif card == self.prev_hover_card:
-                self.prev_hover_card = None
+                elif card == self.prev_hover_card:
+                    self.prev_hover_card = None
 
-            elif self.show_cards:
-                card.change_y = 10
+                elif self.show_cards:
+                    card.change_y = 10
 
-            else:
-                card.change_y = -10
+                else:
+                    card.change_y = -10
 
+        self._update_colors()
         self.cards.update()
 
 
@@ -297,7 +317,6 @@ class CursorManager:
         }
         self._curr_cursor: arcade.Sprite = self.cursors["ranged"]
         self.window.set_mouse_visible(False)
-
 
         self.prev_viewport = self.view.camera.viewport_left, self.view.camera.viewport_bottom
 

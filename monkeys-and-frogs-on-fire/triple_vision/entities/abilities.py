@@ -3,6 +3,10 @@ import enum
 from triple_vision.entities.weapons import FloorStompMelee
 from triple_vision.sound import SoundManager
 
+# Abilities without duration need to use this
+# This will make player unable to change character for 1s
+INSTANT_DURATION = 1
+
 
 class BaseAbility:
     base_cool_down = 30.0
@@ -42,8 +46,7 @@ class TimeSlow(BaseAbility):
 
 class FloorStomp(BaseAbility):
     def __init__(self, **kwargs):
-        # Instant ability no duration
-        super().__init__(duration=0, **kwargs)
+        super().__init__(duration=INSTANT_DURATION, **kwargs)
 
     def activate(self, x, y, view_reference):
         floor_stomp = FloorStompMelee(

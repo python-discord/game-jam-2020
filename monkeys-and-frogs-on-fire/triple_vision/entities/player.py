@@ -201,6 +201,7 @@ class Player(LivingEntity, MovingSprite):
             self.mana_bar.clear()
             self._ability_duration_left = self.selected_ability.duration
             self.selected_ability.activate(x, y, self.view)
+            self.view.card_manager.card_manager_enabled = False
         else:
             print(f"No mana")
             # TODO empty mana sound
@@ -249,6 +250,7 @@ class Player(LivingEntity, MovingSprite):
         elif self._ability_duration_left < 0:
             self._ability_duration_left = 0
             self.selected_ability.deactivate(self.view)
+            self.view.card_manager.card_manager_enabled = True
 
         super().on_update(delta_time)
 
