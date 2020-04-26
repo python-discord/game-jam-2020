@@ -10,6 +10,7 @@ class Ground(arcade.Sprite):
         self.textures = textures
         self.texture = self.textures[0]
         self.scale = scale
+        self.timeAfterJump = 0
 
         self.center_x, self.center_y = x, y
 

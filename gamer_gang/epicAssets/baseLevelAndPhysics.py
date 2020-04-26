@@ -5,6 +5,7 @@ from gamer_gang.epicAssets.entities import *
 from gamer_gang.epicAssets.terrainStuff import *
 from gamer_gang.dumbConstants import *
 
+
 def getNames(name):
     name = name.split(sep='on')
     frontier = [[]]
@@ -120,7 +121,9 @@ class Level(arcade.View):
         self.neededStars = len(self.stars)
 
         try:
-            self.torchs.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/torches", self.map)))
+            for t in arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/torches", self.map)):
+                t.center_y -= 5
+                self.torchs.append(t)
         except AttributeError:
             pass
         self.spikes = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/spikes", self.map))
@@ -292,10 +295,11 @@ class Level(arcade.View):
                 break
 
     def movement(self):
+        players = arcade.SpriteList()  # used at the bottom
         for p in self.players:
             if p is None:
                 continue
-
+            players.append(p)
             if p.name == self.players[self.controlled].name:
                 p.pymunk_shape.body.velocity += pymunk.Vec2d((sum(self.userInputs[:2]), 0))  # horizontal movement
                 if p.can_jump:
@@ -314,13 +318,19 @@ class Level(arcade.View):
                 if p.pymunk_shape.body.velocity.x < -250:
                     p.pymunk_shape.body.velocity = pymunk.Vec2d((-250, p.pymunk_shape.body.velocity.y))
 
+        for i in self.jumpPads:
+            for k in arcade.check_for_collision_with_list(i, self.boxes):
+                if k.timeAfterJump > 0.2:
+                    k.pymunk_shape.body.velocity += pymunk.Vec2d((0, 600))
+                    k.timeAfterJump = 0
+
     def entityInteractionCheck(self):
         for p in self.players:
             if p is None:
                 continue
 
             if arcade.check_for_collision_with_list(p, self.spikes):  # if you touch a spike, you DIE
-                self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
+                # self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
                 self.window.sfx['spike'].play()
                 self.window.deathCause = 'a spike that looks an awfully lot like a GD spike'
                 continue
@@ -378,7 +388,7 @@ class Level(arcade.View):
             self.totalTime += dt
 
         for _ in range(10):
-            self.space.step(1/600)
+            self.space.step(1 / 600)
 
         self.movement()  # move all the players (well, the characters)
         self.cameraShift(0.1)  # shift camera
@@ -420,6 +430,8 @@ class Level(arcade.View):
                 if b.center_y <= 0:
                     self.space.remove(b.pymunk_shape, b.pymunk_shape.body)
                     b.kill()
+
+                b.timeAfterJump += dt
 
             spriteListPlayers = arcade.SpriteList()
             for p in self.players:
