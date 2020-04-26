@@ -27,6 +27,7 @@ def login_entry(conn) -> None:
 
     if data == ["play request", "1234509876"]:
         conn.send(b"Pended")
+
         team.append(conn)
         for _player_ in team:
             _player_.send(f"Team count,,{len(team)}||".encode())
@@ -62,10 +63,11 @@ def game_room(teammates: list, ports: int, _host_: str) -> None:
     while True:
         data, address = udp.recvfrom(1024)
         data = data.split(b"||||")
+        print(sent_player)
 
         if len(data) > 1:
             data = loads(data[0])
-
+            print(data)
             if data[0] in sent_player:
                 wall_pos = randint(10, 600)
                 sent_player = [data[0]]
@@ -74,22 +76,19 @@ def game_room(teammates: list, ports: int, _host_: str) -> None:
 
             # pasting game data in pipe
             for _player_ in pipe.keys():
-                if len(data) > 2:
+                if len(data) > 1:
                     if data[0] != _player_:
-                        if len(pipe[_player_]) == 2:
-                            pipe[_player_].pop(0)
-                        pipe[_player_].append(data[1:])
+
+                        pipe[_player_] = data
 
             # checking if viable data is available to be sent
             if pipe[data[0]]:
                 udp.sendto(
-                    dumps([packet.append(wall_pos) for packet in pipe[data[0]]])
-                    + b"||||",
-                    address,
+                    dumps(pipe[data[0]] + [wall_pos]) + b"||||", address,
                 )
                 pipe[data[1]] = []
             else:
-                udp.sendto(dumps([[":server:", wall_pos]]) + b"||||", address)
+                udp.sendto(dumps([":server:", wall_pos]) + b"||||", address)
 
 
 if __name__ == "__main__":

@@ -49,7 +49,6 @@ class Pipe:
                     self.username = seg[1]
                     self.game_port = int(seg[2])
 
-            print(full_data, 111111111111)
             return full_data
         except ConnectionResetError:
             return [False]
@@ -65,8 +64,7 @@ class Pipe:
         data = data.split(b"||||")
 
         if len(data) > 1:
-            data = data[0].split(b"||")
-            data = [loads(game) for game in data]
+            data = loads(data[0])
 
             return True, data
         else:

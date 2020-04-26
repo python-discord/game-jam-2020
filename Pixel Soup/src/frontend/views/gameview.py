@@ -108,9 +108,11 @@ class GameView(arcade.View):
 
         self.assigned_player = 1
 
-    def setup(self, forward, feedback):
+    def setup(self, forward, feedback, character_id):
         """ Set up the game and initialize the variables. """
         self.background = arcade.load_texture(f"{DATA_DIR}/14.png")
+
+        self.assigned_player = int(character_id) + 1
 
         # Sprite lists
         self.player_list = arcade.SpriteList()
@@ -173,7 +175,9 @@ class GameView(arcade.View):
         """Called whenever a key is pressed. """
         if key == arcade.key.SPACE or key == arcade.key.W:
             if self.physics_engine.can_jump():
-                self.player1.change_y = PLAYER_JUMP_SPEED
+                getattr(
+                    self, f"player{self.assigned_player}"
+                ).change_y = PLAYER_JUMP_SPEED
                 self.jump.play(volume=0.5)
         elif key == arcade.key.LEFT or key == arcade.key.A:
             getattr(
@@ -236,12 +240,18 @@ class GameView(arcade.View):
                 0, SCREEN_WIDTH + 0, self.view_bottom, SCREEN_HEIGHT + self.view_bottom,
             )
 
-    def stream(self, delta_time: float) -> None:
-        self.forward.put(())
+    def stream(self, delta: float):
+        self.forward.put(getattr(self, f"player{self.assigned_player}").position)
         if not self.feedback.empty():
             data = self.feedback.get()
+            print(data)
             if data[0]:
-                print(data, 999999999999999999)
-                for seg in data[1][0]:
-                    print(f"wall position ...{seg[1]}")
-                    self.add_wall(pos=seg[1])
+                if data[1][0]:
+                    if data[1][0] == ":server:":
+                        self.add_wall(data[1][1])
+                    else:
+                        getattr(self, f"player{int(data[1][0]) + 1}").position = (
+                            data[1][1],
+                            data[1][2],
+                        )
+                        self.add_wall(data[1][-1])
