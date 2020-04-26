@@ -22,13 +22,16 @@ The player can move around the map by clicking on a tile. The wizard will then u
 
 The map is generated using cellular automata through several generations. The map consists of three things, The flooring, walls, and spikes. The spikes periodically extend up out of the ground, and if the player is on top of them, they will be damaged.
 
-The player and some specific enemies are able to shoot laser projectiles at each other, causing damage to the one entity hit. Currently, we have two enemies: The chasing demons and stationary imps. The chasing demons will chase the player if within range, and use melee attacks. On the other hand, stationary imps will *not* chase the player. Instead, they will sit still and fire lasers when the player is within range.
-
-I think that's about it for our current game implementation.
+The player and some specific enemies are able to shoot laser projectiles at each other, causing damage to the entity hit. There are two types of enemies: The chasing, melee enemies and stationary, sharp shooters. The chasing enemies will chase the player if within range, and use melee attacks. On the other hand, stationary imps will *not* chase the player. Instead, they will sit still and fire lasers when the player is within range.
 
 
-## Tutorial
 
+## Play the game!
+- Run `pipenv sync`
+- Start the server: `pipenv run server`
+- Start the game: `pipenv run start`
+
+You can play on the same server as your friends if you'd like and share leaderboards!
 
 ### Movement
 - Your player moves with the WASD keys.
