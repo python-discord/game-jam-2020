@@ -2,7 +2,7 @@ import logging
 
 import arcade
 from .gamestate import GameState
-from .effects import ColorIsolationWindow
+from .effects import VCRDistortionWindow
 
 SCREEN_WIDTH = 1024
 SCREEN_HEIGHT = 768
@@ -12,14 +12,13 @@ format_string = "%(asctime)s | %(filename)s#%(lineno)d | %(levelname)s | %(messa
 logging.basicConfig(format=format_string, level=logging.DEBUG)
 
 
-class Game(ColorIsolationWindow):
+class Game(VCRDistortionWindow):
     """Main game object."""
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.ingame = False
         self.gamestate = None
-        self.set_isolation_color((49, 119, 255))
 
     def on_update(self, delta_time: float) -> None:
         """Send update event to the gamestate."""
@@ -29,7 +28,8 @@ class Game(ColorIsolationWindow):
             self.start_game()
         if self.gamestate:
             self.gamestate.on_update(delta_time)
-        self.set_isolation_threshold(10.0)
+
+        self.elapsed_time += delta_time
 
     def render(self) -> None:
         """Send draw event to the gamestate."""

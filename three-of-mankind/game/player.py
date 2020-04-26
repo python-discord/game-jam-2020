@@ -1,4 +1,5 @@
 # from math import floor, ceil
+from typing import Tuple
 
 from .constants import JUMP_FORCE, JUMP_FORCE_REDUCTION, RIGHT
 from .sprite import Sprite
@@ -11,11 +12,17 @@ import arcade
 
 class Player(Sprite):
     colors = {"white": 0, "red": 1, "green": 2, "blue": 3}
-    _colors = {
+    bg_colors = {
         "white": (35, 35, 35),
         "red": (85, 35, 35),
         "green": (35, 85, 35),
         "blue": (35, 35, 85)
+    }
+    particle_colors = {
+        "white": (255, 255, 255),
+        "red": (255, 0, 0),
+        "green": (0, 255, 0),
+        "blue": (0, 0, 255)
     }
 
     def __init__(self, *args, **kwargs):
@@ -35,7 +42,13 @@ class Player(Sprite):
     def set_color(self, color: str) -> None:
         self.set_texture(self.colors.get(color, 0))
         self.str_color = color
-        arcade.set_background_color(self._colors.get(color, (0, 0, 0)))
+        arcade.set_background_color(self.get_bg_color())
+
+    def get_bg_color(self) -> Tuple[int, int, int]:
+        return self.bg_colors.get(self.str_color, (0, 0, 0))
+
+    def get_color(self) -> Tuple[int, int, int]:
+        return self.particle_colors.get(self.str_color, (0, 0, 0))
 
     def update(self):
         if self.is_jumping:

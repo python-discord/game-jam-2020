@@ -24,7 +24,7 @@ from .constants import (
 from .player import Player
 from .sprite import Sprite
 from .tile_image import tiles
-from .utils import dash_emitter_factory, is_touching, sweep_trace
+from .utils import dash_emitter_factory, is_touching, sweep_trace, explosion_factory
 
 
 class GameState:
@@ -38,7 +38,7 @@ class GameState:
         with open("config.json") as file:
             self.data = json.load(file)
 
-        self.level = self.data.get("current_level", 0)
+        self.level = 0
 
         self.player = Player(scale=0.99)
         for tile in (
@@ -48,6 +48,7 @@ class GameState:
             tiles.player_blue,
         ):
             self.player.append_texture(tile.texture)
+
         self.player.set_color("white")
 
         self.player.center_x = 200
@@ -55,7 +56,7 @@ class GameState:
 
         self.load_level(self.level)
 
-        self.dash_emitters = []
+        self.emitters = []
 
     def load_level(self, level_id: int) -> bool:
         try:
@@ -158,8 +159,11 @@ class GameState:
 
     def on_update(self, delta_time: float) -> None:
         """Handle update event."""
-        for emitter in self.dash_emitters:
-            emitter.update()
+        for emitter in self.emitters:
+            if emitter.can_reap():
+                self.emitters.remove(emitter)
+            else:
+                emitter.update()
 
         if self.engine.can_jump():
             self.player.movement_control = GROUND_CONTROL
@@ -169,11 +173,6 @@ class GameState:
         if self.player.collides_with_sprite(self.end):
             self.level += 1
             if self.load_level(self.level):
-
-                with open("config.json", "w") as file:
-                    self.data.update(current_level=self.level)
-                    json.dump(self.data, file)
-
                 logging.info("NEXT LEVEL")
             else:
                 logging.info("LAST LEVEL")
@@ -184,18 +183,19 @@ class GameState:
             self.start = saves.pop()
 
         if is_touching(self.player, self.danger):
+            self.emitters.append(explosion_factory((self.player.center_x, self.player.center_y), self.player.get_color()))
             self.move_to_start()
 
         colors = {"red", "green", "blue"}
         colors.discard(self.player.str_color)
         for color in colors:
             if is_touching(self.player, self.colored_geometry[color]):
+                self.emitters.append(explosion_factory((self.player.center_x, self.player.center_y), self.player.get_color()))
                 self.move_to_start()
 
         self.player.update()
         self.engine.update()
         self.level_objects.update()
-
         self.update_screen()
 
     def on_draw(self) -> None:
@@ -204,7 +204,7 @@ class GameState:
         self.player.draw()
         self.level_geometry.draw()
         self.level_objects.draw()
-        for emitter in self.dash_emitters:
+        for emitter in self.emitters:
             emitter.draw()
 
     def on_key_press(self, key, modifiers):
@@ -248,8 +248,9 @@ class GameState:
                     self.player.left += DASH_DISTANCE * self.player.direction
                     # create a particle emitter
                     new_pos = self.player.center_x, self.player.center_y
-                    self.dash_emitters.extend(
-                        dash_emitter_factory(self.player.color, old_pos, new_pos)
+    
+                    self.emitters.extend(
+                        dash_emitter_factory(self.player.get_color(), old_pos, new_pos)
                     )
 
         # Jumping

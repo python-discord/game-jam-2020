@@ -23,6 +23,12 @@ from .constants import (
     PLUME_PARTICLE_LIFETIME,
     PLUME_SCALE,
     PLUME_EMIT_DURATION,
+    EXPLOSION_EMIT_INTERVAL,
+    EXPLOSION_NUM_PARTICLE,
+    PARTICLE_SPEED_FAST,
+    DEFAULT_SCALE,
+    EXPLOSION_SCALE,
+    EXPLOSION_PARTICLE_LIFETIME,
 )
 
 
@@ -168,7 +174,8 @@ def rand_color(c, scale=0.25):
 
 def dash_emitter_factory(color, pos_a, pos_b):
     """Interval, emit on line"""
-    logging.info("Creating emmiter")
+    logging.info("Creating dash emitter")
+
     if pos_a[0] > pos_b[0]:
         angle = 0
     else:
@@ -204,3 +211,35 @@ def dash_emitter_factory(color, pos_a, pos_b):
         ),
     )
     return line_e, exhaust_plume_e
+
+
+class ExplosionParticle(arcade.LifetimeParticle):
+    def update(self):
+        super().update()
+        #self.change_y = -2*(self.lifetime_elapsed-math.sqrt(5))
+
+
+def explosion_factory(pos, color):
+    logging.info(f"Creating explosion emitter at {pos}")
+
+    textures = [
+        arcade.Texture(f"{time.time()}", Image.new("RGBA", (10, 10), p))
+        for p in rand_color(color)
+    ]
+
+    line_e = arcade.Emitter(
+        center_xy=(0.0, 0.0),
+        emit_controller=arcade.EmitterIntervalWithCount(
+            EXPLOSION_EMIT_INTERVAL, EXPLOSION_NUM_PARTICLE
+        ),
+        particle_factory=lambda emitter: arcade.FadeParticle(
+            filename_or_texture=random.choice(textures),
+            change_xy=arcade.rand_in_circle((0.0, 0.0), PARTICLE_SPEED_FAST),
+            lifetime=EXPLOSION_PARTICLE_LIFETIME,
+            center_xy=pos,
+            change_angle=random.uniform(-6, 6),
+            scale=EXPLOSION_SCALE,
+        ),
+    )
+    line_e.change_angle = 16
+    return line_e
