@@ -175,28 +175,24 @@ class Menu(View):
     def on_show(self):
         """Create the buttons."""
         super().on_show()
-        self.buttons.append(ViewButton(
-            self, WIDTH / 2 - 70, HEIGHT / 2 - 50,
-            'multiplayer', MultiplayerMenu
-        ))
-        self.buttons.append(ViewButton(
-            self, WIDTH / 2, HEIGHT / 2 - 50, 'play', Game
-        ))
-        self.buttons.append(ViewButton(
-            self, WIDTH / 2 + 70, HEIGHT / 2 - 50, 'help', Tutorial
-        ))
-        self.buttons.append(ViewButton(
-            self, WIDTH / 2 - 70, HEIGHT / 2 - 120, 'about', About
-        ))
-        self.buttons.append(ViewButton(
-            self, WIDTH / 2, HEIGHT / 2 - 120,
-            'achievements', Achievements
-        ))
+        buttons = {
+            'multiplayer': MultiplayerMenu,
+            'play': Game,
+            'help': Tutorial,
+            'about': About,
+            'achievements': Achievements,
+            'settings': Settings
+        }
+        x = WIDTH / 2 - 70
+        y = HEIGHT / 2 - 50
+        for n, name in enumerate(buttons):
+            self.buttons.append(ViewButton(self, x, y, name, buttons[name]))
+            x += 70
+            if n % 3 == 2:
+                x = WIDTH / 2 - 70
+                y -= 70
         self.buttons.append(IconButton(
-            self, WIDTH / 2 + 70, HEIGHT / 2 - 120, 'quit', self.window.close
-        ))
-        self.buttons.append(ViewButton(
-            self, WIDTH / 2, HEIGHT / 2 - 190, 'settings', Settings
+            self, x + 70, y, 'quit', self.window.close
         ))
 
     def on_draw(self):

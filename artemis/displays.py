@@ -69,7 +69,7 @@ class PausePlay(IconButton):
 
     def __init__(self,
                  x: int, y: int,
-                game: typing.Union[game.Game, multiplayer.MultiplayerGame]):
+                 game: typing.Union[game.Game, multiplayer.MultiplayerGame]):
         """Set up the button."""
         super().__init__(game, x, y, 'pause', self.go, 32)
         self.game = game
