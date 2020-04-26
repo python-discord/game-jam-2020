@@ -1,7 +1,8 @@
+import math
+
 import arcade
 import pyautogui
 from .display import ColourBlend as cb
-from .settings import Settings
 
 
 class Shape:
@@ -34,7 +35,8 @@ class Shape:
     def x(self):
         if self.dist > 0:
             print(self.end_x, self.dist, self.start_dist)
-            return self.screen_width_center + int(self.end_x**(1 - self.dist/self.start_dist))
+            return self.screen_width_center + math.copysign(
+                int(abs(self.end_x)**(1 - self.dist/self.start_dist)), self.end_x)
         else:
             return self.end_x + self.screen_width_center
 
