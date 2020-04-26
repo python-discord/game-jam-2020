@@ -69,7 +69,7 @@ class Timer(arcade.Sprite):
     def __init__(self, asset_fp: str, centre, start_time):
         super(Timer, self).__init__(asset_fp)
         self.stop = False
-        self.end_time:Optional[int] = None
+        self.end_time: Optional[int] = None
         self.center_x, self.center_y = centre
         self.start_time = start_time
 
@@ -110,6 +110,7 @@ class ClueTextBox(arcade.Sprite):
             self.clue_text,
             self.center_x,
             self.top - 110,
+
             arcade.color.BLACK,
             size,
             anchor_x="center",
@@ -131,6 +132,14 @@ class ClueTextBox(arcade.Sprite):
                         clue = " ".join(clue_words)
                         break
             printable_clues.append(clue)
+        printable_clues = ["• " + c for c in printable_clues]
+        for clue_idx, clue in enumerate(printable_clues):
+            word_l = clue.split(" ")
+            for i, word in enumerate(word_l):
+                if "\n" in word:
+                    word_l[i + 1] = ("  " + word_l[i + 1])
+                    printable_clues[clue_idx] = " ".join(word_l)
+                    break
         return "\n\n".join(printable_clues)
 
 
