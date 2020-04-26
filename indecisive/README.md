@@ -20,9 +20,12 @@ To Play the Game:
     - Then all players must enter a name in the black box of the next screen.
     - Then the host can start the game by pressing "Start".
     
-    
+Using Python 3.8
+ 
 `python -m venv venv`
 
 activate virtual environment
 
 `pip install arcade websocket`
+
+`python -m game`
