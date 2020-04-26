@@ -121,7 +121,7 @@ class MyGame(arcade.View):
 
         self.music = arcade.load_sound('Music/The 16Bit Cowboy.wav')
         self.music_length = 59
-        self.musicdt = 0
+        self.musicdt = 59
 
         self.player_list = None
         self.background_list = None
@@ -185,6 +185,8 @@ class MyGame(arcade.View):
 
         self.potion_list = None
 
+        print('Not working')
+
 
     def on_show(self):
 
@@ -192,8 +194,6 @@ class MyGame(arcade.View):
 
         self.game_timer = 0
         self.drew_game_over = False
-
-        self.music.play(volume=0.01)
 
         self.player_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
@@ -476,7 +476,7 @@ class MyGame(arcade.View):
                     self.player_sprite.change_y = PLAYER_MOVEMENT_SPEED
                 elif self.physics_engine.can_jump():
                     self.player_sprite.change_y = PLAYER_JUMP_SPEED
-                    arcade.play_sound(self.jump_sound)
+                    self.jump_sound.play(volume=0.01)
 
             if key == arcade.key.S:
                 if self.physics_engine.is_on_ladder():
@@ -585,8 +585,9 @@ class MyGame(arcade.View):
         self.game_timer += delta_time
 
         self.musicdt += delta_time
-        if self.musicdt >= self.music_length:
+        if self.musicdt >= 59:
             self.music.play(volume=0.01)
+            self.musicdt = 0
 
         self.delta_track += delta_time
         if self.delta_track >= 5:
@@ -611,22 +612,22 @@ class MyGame(arcade.View):
 
         for coin in coin_hit_list:
             coin.remove_from_sprite_lists()
-            arcade.play_sound(self.collect_coin_sound)
+            self.collect_coin_sound.play(volume=0.01)
             self.coin_counter += 1
 
         for coin in coin_2_hit_list:
             coin.remove_from_sprite_lists()
-            arcade.play_sound(self.collect_coin_sound)
+            self.collect_coin_sound.play(volume=0.01)
             self.coin_counter += 2
 
         for coin in coin_5_hit_list:
             coin.remove_from_sprite_lists()
-            arcade.play_sound(self.collect_coin_sound)
+            self.collect_coin_sound.play(volume=0.01)
             self.coin_counter += 5
 
         for coin in coin_secret_hit_list:
             coin.remove_from_sprite_lists()
-            arcade.play_sound(self.collect_coin_sound)
+            self.collect_coin_sound.play(volume=0.01)
             self.coin_counter += 5
 
         self.player_sprite.change_x = 0
@@ -724,7 +725,8 @@ class MyGame(arcade.View):
 
             if self.game_timer >= self.previous_time and self.run == 2 and not self.drew_game_over:
                 window = arcade.get_window()
-                window.show_view(GAME_OVER)
+                game_over = GameOver()
+                window.show_view(game_over)
 
         self.player_list.update_animation()
         self.potion_list.update_animation()
@@ -737,11 +739,11 @@ class MyGame(arcade.View):
             arcade.set_viewport(self.view_left, self.view_left + SCREEN_WIDTH, self.view_bottom, self.view_bottom + SCREEN_HEIGHT)
 
 
-def main(gm=False):
+def main():
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=True)
-    start_menu = StartMenuView()
-    game = MyGame(2, 5)
-    window.show_view(start_menu)
+    game = MyGame(2, 10)
+    game_over = GameOver()
+    window.show_view(game_over)
     arcade.run()
 
 

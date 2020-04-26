@@ -74,7 +74,7 @@ class GameOver(arcade.View):
     def on_mouse_release(self, x, y, button, modifiers):
         if self.play_left + self.restart_button.width + 50 >= x >= self.play_left - 50 and self.play_bottom + self.restart_button.height + 25 >= y >= self.play_bottom - 25:
             from open_window_views import MyGame
-            game = MyGame()
+            game = MyGame(2, 10)
             self.window.show_view(game)
 
     def on_draw(self):
