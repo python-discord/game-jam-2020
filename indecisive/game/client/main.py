@@ -39,7 +39,7 @@ class Display(arcade.Window):
     def on_draw(self):
         arcade.start_render()
         self.scenes[self.scene].draw()
-        if self.music.get_stream_position() == 0.0:
+        if self.music.get_stream_position() == 0.0 and self.music_bool == True:
             self.music_play()
 
     def music_play(self):
