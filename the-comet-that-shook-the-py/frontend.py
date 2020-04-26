@@ -52,7 +52,7 @@ class GridCell:
         self.associated_tile.center_x, self.associated_tile.center_y = self.centre
         self.associated_tile.set_bounds()
 
-    def __repr__(self, ):
+    def __repr__(self,):
         return str(self.centre)
 
 
@@ -80,9 +80,9 @@ class ClueTextBox(arcade.Sprite):
     def draw(self):
         super(ClueTextBox, self).draw()
         size = 20 if len(self.clues) <= 10 else 16
-        clue_text = "\n\n".join(self.clues)
+
         arcade.draw_text(
-            clue_text,
+            self.clue_text,
             self.center_x,
             self.top - 110,
             arcade.color.BLACK,
@@ -92,6 +92,22 @@ class ClueTextBox(arcade.Sprite):
             font_name="GARA",
         )
 
+    @property
+    def clue_text(self):
+        printable_clues = []
+        for clue in self.clues:
+            if len(clue) > 50:
+                clue_words = clue.split()
+                total_len = 0
+                for i, word in enumerate(clue_words):
+                    total_len += len(word)
+                    if total_len > 40:
+                        clue_words = clue_words[:i] + ["\n"] + clue_words[i:]
+                        clue = " ".join(clue_words)
+                        break
+            printable_clues.append(clue)
+        return "\n\n".join(printable_clues)
+
 
 class TileSprite(arcade.Sprite):
     """
@@ -100,7 +116,7 @@ class TileSprite(arcade.Sprite):
     """
 
     def __init__(
-            self, image_filepath: str, starting_x: int, starting_y: int,
+        self, image_filepath: str, starting_x: int, starting_y: int,
     ):
         super().__init__(image_filepath)
         self.tile_value = image_filepath.split("/")[1]
@@ -115,7 +131,7 @@ class TileSprite(arcade.Sprite):
         self.height = TILE_HEIGHT
         self.set_bounds()
 
-    def set_bounds(self, ):
+    def set_bounds(self,):
         """
         Set boundary_left etc to be updated for a new center position
         """
@@ -124,7 +140,7 @@ class TileSprite(arcade.Sprite):
         self.boundary_bottom = self.center_y - (self.height // 2)
         self.boundary_top = self.center_y + (self.height // 2)
 
-    def reset(self, ):
+    def reset(self,):
         """Resets the sprite back to its original starting position"""
         self.center_x = self.starting_x
         self.center_y = self.starting_y
@@ -164,21 +180,21 @@ class SubmissionGrid(arcade.Sprite):
                         (x, y,),
                         cell_width,
                         cell_height,
-                        allowed_values[row_num * 3: (row_num + 1) * 3],
+                        allowed_values[row_num * 3 : (row_num + 1) * 3],
                     )
                 )
 
-    def get_relevant_cell(self, point: Tuple[float, float,], ) -> GridCell:
+    def get_relevant_cell(self, point: Tuple[float, float,],) -> GridCell:
         """
         Gets the cell, or None, in which the provided point resides
         :param point the x/y coord of which to check
         :return: Optionally, the relevant octothorpe cell
         """
         for cell in self.cells:
-            if check_bounds(point, cell.bottom_left, cell.top_right, ):
+            if check_bounds(point, cell.bottom_left, cell.top_right,):
                 return cell
 
-    def extract_value(self, ) -> List[Optional[str]]:
+    def extract_value(self,) -> List[Optional[str]]:
         """
         Extracts the values the player has inserted into
         the board into a format that can be used to verify the game
@@ -197,7 +213,7 @@ class MyGame(arcade.Window):
     """
 
     # TODO figure out how to render clues as text
-    def __init__(self, ):
+    def __init__(self,):
         super().__init__(
             WINDOW_WIDTH, WINDOW_HEIGHT, "Fun",
         )
@@ -214,7 +230,7 @@ class MyGame(arcade.Window):
         self.game_won: bool = False
         arcade.set_background_color((100, 100, 100,))
 
-    def setup(self, ):
+    def setup(self,):
         """
         Set the game up for play. Call this to reset the game.
         """
@@ -243,11 +259,11 @@ class MyGame(arcade.Window):
         )
         self.green_tick.width = 600
         self.green_tick.height = 600
-        for ((x, y,), asset_path,) in zip(self.get_boneyard_starting_positions(), shuffled_list, ):
-            tile_sprite = TileSprite(f"assets/{asset_path}", int(x), int(y), )
+        for ((x, y,), asset_path,) in zip(self.get_boneyard_starting_positions(), shuffled_list,):
+            tile_sprite = TileSprite(f"assets/{asset_path}", int(x), int(y),)
             self.tile_sprites.append(tile_sprite)
 
-    def on_draw(self, ):
+    def on_draw(self,):
         """
         Main draw function. Draws the boneyard, and the submission grid.
         """
@@ -268,7 +284,7 @@ class MyGame(arcade.Window):
         if time.time() > self._flash_red_x_end:
             self._red_x_visible = False
 
-    def get_boneyard_starting_positions(self, ):
+    def get_boneyard_starting_positions(self,):
         """
         yields the positions where tiles should be placed in the starting boneyard
         """
@@ -282,7 +298,7 @@ class MyGame(arcade.Window):
             yield left_edge_padding + tile_and_padding, tile_height
 
     def on_mouse_motion(
-            self, x, y, dx, dy,
+        self, x, y, dx, dy,
     ):
         """ Called to update our objects. Happens approximately 60 times per second."""
         if self.dragging_sprite is not None:
@@ -290,7 +306,7 @@ class MyGame(arcade.Window):
             self.dragging_sprite.center_y = y
 
     def on_mouse_press(
-            self, x, y, button, modifiers,
+        self, x, y, button, modifiers,
     ):
         """
         Called when the user presses a mouse button.
@@ -302,14 +318,14 @@ class MyGame(arcade.Window):
         tile_sprite: TileSprite
         for tile_sprite in self.tile_sprites:
             if check_bounds(
-                    (x, y,),
-                    (tile_sprite.boundary_left, tile_sprite.boundary_bottom,),
-                    (tile_sprite.boundary_right, tile_sprite.boundary_top,),
+                (x, y,),
+                (tile_sprite.boundary_left, tile_sprite.boundary_bottom,),
+                (tile_sprite.boundary_right, tile_sprite.boundary_top,),
             ):
                 self.dragging_sprite = tile_sprite
 
     def on_mouse_release(
-            self, x, y, button, modifiers,
+        self, x, y, button, modifiers,
     ):
         """
         Called when a user releases a mouse button.
@@ -353,7 +369,7 @@ class MyGame(arcade.Window):
 
 
 def check_bounds(
-        point: Tuple[float, float,], bottom_left: Tuple[float, float,], top_right: Tuple[float, float,],
+    point: Tuple[float, float,], bottom_left: Tuple[float, float,], top_right: Tuple[float, float,],
 ) -> bool:
     """
     Check if a given point is within the bounds of 4 sides
