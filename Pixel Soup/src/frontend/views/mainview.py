@@ -13,6 +13,8 @@ class MainView(arcade.View):
     def __init__(self):
         super().__init__()
         self.background = None
+        self.music = arcade.load_sound(f"{DATA_PATH}/music.wav")
+        self.music.play(volume=0.2)
 
     def on_show(self) -> None:
         """Called when MainView should draw."""
