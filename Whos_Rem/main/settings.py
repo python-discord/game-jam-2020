@@ -28,7 +28,7 @@ class Settings(arcade.View):
         self.brightness_slide = Slider(int(width * 0.1), int(height * 0.57), int(width * 0.3), int(height * 0.01),
                                   name="Brightness")
         self.volume_slide = Slider(int(width * 0.1), int(height * 0.7), int(width * 0.3), int(height * 0.01),
-                              name="Volume")
+                              start_value=0.5, name="Volume")
 
         self.left_key_button = Button(width * 0.2, height * 0.1, min(width, height) * 0.1, min(width, height) * 0.1,
                                  activation=lambda self: setattr(self, "binding_key", "left"), name="left_button")
