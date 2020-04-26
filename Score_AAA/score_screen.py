@@ -65,7 +65,7 @@ class Score:
         if self.restart_timer >= 0:
             arcade.draw_text(
                 "Press a key to play again",
-                self.width // 2 - 47 * len(value),
+                self.width // 2 - 185,
                 self.height // 9,
                 arcade.color.YELLOW_ORANGE,
                 30,
@@ -74,7 +74,7 @@ class Score:
     def score_input(self, char: str):
         if self.restart_timer > 1.5:
             return True
-        elif self.index >= 0 and self.char_count < 3:
+        elif self.index >= 0 and self.char_count < 3 and char.isalpha():
 
             score = list(self.score_dict.keys())[self.index]
             name = list(self.score_dict.values())[self.index]
