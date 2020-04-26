@@ -7,6 +7,7 @@ import vlc
 import _thread
 from .perspective_objects import ShapeManager
 from .display import ColourBlend as cb
+from . import Button
 
 
 TESTING = False
@@ -322,6 +323,11 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                                         self.main.size[0]*0.04, self.main.size[1]*0.6,
                                         [255, 0, 0], [0, 0, 0])
 
+        self.menu_button = Button(self.main.size[0]*0.4, self.main.size[1]*0.5,
+                                  self.main.size[0]*0.2, self.main.size[1]*0.1)
+        self.settings_button = Button(self.main.size[0] * 0.42, self.main.size[1] * 0.35,
+                                  self.main.size[0] * 0.16, self.main.size[1] * 0.1)
+
     def setup(self, _track, _main):
         """
         This Adds the background image, Keys 1 -> 3 sprites, and countdown sprites,
@@ -582,6 +588,13 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
 
         elif symbol == self.key_binds['right']:
             self.right_button_active = False
+
+    def on_mouse_press(self, x, y, button, modifiers):
+        if self.paused or self.ended:
+            if self.menu_button.pressed(x, y):
+                self.main.window.show_view(self.main.menu)
+            if self.settings_button.pressed(x, y):
+                self.main.window.show_view(self.main.settings)
 
 
 class ProgressBar:

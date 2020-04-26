@@ -1,5 +1,5 @@
 ### 3 Strings!
-Welcome to 3 strings, the game made by Whos_Rem (ChillFish8 (CF8), and JamieSaunders03)
+Welcome to 3 strings, the game made by Whos_Rem (jamiesaunders03 and ChillFish8 (CF8))
 
 ## Dependancies
 - YOU MUST HAVE VLC MEDIA INSTALLED PRIOR TO THIS!
