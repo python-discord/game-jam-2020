@@ -4,7 +4,7 @@ from .constants import JUMP_FORCE, JUMP_FORCE_REDUCTION, RIGHT
 from .sprite import Sprite
 
 # from .utils import AnimLoader
-import arcade
+# import arcade
 
 # import time
 

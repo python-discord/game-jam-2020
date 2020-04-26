@@ -32,33 +32,29 @@ class GameState:
     def __init__(self, game):
         self.view_left = 0
         self.view_bottom = 0
+        self.level = 0
         self.game = game
-
-        self.level_geometry = arcade.SpriteList()  # Have collisions
-        self.level_objects = arcade.SpriteList()  # Doesn't have collision
-        self.colored_geometry = {
-            "red": arcade.SpriteList(),
-            "green": arcade.SpriteList(),
-            "blue": arcade.SpriteList(),
-            "white": arcade.SpriteList(),
-        }
 
         self.player = Player(scale=0.99)
         for tile in (tiles.player_white, tiles.player_red, tiles.player_green, tiles.player_blue):
             self.player.append_texture(tile.texture)
         self.player.set_texture(0)
 
-        self.player.center_x = 200
-        self.player.center_y = 200
-
-        self.load_level(0)
+        self.load_level(self.level)
 
         self.engine = arcade.PhysicsEnginePlatformer(self.player, self.level_geometry, GRAVITY)
 
-    def load_level(self, level_id: int) -> None:
+    def load_level(self, level_id: int) -> bool:
+        try:
+            image = Image.open(f"levels/level_{level_id}.png")
+        except OSError:
+            return False
+
         self.level_objects = arcade.SpriteList()
         self.level_geometry = arcade.SpriteList()
         self.danger = arcade.SpriteList()
+        self.saves = arcade.SpriteList()
+        self.start, self.end = None, None
         self.colored_geometry = {
             "red": arcade.SpriteList(),
             "green": arcade.SpriteList(),
@@ -66,39 +62,82 @@ class GameState:
             "white": arcade.SpriteList(),
         }
 
-        # image = Image.open(f"levels/level_{level_id}.png")
-        # w, h = image.size
-        # pixels = image.load()
+        w, h = image.size
+        pixels = image.load()
 
-        with open(f"levels/level_{level_id}") as file:
-            left, bottom = 0, 0
-            for line in reversed(file.read().strip().splitlines()):
-                for index in range(0, len(line), BLOCK_LEN):
-                    block_str = line[index : index + BLOCK_LEN].strip()
+        color_map = {
+            0xFFFFFFFF: "W",
+            0xFF0000FF: "R",
+            0x00FF00FF: "G",
+            0x0000FFFF: "B",
+            0x00FFFFFF: "L",
+            0xFF00FFFF: "P",
+            0x000000FF: "D",
+            0x00000000: "E",
+        }
 
-                    if block_str:
-                        tile = getattr(tiles, block_str)
+        def to_int(r: int, g: int, b: int, a: int) -> int:
+            return (r << 24) + (g << 16) + (b << 8) + a
 
-                        sprite = Sprite.from_texture(tile.texture)
-                        sprite.left = left
-                        sprite.bottom = bottom
+        def gen_colors():
+            for yi in range(y - 2, y + 1):
+                for xi in range(x, x + 3):
+                    yield color_map.get(to_int(*pixels[xi, yi]), "E")
 
-                        if tile.name.startswith(("block", "danger")):
-                            self.level_geometry.append(sprite)
+        left, bottom = 0, 0
 
+        for y in range(h - 1, -1, -3):
+            for x in range(0, w, 3):
+                colors = "".join(gen_colors())
+
+                try:
+                    tile = tiles[colors]
+
+                except KeyError:
+                    pass
+
+                else:
+                    sprite = Sprite.from_texture(tile.texture)
+
+                    sprite.left, sprite.bottom = left, bottom
+
+                    if tile.name.startswith(("block", "danger")):
+                        self.level_geometry.append(sprite)
+
+                    else:
+                        self.level_objects.append(sprite)
+
+                    if tile.name.endswith(("white", "red", "green", "blue")):
+                        self.colored_geometry[tile.name.rsplit("_", 1)[-1]].append(sprite)
+
+                    if tile.name.startswith("save"):
+                        self.saves.append(sprite)
+
+                    if tile.name.startswith("danger"):
+                        self.danger.append(sprite)
+
+                    if tile.name.startswith("level"):
+                        if tile.name.endswith("start"):
+                            self.start = sprite
                         else:
-                            self.level_objects.append(sprite)
+                            self.end = sprite
 
-                        if tile.name.endswith(("white", "red", "green", "blue")):
-                            self.colored_geometry[tile.name.rsplit("_", 1)[-1]].append(sprite)
+                left += TEXTURE_SIZE
 
-                        if tile.name.startswith("danger"):
-                            self.danger.append(sprite)
+            left = 0
+            bottom += TEXTURE_SIZE
 
-                    left += TEXTURE_SIZE
+        if not self.start:
+            raise RuntimeError("Start is not set.")
+        elif not self.end:
+            raise RuntimeError("End is not set.")
 
-                left = 0
-                bottom += TEXTURE_SIZE
+        self.move_to_start()
+
+        return True
+
+    def move_to_start(self) -> None:
+        self.player.left, self.player.bottom = self.start.left, self.start.bottom
 
     def on_update(self, delta_time: float) -> None:
         """Handle update event."""
@@ -107,14 +146,26 @@ class GameState:
         else:
             self.player.movement_control = AIR_CONTROL
 
+        if self.player.collides_with_sprite(self.end):
+            self.level += 1
+            if self.load_level(self.level):
+                logging.info("NEXT LEVEL")
+            else:
+                logging.info("LAST LEVEL")
+
+        saves = self.player.collides_with_list(self.saves)
+
+        if saves:
+            self.start = saves.pop()
+
         if is_touching(self.player, self.danger):
-            logging.info(f"DEAD AAAAAAAAAAAAAAAA")
+            self.move_to_start()
 
         colors = {"red", "green", "blue"}
         colors.discard(self.player.str_color)
         for color in colors:
             if is_touching(self.player, self.colored_geometry[color]):
-                logging.info(f"DEAD AAAAA")
+                self.move_to_start()
 
         self.player.update()
         self.engine.update()
@@ -140,9 +191,9 @@ class GameState:
         }
         if key == arcade.key.E:
             all_colors = ("white", "red", "green", "blue")
-            self.player.set_color(all_colors[
-                (all_colors.index(self.player.str_color) + 1) % len(all_colors)
-            ])
+            self.player.set_color(
+                all_colors[(all_colors.index(self.player.str_color) + 1) % len(all_colors)]
+            )
         if key in colors:
             self.player.set_color(colors[key])
 

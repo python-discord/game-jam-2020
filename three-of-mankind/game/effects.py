@@ -36,7 +36,7 @@ class ColorIsolationWindow(arcade.Window):
                 const mat3 mat = mat3(
                     0.4124, 0.3576, 0.1805,
                     0.2126, 0.7152, 0.0722,
-                    0.0193, 0.1192, 0.9505 
+                    0.0193, 0.1192, 0.9505
                 );
                 return 100.0 * (tmp * mat);
             }

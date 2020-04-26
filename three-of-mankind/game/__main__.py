@@ -53,4 +53,8 @@ class Game(ColorIsolationWindow):
 # Start game
 game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=True)
 arcade.set_background_color((20, 20, 20))
-arcade.run()
+
+try:
+    arcade.run()
+except KeyboardInterrupt:
+    pass

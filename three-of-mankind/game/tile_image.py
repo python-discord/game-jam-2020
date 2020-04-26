@@ -13,9 +13,10 @@ HEIGHT = data.get("height", 64)
 
 
 class Tile:
-    def __init__(self, name: str, block_x: int, block_y: int) -> None:
+    def __init__(self, name: str, block_x: int, block_y: int, state: str = "") -> None:
         self.name = name
         self.alias = "".join(part[0] for part in name.split("_"))
+        self.state = state
         self.w = WIDTH
         self.h = HEIGHT
         self.x = block_x * self.w
@@ -36,4 +37,4 @@ tiles = NamedDict()
 
 for n, tile_info in enumerate(data.get("tiles", [])):
     tile = Tile(**tile_info)
-    tiles.update({tile.name: tile, tile.alias: tile, n: tile})
+    tiles.update({tile.name: tile, tile.alias: tile, tile.state: tile, n: tile})
