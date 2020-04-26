@@ -185,12 +185,6 @@ class MainView(SuperView):
         elif 9 < minutes <= 10:
             self.pet.age = 10
 
-        elif 10 < minutes <= 11:
-            self.pet.age = 11
-
-        elif 11 < minutes <= 12:
-            self.pet.age = 12
-
         else:
             # die from natural causes
             self.game_start = False
@@ -233,21 +227,6 @@ class MainView(SuperView):
                 self.pet.needs_attention = True
             elif rand_int == 17:
                 self.pet.needs_attention = True
-        """ 
-        # cusp of YA/adult
-        if 8 < minutes <= 9:
-            if rand_int == 14:
-                self.pet.sick = True
-                self.pet.needs_attention = True
-            elif rand_int == 5:
-                self.pet.waste = True
-                self.pet.needs_attention = True
-            elif rand_int == 9:
-                self.pet.needs_attention = True
-
-        if self.pet.needs_attention:
-            arcade.play_sound(self.attention_sound)
-        """
 
 
     """ Main Game Loop Logic"""

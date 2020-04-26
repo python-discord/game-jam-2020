@@ -1,5 +1,5 @@
 import arcade
-import random
+
 from MainView import MainView
 
 """ CONSTANTS """
