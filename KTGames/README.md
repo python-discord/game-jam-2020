@@ -5,11 +5,9 @@ Thinking about getting a pet during quarantine, but worried about the increase i
 
 Each Hatchling starts as a small, colorful ball of energy. As the game progresses, your hatchling will evolve into one of three distinct species. Your Hatchling will grow very quickly, so you have to make sure to take good care of it by providing food, rest and letting it play a game to entertain itself.
 
-Your Hatchling loves your attention, and will request it if it is hungry, bored, sick, or if it soils its tank. Hatchlings are very impatient, and will be sure to call you until you attend to their needs and dismiss their request for attention. Like any creature, you must train your Hatchling to only call you when it needs you, providng discipline for unnecessary calls.
+Your Hatchling loves your attention, and will request it if it is hungry, bored, sick, or if it soils its tank. Hatchlings are very impatient, and will be sure to call you until you attend to their needs and dismiss their request for attention. Like any creature, you must train your Hatchling to only call you when it needs you, providing discipline for unnecessary calls.
 
-Hatchlings hang around their tanks until they are grown. Although they have three unique ways of growing up, they all eventually end up looking quite similar once they are ready to leave the tank and return to the world wide web. Once they decide to leave, they will provide you with a score of how well you cared for them, encouraging you to provide even better care for your next Hatchling!
-
-
+Hatchlings hang around their tanks until they are grown, then they leave for the world wide web. Once they decide to leave, they will provide you with a score of how well you cared for them, encouraging you to provide even better care for your next Hatchling!
 
 ## Getting Started
 
