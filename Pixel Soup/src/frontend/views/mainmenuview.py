@@ -7,7 +7,7 @@ from multiprocessing import Process, Queue
 from .gameview import GameView
 from ..networking.net_interface import Pipe
 
-import socket
+import os
 from textwrap import dedent
 
 DATA_PATH = f"{GAME_PATH}/data"
@@ -15,7 +15,7 @@ DATA_PATH = f"{GAME_PATH}/data"
 
 def networking(forward, feedback):
     while True:
-        pipe = Pipe(server=socket.gethostname(), port=9000)
+        pipe = Pipe(server=os.getenv("PORT"), port=int(os.getenv("PORT")))
         response = pipe.login()
         feedback.put(response)
         if response:
