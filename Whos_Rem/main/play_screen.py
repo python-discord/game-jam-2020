@@ -10,7 +10,7 @@ from .display import ColourBlend as cb
 
 
 TESTING = False
-SAMPLING = False
+SAMPLING = True
 
 if SAMPLING:
     sample_list = []
@@ -212,21 +212,42 @@ class GameLogic:
                  key_data: ("Key sprites", list, tuple),
                  notes: ("note objects", list, tuple)):
         total_points, combos = 0, 0
-        for loc, key in enumerate(keys_list):
-            if key:
-                if notes[loc] is not None:
-                    points = cls.get_points(notes[loc].y, key_data[loc].height)
+        for note in notes:
+            if note.note_id == -1:
+                if keys_list[0]:
+                    points = cls.get_points(note.y, key_data[0].height)
                     if points != -1:
                         total_points += points
                         combos += 1
                     else:
                         combos = -1
                 else:
-                    combos = -1
-            else:
-                if notes[loc] is not None:
-                    if cls.check_miss(notes[loc].y, key_data[loc].height):
+                    if cls.check_miss(note.y, key_data[0].height):
                         combos = -1
+            elif not note.note_id:
+                if keys_list[1]:
+                    points = cls.get_points(note.y, key_data[1].height)
+                    if points != -1:
+                        total_points += points
+                        combos += 1
+                    else:
+                        combos = -1
+                else:
+                    if cls.check_miss(note.y, key_data[1].height):
+                        combos = -1
+
+            elif note.note_id:
+                if keys_list[2]:
+                    points = cls.get_points(note.y, key_data[2].height)
+                    if points != -1:
+                        total_points += points
+                        combos += 1
+                    else:
+                        combos = -1
+                else:
+                    if cls.check_miss(note.y, key_data[2].height):
+                        combos = -1
+
         return total_points, combos
 
 
@@ -294,7 +315,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         track_timings = {
             'track_1': 17,
             'track_2': 16,
-            'track_3': 17,
+            'track_3': 16,
             'track_4': 16,
             'track_5': 17,
         }
@@ -383,10 +404,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             points_to_add, combos = GameLogic.get_data(
                 (self.left_button_active, self.middle_button_active, self.right_button_active),
                 (self.key_1, self.key_2, self.key_3),
-                (self.notes_list[0] if len(self.notes_list) > 0 else None,
-                 self.notes_list[1] if len(self.notes_list) > 1 else None,
-                 self.notes_list[2] if len(self.notes_list) > 2 else None,
-                 )
+                self.notes_list
             )
             self.score += points_to_add
             self.combo = (self.combo + combos) if combos != -1 else 0

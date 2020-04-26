@@ -15,13 +15,15 @@ class Shape:
                  dims: "ratio width:height, list length 2",
                  dist: "starting 'dist' from screen, int",
                  colour: list,
-                 speed: "default rate distance decreases, can be overwritten in update()",):
+                 speed: "default rate distance decreases, can be overwritten in update()",
+                 note: "The -1, 0, 1 positionor"):
         """
         Note: dims is a relative ratio to scale size, if you want a rectangle which
         grows to a size of 400x200 its recommended you set scale_size to 400 and
         dims to [1, 0.5] because at its largest value, width will be 400*1 = 400
         and height will be 400*0.5 = 200
         """
+        self.note_id = note
         self.screen_width_center = arcade.window_commands.get_window().width // 2
         self.end_x = x
         self.start_y = y
@@ -91,7 +93,7 @@ class ShapeManager:
         width = int(central_spacing * 0.55)
         x_pos = int(central_spacing * note)
         y_pos = int(pyautogui.size().height * 0.8)
-        new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 256, colour, 2)
+        new_shape = Shape(x_pos, y_pos, width, [1, 0.5], 256, colour, 2, note)
 
         return new_shape
 
