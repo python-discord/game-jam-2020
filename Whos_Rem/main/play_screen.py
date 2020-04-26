@@ -6,6 +6,7 @@ import os
 import vlc
 import _thread
 from .perspective_objects import ShapeManager
+from .display import ColourBlend as cb
 
 
 TESTING = False
@@ -17,6 +18,7 @@ if SAMPLING:
     sample_list = []
     sample_sec = []
     prev = 0
+
 
 class Audio:
     BASE_DIR = os.getcwd()
@@ -95,7 +97,7 @@ class PauseScreen:
         cls.HEIGHT = height
 
     @classmethod
-    def pause_menu(cls):
+    def pause_menu(cls, brightness):
         cls.pause_sprite_list.append(  # Game Paused text
             arcade.Sprite(filename=f"{cls.BASE_DIR}/main/Resources/game_play/Game-Paused.png",
                           center_x=cls.WIDTH / 2,
@@ -119,6 +121,9 @@ class PauseScreen:
                           center_x=cls.WIDTH / 2,
                           center_y=cls.HEIGHT / 4.75,
                           scale=0.75))
+
+        for sprite in cls.pause_sprite_list:
+            sprite.alpha = int(255 * brightness)
 
         return cls.pause_sprite_list
 
@@ -389,7 +394,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         self.background.center_y = self.HEIGHT / 2
         self.background.scale = 0.4
         self.background.width = self.WIDTH
-        self.background.alpha = 200
+        self.background.alpha = int(200*self.main.brightness)
         self.background.draw()
 
         # White mask note box
@@ -405,7 +410,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         self.background_sprite.center_y = self.HEIGHT / 2
         self.background_sprite.scale = 1
         self.background_sprite.width = self.WIDTH / 2
-        self.background_sprite.alpha = 160
+        self.background_sprite.alpha = int(160*self.main.brightness)
         self.background_sprite.draw()
 
         # If un pausing render  todo finish
@@ -422,7 +427,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             self.HEIGHT / 10,
             width=self.WIDTH / 2,
             height=self.key_1.height,
-            color=arcade.color.WHITE)
+            color=cb.brightness(arcade.color.WHITE, self.main.brightness))
 
         # Renders pressed keys if NOT paused
         if not self.paused and self.started:
@@ -430,18 +435,21 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                 self.key_1.center_x = self.WIDTH / 2 - (self.WIDTH / (200 / 30))
                 self.key_1.center_y = self.HEIGHT / 10
                 self.key_1.scale = ((self.WIDTH / self.HEIGHT) / (20 / 3)) * (self.HEIGHT / 600)
+                self.key_1.alpha = int(255*self.main.brightness)
                 self.key_1.draw()
 
             if self.middle_button_active:
                 self.key_2.center_x = self.WIDTH / 2
                 self.key_2.center_y = self.HEIGHT / 10
                 self.key_2.scale = ((self.WIDTH / self.HEIGHT) / (20 / 3)) * (self.HEIGHT / 600)
+                self.key_2.alpha = int(255 * self.main.brightness)
                 self.key_2.draw()
 
             if self.right_button_active:
                 self.key_3.center_x = self.WIDTH / 2 + (self.WIDTH / (200 / 30))
                 self.key_3.center_y = self.HEIGHT / 10
                 self.key_3.scale = ((self.WIDTH / self.HEIGHT) / (20 / 3)) * (self.HEIGHT / 600)
+                self.key_3.alpha = int(255 * self.main.brightness)
                 self.key_3.draw()
 
         # Audio progress bar
@@ -467,30 +475,34 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         arcade.draw_text(f"{self.score}",
                          start_x=self.score_pic.center_x - (len(f"{self.score}") * 20),
                          start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 0.35)),
-                         color=arcade.color.WHITE, align="center", font_size=50)
+                         color=cb.brightness(arcade.color.WHITE, self.main.brightness),
+                         align="center", font_size=50)
 
         # Actual combo
         arcade.draw_text(f"{self.combo}",
                          start_x=self.combo_pic.center_x - (len(f"{self.combo}") * 20),
                          start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 1.90)),
-                         color=arcade.color.WHITE, align="center", font_size=50)
+                         color=cb.brightness(arcade.color.WHITE, self.main.brightness),
+                         align="center", font_size=50)
 
         # Actual total hits
         arcade.draw_text(f"{self.notes_hit}",
                          start_x=self.notes_hit_pic.center_x - (len(f"{self.notes_hit}") * 20),
                          start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * -2)),
-                         color=arcade.color.WHITE, align="center", font_size=50)
+                         color=cb.brightness(arcade.color.WHITE, self.main.brightness),
+                         align="center", font_size=50)
 
         # Actual total misses
         arcade.draw_text(f"{self.notes_missed}",
                          start_x=self.notes_missed_pic.center_x - (len(f"{self.notes_missed}") * 20),
                          start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * -3.5)),
-                         color=arcade.color.WHITE, align="center", font_size=50)
+                         color=cb.brightness(arcade.color.WHITE, self.main.brightness),
+                         align="center", font_size=50)
 
         if self.paused:
             self.background.alpha = 255
             self.background.draw()
-            self.pause_menu().draw()
+            self.pause_menu(self.main.brightness).draw()
 
         if self.ended:
             self.on_end()

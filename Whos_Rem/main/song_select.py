@@ -105,7 +105,7 @@ class SongSelection(arcade.View):
 
         choice = SongChoices.manage_song_selections(self.songs, x, y)
         if choice is not None:
-            self.main.play_screen.setup(choice)
+            self.main.play_screen.setup(choice, self.main)
             self.main.window.show_view(self.main.play_screen)
 
     @staticmethod

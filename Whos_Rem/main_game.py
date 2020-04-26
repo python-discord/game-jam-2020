@@ -5,8 +5,7 @@ from main import *
 
 class Main:
 
-    #size = pyautogui.size()
-    size = [1920, 1080]
+    size = pyautogui.size()
 
     def __init__(self):
         self.settings = Settings(self)
