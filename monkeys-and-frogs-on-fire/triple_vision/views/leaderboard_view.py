@@ -209,7 +209,7 @@ class LeaderboardView(arcade.View):
 
         self.scores = Memory.scores
 
-        for idx, score in enumerate(self.scores, -1):
+        for idx, score in enumerate(reversed(self.scores), -1):
             self.score_nodes.append(
                 ScoreNode(
                     username=score['username'],
