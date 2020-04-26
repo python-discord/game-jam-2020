@@ -183,7 +183,7 @@ class Level(arcade.View):
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.userInputs[0] = 30
         elif key == arcade.key.UP or key == arcade.key.W:
-            self.userInputs[2] = 500
+            self.userInputs[2] = 450
         elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
             self.controlled = 0
         elif key == arcade.key.NUM_2 or key == arcade.key.KEY_2:
@@ -378,7 +378,7 @@ class Level(arcade.View):
             self.space.step(1/600)
 
         self.movement()  # move all the players (well, the characters)
-        self.cameraShift(dt)  # shift camera
+        self.cameraShift(0.1)  # shift camera
         self.stackCheck()  # join into stacks if detected
         self.entityInteractionCheck()  # check for interaction with any enemies, bad stuff, etc.
 

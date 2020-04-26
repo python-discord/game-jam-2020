@@ -19,7 +19,7 @@ def makeLand(space, textures, scale, x, y, hit_box):
     body = pymunk.Body(body_type=pymunk.Body.STATIC)
     body.position = pymunk.Vec2d((pos_x, pos_y))
     shape = pymunk.Poly.create_box(body, (width, height))
-    shape.friction = 1
+    shape.friction = 0.5
     space.add(body, shape)
     sprite = Ground(shape, textures, scale, pos_x, pos_y)
     sprite.hit_box = hit_box
@@ -29,7 +29,7 @@ def makeBox(mass, space, textures, hit_box, scale, x, y):
     body = pymunk.Body(mass, pymunk.moment_for_poly(mass, vertices=hit_box) * 10)
     body.position = pymunk.Vec2d((x, y))
     shape = pymunk.Poly.create_box(body, (textures[0].width, textures[0].height))
-    shape.friction = 0.8
+    shape.friction = 0.5
     space.add(body, shape)
     sprite = Ground(shape, textures, scale, x, y)
     return sprite
