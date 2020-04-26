@@ -142,12 +142,12 @@ class GameManager:
         if len(self.enemies) == 0:
             # TODO PLAY WIN SOUND
             self.view.level += 1
-            self.view.sound_manager.play_song()
+            self.view.soundtrack_manager.play_song()  # plays the next soundtrack
             self.view.create_level()
         elif not self.view.player.is_alive:
             # TODO PLAY DEATH SOUND
             self.view.level += 0
-            self.view.sound_manager.play_song()
+            self.view.soundtrack_manager.play_song()  # plays the next soundtrack
             self.view.create_level()
 
     def enemy_killed(self, enemy) -> None:
@@ -374,18 +374,22 @@ class LevelManager:
     NORMAL_SHOOTER_RADIUS = Tile.SCALED * 10
     BIG_SHOOTER_RADIUS = Tile.SCALED * 12
 
+    MAX_OF_ONE_ENEMY_TYPE = 7
+
     @classmethod
     def create_level(cls, game_manager: GameManager, player, level: int):
         """Deals with how many enemies and what types spawn"""
-        
         # Goblins have low hp but are fast and big in numbers.
         # Very small dmg
         # level1 3
         # level2 5
         # level3 7
-        # level4 9
+        # level4 7
         # etc
-        for _ in range(level * 3 - (level - 1) * 1):
+        for i, _ in enumerate(range(level * 3 - (level - 1))):
+            if i > cls.MAX_OF_ONE_ENEMY_TYPE:
+                break
+
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.goblin,
@@ -399,9 +403,12 @@ class LevelManager:
         # level1 3
         # level2 5
         # level3 7
-        # level4 9
+        # level4 7
         # etc
-        for _ in range(level * 3 - (level - 1) * 1):
+        for i, _ in enumerate(range(level * 3 - (level - 1))):
+            if i > cls.MAX_OF_ONE_ENEMY_TYPE:
+                break
+
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.chort,
@@ -415,9 +422,12 @@ class LevelManager:
         # level1 3
         # level2 5
         # level3 7
-        # level4 9
+        # level4 7
         # etc
-        for _ in range(level * 3 - (level - 1) * 1):
+        for i, _ in enumerate(range(level * 3 - (level - 1))):
+            if i > cls.MAX_OF_ONE_ENEMY_TYPE:
+                break
+
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.tiny_zombie,
@@ -431,9 +441,12 @@ class LevelManager:
         # level1 2
         # level2 4
         # level3 6
-        # level4 8
+        # level4 7
         # etc
-        for _ in range(level * 2):
+        for i, _ in enumerate(range(level * 2)):
+            if i > cls.MAX_OF_ONE_ENEMY_TYPE:
+                break
+
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.ice_zombie,
@@ -446,11 +459,14 @@ class LevelManager:
         # Big demons are tough foes, normal speed but lot HP.
         # Huge dmg and big detection radius
         # level1 3
-        # level2 6
-        # level3 9
-        # level4 12
+        # level2 5
+        # level3 6
+        # level4 7
         # etc
-        for _ in range(level * 3):
+        for i, _ in enumerate(range(level + 2 + level//3)):
+            if i > cls.MAX_OF_ONE_ENEMY_TYPE:
+                break
+
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.big_demon,
@@ -461,11 +477,14 @@ class LevelManager:
             )
 
         # Imps are shooting
-        # level1 2
-        # level2 4
-        # level3 6
-        # level4 8
-        for _ in range(level * 2):
+        # level1 1
+        # level2 2
+        # level3 4
+        # level4 5
+        for i, _ in enumerate(range(level + level//2)):
+            if i > cls.MAX_OF_ONE_ENEMY_TYPE:
+                break
+
             game_manager.create_enemy(
                 StationaryEnemy,
                 Enemies.imp,
@@ -481,7 +500,10 @@ class LevelManager:
         # level2 0
         # level3 1
         # level4 2
-        for _ in range(level - 2):
+        for i, _ in enumerate(range(level - 2)):
+            if i > cls.MAX_OF_ONE_ENEMY_TYPE:
+                break
+
             game_manager.create_enemy(
                 StationaryEnemy,
                 Enemies.necromancer,
@@ -494,10 +516,13 @@ class LevelManager:
 
         # Muddy is slow mowing tank
         # level1 0
-        # level2 1
-        # level3 2
-        # level4 3
-        for _ in range(level - 1):
+        # level2 2
+        # level3 4
+        # level4 6
+        for i, _ in enumerate(range((level - 1) * 2)):
+            if i > cls.MAX_OF_ONE_ENEMY_TYPE:
+                break
+
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.muddy,
