@@ -48,7 +48,7 @@ class Audio:
 
         path = f"{cls.BASE_DIR}/main/tracks/{cls.track['path'].upper()}.{cls.track['type']}"
         cls.player = vlc.MediaPlayer(path)
-        cls.player.audio_set_volume(_main.volume * 100)
+        cls.player.audio_set_volume(int(round(_main.volume * 100, 0)))
 
         if not SAMPLING:
             with open(f"{cls.BASE_DIR}/main/tracks/{cls.track['path']}.json", 'r') as file:
@@ -58,7 +58,7 @@ class Audio:
     def _play_in_thread(cls):
         time.sleep(1.5)
         cls.player.play()
-        time.sleep(0.01)
+        time.sleep(0.03)
         cls.started = True
         cls.thread_end = True
 
