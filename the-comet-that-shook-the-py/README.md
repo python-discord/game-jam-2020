@@ -6,7 +6,7 @@ game that is log-3
 If you've ever had the urge to puzzle over what language Dracula programs in. Or what operating system a cyclops might 
 use,  then this is the game for you.
 ## The game 
-![Image of Yaktocat](https://github.com/CharlieADavies/game-jam-2020/blob/dev/the-comet-that-shook-the-py/screenshot_1.PNG)
+![Example screen](https://github.com/CharlieADavies/game-jam-2020/blob/dev/the-comet-that-shook-the-py/screenshot_1.PNG)
 
 The aim of the game is to full the octothrope whilst following the rules. 
 
@@ -16,7 +16,7 @@ There are three rows with three categories:
 * The third row is their **operating system**
 
 When you've figured out the clues, you can submit the game - if you got it right, you can try again - and try to do it faster
-![Image of Yaktocat](https://github.com/CharlieADavies/game-jam-2020/blob/dev/the-comet-that-shook-the-py/screenshot_2.PNG)
+![Winning screen](https://github.com/CharlieADavies/game-jam-2020/blob/dev/the-comet-that-shook-the-py/screenshot_2.png)
 ## How to play the game (install/setup)
 
 
