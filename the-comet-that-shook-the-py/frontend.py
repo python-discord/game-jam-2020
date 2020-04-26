@@ -250,11 +250,13 @@ class MyGame(arcade.Window):
         self.dragging_sprite: Optional[TileSprite] = None
         self.tile_sprites: Optional[arcade.SpriteList] = None
         self.button_list: Optional[arcade.SpriteList] = None
+        self.reset_button: Optional[Button] = None
         self.clues: Optional[ClueTextBox] = None
         self.answers: Optional[List[str]] = None
         self.red_x: Optional[arcade.sprite] = None
         self.green_tick: Optional[arcade.sprite] = None
         self.timer: Optional[Timer] = None
+        self.end_timer: Optional[Timer] = None
         self._flash_red_x_end: Optional[int] = None
         self._red_x_visible: bool = False
         self.game_won: bool = False
@@ -264,17 +266,24 @@ class MyGame(arcade.Window):
         """
         Set the game up for play. Call this to reset the game.
         """
+        self._red_x_visible = False
+        self.game_won = False
+        self.button_list = arcade.SpriteList()
+        done_button = Button("assets/done_button.png", (1130, 110))
+        done_button.on_click = self.submit_game
+
+        exit_button = Button("assets/exit_button.png", (1410, 110))
+        exit_button.on_click = exit
+        self.button_list.extend([done_button, exit_button])
+
+        self.reset_button = Button("assets/restart_button.png", (850, 110))
+        self.reset_button.on_click = self.setup
+
         (answers, shuffled_list, clues, _,) = start_new_game()
         self.clues = ClueTextBox(clues)
         self.answers = answers
         self.submission_grid = SubmissionGrid(answers)
         self.tile_sprites = arcade.SpriteList()
-        self.button_list = arcade.SpriteList()
-        done_button = Button("assets/done_button.png", (1130, 110))
-        done_button.on_click = self.submit_game
-        exit_button = Button("assets/exit_button.png", (1380 + 30, 110))
-        exit_button.on_click = exit
-        self.button_list.extend([done_button, exit_button])
 
         self.red_x = arcade.Sprite("assets/red_x.png")
         self.red_x.center_x, self.red_x.center_y = (
@@ -290,6 +299,10 @@ class MyGame(arcade.Window):
         self.green_tick.height = 600
 
         self.timer = Timer("assets/blank_button.png", (850, 110), time.time())
+        self.end_timer = Timer(
+            "assets/bone_back.png", (self.submission_grid.center_x, 120), time.time()
+        )
+        self.end_timer.stop = True
         for ((x, y,), asset_path,) in zip(self.get_boneyard_starting_positions(), shuffled_list,):
             tile_sprite = TileSprite(f"assets/{asset_path}", int(x), int(y),)
             self.tile_sprites.append(tile_sprite)
@@ -303,11 +316,14 @@ class MyGame(arcade.Window):
         self.tile_sprites.draw()
         self.clues.draw()
         self.button_list.draw()
-        self.timer.draw()
         if self._red_x_visible:
             self.red_x.draw()
         if self.game_won:
+            self.end_timer.draw()
             self.green_tick.draw()
+            self.reset_button.draw()
+        else:
+            self.timer.draw()
 
     def update(self, delta_time):
         super(MyGame, self).update(delta_time)
@@ -346,6 +362,13 @@ class MyGame(arcade.Window):
         for button in self.button_list:
             if check_bounds((x, y), (button.left, button.bottom), (button.right, button.top)):
                 button.on_click()
+        if self.game_won:
+            if check_bounds(
+                (x, y),
+                (self.reset_button.left, self.reset_button.bottom),
+                (self.reset_button.right, self.reset_button.top),
+            ):
+                self.reset_button.on_click()
 
         tile_sprite: TileSprite
         for tile_sprite in self.tile_sprites:
