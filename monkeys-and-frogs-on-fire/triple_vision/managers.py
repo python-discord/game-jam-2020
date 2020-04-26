@@ -56,7 +56,7 @@ class GameManager:
         self.enemies.append(enemy)
 
     def create_dmg_indicator(self, dmg: float, position: Tuple[float, float]) -> None:
-        dmg_indicator = TextIndicator(str(int(dmg)), *position)
+        dmg_indicator = TextIndicator(f"-{int(dmg)}", *position)
         self.damage_indicators.append(dmg_indicator)
 
     def create_text_indicator(self, text: str, position: Tuple[float, float], color) -> None:
