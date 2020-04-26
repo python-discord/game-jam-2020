@@ -65,14 +65,14 @@ class Player(Mob):
         
         if self.keyboard.is_pressed("dash"):
             if not self.dashing:
-                self.change_y += 1
+                self.change_y += 2
             self.dashing = True
         
         if self.keyboard.is_pressed("l"):
-            self.level.reset = True
+            pass
+            # self.level.reset = True
 
         if self.keyboard.is_pressed("down"):
-            # if not self.crawling:
             self.change_y -= 0.1
             self.crawling = True
             speed_mult *= 0.5
@@ -145,9 +145,9 @@ class Player(Mob):
 
         if self.dashing:
             if self.change_x > 0:
-                self.change_x = self.movespeed * speed_mult * 2
+                self.change_x = self.movespeed * speed_mult * 1.5
             elif self.change_x < 0:
-                self.change_x = -self.movespeed * speed_mult * 2
+                self.change_x = -self.movespeed * speed_mult * 1.5
 
             self.curr_dash_frame += 1
             if self.curr_dash_frame >= self.dash_frame_speed * len(self.dash_textures):
@@ -202,11 +202,12 @@ class Player(Mob):
     def hurt(self, damage, knockback):
         if damage == 0:
             return
+            
         if self.curr_invis_frame <= 0:
             self.health -= damage
             self.change_x += knockback
             self.curr_invis_frame = self.invis_frame
             Sounds.play(Sounds.HURT)
         if self.health <= 0:
-            # Die
-            pass
+            self.level.game_over = True
+            self.level.game_over_timer = 180
