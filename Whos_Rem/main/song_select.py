@@ -61,5 +61,22 @@ class SongSelection(arcade.View):
 
 class song_choice:
 
-    def __init__(self):
-        pass
+    names_dict = {}
+    screen_size = pyautogui.size()
+
+    def __init__(self, song_id: int, colour: list):
+        self.song_is = song_id
+        self.name = self.names_dict[song_id]
+        self.width = self.screen_size[0]*0.5
+        self.height = self.screen_size[1]*0.15
+        self.font_size = 20
+        self.x_pos = self.screen_size[0]*0.3
+        self.y_pos = self.screen_size[1]*(0.8 - 0.15*song_id)
+        self.colour = colour
+
+    def draw(self, brightness):
+        arcade.draw_lrtb_rectangle_filled(self.x_pos, self.x_pos + self.width,
+                                          self.y_pos + self.height, self.y_pos,
+                                          cb.brightness(self.colour, brightness))
+        arcade.draw_text(self.name, self.x_pos, self.y_pos,
+                         cb.brightness(self.colour, brightness), self.font_size)

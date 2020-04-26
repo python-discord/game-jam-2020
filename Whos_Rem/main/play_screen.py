@@ -412,7 +412,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                          color=arcade.color.CRIMSON)
 
         # notes
-        ShapeManager.manage_shapes(self.notes_list)
+        ShapeManager.manage_shapes(self.notes_list, self.main.brightness)
 
         # Shows Pause menu because i suck?
         if self.paused:

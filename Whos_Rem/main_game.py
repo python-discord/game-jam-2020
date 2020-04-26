@@ -12,13 +12,9 @@ class Main:
         self.menu = MainMenu(self)
         self.song_selection = SongSelection(self)
         self.window = arcade.Window(
-            #self.width,
-            #self.height,
-            1000,
-            600,
-            title="3 Strings",
-            fullscreen=False, update_rate=1/64)
-        self.play_screen = GameScreen(self)
+            self.width, self.height,
+            title="3 Strings", fullscreen=False, update_rate=1/64)
+        # self.play_screen = GameScreen(self)
 
     @property
     def brightness(self):
@@ -39,7 +35,6 @@ class Main:
 
 if __name__ == "__main__":
     main = Main()
-    main.window.show_view(main.play_screen)
-    main.play_screen.setup({'name': 'undertale', 'path': 'track_1', 'type': 'wav'})
+    main.window.show_view(main.menu)
     arcade.run()
 

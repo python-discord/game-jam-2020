@@ -62,24 +62,24 @@ class Shape:
     def removable(self):
         return self.dist <= 0
 
-    def draw(self):
+    def draw(self, brightness):
         arcade.draw_rectangle_filled(self.x, self.y,
                                      int(self.dims[0] * self.scale_size),
                                      int(self.dims[1] * self.scale_size),
-                                     cb.brightness(self.colour, Settings.brightness))
+                                     cb.brightness(self.colour, brightness))
 
 
 class ShapeManager:
 
     @classmethod
-    def manage_shapes(cls, shapes: "list of shape objects", speed: int = None) -> "list of updated shapes":
+    def manage_shapes(cls, shapes: "list of shape objects", brightness, speed: int = None) -> "list of updated shapes":
         for shape in shapes:
             if shape.removable:
                 shapes.remove(shape)
             else:
                 shape.update(speed)
 
-        cls.draw_all_shapes(shapes)
+        cls.draw_all_shapes(shapes, brightness)
         return shapes
 
     @staticmethod
@@ -93,12 +93,7 @@ class ShapeManager:
 
         return new_shape
 
-    @staticmethod
-    def renderer(shape: Shape):
-        shape.draw()
-        return
-
     @classmethod
-    def draw_all_shapes(cls, shapes: "list of shape objects"):
+    def draw_all_shapes(cls, shapes: "list of shape objects", brightness=1):
         for shape in shapes:
-            shape.draw()
+            shape.draw(brightness)
