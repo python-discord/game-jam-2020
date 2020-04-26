@@ -53,7 +53,7 @@ class MenuView(arcade.View):
             self.decorations.append(toAdd)
             e += 1
 
-        for i in range(5):  # TODO: clouds are glitchy when they're near the edge
+        for i in range(5):
             toAdd = Clouds(arcade.load_texture(str(Path(__file__).parent) + "/images/dumbGUIImages/cloud.png"),
                            0.3, random.randint(-232, 1032), random.randint(400, 600), random.uniform(-1, 1))
             while toAdd.direction == 0:
@@ -119,16 +119,15 @@ class MenuView(arcade.View):
 
         for i in self.clouds:  # move the clouds
             i.center_x += 0.2 * i.direction
-            if (i.center_x > random.randint(832, 1032)) or (i.center_x < random.randint(-232, -32)):
-                choice = random.randint(0, 1)
-                if choice == 1:
+            if (i.center_x > SCREEN_WIDTH + i.width/2 and i.direction >0) or (i.center_x < i.width/2 and i.direction <=0):
+                if random.randint(0,1) == 0:
                     i.center_x = random.randint(832, 1032)
                     i.center_y = random.randint(400, 600)
-                    i.direction = -1
-                if choice == 0:
+                    i.direction = random.randint(-100,1)/100
+                else:
                     i.center_x = random.randint(-232, -32)
                     i.center_y = random.randint(400, 600)
-                    i.direction = 1
+                    i.direction = random.randint(1,100)/100
 
 
 class GameOverView(arcade.View):
