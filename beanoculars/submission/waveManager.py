@@ -179,13 +179,13 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(0, E_ANT, MID_ROW, 10, 0.5))
             spawnList.append(EnemyGroup(0, E_MOSQUITO, TOP_ROW, 10, 0.5))
 
-            spawnList.append(EnemyGroup(15, E_SPIDER, BOT_ROW, 10, 0.5))
-            spawnList.append(EnemyGroup(15, E_ANT, MID_ROW, 10, 0.5))
-            spawnList.append(EnemyGroup(15, E_MOSQUITO, TOP_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(15, E_SPIDER, BOT_ROW, 7, 0.5))
+            spawnList.append(EnemyGroup(15, E_ANT, MID_ROW, 7, 0.5))
+            spawnList.append(EnemyGroup(15, E_MOSQUITO, TOP_ROW, 7, 0.5))
 
-            spawnList.append(EnemyGroup(30, E_SPIDER, BOT_ROW, 10, 0.5))
-            spawnList.append(EnemyGroup(30, E_ANT, MID_ROW, 10, 0.5))
-            spawnList.append(EnemyGroup(30, E_MOSQUITO, TOP_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(30, E_SPIDER, BOT_ROW, 5, 0.5))
+            spawnList.append(EnemyGroup(30, E_ANT, MID_ROW, 5, 0.5))
+            spawnList.append(EnemyGroup(30, E_MOSQUITO, TOP_ROW, 5, 0.5))
 
         elif waveNumber == 17:
             spawnList.append(EnemyGroup(0, E_SPIDER, TOP_ROW, 10, 1))
@@ -231,14 +231,14 @@ def getSpawnList(waveNumber: int, timeGeneration: float):
             spawnList.append(EnemyGroup(6.5, E_SPIDER, BOT_ROW, 2, 0.75))
 
         elif waveNumber == 21:
-            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.25))
-            spawnList.append(EnemyGroup(3, E_ANT, MID_ROW, 10, 0.25))
-            spawnList.append(EnemyGroup(6, E_ANT, BOT_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 6, 0.25))
+            spawnList.append(EnemyGroup(3, E_ANT, MID_ROW, 6, 0.25))
+            spawnList.append(EnemyGroup(6, E_ANT, BOT_ROW, 6, 0.25))
 
         elif waveNumber == 22:
-            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 10, 0.25))
+            spawnList.append(EnemyGroup(0, E_ANT, TOP_ROW, 6, 0.25))
             spawnList.append(EnemyGroup(0, E_MOSQUITO, MID_ROW, 10, 0.25))
-            spawnList.append(EnemyGroup(3, E_ANT, BOT_ROW, 10, 0.5))
+            spawnList.append(EnemyGroup(3, E_ANT, BOT_ROW, 6, 0.5))
 
         elif waveNumber == 23:
             spawnList.append(EnemyGroup(0, E_ANT, BOT_ROW, 5, 0.5))
