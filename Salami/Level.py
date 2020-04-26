@@ -6,7 +6,7 @@ import PIL
 
 import LevelGenerator
 import Maths
-
+import Graphics
 import Textures
 
 from Engine import Engine
@@ -41,6 +41,7 @@ class Level:
         self.tiles = {}
 
         self.reset = False
+        self.reset_timer = -1
 
         # for i in range(100):
         #     ball = Ball(Textures.get_texture(2, 5), 128 * random.random(), 128 * random.random())
@@ -58,6 +59,11 @@ class Level:
         self.engine = Engine(self.entities, self.tile_list, self, GRAVITY)
         
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player, self.tile_list, GRAVITY)
+
+        self.pause_text = Graphics.create_text_list("Paused", 0, 0, True)
+        self.game_over_text = Graphics.create_text_list("Game Over :<", 0, 0, True)
+        self.game_over = False
+        self.game_over_timer = 0
 
         self.curr_health = self.player.health
 
@@ -86,8 +92,19 @@ class Level:
 
         self.level_gen.update()
 
-        if not (self.level_gen.generating or self.level_gen.drawing or self.paused):
+        if not (self.level_gen.generating or self.level_gen.drawing or self.paused or self.game_over):
             self.engine.update()
+
+        if self.game_over_timer >= 0:
+            self.game_over_timer -= 1
+        if self.game_over_timer == 0:
+            self.game_over = False
+            self.reset = True
+
+        if self.reset_timer >= 0:
+            self.reset_timer -= 1
+        if self.reset_timer == 0:
+            self.reset = True
 
         if self.reset:
             self.difficulty += 1
@@ -115,6 +132,16 @@ class Level:
         self.tile_list.draw(filter=gl.GL_NEAREST)
 
         self.health_bar.draw(filter=gl.GL_NEAREST)
+
+        if self.paused:
+            self.pause_text.move(self.player.center_x - 18, self.player.center_y)
+            self.pause_text.draw(filter=gl.GL_NEAREST)
+            self.pause_text.move(-self.player.center_x + 18, -self.player.center_y)
+        
+        if self.game_over:
+            self.game_over_text.move(self.player.center_x - 48, self.player.center_y)
+            self.game_over_text.draw(filter=gl.GL_NEAREST)
+            self.game_over_text.move(-self.player.center_x + 48, -self.player.center_y)
 
         # self.player.draw_hit_box(arcade.color.BLUE)
 
@@ -160,6 +187,7 @@ class Level:
         level_gen_x = int(x // TILE_SIZE // ROOM_WIDTH)
         level_gen_y = int(y // TILE_SIZE // ROOM_HEIGHT)
         
+        self.level_gen.max_depth += 1
         self.level_gen.startGen(level_gen_x, level_gen_y)
 
         # LevelGenerator.generateLevel(self, int(level_gen_x), int(level_gen_y))
