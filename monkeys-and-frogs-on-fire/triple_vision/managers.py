@@ -142,12 +142,12 @@ class GameManager:
         if len(self.enemies) == 0:
             # TODO PLAY WIN SOUND
             self.view.level += 1
-            self.view.sound_manager.play_song()
+            self.view.soundtrack_manager.play_song()
             self.view.create_level()
         elif not self.view.player.is_alive:
             # TODO PLAY DEATH SOUND
             self.view.level += 0
-            self.view.sound_manager.play_song()
+            self.view.soundtrack_manager.play_song()
             self.view.create_level()
 
     def enemy_killed(self, enemy) -> None:
