@@ -1,8 +1,7 @@
 # Monkeys & Frogs on Fire
 
 ## Triple Vision
-"Triple Vision" is a dungeon 2d game.
-[TODO]
+"Triple Vision" is a dungeon 2d game based on the theme "3 of a kind".
 
 
 
@@ -28,6 +27,22 @@ The player and some specific enemies are able to shoot laser projectiles at each
 I think that's about it for our current game implementation.
 
 
+## Tutorial
+
+### Movement
+- Your player moves with the WASD keys.
+
+### Attacking
+- Your player will fire a spell when clicking on the left mouse button, the spell will move to the direction your cursor will point on while clicking.
+- Your player will activate his powerup / ability when you press the right mouse button.
+
+### Entities
+- You and all moving sprites can walk on the floor.
+- You can pickup potions to increase your stats and the chance of you defeating the enemies.
+
+### Characters
+- To switch to a different character, simply hover on the card menu in the button right and click on the character you want to switch to, be aware that you cannot switch characters while using your powerup.
 
 ### Game Peeks
-[TODO]
+<img src="https://cdn.discordapp.com/attachments/693177507683369010/704005792197640232/unknown.png">
+<img src="https://cdn.discordapp.com/attachments/693177507683369010/704006014554472498/unknown.png">
