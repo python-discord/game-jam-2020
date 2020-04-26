@@ -5,7 +5,6 @@ import time
 import os
 import vlc
 import _thread
-from datetime import timedelta
 from .perspective_objects import ShapeManager
 
 
