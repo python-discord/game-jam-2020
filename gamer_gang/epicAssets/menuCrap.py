@@ -78,9 +78,9 @@ class MenuView(arcade.View):
                                        str(Path(__file__).parent) + "/images/dumbGUIImages/levelButton1.png",
                                        str(Path(__file__).parent) + "/images/dumbGUIImages/levelButton2.png")
         levelNum = 1
-        for y in range(1):
-            for x in range(5):
-                self.button_list.append(LevelButton(self, SCREEN_WIDTH//2 + 1820 + 100 * x,
+        for y in range(2):
+            for x in range(3):
+                self.button_list.append(LevelButton(self, SCREEN_WIDTH//2 + 1930 + 100 * x,
                                                     SCREEN_HEIGHT//2 + 150 - 100 * y, 64, 64, text=str(levelNum),
                                                     theme=self.theme, levelNum=levelNum))
                 levelNum += 1
@@ -157,7 +157,8 @@ class GameOverView(arcade.View):
     def on_draw(self):
         arcade.start_render()
         arcade.draw_text(f'you died from: {self.window.deathCause}',
-                         SCREEN_WIDTH//2 - 200, SCREEN_HEIGHT//2 - 50, arcade.color.WHITE, font_size=18, align='center')
+                         SCREEN_WIDTH//2 - 300, SCREEN_HEIGHT//2 - 50, arcade.color.WHITE,
+                         font_name=str(Path(__file__).parent) + "/pixelFont.TTF", font_size=22, align='center')
         self.gameOverText.draw()
         for i in self.button_list:
             i.draw()
@@ -253,7 +254,6 @@ class RestartButton(TextButton):
     def on_press(self):
         if not self.pressed:
             self.pressed = True
-            self.game.window.sfx['level music'].stop()
             self.game.window.setup()
             self.game.window.show_view(self.game.window.levels[self.game.window.currLevel])
 

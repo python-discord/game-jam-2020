@@ -63,12 +63,14 @@ class Level(arcade.View):
         self.map = arcade.tilemap.read_tmx(str(Path(__file__).parent) + f'/levels/level_{self.ln}.tmx')
         self.frames = 0
         self.totalTime = 0
+        self.bkg = arcade.SpriteList()
         self.ground = arcade.SpriteList()
         self.sands = arcade.SpriteList()
         self.deco = arcade.SpriteList()
         self.boxes = arcade.SpriteList()
         self.BEES = arcade.SpriteList()
         self.stars = arcade.SpriteList()
+        self.torchs = arcade.SpriteList()
         self.msg = None
         self.players = []
         self.bodies = []
@@ -117,6 +119,10 @@ class Level(arcade.View):
             self.stars.append(StarSprite(s.textures, 1, s.center_x, s.center_y, s.hit_box))
         self.neededStars = len(self.stars)
 
+        try:
+            self.torchs.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/torches", self.map)))
+        except AttributeError:
+            pass
         self.spikes = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/spikes", self.map))
         self.jumpPads = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/jumping pads", self.map))
         self.exit = arcade.tilemap._process_tile_layer(self.map, getLayer("Interactions/exit door", self.map))
@@ -129,7 +135,6 @@ class Level(arcade.View):
         self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Plants", self.map)))
         self.deco.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Signs", self.map)))
         try:
-            self.bkg = arcade.SpriteList()
             self.bkg.extend(arcade.tilemap._process_tile_layer(self.map, getLayer("DecorationsBack/Ocean", self.map)))
         except AttributeError:
             pass
@@ -151,6 +156,7 @@ class Level(arcade.View):
         self.jumpPads.draw()
         self.sands.draw()
         self.stars.draw()
+        self.torchs.draw()
         if self.msg is not None: self.msg.draw()
 
         if self.collectedStars != self.neededStars:
@@ -297,7 +303,7 @@ class Level(arcade.View):
                     else:
                         if self.userInputs[2]:
                             p.pymunk_shape.body.velocity += pymunk.Vec2d((0, self.userInputs[2]))
-                            self.window.sfx['jump'].play()
+                            self.window.sfx['jump'].play(0.5)
                     p.can_jump = False
 
                 if p.pymunk_shape.body.velocity.x > 250:  # prevent from accelerating too fast
@@ -314,7 +320,13 @@ class Level(arcade.View):
             if arcade.check_for_collision_with_list(p, self.spikes):  # if you touch a spike, you DIE
                 self.window.game_over = True  # and you GO TO HELL ALONG WITH PYTHON 2
                 self.window.sfx['spike'].play()
-                self.window.deathCause = 'a spike that looks awfully like a GD spike'
+                self.window.deathCause = 'a spike that looks an awfully lot like a GD spike'
+                continue
+
+            if arcade.check_for_collision_with_list(p, self.torchs):
+                self.window.game_over = True
+                self.window.sfx['burn'].play()
+                self.window.deathCause = 'fire. just fire. you died from fire, and that\'s it'
                 continue
 
             if arcade.check_for_collision_with_list(p, self.BEES):
@@ -374,7 +386,7 @@ class Level(arcade.View):
             if p is not None and p.top < 0:
                 self.window.game_over = True
                 self.window.sfx['void'].play()
-                self.window.deathCause = 'the bottomless bottomless pit'
+                self.window.deathCause = 'the super saiyan mega ultra bottomless pit'
 
         if not self.window.game_over:
             for p in self.players:
@@ -383,13 +395,14 @@ class Level(arcade.View):
 
                 p.update()
                 p.update_animation(dt)
-                collidedGround = [g for g in arcade.check_for_collision_with_list(p, self.ground) if p.top > g.bottom]
-                collidedBoxes = [b for b in arcade.check_for_collision_with_list(p, self.boxes)
+                metGround = [g for g in arcade.check_for_collision_with_list(p, self.ground) if p.top > g.bottom]
+                metBoxes = [b for b in arcade.check_for_collision_with_list(p, self.boxes)
                                  if abs(p.bottom - b.top) < 5]
+                metSand = [g for g in arcade.check_for_collision_with_list(p, self.sands) if p.top > g.bottom]
                 metPlayers = [True for pl in self.players if pl is not None and
                               arcade.check_for_collision(p, pl) and pl != p]  # the players that are beneath
 
-                if (collidedGround or metPlayers or collidedBoxes) and abs(p.pymunk_shape.body.velocity.y) < 3:
+                if (metGround or metPlayers or metBoxes or metSand) and abs(p.pymunk_shape.body.velocity.y) < 3:
                     p.can_jump = True
 
                 p.center_x = p.pymunk_shape.body.position.x
@@ -450,22 +463,24 @@ class Level(arcade.View):
                     self.msg = None
 
         else:
+            self.window.sfx['level music'].stop()
             self.window.show_view(self.window.gameOver)
 
 
 if __name__ == '__main__':
     testGame = arcade.Window(1000, 600, 'test')
-    testGame.level = Level(1)
+    testGame.level = Level(6)
     testGame.game_over = False
     filePath = str(Path(__file__).parent.parent)
-    testGame.sfx = {"jump": arcade.load_sound(filePath + "/epicAssets/sounds/jump.wav"),
-                    "star": arcade.load_sound(filePath + "/epicAssets/sounds/star.wav"),
-                    "void": arcade.load_sound(filePath + "/epicAssets/sounds/dropVoid.wav"),
-                    "sting": arcade.load_sound(filePath + "/epicAssets/sounds/beeSting.wav"),
-                    "lost": arcade.load_sound(filePath + "/epicAssets/sounds/levelLost.wav"),
-                    "win": arcade.load_sound(filePath + "/epicAssets/sounds/levelPass.wav"),
-                    "spike": arcade.load_sound(filePath + "/epicAssets/sounds/spike.wav"),
-                    "level music": arcade.load_sound(filePath + "/epicAssets/sounds/background.wav"),
-                    "menu music": arcade.load_sound(filePath + "/epicAssets/sounds/menu.wav")}
+    testGame.sfx = {"jump": arcade.load_sound(str(Path(__file__).parent) + "/sounds/jump.wav"),
+                    "star": arcade.load_sound(str(Path(__file__).parent) + "/sounds/star.wav"),
+                    "void": arcade.load_sound(str(Path(__file__).parent) + "/sounds/dropVoid.wav"),
+                    "sting": arcade.load_sound(str(Path(__file__).parent) + "/sounds/beeSting.wav"),
+                    "lost": arcade.load_sound(str(Path(__file__).parent) + "/sounds/levelLost.wav"),
+                    "win": arcade.load_sound(str(Path(__file__).parent) + "/sounds/levelPass.wav"),
+                    "spike": arcade.load_sound(str(Path(__file__).parent) + "/sounds/spike.wav"),
+                    "level music": arcade.load_sound(str(Path(__file__).parent) + "/sounds/background.wav"),
+                    "menu music": arcade.load_sound(str(Path(__file__).parent) + "/sounds/menu.wav"),
+                    "burn": arcade.load_sound(str(Path(__file__).parent) + "/sounds/burn.wav")}
     testGame.show_view(testGame.level)
     arcade.run()
