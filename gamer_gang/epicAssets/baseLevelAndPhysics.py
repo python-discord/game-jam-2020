@@ -403,14 +403,14 @@ class Level(arcade.View):
         for _ in range(10):
             self.space.step(1 / 600)
             
-        players = arcade.SpriteList()
-        for k in self.players:
-            players.append(k)
-        for i in self.jumpPads:
-            for k in arcade.check_for_collision_with_list(i,players):
-                if k.can_jump == True:
-                    k.pymunk_shape.body.velocity += pymunk.Vec2d((0,600))
-                    k.can_jump = False
+        for i in self.players:
+            try:
+                for k in arcade.check_for_collision_with_list(i,self.jumpPads):
+                    if i.can_jump == True:
+                        i.pymunk_shape.body.velocity += pymunk.Vec2d((0,600))
+                        i.can_jump = False
+            except:
+                continue
                     
         self.movement()  # move all the players (well, the characters)
         self.cameraShift(0.1)  # shift camera
