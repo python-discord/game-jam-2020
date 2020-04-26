@@ -4,15 +4,16 @@ import json
 import time
 import os
 import vlc
+import _thread
 from datetime import timedelta
 from .perspective_objects import ShapeManager
 
 
-TESTING = True
+TESTING = False
 SAMPLING = False
 
 if SAMPLING:
-    with open('track_1.json', 'w+') as file:
+    with open('track_2.json', 'w+') as file:
         pass
     sample_list = []
     sample_sec = []
@@ -32,6 +33,8 @@ class Audio:
     active = False
     vlc_instance = None
     player = None
+    started = False
+    thread_end = False
 
     def __init__(self, main_):
         self.main = main_
@@ -53,10 +56,18 @@ class Audio:
                 cls.notes = json.load(file)
 
     @classmethod
-    def _play(cls):
+    def _play_in_thread(cls):
+        time.sleep(1.5)
         cls.player.play()
-        cls.active = True
         time.sleep(0.01)
+        cls.started = True
+        cls.thread_end = True
+
+    @classmethod
+    def _play(cls):
+        cls.started = False
+        _thread.start_new_thread(cls._play_in_thread, ())
+        cls.active = True
 
     @classmethod
     def _pause(cls):
@@ -253,6 +264,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             scale=1,
             image_height=self.HEIGHT,
             image_width=self.WIDTH)
+        self.delta_time = 0
 
     def setup(self, _track):
         """
@@ -264,7 +276,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         :return:
         """
 
-        arcade.schedule(self.on_note_change, 1 / (16 * self.note_offset))
+        arcade.schedule(self.on_note_change, 1 / 16)
         self.audio._setup(_track)
         self.pause_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
         self.score_setup(base_dir=self.BASE_DIR, width=self.WIDTH, height=self.HEIGHT)
@@ -297,9 +309,9 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             Normally this should render at 16 fps to update (on a 4/4 song) This can be 64 fps if
             vlc is being weird?
         """
-
-        self.active = self.audio.player.is_playing()
-        if self.active:
+        if self.audio.thread_end:
+            self.audio.active = self.audio.player.is_playing()
+        if self.audio.active:
             if not SAMPLING:
                 self.left, self.center, self.right = self.audio.get_notes(next(self.audio.frame_count))
 
@@ -307,13 +319,13 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                     self.left_button_active = self.left
                     self.middle_button_active = self.center
                     self.right_button_active = self.right
-
-                if self.left:
-                    self.notes_list.append(ShapeManager.create_shape(-1))
-                elif self.center:
-                    self.notes_list.append(ShapeManager.create_shape(0))
-                elif self.right:
-                    self.notes_list.append(ShapeManager.create_shape(1))
+                else:
+                    if self.left:
+                        self.notes_list.append(ShapeManager.create_shape(-1))
+                    elif self.center:
+                        self.notes_list.append(ShapeManager.create_shape(0))
+                    elif self.right:
+                        self.notes_list.append(ShapeManager.create_shape(1))
 
             else:
                 global sample_sec, sample_list, prev
@@ -343,6 +355,8 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
 
     def on_update(self, delta_time: float):
         """ In charge of registering if a user had hit or missed a note. """
+
+        self.delta_time = delta_time
         if self.started and not self.paused and False:  # todo not fuck this
             points_to_add, combos = GameLogic.get_data(
                 (self.left_button_active, self.middle_button_active, self.right_button_active),
@@ -355,8 +369,8 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             self.score += points_to_add
             self.combo = (self.combo + combos) if combos != -1 else 0
 
-        if not self.audio.player.is_playing() and self.started and not self.paused:
-            self.ended = True
+        #if not self.audio.player.is_playing() and self.started and self.audio.started and not self.paused and self.audio.thread_end:
+        #    self.ended = True
 
     def on_draw(self, time_delta=None, count_down=None):
         """ In charge of rendering the notes at current time. """
@@ -391,7 +405,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             count_down.draw()
 
         # notes
-        ShapeManager.manage_shapes(self.notes_list, self.main.brightness, speed=2)
+        ShapeManager.manage_shapes(self.notes_list, self.main.brightness, speed=256/(1.5/self.delta_time))
 
         # White box behind the keys
         arcade.draw_rectangle_filled(

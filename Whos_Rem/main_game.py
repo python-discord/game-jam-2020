@@ -37,6 +37,6 @@ class Main:
 if __name__ == "__main__":
     main = Main()
     main.window.show_view(main.play_screen)
-    main.play_screen.setup({'name': 'undertale', 'path': 'track_1', 'type': 'wav'})
+    main.play_screen.setup({'name': 'undertale', 'path': 'track_2', 'type': 'mp3'})
     arcade.run()
 
