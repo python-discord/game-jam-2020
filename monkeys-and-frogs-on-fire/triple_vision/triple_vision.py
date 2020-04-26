@@ -51,7 +51,7 @@ class TripleVision(arcade.View):
             self.seed = seed
             random.seed(seed)
 
-        self.bullet_list = arcade.SpriteList()
+        self.bullet_list = arcade.SpriteList(use_spatial_hash=True)
 
         self.player = Player(self, 'm')
         self.camera = Camera(self, s.WINDOW_SIZE[0] / 2.5, s.WINDOW_SIZE[1] / 2.5)
