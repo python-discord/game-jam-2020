@@ -204,7 +204,7 @@ class Level(arcade.View):
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.userInputs[0] = 30
         elif key == arcade.key.UP or key == arcade.key.W:
-            self.userInputs[2] = 450
+            self.userInputs[2] = 475
         elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
             self.controlled = 0
         elif key == arcade.key.NUM_2 or key == arcade.key.KEY_2:
