@@ -29,12 +29,15 @@ I think that's about it for our current game implementation.
 
 ## Tutorial
 
+
 ### Movement
 - Your player moves with the WASD keys.
 
 ### Attacking
 - Your player will fire a spell when you click on the left mouse button, the spell will move to the direction your cursor will point on while clicking. hold the left mouse button to shoot a charging spell which causes more damage and knockback!
 - Your player will activate his powerup / ability when you press the right mouse button.
+
+- Your mana bar will control your abilities and charged spells, if the mana bar is empty, you are helpless until its recharged.
 
 
 ### Entities
@@ -44,6 +47,13 @@ I think that's about it for our current game implementation.
 ### Characters
 - To switch to a different character, simply hover on the card menu in the button right and click on the character you want to switch to, be aware that you cannot switch characters while using your powerup.
 
+### Game ending
+Kill all enemies in order to win and climb up levels, once all your hearts are empty, you die.
+
+### Multiplayer??
+Get the highest score and compete with your friends!
+
 ### Game Peeks
 <img src="https://cdn.discordapp.com/attachments/693177507683369010/704005792197640232/unknown.png">
 <img src="https://cdn.discordapp.com/attachments/693177507683369010/704006014554472498/unknown.png">
+<img src="https://cdn.discordapp.com/attachments/693177507683369010/704016339895058443/unknown.png">
