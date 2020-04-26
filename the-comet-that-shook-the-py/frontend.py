@@ -30,8 +30,7 @@ TEXT_TOP = WINDOW_HEIGHT
 class GridCell:
     """Represents a cell within the main grid which the user interacts with"""
 
-    def __init__(self, centre: Tuple[float, float, ], width, height,
-                 allowed_tile_values: Set[str]):
+    def __init__(self, centre: Tuple[float, float,], width, height, allowed_tile_values: Set[str]):
         self.bottom_left = (
             centre[0] - width / 2,
             centre[1] - height / 2,
@@ -50,8 +49,7 @@ class GridCell:
         return True
 
     def place_associated_tile(self):
-        self.associated_tile.center_x,
-        self.associated_tile.center_y = self.centre
+        self.associated_tile.center_x, self.associated_tile.center_y = self.centre
         self.associated_tile.set_bounds()
 
     def __repr__(self,):
@@ -211,11 +209,11 @@ class SubmissionGrid(arcade.Sprite):
                         (x, y,),
                         cell_width,
                         cell_height,
-                        allowed_values[row_num * 3: (row_num + 1) * 3],
+                        allowed_values[row_num * 3 : (row_num + 1) * 3],
                     )
                 )
 
-    def get_relevant_cell(self, point: Tuple[float, float, ],) -> GridCell:
+    def get_relevant_cell(self, point: Tuple[float, float,],) -> GridCell:
         """
         Gets the cell, or None, in which the provided point resides
         :param point the x/y coord of which to check
@@ -229,8 +227,7 @@ class SubmissionGrid(arcade.Sprite):
         """
         Extracts the values the player has inserted into
         the board into a format that can be used to verify the game
-        :return: The list of strings representing the game state to
-        be validated
+        :return: The list of strings representing the game state to be validated
         """
         return [
             cell.associated_tile.tile_value
@@ -303,13 +300,10 @@ class MyGame(arcade.Window):
 
         self.timer = Timer("assets/blank_button.png", (850, 110), time.time())
         self.end_timer = Timer(
-            "assets/bone_back.png", (self.submission_grid.center_x, 120),
-            time.time())
+            "assets/bone_back.png", (self.submission_grid.center_x, 120), time.time()
+        )
         self.end_timer.stop = True
-        for ((x, y,),
-                asset_path,) in zip(
-                        self.get_boneyard_starting_positions(),
-                        shuffled_list,):
+        for ((x, y,), asset_path,) in zip(self.get_boneyard_starting_positions(), shuffled_list,):
             tile_sprite = TileSprite(f"assets/{asset_path}", int(x), int(y),)
             self.tile_sprites.append(tile_sprite)
 
@@ -340,8 +334,7 @@ class MyGame(arcade.Window):
 
     def get_boneyard_starting_positions(self,):
         """
-        yields the positions where tiles should be placed in the
-        starting boneyard
+        yields the positions where tiles should be placed in the starting boneyard
         """
         for i in range(9):
             left_edge_padding = 1 / 27 * WINDOW_WIDTH
@@ -355,8 +348,7 @@ class MyGame(arcade.Window):
     def on_mouse_motion(
         self, x, y, dx, dy,
     ):
-        """ Called to update our objects. Happens approximately 60
-        times per second."""
+        """ Called to update our objects. Happens approximately 60 times per second."""
         if self.dragging_sprite is not None:
             self.dragging_sprite.center_x = x
             self.dragging_sprite.center_y = y
@@ -368,8 +360,7 @@ class MyGame(arcade.Window):
         Called when the user presses a mouse button.
         """
         for button in self.button_list:
-            if check_bounds((x, y), (button.left, button.bottom),
-                            (button.right, button.top)):
+            if check_bounds((x, y), (button.left, button.bottom), (button.right, button.top)):
                 button.on_click()
         if self.game_won:
             if check_bounds(
@@ -434,8 +425,8 @@ class MyGame(arcade.Window):
 
 
 def check_bounds(
-    point: Tuple[float, float, ], bottom_left: Tuple[float, float, ],
-        top_right: Tuple[float, float, ],) -> bool:
+    point: Tuple[float, float,], bottom_left: Tuple[float, float,], top_right: Tuple[float, float,],
+) -> bool:
     """
     Check if a given point is within the bounds of 4 sides
     :param top_right: the top right of the bounding rectangle
@@ -445,5 +436,4 @@ def check_bounds(
     """
     if bottom_left == top_right:
         raise ValueError("Bottom left and top right can't be the same")
-    return ((bottom_left[0] < point[0] < top_right[0]) and
-            (bottom_left[1] < point[1] < top_right[1]))
+    return (bottom_left[0] < point[0] < top_right[0]) and (bottom_left[1] < point[1] < top_right[1])
