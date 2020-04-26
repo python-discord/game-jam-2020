@@ -2,6 +2,8 @@ import arcade
 
 from multiprocessing import Queue
 import random
+import os
+import socket
 
 from ..gameconstants import (
     GAME_PATH,
@@ -145,8 +147,11 @@ class GameView(arcade.View):
 
         self.forward = forward
         self.feedback = feedback
-
-        arcade.schedule(self.stream, 0.2)
+        if (
+            os.getenv("SERVER") == "127.0.0.1"
+            or os.getenv("PORT") == socket.gethostname()
+        ):
+            arcade.schedule(self.stream, 0.2)
 
     def on_draw(self):
         """
@@ -240,7 +245,13 @@ class GameView(arcade.View):
                 0, SCREEN_WIDTH + 0, self.view_bottom, SCREEN_HEIGHT + self.view_bottom,
             )
 
-    def stream(self, delta: float):
+            if (
+                os.getenv("SERVER") == "127.0.0.1"
+                or os.getenv("PORT") == socket.gethostname()
+            ):
+                self.stream()
+
+    def stream(self, delta: float = 0.0):
         self.forward.put(getattr(self, f"player{self.assigned_player}").position)
         if not self.feedback.empty():
             data = self.feedback.get()
