@@ -326,9 +326,9 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         :return:
         """
         track_timings = {
-            'track_1': 17,
+            'track_1': 17.5,
             'track_2': 16,
-            'track_3': 17,
+            'track_3': 16.75,
             'track_4': 16,
             'track_5': 17,
         }
