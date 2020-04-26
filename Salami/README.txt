@@ -51,6 +51,10 @@ SHIFT  to sprint
 J      to shoot
 K      to dash
 
+-,=    zoom in/out
+F10    toggle fullscreen
+ENTER  to type (for whatever reason)
+
 -------------------------------
 About the Game
 -------------------------------
@@ -61,3 +65,10 @@ blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
 
 Please just play my game I've work hours for this I had to learn python just to make this
 this is my first game aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+Wished I could have done more in the given timeframe but this is all I have so :shrug:
+
+Also your the cards (no, they're not knives) direction are dictated by your velocity
+and if you are aiming up or down
+
+ok bye
