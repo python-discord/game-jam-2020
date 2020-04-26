@@ -147,6 +147,8 @@ class GameView(arcade.View):
         )
         sync.start()
 
+        arcade.schedule(self.stream, 2)
+
     def on_draw(self):
         """
         Render the screen.
@@ -201,7 +203,7 @@ class GameView(arcade.View):
         self.add_wall()
 
     def on_update(self, delta_time):
-        """ Movement and game logic """
+        """Movement and game logic."""
 
         self.physics_engine.update()
 
@@ -235,9 +237,7 @@ class GameView(arcade.View):
                 0, SCREEN_WIDTH + 0, self.view_bottom, SCREEN_HEIGHT + self.view_bottom,
             )
 
-        self.stream()
-
-    def stream(self):
+    def stream(self, delta_time: float) -> None:
         self.forward.put(())
         if not self.feedback.empty():
             data = self.feedback.get()
