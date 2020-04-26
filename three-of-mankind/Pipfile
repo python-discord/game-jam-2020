@@ -12,8 +12,5 @@ matplotlib = "*"
 [requires]
 python_version = "3.8"
 
-[pipenv]
-allow_prereleases = true
-
 [scripts]
 start = 'python -m game'

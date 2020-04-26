@@ -1,3 +1,4 @@
+import logging
 import os
 import math
 from math import floor
@@ -167,6 +168,7 @@ def rand_color(c, scale=0.25):
 
 def dash_emitter_factory(color, pos_a, pos_b):
     """Interval, emit on line"""
+    logging.info("Creating emmiter")
     if pos_a[0] > pos_b[0]:
         angle = 0
     else:

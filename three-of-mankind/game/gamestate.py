@@ -2,6 +2,8 @@ import logging
 
 import arcade
 
+from PIL import Image
+
 from .constants import (
     AIR_CONTROL,
     BLOCK_LEN,
@@ -67,7 +69,6 @@ class GameState:
         self.level_geometry = arcade.SpriteList()
         self.danger = arcade.SpriteList()
         self.level = 0
-        self.game = game
 
         self.player = Player(scale=0.99)
         for tile in (tiles.player_white, tiles.player_red, tiles.player_green, tiles.player_blue):
