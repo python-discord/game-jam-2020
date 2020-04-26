@@ -271,7 +271,6 @@ class PlayerLiveManager:
     def __init__(
         self,
         view,
-        life_count: int = 10,
         is_filled: bool = True,
         scale: float = 1,
     ) -> None:
