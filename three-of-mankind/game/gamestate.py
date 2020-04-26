@@ -25,7 +25,7 @@ from .constants import (
 from .player import Player
 from .sprite import Sprite
 from .tile_image import tiles
-from .utils import dash_emitter_factory, is_touching, sweep_trace, explosion_factory
+from .utils import dash_emitter_factory, is_touching, dash, explosion_factory
 
 
 class GameState:
@@ -39,7 +39,7 @@ class GameState:
         with open("config.json") as file:
             self.data = json.load(file)
 
-        self.level = 0
+        self.level = self.data.get("level", 0)
 
         self.player = Player(scale=0.99)
         for tile in (
@@ -51,12 +51,9 @@ class GameState:
             self.player.append_texture(tile.texture)
 
         self.explosion_sounds = arcade.load_sound("assets/explosion-1.mp3"), arcade.load_sound("assets/explosion-2.mp3")
-        self.background_music = arcade.load_sound("assets/Retro_Platforming_-_David_Fesliyan.mp3")
+        self.background_music = arcade.load_sound("assets/retro.mp3")
 
         self.player.set_color("white")
-
-        self.player.center_x = 200
-        self.player.center_y = 200
 
         self.load_level(self.level)
 
@@ -71,16 +68,16 @@ class GameState:
         except OSError:
             return False
 
-        self.level_objects = arcade.SpriteList()
+        self.level_objects = arcade.SpriteList(use_spatial_hash=True)
         self.level_geometry = arcade.SpriteList(use_spatial_hash=True)
-        self.danger = arcade.SpriteList()
-        self.saves = arcade.SpriteList()
+        self.danger = arcade.SpriteList(use_spatial_hash=True)
+        self.saves = arcade.SpriteList(use_spatial_hash=True)
         self.start, self.end = None, None
         self.colored_geometry = {
-            "red": arcade.SpriteList(),
-            "green": arcade.SpriteList(),
-            "blue": arcade.SpriteList(),
-            "white": arcade.SpriteList(),
+            "red": arcade.SpriteList(use_spatial_hash=True),
+            "green": arcade.SpriteList(use_spatial_hash=True),
+            "blue": arcade.SpriteList(use_spatial_hash=True),
+            "white": arcade.SpriteList(use_spatial_hash=True),
         }
 
         w, h = image.size
@@ -180,6 +177,10 @@ class GameState:
         if self.player.collides_with_sprite(self.end):
             self.level += 1
             if self.load_level(self.level):
+                self.data.update(level=self.level)
+                with open("config.json", "w") as file:
+                    json.dump(self.data, file)
+
                 logging.info("NEXT LEVEL")
             else:
                 logging.info("LAST LEVEL")
@@ -191,7 +192,6 @@ class GameState:
 
         if is_touching(self.player, self.danger):
             self.emitters.append(explosion_factory((self.player.center_x, self.player.center_y), self.player.get_color()))
-            random.choice(self.explosion_sounds).play(volume=.001)
             self.move_to_start()
 
         colors = {"red", "green", "blue"}
@@ -199,7 +199,6 @@ class GameState:
         for color in colors:
             if is_touching(self.player, self.colored_geometry[color]):
                 self.emitters.append(explosion_factory((self.player.center_x, self.player.center_y), self.player.get_color()))
-                random.choice(self.explosion_sounds).play(volume=.001)
                 self.move_to_start()
 
         self.player.update()
@@ -240,27 +239,22 @@ class GameState:
 
         # Dashing
         if key == arcade.key.LSHIFT:
-            if not sweep_trace(self.player, DASH_DISTANCE, 0, self.level_geometry):
-                can_dash = True
+            can_dash = True
 
-                if not self.engine.can_jump():
-                    if self.player.dash_count < DASH_COUNT:
-                        self.player.dash_count += 1
+            if not self.engine.can_jump():
+                if self.player.dash_count < DASH_COUNT:
+                    self.player.dash_count += 1
 
-                    else:
-                        can_dash = False
+                else:
+                    can_dash = False
 
-                if can_dash:
-                    self.player.left += DASH_DISTANCE * self.player.direction
-                    old_pos = self.player.center_x, self.player.center_y
-                    # make player dash
-                    self.player.left += DASH_DISTANCE * self.player.direction
-                    # create a particle emitter
-                    new_pos = self.player.center_x, self.player.center_y
-    
-                    self.emitters.extend(
-                        dash_emitter_factory(self.player.get_color(), old_pos, new_pos)
-                    )
+            if can_dash:
+                old_pos = self.player.center_x, self.player.center_y
+                dash(self.player, DASH_DISTANCE * self.player.direction, 0, self.level_geometry)
+                new_pos = self.player.center_x, self.player.center_y
+                self.emitters.extend(
+                    dash_emitter_factory(self.player.get_color(), old_pos, new_pos)
+                )
 
         # Jumping
         if key == arcade.key.SPACE:
