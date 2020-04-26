@@ -24,7 +24,7 @@ class MainMenu(Base):
                 center_y=220
             ),
             "title": arcade.Sprite(
-                "./assets/PlaceholderTitle.png",
+                "./assets/GameTitle.png",
                 scale=0.5,
                 center_x=640,
                 center_y=580
