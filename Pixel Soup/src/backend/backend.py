@@ -79,7 +79,10 @@ def login_entry(conn) -> None:
                                     for player in room_section:
                                         player[0].send(
                                             f"Start,,{team_udp_port},"
-                                            f",{room_password}".encode()
+                                            f",{room_password},"
+                                            f",{room_section[0][1]} "
+                                            f"{room_section[1][1]} "
+                                            f"{room_section[2][1]}".encode()
                                         )
 
                                     # creates a thread for players room
@@ -130,7 +133,6 @@ def game_room(team_port: int, password: int, players: list) -> None:
     wall_pos = 400
 
     while True:
-
         data, address = udp.recvfrom(1024)
         data = data.split(b"||||")
 
@@ -153,7 +155,7 @@ def game_room(team_port: int, password: int, players: list) -> None:
                             pipe[player].append(data[1:])
 
                 # checking if viable data is available to be sent
-                if pipe[data[1]]:
+                if pipe.get(data[1]):
                     udp.sendto(
                         dumps([packet.append(wall_pos) for packet in pipe[data[1]]])
                         + b"||||",

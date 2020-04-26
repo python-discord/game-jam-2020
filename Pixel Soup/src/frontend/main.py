@@ -3,10 +3,7 @@ import arcade
 from .gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE
 from .views.mainview import MainView
 
-import os
 import logging
-from .networking import net_interface
-import socket
 import multiprocessing
 
 
@@ -15,13 +12,6 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO)
 
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-
-    window.pl = net_interface.Pipe(
-        server=socket.gethostname(), port=int(os.getenv("PORT"))
-    )
-    print(window.pl.login(entry="create", room_name="game3", username="David"))
-    for _ in range(3):
-        print(window.pl.await_response())
 
     joysticks = arcade.get_joysticks()
     """
