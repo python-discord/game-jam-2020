@@ -2,7 +2,6 @@ from pathlib import Path
 from arcade.gui import *
 import random
 from gamer_gang.dumbConstants import *
-from gamer_gang.epicAssets.baseLevelAndPhysics import Level
 
 
 class MenuView(arcade.View):
@@ -32,8 +31,8 @@ class MenuView(arcade.View):
 
         for i in range(240):
             for y in range(4):
-                toAdd = Deco(arcade.load_texture(str(Path(__file__).parent) + "/images/dumbGUIImages/waveDirt.png")
-                             , 1, i * 16 - 50, 87 - 28 * y)
+                toAdd = Deco(arcade.load_texture(str(Path(__file__).parent) + "/images/dumbGUIImages/waveDirt.png"),
+                             1, i * 16 - 50, 87 - 28 * y)
                 self.decorations.append(toAdd)
 
         e = 0

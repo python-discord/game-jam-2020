@@ -40,20 +40,6 @@ def getLayer(layer_path, map_object):
     layer = _get_tilemap_layer(path, map_object.layers)
     return layer
 
-
-class PauseBack(TextButton):
-    def __init__(self, game, x=0, y=0, width=128, height=128, font_size=6, text="menu", theme=None):
-        self.game = game
-        super().__init__(x, y, width, height, font_size=font_size, text=text, theme=theme)
-        self.center_x = x
-        self.pressed = False
-
-    def on_press(self):
-        if not self.pressed and self.game.paused:
-            self.game.window.setup()  # setup does have the show_view in it so yea
-        self.pressed = True
-
-
 class Level(arcade.View):
     def __init__(self, levelNum):
         super().__init__()
@@ -62,7 +48,6 @@ class Level(arcade.View):
         self.theme.add_button_textures(str(Path(__file__).parent) + "/images/dumbGUIImages/backButton.png", None,
                                        str(Path(__file__).parent) + "/images/dumbGUIImages/backButton.png", None)
         self.theme.set_font(14, arcade.color.BLACK, str(Path(__file__).parent) + "/pixelFont.TTF")
-        self.button_list = [None]
         self.ln = levelNum  # ln stands for level number
 
         if self.ln == 1:  # tutorial tex
@@ -79,7 +64,6 @@ class Level(arcade.View):
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
         self.paused = False
-        self.button_list[0] = PauseBack(self, 230, 500, 64, 64, theme=self.theme)
         self.debugging = False
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
@@ -199,7 +183,9 @@ class Level(arcade.View):
         if self.msg is not None: self.msg.draw()
         if self.paused:
             self.pauseSign.draw()
-            self.button_list[0].draw()
+            arcade.draw_text('esc to return\n to menu', self.xCam - 490, self.yCam + 220,
+                             font_name=str(Path(__file__).parent) + "/pixelFont.TTF", font_size=24,
+                             color=arcade.color.BLACK)
 
         if self.collectedStars != self.neededStars:
             arcade.draw_text(f'stars collected: {self.collectedStars} out of {self.neededStars}',
@@ -242,6 +228,8 @@ class Level(arcade.View):
             else:
                 self.window.sfx['level music'].set_volume(0)
             self.paused = not self.paused
+        elif key == arcade.key.ESCAPE and self.paused:
+            self.window.setup()
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
@@ -534,7 +522,6 @@ class Level(arcade.View):
             self.window.sfx['level music'].stop()
             self.window.show_view(self.window.gameOver)
         self.pauseSign.center_x, self.pauseSign.center_y = self.xCam + 370, self.yCam + 200
-        self.button_list[0].center_x, self.button_list[0].center_y = self.xCam - 450, self.yCam + 230
 
 
 if __name__ == '__main__':
