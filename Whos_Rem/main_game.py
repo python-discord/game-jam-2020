@@ -14,8 +14,7 @@ class Main:
         self.window = arcade.Window(
             self.width, self.height,
             title="3 Strings", fullscreen=False, update_rate=1/64)
-        self.window.width
-        # self.play_screen = GameScreen(self)
+        self.play_screen = GameScreen(self)
 
     @property
     def brightness(self):

@@ -486,7 +486,6 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                          start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * -3.5)),
                          color=arcade.color.WHITE, align="center", font_size=50)
 
-
         if self.paused:
             self.background.alpha = 255
             self.background.draw()
