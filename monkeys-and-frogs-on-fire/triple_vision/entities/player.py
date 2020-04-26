@@ -193,11 +193,15 @@ class Player(LivingEntity, MovingSprite):
         bullet.play_activate_sound()
         self.view.game_manager.player_projectiles.append(bullet)
         self.last_shot = time.time()
-        self.mana_bar.remove_filling_part()
+        if charge >= 50:
+            # Remove mana only for charged attack
+            self.mana_bar.remove_filling_part()
         self.state = States.ATTACKING_RANGED
 
     def process_right_mouse_press(self, x, y) -> None:
-        if len(self.mana_bar) == self.mana_bar.max_fillers:
+        if self._ability_duration_left > 0:
+            print("Ability already active!")
+        elif len(self.mana_bar) == self.mana_bar.max_fillers:
             self.mana_bar.clear()
             self._ability_duration_left = self.selected_ability.duration
             self.selected_ability.activate(x, y, self.view)
