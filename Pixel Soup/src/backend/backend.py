@@ -56,7 +56,9 @@ def game_room(teammates: list, ports: int, _host_: str) -> None:
         _player_.send(f"Start,,{i},,{ports}||".encode())
 
     sent_player = []
-    wall_pos = 400
+
+    wall_pos = 50
+    pitch = True
 
     pipe = {"0": [], "1": [], "2": []}
 
@@ -69,7 +71,14 @@ def game_room(teammates: list, ports: int, _host_: str) -> None:
             data = loads(data[0])
             print(data)
             if data[0] in sent_player:
-                wall_pos = randint(10, 600)
+                if wall_pos > 650:
+                    pitch = False
+                elif wall_pos < 50:
+                    pitch = True
+                if not pitch:
+                    wall_pos = randint(10, 600)
+                else:
+                    wall_pos = wall_pos + randint(1, 150)
                 sent_player = [data[0]]
             else:
                 sent_player.append(data[0])
