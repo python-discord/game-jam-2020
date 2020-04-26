@@ -3,7 +3,7 @@ from pyglet import gl
 from Math import Maths
 from StartMenu import StartMenuView
 import random
-# from GameOver import GameOver
+from GameOver import GameOver
 
 # help-phosphorus
 # game-development
@@ -176,9 +176,6 @@ class MyGame(arcade.View):
         self.coin_5_list = arcade.SpriteList()
         self.potion_list = arcade.SpriteList()
 
-        self.view_bottom = 0
-        self.view_left = 0
-
         self.coin_counter = 0
         self.delta_track = 0
 
@@ -266,6 +263,12 @@ class MyGame(arcade.View):
         self.player_list.append(self.player_sprite)
 
         arcade.set_background_color(arcade.csscolor.LIGHT_BLUE)
+
+        self.view_left = self.player_sprite.center_x - SCREEN_WIDTH / 2
+        self.view_bottom = self.player_sprite.center_y - SCREEN_HEIGHT / 2
+
+        arcade.set_viewport(self.player_sprite.center_x - SCREEN_WIDTH / 2, self.player_sprite.center_x + SCREEN_WIDTH / 2, self.player_sprite.center_y - SCREEN_HEIGHT / 2,
+                            self.player_sprite.center_y + SCREEN_HEIGHT / 2)
 
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite, self.wall_list, gravity_constant=GRAVITY, ladders=self.ladder_list)
 
@@ -582,9 +585,9 @@ class MyGame(arcade.View):
             else:
                 self.draw_potion_3_tip = False
 
-            # if len(self.coin_list) + len(self.coin_2_list) + len(self.coin_5_list) == 0:
-            #     game_over = GameOver()
-            #     self.window.show_view(game_over)
+            if len(self.coin_list) + len(self.coin_2_list) + len(self.coin_5_list) == 0:
+                game_over = GameOver()
+                self.window.show_view(game_over)
 
         self.player_list.update_animation()
         self.potion_list.update_animation()
@@ -599,7 +602,8 @@ class MyGame(arcade.View):
 def main():
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE, resizable=True)
     start_menu = StartMenuView()
-    window.show_view(start_menu)
+    game_over = GameOver()
+    window.show_view(game_over)
     arcade.run()
 
 
