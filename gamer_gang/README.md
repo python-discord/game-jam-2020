@@ -1,15 +1,16 @@
-k judges  
-this only works if your current working directory is my team repo  
-###running directions
-so your file path has to be like C:/Users/stuff/game-jam-2020 for this game to work  
-so yea you're gonna have to run: "python gamer_gang/triple_blocks.py"  
-there might be some other ones but idk  
-maybe requirements.txt too but idk  
-###game mechanics
-up, left, right OR WAD to move  
-1, 2, 3 to control the green, red, and purple squares (or cubes whatever you wanna call 'em)  
-down or S to split the stack that you're currently in  
-get on top of another cube to join with them  
-collect all the stars to unlock the door  
-you have to get all three squares/cubes to the exit door (a black box) at the end of the level to complete it  
-spikes and bees wanna kill you  
+Ok judges!
+This only works if your current working directory is my team repo  
+
+###Running Directions
+Your file path has to be like C:/Users/stuff/game-jam-2020 for this game to work  
+So yea you're gonna have to run: "python gamer_gang/triple_blocks.py"  
+Maybe requirements.txt too
+
+###Game Mechanics
+Up, Left, Right arrows OR WAD keys to move
+1, 2, 3 to control the green, red, and purple squares/cubes whatever you wanna call 'em
+Down arrow or S key to split the stack that you're currently in  
+Get on top of another cube to join with them  
+Collect all the stars to unlock the exit door  
+You have to get all three squares/cubes to the exit door at the end of the level to complete it  
+Be Warned! Spikes, Fire, and bees gonna kill you!
