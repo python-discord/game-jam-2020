@@ -131,7 +131,7 @@ class Mob(arcade.Sprite):
         super(Mob, self).__init__(*args, **kwargs)
 
         self.max_health, self.max_armor = max_health, max_armor
-        self.health, self.armor = 60, max_armor
+        self.health, self.armor = max_health, max_armor
         self.idle_textures = []
         self.walking_textures = []
         self.up_textures = []
