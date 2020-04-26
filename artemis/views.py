@@ -28,6 +28,7 @@ class Paused(View):
         """Store game state."""
         self.game = game
         self.create_new = new
+        self.sound_ratio = 5
         super().__init__()
 
     def on_show(self):
@@ -40,18 +41,18 @@ class Paused(View):
         self.buttons.append(
             IconButton(self, x + 70, y, 'restart', self.restart)
         )
-        music.volume *= 0.5
+        music.volume /= self.sound_ratio
 
     def home(self):
         """Show the menu view."""
         self.game.save()
         self.window.show_view(Menu())
-        music.volume *= 2
+        music.volume *= self.sound_ratio
 
     def play(self):
         """Go back to the game."""
         self.game.pauseplay.go()
-        music.volume *= 2
+        music.volume *= self.sound_ratio
 
     def restart(self):
         """Start a new game."""
@@ -62,7 +63,7 @@ class Paused(View):
                 add_award(1)
         self.game.save()
         self.window.show_view(self.create_new())
-        music.volume *= 2
+        music.volume *= self.sound_ratio
 
     def on_draw(self):
         """Draw buttons, game and title."""
