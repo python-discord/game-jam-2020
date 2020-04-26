@@ -18,10 +18,10 @@ class Pipe:
             self.tcp.connect((self.server, self.port))
             self.connected = True
             return True
-        except (ConnectionResetError, ConnectionRefusedError):
+        except ConnectionError:
             return False
 
-    def login(self, entry: str, room_name: str, username: str) -> tuple:
+    def login(self, entry: str, room_name: str, username: str) -> list:
         self.username = username
         if not self.connected:
             success = self.connect()
@@ -61,22 +61,35 @@ class Pipe:
                 self.udp_password = int(data[2])
 
             return data
-        except ConnectionResetError:
+
+        except ConnectionAbortedError:
             return [False]
 
     def transport(self, game_data: list) -> tuple:
         game_data = [self.udp_password, self.username] + game_data
-
         game_data = (dumps(game_data)) + b"||||"
 
         self.udp.sendto(game_data, (self.server, self.game_port))
 
-        data, _ = self.udp.recvfrom(1024)
+        data, _ = self.udp.recvfrom(2000)
         data = data.split(b"||||")
 
         if len(data) > 1:
-            data = loads(data[0])
+            data = data[0].split(b"||")
+            data = [loads(game) for game in data]
 
             return True, data
         else:
             return False, None
+
+
+pl = Pipe(server=socket.gethostname(), port=9000)
+print(pl.login(entry="join", room_name="game3", username="Pancho"))
+
+while True:
+    packet = pl.await_response()
+    print(packet)
+    if packet[0] == "Start":
+        while True:
+            text = input(":::> ")
+            print(pl.transport(["press", int(text)]))

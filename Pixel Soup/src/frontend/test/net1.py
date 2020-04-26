@@ -80,3 +80,16 @@ class Pipe:
             return True, data
         else:
             return False, None
+
+
+if __name__ == "__main__":
+    pl = Pipe(server="18.218.153.138", port=9000)
+    print(pl.login(entry="create", room_name="game1", username="David"))
+
+    while True:
+        packet = pl.await_response()
+        print(packet)
+        if packet[0] == "Start":
+            while True:
+                text = input(":::> ")
+                print(pl.transport([text]))

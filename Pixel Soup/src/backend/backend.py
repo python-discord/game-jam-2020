@@ -11,7 +11,11 @@ udp_port = 9002
 create_room = {}
 
 sock = socket.socket()
-sock.bind((host, port))
+try:
+    sock.bind((host, port))
+except OSError:
+    print(f"Port {port} is busy")
+
 sock.listen(1)
 
 
@@ -74,8 +78,8 @@ def login_entry(conn) -> None:
                                     room_password = randint(1000, 9999)
                                     for player in room_section:
                                         player[0].send(
-                                            f"Start,,{team_udp_port},\
-                                            ,{room_password}".encode()
+                                            f"Start,,{team_udp_port},"
+                                            f",{room_password}".encode()
                                         )
 
                                     # creates a thread for players room
@@ -122,8 +126,11 @@ def game_room(team_port: int, password: int, players: list) -> None:
     udp.bind((host, team_port))
 
     pipe = {players[0]: [], players[1]: [], players[2]: []}
+    sent_player = []
+    wall_pos = 400
 
     while True:
+
         data, address = udp.recvfrom(1024)
         data = data.split(b"||||")
 
@@ -131,23 +138,30 @@ def game_room(team_port: int, password: int, players: list) -> None:
             data = loads(data[0])
 
             if int(data[0]) == password:
+                if data[1] in sent_player:
+                    wall_pos = randint(10, 600)
+                    sent_player = [data[1]]
+                else:
+                    sent_player.append(data[1])
 
                 # pasting game data in pipe
                 for player in pipe.keys():
-                    if data[1] != player:
-                        if len(pipe[player]) == 2:
-                            pipe[player].pop(0)
-                        pipe[player].append(dumps(data[1:]))
+                    if len(data) > 2:
+                        if data[1] != player:
+                            if len(pipe[player]) == 2:
+                                pipe[player].pop(0)
+                            pipe[player].append(data[1:])
 
                 # checking if viable data is available to be sent
                 if pipe[data[1]]:
-                    udp.sendto((b"||".join(pipe[data[1]])) + b"||||", address)
-                    # written to none so that the player
-                    # will not receive same data twice
+                    udp.sendto(
+                        dumps([packet.append(wall_pos) for packet in pipe[data[1]]])
+                        + b"||||",
+                        address,
+                    )
                     pipe[data[1]] = []
-
                 else:
-                    udp.sendto(b"None", address)
+                    udp.sendto(dumps([[":server:", wall_pos]]) + b"||||", address)
 
 
 if __name__ == "__main__":

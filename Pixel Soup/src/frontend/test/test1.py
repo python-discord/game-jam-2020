@@ -71,12 +71,25 @@ class Pipe:
 
         self.udp.sendto(game_data, (self.server, self.game_port))
 
-        data, _ = self.udp.recvfrom(1024)
+        data, _ = self.udp.recvfrom(2000)
         data = data.split(b"||||")
 
         if len(data) > 1:
-            data = loads(data[0])
+            data = data[0].split(b"||")
+            data = [loads(game) for game in data]
 
             return True, data
         else:
             return False, None
+
+
+pl = Pipe(server=socket.gethostname(), port=9000)
+print(pl.login(entry="join", room_name="game3", username="Eltro"))
+
+while True:
+    packet = pl.await_response()
+    print(packet)
+    if packet[0] == "Start":
+        while True:
+            text = input(":::> ")
+            print(pl.transport([text]))
