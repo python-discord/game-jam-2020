@@ -69,8 +69,8 @@ class Trap(AnimatedEntity, SoundEntity):
 
 class Spike(Trap):
     # TODO change these assets
-    activate_sounds = ("melee_activate_0.wav",)
-    hit_sounds = ("melee_hit_0.flac",)
+    activate_sounds = ("spike_active_0.wav", "spike_active_1.wav")
+    hit_sounds = ("spike_hit_0.wav", "spike_hit_1.wav")
 
     def __init__(self, target_player=None, target_enemies=None, **kwargs) -> None:
         super().__init__(

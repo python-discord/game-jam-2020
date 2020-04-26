@@ -189,6 +189,9 @@ class Player(LivingEntity, MovingSprite):
         bullet.play_activate_sound()
         self.view.game_manager.player_projectiles.append(bullet)
         self.last_shot = time.time()
+        print(charge)
+        if charge >= 70:
+            self.mana_bar.clear(2)
         if charge >= 50:
             # Remove mana only for charged attack
             self.mana_bar.remove_filling_part()
@@ -198,14 +201,13 @@ class Player(LivingEntity, MovingSprite):
         if self._ability_duration_left > 0:
             print("Ability already active!")
         elif len(self.mana_bar) == self.mana_bar.max_fillers:
-            self.mana_bar.clear()
+            self.mana_bar.clear(len(self.mana_bar))
             self._ability_duration_left = self.selected_ability.duration
             self.selected_ability.activate(x, y, self.view)
             self.view.card_manager.card_manager_enabled = False
         else:
-            print(f"No mana")
-            # TODO empty mana sound
-            pass
+            SoundManager.add_sound("mana_empty.wav")
+            SoundManager.play_sound("mana_empty.wav")
 
     def kill(self):
         self.is_alive = False
