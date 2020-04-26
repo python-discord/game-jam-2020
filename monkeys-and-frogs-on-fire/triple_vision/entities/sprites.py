@@ -111,13 +111,18 @@ class TemporarySprite(arcade.Sprite):
         super().on_update(delta_time)
 
 
-class DamageIndicator(TemporarySprite, MovingSprite):
-    def __init__(self, text, start_x: int, start_y: int):
+class TextIndicator(TemporarySprite, MovingSprite):
+    def __init__(self, text, start_x: int, start_y: int, color=(255, 255, 255)):
         super().__init__(
-            lifetime=1, moving_speed=1, center_x=start_x, center_y=start_y, rotate=False
+            lifetime=1,
+            moving_speed=1,
+            center_x=start_x,
+            center_y=start_y,
+            rotate=False
         )
         temp_text = arcade.draw_text(text, start_x, start_y, arcade.color.WHITE)
         self.texture = temp_text.texture
+        self.color = color
         self.move_to(start_x, start_y + 10, set_target=False)
 
 
@@ -224,12 +229,22 @@ class Potion(Entity):
         self.effect = effect
         self.duration = duration
         self.wait_time = 0.0
+        self._effect = effect
 
     def collected(self):
         self.player.attack_multiplier += self.effect.strength
         self.player.hp += self.effect.heal
+        if self.player.hp >= self.player.MAX_HP:
+            self.player.hp = self.player.MAX_HP
         self.player.speed_multiplier += self.effect.speed
         self.player.resistance += self.effect.resistance
+
+        start_y = self.center_y
+        for attribute in self._effect.__dict__.keys():
+            value = self._effect.__getattribute__(attribute)
+            if value > 0:
+                self.ctx.create_text_indicator(f"+{int(value)} {attribute}", (self.center_x, start_y))
+                start_y += 20
 
         SoundManager.add_sound("pickup_0.wav")
         SoundManager.play_sound("pickup_0.wav")
