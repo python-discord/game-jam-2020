@@ -216,10 +216,10 @@ class GameLogic:
                         combos = -1
                 else:
                     combos = -1
-            else:
-                if notes[loc] is not None:
-                    if cls.check_miss(notes[loc].y, key_data[loc].height):
-                        combos = -1
+           # else:
+           #     if notes[loc] is not None:
+           #         if cls.check_miss(notes[loc].y, key_data[loc].height):
+           #             combos = -1
         return total_points, combos
 
 
@@ -260,7 +260,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
         self.main = main_
         self.settings = main_.settings
         self.WIDTH, self.HEIGHT = self.main.window.width, self.main.window.height
-        self.background_sprite = arcade.Sprite(
+        self.background_notes_sprite = arcade.Sprite(
             filename=f"{self.BASE_DIR}/main/Resources/game_play/Notes-Background.png",
             scale=1,
             image_height=self.HEIGHT,
@@ -375,6 +375,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                  self.notes_list[2] if len(self.notes_list) > 2 else None,
                  )
             )
+            print(combos)
             self.score += points_to_add
             self.combo = (self.combo + combos) if combos != -1 else 0
 
@@ -406,12 +407,12 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
             color=arcade.color.WHITE)
 
         # Note background sprite render
-        self.background_sprite.center_x = self.WIDTH / 2
-        self.background_sprite.center_y = self.HEIGHT / 2
-        self.background_sprite.scale = 1
-        self.background_sprite.width = self.WIDTH / 2
-        self.background_sprite.alpha = int(160*self.main.brightness)
-        self.background_sprite.draw()
+        self.background_notes_sprite.center_x = self.WIDTH / 2
+        self.background_notes_sprite.center_y = self.HEIGHT / 2
+        self.background_notes_sprite.scale = 1
+        self.background_notes_sprite.width = self.WIDTH / 2
+        self.background_notes_sprite.alpha = int(160 * self.main.brightness)
+        self.background_notes_sprite.draw()
 
         # If un pausing render  todo finish
         if count_down is not None:
