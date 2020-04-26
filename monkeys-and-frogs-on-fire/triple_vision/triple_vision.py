@@ -9,7 +9,7 @@ from triple_vision.entities import (
     Player,
     StationaryEnemy
 )
-from triple_vision.managers import CardManager, GameManager, CursorManager
+from triple_vision.managers import CardManager, GameManager, CursorManager, SoundtrackManager
 from triple_vision.map import Map
 from triple_vision.sound import SoundManager
 
@@ -37,6 +37,7 @@ class TripleVision(arcade.View):
         self.card_manager = None
         self.game_manager = None
         self.cursor_manager: CursorManager = None
+        self.sound_manager: SoundtrackManager = None
 
         arcade.set_background_color(arcade.color.BLACK)
 
@@ -49,6 +50,9 @@ class TripleVision(arcade.View):
         self.card_manager = CardManager(self)
         self.game_manager = GameManager(self)
         self.cursor_manager = CursorManager(self, self.player)
+        self.sound_manager = SoundtrackManager()
+        self.sound_manager.add_sound("assets/audio/soundtracks/Monplaisir_-_06_-_Level_3.mp3", max_volume=0.1)
+        self.sound_manager.toggle_next_sound()
 
         self.map = Map(self, s.MAP_SIZE)
         self.map.setup()
@@ -210,5 +214,6 @@ class TripleVision(arcade.View):
             self.player.update_health_bars(delta_time)
 
         SoundManager.update(self.slow_down or self.time_slow_ability)
+        self.sound_manager.update(delta_time)
         self.cursor_manager.update()
         self.player.update_health_bars(delta_time)
