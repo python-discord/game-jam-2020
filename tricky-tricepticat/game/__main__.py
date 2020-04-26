@@ -419,6 +419,9 @@ class Pirate(arcade.Sprite):
 
             self.cur_run_texture += 1
 
+    def pathfinding(self, target):
+        pass
+
     def on_update(self, delta_time):
         self.update_animation()
 
@@ -1360,6 +1363,8 @@ class PlayerView(arcade.View):
         if self.paused:
             return
 
+        self.level_sprites.append(self.player_sprite.weapon)
+
         self.scroll()
 
         self.update_player_movement(delta_time)
@@ -1375,8 +1380,8 @@ class PlayerView(arcade.View):
 
         self.enemy_list.on_update(delta_time)
 
-        if self.selected_character > 2:
-            self.selected_character = 0
+        if self.player_sprite.health <= 0:
+            self.player_sprite.weapon.kill()
 
         x, y = self.mouse_position
         self.cursor._set_left(x*self.viewport_scale+self.view_left)
@@ -1435,7 +1440,14 @@ class PlayerView(arcade.View):
 
         if key == arcade.key.LALT:
             self.selected_character += 1
+            if self.selected_character > 2:
+                self.selected_character = 0
+            self.player_sprite = self.player_sprites[self.selected_character]
 
+            self.level_sprites = arcade.SpriteList()
+            self.player_sprite.weapon = Weapon('sword')
+            self.player_sprite.weapon.center_x = self.player_sprite.center_x-10
+            self.player_sprite.weapon.center_x = self.player_sprite.center_y
 
     def on_key_release(self, key, key_modifiers):
         """
