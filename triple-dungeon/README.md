@@ -8,8 +8,11 @@ This repository is Triple Dungeon's submittion for [Python Discord](https://pyth
 
 This game is far from complete. We ran into some serious lag issues half way though the project, but all agreed that it was a good experience.
 
-## Install
-This game can be installed with `pipenv sync`
+## Setup
+This game can be setup and run with:
+`pipenv sync`
+`pipenv shell`
+`python main.py`
 
 ## Instructions
 Use WASD to move and the mouse to aim and fire.
