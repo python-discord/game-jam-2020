@@ -1,7 +1,6 @@
 import arcade
 
 from submission.gameConstants import *
-from submission.get_farthest_sprite import get_farthest_sprite
 from submission.loadAnimatedChars import AnimatedDamage
 
 

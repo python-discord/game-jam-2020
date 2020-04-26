@@ -9,7 +9,6 @@ from submission.sounds import loadSounds
 from submission.motion import moveEntities, updateActualPos, movePlayer
 from submission.waveManager import getSpawnList, manageEnemySpawn, decomposeSpawnList, generateASpawn, \
     EnemyGroup, SpawnOrder
-from submission.get_farthest_sprite import get_farthest_sprite
 from submission.gameOver import GameOverView
 from submission.turretAttack import turretAttack
 from random import randint
