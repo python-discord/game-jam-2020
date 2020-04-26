@@ -133,6 +133,15 @@ class GameManager:
         for potion in self.hidden_active_potions:
             potion.on_update(delta_time)
 
+        if len(self.enemies) == 0:
+            self.view.level += 1
+            self.view.sound_manager.play_song()
+            self.view.create_level()
+        elif not self.view.player.is_alive:
+            self.view.level += 0
+            self.view.sound_manager.play_song()
+            self.view.create_level()
+
     def enemy_killed(self, enemy) -> None:
         self.points += enemy.kill_value
 
