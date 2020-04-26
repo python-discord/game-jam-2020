@@ -211,7 +211,7 @@ class GameLogic:
                  keys_list: ("pressed keys", list, tuple),
                  key_data: ("Key sprites", list, tuple),
                  notes: ("note objects", list, tuple)):
-        total_points, combos = 0, 0
+        total_points, combos, notes_rendered = 0, 0, 0
         for note in notes:
             if note.note_id == -1:
                 if keys_list[0]:
@@ -219,6 +219,7 @@ class GameLogic:
                     if points != -1:
                         total_points += points
                         combos += 1
+                        notes_rendered += 1
                     else:
                         combos = -1
                 else:
@@ -230,6 +231,7 @@ class GameLogic:
                     if points != -1:
                         total_points += points
                         combos += 1
+                        notes_rendered += 1
                     else:
                         combos = -1
                 else:
@@ -242,13 +244,13 @@ class GameLogic:
                     if points != -1:
                         total_points += points
                         combos += 1
+                        notes_rendered += 1
                     else:
                         combos = -1
                 else:
                     if cls.check_miss(note.y, key_data[2].height):
                         combos = -1
-
-        return total_points, combos
+        return total_points, combos, notes_rendered
 
 
 class GameScreen(arcade.View, PauseScreen, ScoreScreen):
@@ -279,7 +281,6 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
     score = 0
     combo = 0
     notes_hit = 0
-    notes_missed = 0
     notes_total = 0
 
     def __init__(self, main_):
@@ -364,10 +365,13 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                     self.right_button_active = self.right
                 else:
                     if self.left:
+                        self.notes_total += 1
                         self.notes_list.append(ShapeManager.create_shape(-1, screen_width=self.WIDTH))
-                    elif self.center:
+                    if self.center:
+                        self.notes_total += 1
                         self.notes_list.append(ShapeManager.create_shape(0, screen_width=self.WIDTH))
-                    elif self.right:
+                    if self.right:
+                        self.notes_total += 1
                         self.notes_list.append(ShapeManager.create_shape(1, screen_width=self.WIDTH))
 
             else:
@@ -401,12 +405,13 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
 
         self.delta_time = delta_time
         if self.started and not self.paused:  # todo not fuck this
-            points_to_add, combos = GameLogic.get_data(
+            points_to_add, combos, notes_passed = GameLogic.get_data(
                 (self.left_button_active, self.middle_button_active, self.right_button_active),
                 (self.key_1, self.key_2, self.key_3),
                 self.notes_list
             )
             self.score += points_to_add
+            self.notes_hit += notes_passed
             self.combo = (self.combo + combos) if combos != -1 else 0
 
         if not self.audio.player.is_playing() and \
@@ -496,16 +501,12 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
 
         self.score_pic.alpha = alpha
         self.score_pic.draw()
-        # self.combo_pic.alpha = alpha
-        # self.combo_pic.draw()
         self.notes_hit_pic.alpha = alpha
         self.notes_hit_pic.draw()
-        self.notes_missed_pic.alpha = alpha
-        self.notes_missed_pic.draw()
 
         # Actual score
         arcade.draw_text(f"{self.score}",
-                         start_x=self.score_pic.center_x - (len(f"{self.score}") * 20),
+                         start_x=self.score_pic.center_x - (len(f"{self.score}") * 15),
                          start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * 0.35)),
                          color=cb.brightness(arcade.color.WHITE, self.main.brightness),
                          align="center", font_size=50)
@@ -519,15 +520,8 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
 
         # Actual total hits
         arcade.draw_text(f"{self.notes_hit}",
-                         start_x=self.notes_hit_pic.center_x - (len(f"{self.notes_hit}") * 20),
+                         start_x=self.notes_hit_pic.center_x - (len(f"{self.notes_hit}") * 15),
                          start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * -2)),
-                         color=cb.brightness(arcade.color.WHITE, self.main.brightness),
-                         align="center", font_size=50)
-
-        # Actual total misses
-        arcade.draw_text(f"{self.notes_missed}",
-                         start_x=self.notes_missed_pic.center_x - (len(f"{self.notes_missed}") * 20),
-                         start_y=((self.HEIGHT / 2) + ((self.HEIGHT / 10) * -3.5)),
                          color=cb.brightness(arcade.color.WHITE, self.main.brightness),
                          align="center", font_size=50)
 
