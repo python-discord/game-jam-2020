@@ -28,8 +28,6 @@ class Blocks(IntEnum):
 
 TEXTURES_AND_COLORS = {
     0: (141, 182, 0),
-    1: "./resources/frame.png",
-    2: "./resources/wall.png",
-    3: "./resources/trap.png",
-    4: (0, 105, 148)
+    1: ":resources:images/tiles/boxCrate_double.png",
+    2: ":resources:images/tiles/brickGrey.png"
 }
