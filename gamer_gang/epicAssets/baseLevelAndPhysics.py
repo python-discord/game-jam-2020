@@ -177,7 +177,7 @@ class Level(arcade.View):
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             self.userInputs[0] = 30
         elif key == arcade.key.UP or key == arcade.key.W:
-            self.userInputs[2] = 500
+            self.userInputs[2] = 425
         elif key == arcade.key.NUM_1 or key == arcade.key.KEY_1:
             self.controlled = 0
         elif key == arcade.key.NUM_2 or key == arcade.key.KEY_2:
@@ -300,11 +300,11 @@ class Level(arcade.View):
                             self.window.sfx['jump'].play()
                     p.can_jump = False
 
-                if p.pymunk_shape.body.velocity.x > 300:  # prevent from accelerating too fast
-                    p.pymunk_shape.body.velocity = pymunk.Vec2d((150, p.pymunk_shape.body.velocity.y))
+                if p.pymunk_shape.body.velocity.x > 250:  # prevent from accelerating too fast
+                    p.pymunk_shape.body.velocity = pymunk.Vec2d((250, p.pymunk_shape.body.velocity.y))
 
-                if p.pymunk_shape.body.velocity.x < -300:
-                    p.pymunk_shape.body.velocity = pymunk.Vec2d((-150, p.pymunk_shape.body.velocity.y))
+                if p.pymunk_shape.body.velocity.x < -250:
+                    p.pymunk_shape.body.velocity = pymunk.Vec2d((-250, p.pymunk_shape.body.velocity.y))
 
     def entityInteractionCheck(self):
         for p in self.players:
