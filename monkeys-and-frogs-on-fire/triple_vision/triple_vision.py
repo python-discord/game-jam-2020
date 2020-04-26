@@ -75,8 +75,6 @@ class TripleVision(arcade.View):
             arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
             self.window.set_mouse_visible(True)
             self.window.show_view(self.main_view)
-        elif key == arcade.key.R:
-            self.create_level(seed=self.seed)
         else:
             self.player.process_key_press(key)
 
