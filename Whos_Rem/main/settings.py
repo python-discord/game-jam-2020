@@ -12,7 +12,7 @@ class Settings(arcade.View):
 
     background_image = arcade.Sprite(
         filename=Path().cwd() / Path("main/Resources/background.png"),
-        scale=min(width / 6400, height / 3600),
+        scale=max(width / 6400, height / 3600),
         center_x=int(width * 0.5),
         center_y=int(height * 0.5),
     )

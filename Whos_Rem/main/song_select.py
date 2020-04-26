@@ -8,15 +8,20 @@ from .display import ColourBlend as cb
 
 class SongChoices:
 
-    names_dict = {}
+    names_dict = {
+        1: "MEGALOVANIA (Camellia Remix)",
+        2: "Camellia - Light it up",
+        3: "Getsix - Sky Fracture VIP (feat. Miss Lina)",
+        4: "The Fat Rat - Stronger",
+    }
     screen_size = pyautogui.size()
 
     def __init__(self, song_id: int, colour: list):
         self.song_id = song_id
         self.name = f"{self.song_id}: {self.names_dict.get(song_id, '')}"
-        self.width = self.screen_size[0]*0.5
+        self.width = self.screen_size[0]*0.7
         self.height = self.screen_size[1]*0.08
-        self.font_size = 40
+        self.font_size = self.height * 0.45
         self.x_pos = self.screen_size[0]*0.05
         self.y_pos = self.screen_size[1]*(0.7 - 0.12*song_id)
         self.colour = colour
@@ -66,7 +71,7 @@ class SongSelection(arcade.View):
     )
     background_image = arcade.Sprite(
         filename=Path().cwd() / Path("main/Resources/background.png"),
-        scale=min(width/6400, height/3600),
+        scale=max(width/6400, height/3600),
         center_x=int(width * 0.5),
         center_y=int(height * 0.5),
     )
@@ -97,16 +102,19 @@ class SongSelection(arcade.View):
         if self.return_button.pressed(x, y):
             self.main.window.show_view(self.main.menu)
 
-        SongChoices.manage_song_selections(self.songs, x, y)
+        choice = SongChoices.manage_song_selections(self.songs, x, y)
+        if choice is not None:
+            self.main.play_screen.setup(choice)
+            self.main.window.show_view(self.main.play_screen)
 
     @staticmethod
     def load_song_data(song_choice, base_path=Path.cwd() / Path("main/tracks")):
-        name = f"track_{song_choice}"
-        file_type = list(base_path.glob(f"*{name}*"))
+        name = SongChoices.names_dict.get(song_choice, f"track_{song_choice}")
+        file_type = list(base_path.glob(f"*track_{song_choice}*"))
         file_type = [path.suffix[1:] for path in file_type if "json" not in path.suffix]
         track_dict = {
             "name": name,
-            "path": base_path / Path(name),
+            "path": f"track_{song_choice}",
             "type": file_type[0]
         }
 
