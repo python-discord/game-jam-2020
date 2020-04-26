@@ -95,7 +95,7 @@ class TriGrid:
             # select next player cycle through if player is dead
             next_player = (self.cur_player + 1) % self.num_players
             while not self.player_status[next_player]:
-                next_player = (self.cur_player + 1) % self.num_players
+                next_player = (next_player + 1) % self.num_players
             self.cur_player = next_player
 
     def clear_highlights(self):
@@ -130,7 +130,7 @@ class TriGrid:
                     if pos in self.cur_valid_attacks and new_cell.piece is not None \
                             and self.cur_selected_cell.piece.player != new_cell.piece.player:
 
-                        if new_cell.piece.name == 'king':
+                        if new_cell.piece.piece_name == 'king':
                             # if king killed set player as dead
                             self.player_status[new_cell.piece.player] = False
 
