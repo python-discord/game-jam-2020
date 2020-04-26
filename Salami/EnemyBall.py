@@ -11,6 +11,7 @@ class EnemyBall(Enemy):
         super().__init__(texture, x, y, difficulty)
 
         self.life = 300
+        self.health = 2
 
     def update(self):
 

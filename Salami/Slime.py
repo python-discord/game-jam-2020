@@ -6,6 +6,7 @@ class Slime(Enemy):
         super().__init__(texture, x, y, difficulty)
 
         self.movespeed = 2
+        self.health = 2 + difficulty
         self.jump_height = 4
 
         self.curr_move_cd = 0

@@ -16,6 +16,8 @@ class Enemy(Mob):
 
         self.damage = 1
         self.movespeed = 1
+        self.health = 6 + difficulty * 1.5
+
         self.jump_height = 3
         self.jumping = False
         self.curr_jump_cd = 0
