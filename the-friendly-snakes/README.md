@@ -15,4 +15,7 @@ folder that you just created.
 2) Open up a terminal by clicking `Win + R` (Windows Button + R) and then typing `cmd` and pressing `Enter`. Then, install `pipenv` by typing
 `pip install pipenv` in the terminal you just opened and then pressing enter `Enter`. You can close this window.
 3) Open the `the-friendly-snakes` folder that is inside of the folder you made above. Click in the top bar and type `cmd`
-and then click `Enter`. It looks like this: (![How To Open CMD](StuffForREADME/cmd.gif))
+and then click `Enter`. It looks like this: ![How To Open CMD](StuffForREADME/cmd.gif)
+4) In that terminal type: `pipenv sync && pipenv run game` and there you go! The game will be up and running. From now on,
+any time that you want to play in the future you only have to type `pipenv run game` for this last step!
+5) Enjoy *Flimsy Billy's Coin Dash 3: Super Tag 3 Electric Tree*!
