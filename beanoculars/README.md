@@ -12,9 +12,11 @@ This game was made for the Python Discord's Game Jam 2020. The theme was "Three 
 The idea was to make a tower defense game, where you only have three towers that you have to replace during the rounds to defeat the three types of mutant bugs that want to destroy the city, coming from the three paths available. You play as a helicopter which must grab your towers and put them near their favorite type of insect to destroy, optimizing your travels and the use of your turrets. The first 50 waves of enemies are pre-made, and after that point, they are generated with by a function, being harder and harder.
 
 ## Setup
-Download the files from the `beanoculars`folder. Once you have a virtual environnement with pipenv set up for the game, you should be able to run the game easily on Windows by using these commands:
-`pipenv install` to install the depedencies of the project,
-`pipenv run start` to run the game.
+1. Download this repository.
+2. Make sure you have the latest versions of pip, wheel and setuptools.
+3. Create a virtual environnement and install pipenv: `pip install pipenv`
+4. Install the dependencies: `pipenv install`
+5. Run the game: `pipenv run start`
 
 ## Screenshots
 ![Screenshot of the game #1](submission/images/screen1.png)
