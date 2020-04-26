@@ -153,6 +153,9 @@ class GameState:
 
     def on_update(self, delta_time: float) -> None:
         """Handle update event."""
+        for emitter in self.dash_emitters:
+            emitter.update()
+
         if self.engine.can_jump():
             self.player.movement_control = GROUND_CONTROL
         else:
@@ -188,14 +191,11 @@ class GameState:
     def on_draw(self) -> None:
         """Handle draw event."""
         arcade.start_render()
+        self.player.draw()
         self.level_geometry.draw()
         self.level_objects.draw()
-        self.player.draw()
         for emitter in self.dash_emitters:
             emitter.draw()
-        self.player.draw()
-        self.level_geometry.draw()
-        self.level_objects.draw()
 
     def on_key_press(self, key, modifiers):
         """Called whenever a key is pressed."""
