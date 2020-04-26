@@ -398,10 +398,11 @@ class Level(arcade.View):
 
                 p.update()
                 p.update_animation(dt)
-                metGround = [g for g in arcade.check_for_collision_with_list(p, self.ground) if p.top > g.bottom]
-                metBoxes = [b for b in arcade.check_for_collision_with_list(p, self.boxes)
-                                 if abs(p.bottom - b.top) < 5]
-                metSand = [g for g in arcade.check_for_collision_with_list(p, self.sands) if p.top > g.bottom]
+                metGround = [g for g in arcade.check_for_collision_with_list(p, self.ground)
+                             if abs(p.bottom - g.top) < 5 and abs(p.center_x - g.center_x) < 10]
+                metBoxes = [b for b in arcade.check_for_collision_with_list(p, self.boxes) if abs(p.bottom - b.top) < 5]
+                metSand = [s for s in arcade.check_for_collision_with_list(p, self.sands)
+                           if abs(p.bottom - s.top) < 5 and abs(p.center_x - s.center_x) < 10]
                 metPlayers = [True for pl in self.players if pl is not None and
                               arcade.check_for_collision(p, pl) and pl != p]  # the players that are beneath
 
