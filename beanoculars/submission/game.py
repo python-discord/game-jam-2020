@@ -154,12 +154,12 @@ class GameView(arcade.View):
         # GUI layer
 
         if self.betweenRounds:
-            arcade.draw_rectangle_filled(96, 484, 204, 54, (70, 92, 32))
-            arcade.draw_rectangle_filled(99, 484, 192, 48, arcade.csscolor.DARK_OLIVE_GREEN)
+            arcade.draw_rectangle_filled(96, 485, 204, 54, (70, 92, 32))
+            arcade.draw_rectangle_filled(99, 485, 192, 48, arcade.csscolor.DARK_OLIVE_GREEN)
 
         elif not self.betweenRounds:
-            arcade.draw_rectangle_filled(96, 484, 204, 54, (75, 0, 0))
-            arcade.draw_rectangle_filled(99, 484, 192, 48, arcade.csscolor.DARK_RED)
+            arcade.draw_rectangle_filled(96, 485, 204, 54, (75, 0, 0))
+            arcade.draw_rectangle_filled(99, 485, 192, 48, arcade.csscolor.DARK_RED)
 
         if self.shownRoundNumber < 99:
             arcade.draw_text("Wave number: " + str(self.shownRoundNumber), 10, 512 - 44, arcade.csscolor.WHITE, 18,
