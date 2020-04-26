@@ -1,6 +1,7 @@
 import arcade
 from .scenes import *
 from typing import Union, Optional
+import json
 
 
 class Display(arcade.Window):
@@ -8,8 +9,13 @@ class Display(arcade.Window):
         super().__init__(1280, 720, "Three of a king")
         self.title = arcade.sprite_list
         arcade.set_background_color((255, 255, 255))
+        self.music_bool = True
+        self.music = None
+        with open("data/music.json") as file:
+            self.music_load = json.load(file)
         self.scene = "loading"
         self.scenes = dict()
+        self.music_play()
 
     def setup(self):
         self.scenes["loading"] = LoadingScreen(self)
@@ -24,11 +30,19 @@ class Display(arcade.Window):
     def change_scenes(self, scene: str, *args, **kwargs):
         self.scenes[scene].reset(*args, **kwargs)
         self.scene = scene
+        if self.music_bool:
+            self.music_play()
 
     def on_draw(self):
-
         arcade.start_render()
         self.scenes[self.scene].draw()
+
+    def music_play(self):
+        if self.scene in self.music_load:
+            if self.music is not None:
+                self.music.stop()
+            self.music = arcade.Sound(self.music_load[self.scene], streaming=True)
+            self.music.play(0.01)
 
     def on_update(self, delta_time: float):
         self.scenes[self.scene].update(delta_time)
