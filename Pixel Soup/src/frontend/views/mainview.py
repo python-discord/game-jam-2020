@@ -1,5 +1,4 @@
 import arcade
-from pyglet.input.base import Joystick
 
 from ..gameconstants import SCREEN_WIDTH, SCREEN_HEIGHT, GAME_PATH
 from .mainmenuview import MainMenuView
@@ -23,10 +22,6 @@ class MainView(arcade.View):
 
     def on_show(self) -> None:
         """Called when MainView should draw."""
-        if self.window.joystick:
-            self.window.joystick.set_handler(
-                "on_joybutton_release", self.on_joybutton_release
-            )
 
     def on_draw(self) -> None:
         """Show the widgets."""
@@ -104,11 +99,6 @@ class MainView(arcade.View):
         self.window.show_view(main_menu_view)
         main_menu_view.setup()
 
-        if self.window.joystick:
-            self.window.joystick.remove_handler(
-                "on_joybutton_release", self.on_joybutton_release
-            )
-
     def _toggle_instructions(self) -> None:
         """Open/Close a DialogueBox with the Instructions."""
         self.window.dialogue_box_list[0].active = not self.window.dialogue_box_list[
@@ -124,7 +114,3 @@ class MainView(arcade.View):
             self._to_main_menu()
         elif key == arcade.key.I:
             self._toggle_instructions()
-
-    def on_joybutton_release(self, joystick: Joystick, button: int) -> None:
-        """Move to the next view when any joystick button is pressed."""
-        self._to_main_menu()

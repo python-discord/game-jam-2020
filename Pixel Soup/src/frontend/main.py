@@ -13,16 +13,6 @@ def main() -> None:
 
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
-    joysticks = arcade.get_joysticks()
-    """
-    Add support for the first joystick found, it can be changed later
-    in settings.
-    """
-    window.joystick = None
-    if joysticks:
-        window.joystick = joysticks[0]
-        window.joystick.open()
-
     main_view = MainView()
     window.show_view(main_view)
     main_view.setup()
