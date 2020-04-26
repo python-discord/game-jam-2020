@@ -76,7 +76,7 @@ class LevelGen:
 
         self.current_room = None
         self.curr_depth = 0
-        self.max_depth = 4
+        self.max_depth = 8
         self.rooms = {}
         
         self.drawing = False
@@ -213,16 +213,23 @@ class LevelGen:
             if room.type == START_ROOM:
                 break
             if room.type == BOSS_ROOM:
-                entity_x = random.randrange(room_x - 1, room_x + ROOM_WIDTH - 1) * TILE_SIZE
-                entity_y = random.randrange(room_y - 1, room_y + ROOM_HEIGHT - 1) * TILE_SIZE
+                entity_x = (room_x + ROOM_WIDTH / 2) * TILE_SIZE
+                entity_y = (room_y + ROOM_HEIGHT / 2) * TILE_SIZE
                 boss = Boss(entity_x, entity_y, self.level.difficulty)
                 self.level.add_entity_to_list(boss, self.level.entities)
                 difficulty -= 5
             else:
                 enemy_type = random.randint(0, 2)
                 
-                entity_x = random.randrange(room_x + 1, room_x + ROOM_WIDTH - 1) * TILE_SIZE
-                entity_y = random.randrange(room_y + 1, room_y + ROOM_HEIGHT - 1) * TILE_SIZE
+                entity_x = random.randrange(room_x + 1, room_x + ROOM_WIDTH - 1)
+                entity_y = random.randrange(room_y + 1, room_y + ROOM_HEIGHT - 1)
+                tries = 0
+                while self.level.get_tile(entity_x, entity_y) or tries < 5:
+                    entity_x = random.randrange(room_x + 1, room_x + ROOM_WIDTH - 1)
+                    entity_y = random.randrange(room_y + 1, room_y + ROOM_HEIGHT - 1)
+                    tries += 1
+                entity_x *= TILE_SIZE
+                entity_y *= TILE_SIZE
                 if enemy_type == 0:
                     slem = Slime(Textures.get_texture(3, 2), entity_x, entity_y, self.level.difficulty)
                     self.level.add_entity_to_list(slem, self.level.entities)
