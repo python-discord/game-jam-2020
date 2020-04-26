@@ -52,7 +52,7 @@ class Level(arcade.View):
         self.debugging = False
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
-        self.space.damping = 0.95
+        self.space.damping = 0.9
         self.leftView = self.bottomView = 0
         self.timeAfterSplit = 0
         self.controlled = 0
