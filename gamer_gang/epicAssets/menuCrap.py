@@ -2,12 +2,12 @@ from pathlib import Path
 from arcade.gui import *
 import random
 from gamer_gang.dumbConstants import *
+from gamer_gang.epicAssets.baseLevelAndPhysics import Level
 
 
 class MenuView(arcade.View):
     def __init__(self):
         super().__init__()
-
         arcade.set_background_color(arcade.color.PALE_TURQUOISE)
         self.start = False
 
@@ -62,7 +62,7 @@ class MenuView(arcade.View):
 
     def setup_theme(self):
         self.theme = Theme()
-        self.theme.set_font(24, arcade.color.WHITE)
+        self.theme.set_font(32, arcade.color.WHITE, str(Path(__file__).parent) + "/pixelFont.TTF")
 
     def set_buttons(self):
         self.theme.add_button_textures(str(Path(__file__).parent) + "/images/dumbGUIImages/startButton.png", None,
@@ -135,23 +135,24 @@ class GameOverView(arcade.View):
         arcade.set_viewport(0, 1000, 0, 600)
         arcade.set_background_color(arcade.color.BLACK)
         self.gameOverText = arcade.Sprite(center_x=SCREEN_WIDTH // 2, center_y=SCREEN_HEIGHT // 2 + 230)
-        self.gameOverText.textures = [arcade.load_texture(str(Path(__file__).parent) + '/images/dumbGUIImages/gameOverText.png')]
+        self.gameOverText.textures = [arcade.load_texture(str(Path(__file__).parent) +
+                                                          '/images/dumbGUIImages/gameOverText.png')]
         self.gameOverText.texture = self.gameOverText.textures[0]
         self.setup_theme()
         self.set_buttons()
 
     def setup_theme(self):
         self.theme = Theme()
-        self.theme.set_font(24, arcade.color.WHITE)
+        self.theme.set_font(24, arcade.color.WHITE, str(Path(__file__).parent) + "/pixelFont.TTF")
 
     def set_buttons(self):
+        self.theme.add_button_textures(str(Path(__file__).parent) + "/images/dumbGUIImages/backButton.png", None,
+                                       str(Path(__file__).parent) + "/images/dumbGUIImages/backButton.png", None)
+        self.button_list.append(BackToMenu(self, 100, 90, theme=self.theme))
+
         self.theme.add_button_textures(str(Path(__file__).parent) + "/images/dumbGUIImages/restart.png", None,
                                        str(Path(__file__).parent) + "/images/dumbGUIImages/restart.png", None)
         self.button_list.append(RestartButton(self, theme=self.theme))
-
-        self.theme.add_button_textures(str(Path(__file__).parent) + "/images/dumbGUIImages/backButton.png", None,
-                                       str(Path(__file__).parent) + "/images/dumbGUIImages/backButton.png", None)
-        self.button_list.append(BackToMenu(self, 100, 120, theme=self.theme))
 
     def on_draw(self):
         arcade.start_render()
@@ -260,14 +261,13 @@ class RestartButton(TextButton):
         self.pressed = False
 
 class BackToMenu(TextButton):
-    def __init__(self, game, x=0, y=0, width=48, height=48, text="", theme=None):
-        super().__init__(x, y, width, height, text, theme=theme)
+    def __init__(self, game, x=0, y=0, width=128, height=128, font_size=6, text="menu", theme=None):
+        super().__init__(x, y, width, height, font_size=font_size, text=text, theme=theme)
         self.game = game
         self.center_x = x
         self.pressed = False
 
     def on_press(self):
         if not self.pressed:
-            self.pressed = True
-            self.game.window.setup()
-            self.game.window.show_view(self.game.window.menuView)
+            self.game.window.setup()  # setup does have the show_view in it so yea
+        self.pressed = True

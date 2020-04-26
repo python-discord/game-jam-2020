@@ -1,10 +1,10 @@
 import itertools
 from pathlib import Path
+from arcade.gui import TextButton
 import pytiled_parser
 from gamer_gang.epicAssets.entities import *
 from gamer_gang.epicAssets.terrainStuff import *
 from gamer_gang.dumbConstants import *
-
 
 def getNames(name):
     name = name.split(sep='on')
@@ -41,10 +41,28 @@ def getLayer(layer_path, map_object):
     return layer
 
 
+class PauseBack(TextButton):
+    def __init__(self, game, x=0, y=0, width=128, height=128, font_size=6, text="menu", theme=None):
+        self.game = game
+        super().__init__(x, y, width, height, font_size=font_size, text=text, theme=theme)
+        self.center_x = x
+        self.pressed = False
+
+    def on_press(self):
+        if not self.pressed and self.game.paused:
+            self.game.window.setup()  # setup does have the show_view in it so yea
+        self.pressed = True
+
+
 class Level(arcade.View):
     def __init__(self, levelNum):
         super().__init__()
         arcade.set_background_color(arcade.color.LIGHT_BLUE)
+        self.theme = arcade.Theme()
+        self.theme.add_button_textures(str(Path(__file__).parent) + "/images/dumbGUIImages/backButton.png", None,
+                                       str(Path(__file__).parent) + "/images/dumbGUIImages/backButton.png", None)
+        self.theme.set_font(14, arcade.color.BLACK, str(Path(__file__).parent) + "/pixelFont.TTF")
+        self.button_list = [None]
         self.ln = levelNum  # ln stands for level number
 
         if self.ln == 1:  # tutorial tex
@@ -60,6 +78,8 @@ class Level(arcade.View):
 
     def on_show(self):
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+        self.paused = False
+        self.button_list[0] = PauseBack(self, 230, 500, 64, 64, theme=self.theme)
         self.debugging = False
         self.space = pymunk.Space()
         self.space.gravity = (0.0, -900.0)
@@ -68,7 +88,6 @@ class Level(arcade.View):
         self.timeAfterSplit = 0
         self.controlled = 0
         self.userInputs = [0, 0, 0]  # the user input
-
         self.makeLevel()
 
     def makeLevel(self):
@@ -83,6 +102,8 @@ class Level(arcade.View):
         self.BEES = arcade.SpriteList()
         self.stars = arcade.SpriteList()
         self.torchs = arcade.SpriteList()
+        self.pauseSign = arcade.Sprite(filename=str(Path(__file__).parent) + '/images/pauseSign.png',
+                                       center_x=830, center_y=430)
         self.msg = None
         self.players = []
         self.bodies = []
@@ -171,12 +192,14 @@ class Level(arcade.View):
         self.stars.draw()
         self.torchs.draw()
         if self.ln == 1:
-
             for x, i in enumerate(self.positions):
                 arcade.draw_text(self.text[x], i[0], i[1], font_name=str(Path(__file__).parent) + "/pixelFont.TTF",
                                  font_size=20, color=arcade.color.BLACK)
 
         if self.msg is not None: self.msg.draw()
+        if self.paused:
+            self.pauseSign.draw()
+            self.button_list[0].draw()
 
         if self.collectedStars != self.neededStars:
             arcade.draw_text(f'stars collected: {self.collectedStars} out of {self.neededStars}',
@@ -213,6 +236,12 @@ class Level(arcade.View):
             self.controlled = 2
         elif key == arcade.key.DOWN or key == arcade.key.S:
             self.splitStack()
+        elif key == arcade.key.SPACE:
+            if self.paused:
+                self.window.sfx['level music'].set_volume(0.3)
+            else:
+                self.window.sfx['level music'].set_volume(0)
+            self.paused = not self.paused
 
     def on_key_release(self, key, modifiers):
         if key == arcade.key.LEFT or key == arcade.key.A:
@@ -391,6 +420,9 @@ class Level(arcade.View):
                     self.window.show_view(self.window.menuView)
 
     def on_update(self, dt):
+        if self.paused:
+            return
+
         self.frames += 1
         self.timeAfterSplit += dt
         if self.totalTime == 0:
@@ -402,16 +434,14 @@ class Level(arcade.View):
 
         for _ in range(10):
             self.space.step(1 / 600)
-            
+
         for i in self.players:
-            try:
-                for k in arcade.check_for_collision_with_list(i,self.jumpPads):
-                    if i.can_jump == True:
-                        i.pymunk_shape.body.velocity += pymunk.Vec2d((0,700))
+            if i is not None:  # check for collision with jump pads
+                for k in arcade.check_for_collision_with_list(i, self.jumpPads):
+                    if i.can_jump:
+                        i.pymunk_shape.body.velocity += pymunk.Vec2d((0, 700))
                         i.can_jump = False
-            except:
-                continue
-                    
+
         self.movement()  # move all the players (well, the characters)
         self.cameraShift(0.1)  # shift camera
         self.stackCheck()  # join into stacks if detected
@@ -464,7 +494,7 @@ class Level(arcade.View):
             for s in self.sands:
                 s.center_x = s.pymunk_shape.body.position.x
                 s.center_y = s.pymunk_shape.body.position.y
-                s.center_y -= 32
+                s.center_y -= 5
                 metBoxes = arcade.check_for_collision_with_list(s, self.boxes)
                 metBoxes.extend(arcade.check_for_collision_with_list(s, self.ground))
                 metBoxes.extend(arcade.check_for_collision_with_list(s, spriteListPlayers))
@@ -474,7 +504,7 @@ class Level(arcade.View):
                     self.space.remove(s.pymunk_shape, s.pymunk_shape.body)
                     s.kill()
                 else:
-                    s.center_y += 32
+                    s.center_y += 5
                 if s.center_y <= 0:
                     self.space.remove(s.pymunk_shape, s.pymunk_shape.body)
                     s.kill()
@@ -503,11 +533,13 @@ class Level(arcade.View):
         else:
             self.window.sfx['level music'].stop()
             self.window.show_view(self.window.gameOver)
+        self.pauseSign.center_x, self.pauseSign.center_y = self.xCam + 370, self.yCam + 200
+        self.button_list[0].center_x, self.button_list[0].center_y = self.xCam - 450, self.yCam + 230
 
 
 if __name__ == '__main__':
     testGame = arcade.Window(1000, 600, 'test')
-    testGame.level = Level(6)
+    testGame.level = Level(1)
     testGame.game_over = False
     filePath = str(Path(__file__).parent.parent)
     testGame.sfx = {"jump": arcade.load_sound(str(Path(__file__).parent) + "/sounds/jump.wav"),
