@@ -24,8 +24,8 @@ def main() -> None:
         window.joystick.open()
 
     main_view = MainView()
-    main_view.setup()
     window.show_view(main_view)
+    main_view.setup()
     arcade.run()
 
 
