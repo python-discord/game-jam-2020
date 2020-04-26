@@ -13,7 +13,7 @@ class Main:
         self.song_selection = SongSelection(self)
         self.window = arcade.Window(
             self.width, self.height,
-            title="3 Strings", fullscreen=False, update_rate=1/64)
+            title="3 Strings", fullscreen=False, update_rate=1/32)
         self.play_screen = GameScreen(self)
 
     @property

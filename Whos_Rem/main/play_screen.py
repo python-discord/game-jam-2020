@@ -34,6 +34,7 @@ class Audio:
     player = None
     started = False
     thread_end = False
+    thead_finished_allow_end = False
 
     def __init__(self, main_):
         self.main = main_
@@ -55,11 +56,12 @@ class Audio:
     @classmethod
     def _play_in_thread(cls):
         if not SAMPLING:
-            time.sleep(1.5)
+            time.sleep(2)
         cls.player.play()
         time.sleep(0.03)
         cls.started = True
         cls.thread_end = True
+        cls.thead_finished_allow_end = True
 
     @classmethod
     def _play(cls):
@@ -166,7 +168,7 @@ class ScoreScreen:
                           scale=0.5))
         arcade.draw_text(f"{score}",
                          start_x=cls.WIDTH / 2 - (len(f"{score}") * 15),
-                         start_y=cls.HEIGHT / 2.5,
+                         start_y=cls.HEIGHT / 2.3,
                          color=cb.brightness(arcade.color.WHITE, brightness),
                          align="center", font_size=50)
 
@@ -178,7 +180,7 @@ class ScoreScreen:
                           scale=0.50))
         arcade.draw_text(f"{notes_total}",
                          start_x=cls.WIDTH / 2 - (len(f"{notes_total}") * 15),
-                         start_y=cls.HEIGHT / 3.25,
+                         start_y=cls.HEIGHT / 3.50,
                          color=cb.brightness(arcade.color.WHITE, brightness),
                          align="center", font_size=50)
 
@@ -190,7 +192,7 @@ class ScoreScreen:
                           scale=0.50))
         arcade.draw_text(f"{notes_hit}",
                          start_x=cls.WIDTH / 2 - (len(f"{notes_hit}") * 15),
-                         start_y=cls.HEIGHT / 4.0,
+                         start_y=cls.HEIGHT / 4.5,
                          color=cb.brightness(arcade.color.WHITE, brightness),
                          align="center", font_size=50)
 
@@ -436,7 +438,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
                 self.started and \
                 self.audio.started and not\
                 self.paused and \
-                self.audio.thread_end:
+                self.audio.thread_end and self.audio.thead_finished_allow_end and self.notes_total > 2500:
             self.ended = True
 
     def on_draw(self, time_delta=None, count_down=None):
@@ -470,7 +472,7 @@ class GameScreen(arcade.View, PauseScreen, ScoreScreen):
 
         # notes
         if not self.paused and self.started:
-            ShapeManager.manage_shapes(self.notes_list, self.main.brightness, speed=256/(1.5/self.delta_time))
+            ShapeManager.manage_shapes(self.notes_list, self.main.brightness, speed=256/(2/self.delta_time))
 
         # White box behind the keys
         arcade.draw_rectangle_filled(
