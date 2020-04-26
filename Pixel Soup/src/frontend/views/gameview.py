@@ -1,6 +1,7 @@
 import arcade
 
-from multiprocessing import Process, Queue
+import os
+from multiprocessing import Queue
 import random
 
 from ..gameconstants import (
@@ -105,10 +106,7 @@ class GameView(arcade.View):
         self.forward = Queue()
         self.feedback = Queue()
 
-        self.player_connection = player_connection
-        self.assigned_player = assigned_player
-
-    def setup(self):
+    def setup(self, forward, feedback):
         """ Set up the game and initialize the variables. """
         self.background = arcade.load_texture(f"{DATA_DIR}/14.png")
 
@@ -141,11 +139,8 @@ class GameView(arcade.View):
             getattr(self, f"player{self.assigned_player}"), self.wall_list, GRAVITY
         )
 
-        sync = Process(
-            target=networking,
-            args=(self.forward, self.feedback, self.player_connection,),
-        )
-        sync.start()
+        self.forward = forward
+        self.feedback = feedback
 
         arcade.schedule(self.stream, 2)
 
