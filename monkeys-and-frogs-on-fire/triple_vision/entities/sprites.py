@@ -5,7 +5,8 @@ from typing import Optional
 import arcade
 
 from triple_vision.utils import get_change_vector, is_in_radius_positions
-
+from triple_vision.entities.entities import Entity
+from triple_vision.sound import SoundManager
 
 class MovingSprite(arcade.Sprite):
     def __init__(self, moving_speed, rotate=True, *args, **kwargs):
@@ -110,13 +111,18 @@ class TemporarySprite(arcade.Sprite):
         super().on_update(delta_time)
 
 
-class DamageIndicator(TemporarySprite, MovingSprite):
-    def __init__(self, text, start_x: int, start_y: int):
+class TextIndicator(TemporarySprite, MovingSprite):
+    def __init__(self, text, start_x: int, start_y: int, color=(255, 255, 255)):
         super().__init__(
-            lifetime=1, moving_speed=1, center_x=start_x, center_y=start_y, rotate=False
+            lifetime=1,
+            moving_speed=1,
+            center_x=start_x,
+            center_y=start_y,
+            rotate=False
         )
         temp_text = arcade.draw_text(text, start_x, start_y, arcade.color.WHITE)
         self.texture = temp_text.texture
+        self.color = color
         self.move_to(start_x, start_y + 10, set_target=False)
 
 
@@ -168,9 +174,9 @@ class ManaBar(arcade.Sprite):
             return
         self.fill_part_list.pop()
 
-    def clear(self):
-        for _ in range(len(self.fill_part_list)):
-            self.fill_part_list.pop()
+    def clear(self, amount):
+        for _ in range(amount):
+            self.remove_filling_part()
 
     def add_filling_part(self):
         if len(self.fill_part_list) < self.max_fillers:
@@ -209,18 +215,59 @@ class ManaBar(arcade.Sprite):
 
 
 class PotionEffect:
-    def __init__(self, heal=0, speed=0, strength=0):
+    def __init__(self, heal=0.0, speed=0.0, strength=0.0, resistance=0.0):
         self.heal = heal
         self.speed = speed
         self.strength = strength
+        self.resistance = resistance
 
 
-class Potion:
-    def __init__(self, player, effect: PotionEffect):
+class Potion(Entity):
+    def __init__(self, ctx, player, effect: PotionEffect, duration: float = None, *args, **kwargs):
+        super().__init__(ctx, *args, **kwargs)
         self.player = player
         self.effect = effect
+        self.duration = duration
+        self.wait_time = 0.0
+        self._effect = effect
 
-    def activate(self):
-        self.player.force += self.effect.strength
+    def collected(self):
+        self.player.attack_multiplier += self.effect.strength
         self.player.hp += self.effect.heal
-        self.player.speed += self.effect.speed
+        if self.player.hp >= self.player.MAX_HP:
+            self.player.hp = self.player.MAX_HP
+        self.player.speed_multiplier += self.effect.speed
+        self.player.resistance += self.effect.resistance
+
+        start_y = self.center_y
+        for attribute in self._effect.__dict__.keys():
+            value = self._effect.__getattribute__(attribute)
+            if value > 0:
+                if value % 1 == 0:
+                    msg = f"+{value} {attribute}"
+                else:
+                    percentage = value * 100
+                    msg = f"+{int(percentage)}% {attribute}"
+
+                self.ctx.create_text_indicator(
+                    msg,
+                    (self.center_x, start_y),
+                    color=(0, 255, 0)
+                )
+                start_y += 20
+
+        SoundManager.add_sound("pickup_0.wav")
+        SoundManager.play_sound("pickup_0.wav")
+
+        if self.duration is None:
+            self.kill()
+
+    def on_update(self, delta_time: float = 1/60):
+        if self.duration is None:
+            return
+
+        self.wait_time += delta_time
+
+        if self.wait_time > self.duration:
+            self.player.reset_stats()
+

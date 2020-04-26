@@ -19,8 +19,15 @@ class Enemies(enum.Enum):
     """
     big_demon = 1024
     chort = 100
-    imp = 300
     wogol = 512
+    big_zombie = 512
+    tiny_zombie = 100
+    goblin = 64
+    ice_zombie = 256
+    muddy = 2048
+
+    imp = 300
+    necromancer = 512
 
 
 class BaseEnemy(LivingEntity):
@@ -38,9 +45,22 @@ class BaseEnemy(LivingEntity):
         self.being_pushed = False
         self.kill_value = kill_value
 
+        self.can_melee_attack = True
+        self._melee_tick = 0.0
+        self._melee_interval = 1
+
     def kill(self) -> None:
         self.ctx.enemy_killed(self)
         super().kill()
+
+    def update_melee(self, delta_time: float):
+        if self.can_melee_attack:
+            return
+
+        self._melee_tick += delta_time
+        if self._melee_tick >= self._melee_interval:
+            self._melee_tick = 0.0
+            self.can_melee_attack = True
 
 
 class SimpleChasingEnemy(BaseEnemy, MovingSprite):
@@ -52,12 +72,14 @@ class SimpleChasingEnemy(BaseEnemy, MovingSprite):
     def __init__(
         self,
         enemy: Enemies,
+        melee_weapon,
         target_sprite: arcade.Sprite,
         detection_radius: int,
         **kwargs
     ) -> None:
         super().__init__(enemy, rotate=False, **kwargs)
 
+        self.melee_weapon = melee_weapon
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
 
@@ -75,6 +97,7 @@ class SimpleChasingEnemy(BaseEnemy, MovingSprite):
         # Since both are defined in both parents it's gonna call only from BaseEnemy
         # so we're forcing the call for MovingSprite
         super().on_update(delta_time)
+        super().update_melee(delta_time)
         super().force_moving_sprite_on_update(delta_time)
 
 
@@ -87,12 +110,14 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
     def __init__(
         self,
         enemy: Enemies,
+        melee_weapon,
         target_sprite: arcade.Sprite,
         detection_radius: int,
         **kwargs
     ) -> None:
         super().__init__(enemy, rotate=False, kill_value=5, **kwargs)
 
+        self.melee_weapon = melee_weapon
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
 
@@ -142,6 +167,7 @@ class ChasingEnemy(BaseEnemy, MovingSprite):
         # Since both are defined in both parents it's gonna call only from BaseEnemy
         # so we're forcing the call for MovingSprite
         super().on_update(delta_time)
+        super().update_melee(delta_time)
         super().force_moving_sprite_on_update(delta_time)
 
 
@@ -150,20 +176,25 @@ class StationaryEnemy(BaseEnemy):
     def __init__(
         self,
         enemy: Enemies,
+        melee_weapon,
         target_sprite: arcade.Sprite,
         detection_radius: int,
         shoot_interval: float,
+        dmg: random.randrange,
         **kwargs
     ) -> None:
         super().__init__(enemy, is_pushable=False, kill_value=5, **kwargs)
 
+        self.melee_weapon = melee_weapon  # If player gets too close to the sprite
         self.target_sprite = target_sprite
         self.detection_radius = detection_radius
         self.shoot_interval = shoot_interval
+        self.dmg = dmg
         self._passed_time = 0.0
 
     def on_update(self, delta_time: float = 1/60) -> None:
         super().on_update(delta_time)
+        super().update_melee(delta_time)
         self._passed_time += delta_time
 
         if not is_in_radius(self, self.target_sprite, self.detection_radius):
@@ -174,6 +205,7 @@ class StationaryEnemy(BaseEnemy):
 
         laser = LaserProjectile(
             color='red',
+            dmg=self.dmg,
             center_x=self.center_x,
             center_y=self.center_y,
             rotate=True

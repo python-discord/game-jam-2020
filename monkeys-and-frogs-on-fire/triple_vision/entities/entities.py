@@ -25,7 +25,9 @@ class Entity(arcade.Sprite):
     def setup(self) -> None:
         if self.spawn_in_map:
             while True:
-                center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
+                center = tile_to_pixels(
+                    random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1])
+                )
 
                 if (
                     len(arcade.get_sprites_at_point(center, self.ctx.view.collision_list)) == 0 and

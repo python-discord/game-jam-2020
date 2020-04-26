@@ -1,22 +1,22 @@
+import random
+import time
+
 import arcade
 
-from triple_vision import Settings as s
-from triple_vision import Tile
+from triple_vision import Settings as s, SoundSettings as ss
 from triple_vision.camera import Camera
-from triple_vision.entities import (
-    ChasingEnemy,
-    Enemies,
-    Player,
-    StationaryEnemy
-)
-from triple_vision.managers import CardManager, GameManager, CursorManager
+from triple_vision.entities import Player
+from triple_vision.managers import CardManager, GameManager, CursorManager, LevelManager
 from triple_vision.map import Map
-from triple_vision.sound import SoundManager
+from triple_vision.networking import client
+from triple_vision.sound import SoundManager, SoundtrackManager
 
 
 class TripleVision(arcade.View):
     def __init__(self, main_view) -> None:
         super().__init__()
+        self.level = 1
+        self.seed = None
 
         self.main_view = main_view
 
@@ -37,11 +37,23 @@ class TripleVision(arcade.View):
         self.card_manager = None
         self.game_manager = None
         self.cursor_manager: CursorManager = None
+        self.soundtrack_manager = SoundtrackManager(ss.SOUNDTRACK_LIST)
+        self.soundtrack_manager.setup()
 
         arcade.set_background_color(arcade.color.BLACK)
 
     def on_show(self) -> None:
-        self.bullet_list = arcade.SpriteList()
+        self.create_level()
+
+    def create_level(self, *, seed=None):
+        if seed is None:
+            self.seed = time.time()
+            random.seed(self.seed)
+        else:
+            self.seed = seed
+            random.seed(seed)
+
+        self.bullet_list = arcade.SpriteList(use_spatial_hash=True)
 
         self.player = Player(self, 'm')
         self.camera = Camera(self, s.WINDOW_SIZE[0] / 2.5, s.WINDOW_SIZE[1] / 2.5)
@@ -57,44 +69,14 @@ class TripleVision(arcade.View):
         self.charge = 0.0
         self.charging = False
 
-        for _ in range(3):
-            self.game_manager.create_enemy(
-                ChasingEnemy,
-                Enemies.big_demon,
-                self.player,
-                Tile.SCALED * 10,
-                moving_speed=1
-            )
-
-        for _ in range(5):
-            self.game_manager.create_enemy(
-                StationaryEnemy,
-                Enemies.imp,
-                self.player,
-                Tile.SCALED * 10,
-                0.75
-            )
-
-        for _ in range(15):
-            self.game_manager.create_enemy(
-                ChasingEnemy,
-                Enemies.chort,
-                self.player,
-                Tile.SCALED * 10,
-                moving_speed=1
-            )
-        for _ in range(5):
-            self.game_manager.create_enemy(
-                ChasingEnemy,
-                Enemies.wogol,
-                self.player,
-                Tile.SCALED * 10,
-                moving_speed=1
-            )
+        LevelManager.create_level(self.game_manager, self.player, self.level)
 
     def on_key_press(self, key, modifiers) -> None:
         if key == arcade.key.ESCAPE:
+            client.new_score(self.game_manager.points)
+
             arcade.set_viewport(0, s.WINDOW_SIZE[0], 0, s.WINDOW_SIZE[1])
+            self.soundtrack_manager.stop()
             self.window.set_mouse_visible(True)
             self.window.show_view(self.main_view)
         else:
@@ -204,11 +186,9 @@ class TripleVision(arcade.View):
         self.camera.update()
         self.card_manager.update()
 
-        if self.time_slow_ability:
-            self.player.update_health_bars(delta_time * s.ON_CARD_HOVER_SLOWDOWN_MULTIPLIER)
-        else:
-            self.player.update_health_bars(delta_time)
+        self.player.update_health_bars(delta_time)
 
         SoundManager.update(self.slow_down or self.time_slow_ability)
+        self.soundtrack_manager.update(self.slow_down or self.time_slow_ability)
         self.cursor_manager.update()
         self.player.update_health_bars(delta_time)

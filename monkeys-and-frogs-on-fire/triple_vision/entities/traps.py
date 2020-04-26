@@ -36,6 +36,10 @@ class Trap(AnimatedEntity, SoundEntity):
         self.activation_rectangle = activation_rectangle
         self.sound_radius = sound_radius
 
+        self.can_deal_dmg = True
+        self._activation_tick = 0.0
+        self._activation_interval = 1
+
     def is_activated(self):
         """
         Should the trap work aka should it be animated and play sounds,
@@ -66,11 +70,19 @@ class Trap(AnimatedEntity, SoundEntity):
         """
         return is_in_radius(self, self.target_player, self.sound_radius)
 
+    def update_trap_activation(self, delta_time: float):
+        if self.can_deal_dmg:
+            return
+
+        self._activation_tick += delta_time
+        if self._activation_tick >= self._activation_interval:
+            self._activation_tick = 0.0
+            self.can_deal_dmg = True
+
 
 class Spike(Trap):
-    # TODO change these assets
-    activate_sounds = ("melee_activate_0.wav",)
-    hit_sounds = ("melee_hit_0.flac",)
+    activate_sounds = ("spike_active_0.wav", "spike_active_1.wav")
+    hit_sounds = ("spike_hit_0.wav", "spike_hit_1.wav")
 
     def __init__(self, target_player=None, target_enemies=None, **kwargs) -> None:
         super().__init__(
@@ -105,6 +117,7 @@ class Spike(Trap):
                 self.ticks += 1
 
             super().on_update(delta_time)
+            super().update_trap_activation(delta_time)
 
     def activate(self):
         # TODO

@@ -6,12 +6,12 @@ import arcade
 
 from triple_vision import Settings as s
 from triple_vision import Tile
+from triple_vision.entities.abilities import Abilities
 from triple_vision.entities.entities import LivingEntity
 from triple_vision.entities.sprites import ManaBar, MovingSprite
 from triple_vision.entities.weapons import ChargedLaserProjectile
-from triple_vision.utils import pixels_to_tile, tile_to_pixels
 from triple_vision.sound import SoundManager
-from triple_vision.entities.abilities import Abilities
+from triple_vision.utils import pixels_to_tile, tile_to_pixels
 
 
 class States(Enum):
@@ -137,7 +137,9 @@ class Player(LivingEntity, MovingSprite):
         self.health_bar = PlayerLiveManager(self.view, self.hp)
 
         while True:
-            center = tile_to_pixels(random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1]))
+            center = tile_to_pixels(
+                random.randrange(0, s.MAP_SIZE[0]), random.randrange(0, s.MAP_SIZE[1])
+            )
 
             if (
                     len(arcade.get_sprites_at_point(center, self.view.collision_list)) == 0 and
@@ -174,8 +176,22 @@ class Player(LivingEntity, MovingSprite):
             SoundManager.play_sound("empty_gun.wav")
             return
 
-        if len(self.mana_bar) == 0:
-            # TODO empty mana sound
+        to_shoot = False
+        if charge >= 90 and len(self.mana_bar) >= 3:
+            to_shoot = True
+            self.mana_bar.clear(3)
+        elif charge >= 70 and len(self.mana_bar) >= 2:
+            to_shoot = True
+            self.mana_bar.clear(2)
+        elif charge >= 50 and len(self.mana_bar) >= 1:
+            to_shoot = True
+            self.mana_bar.remove_filling_part()
+        elif charge < 50:
+            to_shoot = True
+
+        if not to_shoot:
+            SoundManager.add_sound("mana_empty.wav")
+            SoundManager.play_sound("mana_empty.wav")
             return
 
         bullet = ChargedLaserProjectile(
@@ -189,26 +205,32 @@ class Player(LivingEntity, MovingSprite):
         bullet.play_activate_sound()
         self.view.game_manager.player_projectiles.append(bullet)
         self.last_shot = time.time()
-        if charge >= 50:
-            # Remove mana only for charged attack
-            self.mana_bar.remove_filling_part()
+
         self.state = States.ATTACKING_RANGED
 
     def process_right_mouse_press(self, x, y) -> None:
         if self._ability_duration_left > 0:
             print("Ability already active!")
         elif len(self.mana_bar) == self.mana_bar.max_fillers:
-            self.mana_bar.clear()
+            self.mana_bar.clear(len(self.mana_bar))
             self._ability_duration_left = self.selected_ability.duration
             self.selected_ability.activate(x, y, self.view)
+            self.view.card_manager.card_manager_enabled = False
         else:
-            print(f"No mana")
-            # TODO empty mana sound
-            pass
+            SoundManager.add_sound("mana_empty.wav")
+            SoundManager.play_sound("mana_empty.wav")
 
     def kill(self):
         self.is_alive = False
         super().kill()
+
+    def hit(self, weapon, attack_multiplier: float = 1.0):
+        if self.resistance >= 1.0:
+            SoundManager.add_sound("armor.mp3")
+            SoundManager.play_sound("armor.mp3")
+            pass
+        else:
+            super().hit(weapon, attack_multiplier)
 
     def on_update(self, delta_time: float = 1 / 60) -> None:
         change_x = 0
@@ -249,6 +271,7 @@ class Player(LivingEntity, MovingSprite):
         elif self._ability_duration_left < 0:
             self._ability_duration_left = 0
             self.selected_ability.deactivate(self.view)
+            self.view.card_manager.card_manager_enabled = True
 
         super().on_update(delta_time)
 
@@ -269,7 +292,6 @@ class PlayerLiveManager:
     def __init__(
         self,
         view,
-        life_count: int = 10,
         is_filled: bool = True,
         scale: float = 1,
     ) -> None:
