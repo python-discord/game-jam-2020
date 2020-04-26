@@ -15,6 +15,7 @@ class Main:
             #self.width, self.height,
             1600, 800,
             title="3 Strings", fullscreen=False, update_rate=1/64)
+        self.window.width
         self.play_screen = GameScreen(self)
 
     @property
