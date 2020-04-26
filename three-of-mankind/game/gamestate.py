@@ -1,3 +1,4 @@
+import json
 import logging
 
 import arcade
@@ -33,7 +34,11 @@ class GameState:
         self.view_left = 0
         self.view_bottom = 0
         self.game = game
-        self.level = 0
+
+        with open("config.json") as file:
+            self.data = json.load(file)
+
+        self.level = self.data.get("current_level", 0)
 
         self.player = Player(scale=0.99)
         for tile in (
@@ -48,11 +53,7 @@ class GameState:
         self.player.center_x = 200
         self.player.center_y = 200
 
-        self.load_level(0)
-
-        self.engine = arcade.PhysicsEnginePlatformer(
-            self.player, self.level_geometry, GRAVITY
-        )
+        self.load_level(self.level)
 
         self.dash_emitters = []
 
@@ -144,6 +145,10 @@ class GameState:
         elif not self.end:
             raise RuntimeError("End is not set.")
 
+        self.engine = arcade.PhysicsEnginePlatformer(
+            self.player, self.level_geometry, GRAVITY
+        )
+
         self.move_to_start()
 
         return True
@@ -164,6 +169,11 @@ class GameState:
         if self.player.collides_with_sprite(self.end):
             self.level += 1
             if self.load_level(self.level):
+
+                with open("config.json", "w") as file:
+                    self.data.update(current_level=self.level)
+                    json.dump(self.data, file)
+
                 logging.info("NEXT LEVEL")
             else:
                 logging.info("LAST LEVEL")

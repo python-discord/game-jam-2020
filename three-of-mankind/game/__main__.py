@@ -47,8 +47,6 @@ class Game(ColorIsolationWindow):
             self.gamestate.on_key_release(symbol, modifiers)
 
     def start_game(self) -> None:
-        """Create gamestate and set to the ingame mode."""
-        logging.info("New game started")
         self.ingame = True
         self.gamestate = GameState(game=self)
 
