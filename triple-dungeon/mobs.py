@@ -130,7 +130,7 @@ class Mob(arcade.Sprite):
         super(Mob, self).__init__(*args, **kwargs)
 
         self.max_health, self.max_armor = max_health, max_armor
-        self.health, self.armor = max_health, max_armor
+        self.health, self.armor = 60, max_armor
         self.idle_textures = []
         self.walking_textures = []
         self.up_textures = []
@@ -164,20 +164,19 @@ class Player(Mob):
         self.refreshIndex = 0
         self.prev = Enums.IDLE
         self.texture = next(self.map[self.prev])
-        self.kill_list = []
         self.cur_recipe = None
         self.speed = 14
 
-    def add_kill(self, creature):
-        # Adds a kill to kill_list. If 3 or more check the recipe then give a power up if it matches.
-        self.kill_list.append(creature)
-        print(self.kill_list)
-        print(self.cur_recipe)
-        if self.cur_recipe == self.kill_list:
-            print("+++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-            self.kill_list = []
-        elif len(self.kill_list) >= 3:
-            self.kill_list = []
+    def heal(self):
+        self.health+=Config.HEAL_AMOUNT
+        if self.health > self.max_health:
+            self.health = self.max_health
+
+    def harden(self):
+        self.armor+=Config.ARMOR_AMOUNT
+
+    def hurry(self):
+        self.speed+=Config.SPEED_AMOUNT
 
     def update_animation(self, delta_time: float = 1 / 60) -> None:
         """
@@ -257,8 +256,6 @@ class Enemy(Mob):
             self.change_y = -self.speed
         else:
             self.change_y = 0
-
-
 
     def get_path(self, end: Tuple[int, int] = None) -> List[Tuple[int, int]]:
         """
