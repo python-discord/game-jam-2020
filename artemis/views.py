@@ -305,6 +305,11 @@ class MultiplayerMenu(View):
             arcade.color.WHITE, font_size=50, anchor_x='center',
             anchor_y='bottom', font_name=FONT.format(type='b')
         )
+        arcade.draw_text(
+            'Multiplayer physics is still a little broken, apologies.',
+            WIDTH / 2, HEIGHT / 2 - 160, (255, 255, 255), 20,
+            anchor_x='center', anchor_y='top', font_name=FONT.format(type='li')
+        )
 
 
 class MultiplayerHelpOne(View):
