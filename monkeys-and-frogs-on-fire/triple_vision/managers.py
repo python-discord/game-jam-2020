@@ -13,6 +13,7 @@ from triple_vision.entities import (
 from triple_vision.entities import DamageIndicator, States
 from triple_vision.entities.sprites import Potion, PotionEffect
 from triple_vision.networking import client
+from triple_vision.entities import Melee
 
 
 
@@ -90,6 +91,12 @@ class GameManager:
         for spike in spikes_hit:
             if 0 < spike.ticks < 7:
                 self.view.player.hit(spike)
+
+        enemy_collision_with_player = arcade.check_for_collision_with_list(self.view.player, self.enemies)
+        for enemy in enemy_collision_with_player:
+            if enemy.can_melee_attack:
+                self.view.player.hit(enemy.melee_weapon)
+                enemy.can_melee_attack = False
 
         self.enemies.on_update(delta_time)
 
@@ -343,7 +350,7 @@ class LevelManager:
     @classmethod
     def create_level(cls, game_manager: GameManager, player, level: int):
         """Deals with how many enemies and what types spawn"""
-
+        
         # Goblins have low hp but are fast and big in numbers.
         # Very small dmg
         # level1 3
@@ -355,6 +362,7 @@ class LevelManager:
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.goblin,
+                Melee(cls.LOW_MELEE_DMG),
                 player,
                 cls.NORMAL_CHASING_DETECTION_RADIUS,
                 moving_speed=cls.VERY_FAST_SPEED
@@ -370,6 +378,7 @@ class LevelManager:
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.chort,
+                Melee(cls.LOW_MELEE_DMG),
                 player,
                 cls.NORMAL_CHASING_DETECTION_RADIUS,
                 moving_speed=cls.VERY_FAST_SPEED
@@ -385,6 +394,7 @@ class LevelManager:
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.tiny_zombie,
+                Melee(cls.LOW_MELEE_DMG),
                 player,
                 cls.NORMAL_CHASING_DETECTION_RADIUS,
                 moving_speed=cls.VERY_FAST_SPEED
@@ -400,6 +410,7 @@ class LevelManager:
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.ice_zombie,
+                Melee(cls.NORMAL_MELEE_DMG),
                 player,
                 cls.BIG_CHASING_DETECTION_RADIUS,
                 moving_speed=cls.FAST_SPEED
@@ -416,6 +427,7 @@ class LevelManager:
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.big_demon,
+                Melee(cls.HIGH_MELEE_DMG),
                 player,
                 cls.BIG_CHASING_DETECTION_RADIUS,
                 moving_speed=cls.NORMAL_SPEED
@@ -430,6 +442,7 @@ class LevelManager:
             game_manager.create_enemy(
                 StationaryEnemy,
                 Enemies.imp,
+                Melee(cls.LOW_MELEE_DMG),
                 player,
                 cls.NORMAL_SHOOTER_RADIUS,
                 shoot_interval=cls.FAST_SHOOT_INTERVAL,
@@ -445,6 +458,7 @@ class LevelManager:
             game_manager.create_enemy(
                 StationaryEnemy,
                 Enemies.necromancer,
+                Melee(cls.NORMAL_MELEE_DMG),
                 player,
                 cls.BIG_SHOOTER_RADIUS,
                 shoot_interval=cls.SLOW_SHOOT_INTERVAL,
@@ -460,6 +474,7 @@ class LevelManager:
             game_manager.create_enemy(
                 ChasingEnemy,
                 Enemies.muddy,
+                Melee(cls.HIGH_MELEE_DMG),
                 player,
                 cls.HUGE_CHASING_DETECTION_RADIUS,
                 moving_speed=cls.LOW_SPEED

@@ -88,7 +88,7 @@ class Melee(Weapon):
     activate_sounds = ("melee_activate_0.wav", "melee_activate_1.wav", "melee_activate_2.wav")
     hit_sounds = ("melee_hit_0.flac", "melee_hit_1.flac", "melee_hit_2.flac")
 
-    def __init__(self, dmg: float, throwback_force: int, **kwargs) -> None:
+    def __init__(self, dmg: float, throwback_force: int = 0, **kwargs) -> None:
         super().__init__(
             dmg,
             throwback_force,
