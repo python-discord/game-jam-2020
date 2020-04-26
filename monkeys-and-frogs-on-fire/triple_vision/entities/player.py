@@ -216,6 +216,13 @@ class Player(LivingEntity, MovingSprite):
         self.is_alive = False
         super().kill()
 
+    def hit(self, weapon, attack_multiplier: float = 1.0):
+        if self.resistance >= 1.0:
+            # TODO some indestructible sound?
+            pass
+        else:
+            super().hit(weapon, attack_multiplier)
+
     def on_update(self, delta_time: float = 1 / 60) -> None:
         change_x = 0
         change_y = 0
