@@ -24,3 +24,6 @@ Download the files from the `beanoculars`folder. Once you have a virtual environ
 It's my first time using pipenv and github, I really hope that this works, otherwise I'd be thankful if you messaged me on discord: Sacha#8175.
 I am not a native english speaker so if there's some mistake of language, please let me know on discord.
 Pro tip: clicking far from the helicopter makes it move faster.
+
+## Licenses
+I made all the images for the game myself and the code is using the Arcade library by Paul Vincent Craven, which license is found in the `submission` folder.
