@@ -3,6 +3,7 @@ import arcade
 
 import game
 import player
+from sound import play_sound_effect
 
 
 def check_for_collision(sprite1: arcade.Sprite,
@@ -97,7 +98,13 @@ def _move_sprite(moving_sprite: arcade.Sprite, walls: arcade.SpriteList):
         elif moving_sprite.change_y < 0:
             while check_for_collision_with_list(moving_sprite, walls):
                 moving_sprite.center_y += 1
-
+        was_falling = (
+            abs(moving_sprite.change_y)
+            > abs(moving_sprite.engine.gravity_constant)
+        )
+        if was_falling:
+            # they have been moving for more than one frame
+            play_sound_effect('impact')
         moving_sprite.change_y = min(0.0, hit_list_x[0].change_y)
 
     moving_sprite.center_y = round(moving_sprite.center_y, 2)
