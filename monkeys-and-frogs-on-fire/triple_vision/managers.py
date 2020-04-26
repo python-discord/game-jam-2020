@@ -11,8 +11,11 @@ from triple_vision.entities import (
     StationaryEnemy
 )
 from triple_vision.entities import DamageIndicator, States
+from triple_vision.entities.sprites import Potion, PotionEffect
 from triple_vision.networking import client
 from triple_vision.entities import Melee
+
+
 
 
 class GameManager:
@@ -26,6 +29,8 @@ class GameManager:
         self.effects = arcade.SpriteList()
         self.enemy_projectiles = arcade.SpriteList(use_spatial_hash=True)
         self.damage_indicators = arcade.SpriteList()
+        self.potions = arcade.SpriteList()
+        self.hidden_active_potions: list = []
 
         self.spikes: Optional[arcade.SpriteList] = None
 
@@ -39,6 +44,10 @@ class GameManager:
         self.player_projectiles.draw()
         self.enemy_projectiles.draw()
         self.damage_indicators.draw()
+        self.potions.draw()
+
+    def create_potion(self, effect: PotionEffect):
+        self.potions.append(Potion(self.view.player, effect))
 
     def create_enemy(self, enemy_class, *args, **kwargs) -> None:
         enemy = enemy_class(ctx=self, *args, **kwargs)
@@ -104,6 +113,15 @@ class GameManager:
         if not self.view.player.is_alive and not self.prev_sent:
             client.new_score(self.points)
             self.prev_sent = True
+
+        hit_list = arcade.check_for_collision_with_list(self.view.player, self.potions)
+        for potion in hit_list:
+            potion.collected()
+            potion.kill()
+            self.hidden_active_potions.append(potion)
+
+        for potion in self.hidden_active_potions:
+            potion.on_update(delta_time)
 
     def enemy_killed(self, enemy) -> None:
         self.points += enemy.kill_value

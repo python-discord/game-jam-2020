@@ -209,18 +209,33 @@ class ManaBar(arcade.Sprite):
 
 
 class PotionEffect:
-    def __init__(self, heal=0, speed=0, strength=0):
+    def __init__(self, heal=0.0, speed=0.0, strength=0.0, resistance=0.0):
         self.heal = heal
         self.speed = speed
         self.strength = strength
+        self.resistance = resistance
 
 
-class Potion:
-    def __init__(self, player, effect: PotionEffect):
+class Potion(arcade.Sprite):
+    def __init__(self, player, effect: PotionEffect, duration: float = None, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.player = player
         self.effect = effect
+        self.duration = duration
+        self.wait_time = 0.0
 
-    def activate(self):
-        self.player.force += self.effect.strength
+    def collected(self):
+        self.player.attack_multiplier += self.effect.strength
         self.player.hp += self.effect.heal
-        self.player.speed += self.effect.speed
+        self.player.speed_multiplier += self.effect.speed
+        self.player.resistance += self.effect.resistance
+
+    def on_update(self, delta_time: float = 1/60):
+        if self.duration is None:
+            return
+
+        self.wait_time += delta_time
+
+        if self.wait_time > self.duration:
+            self.player.reset_stats()
+
