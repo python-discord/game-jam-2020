@@ -1,0 +1,32 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "13add27d6332c02f12c75fb90c3c6dfb3cedb81657e97e8a2502db4c252f52d1"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.7"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "c34b4ee": {
+            "file": "https://github.com/pvcraven/arcade/archive/shader_experimental.zip"
+        },
+        "pathfinding": {
+            "hashes": [
+                "sha256:3e3809abada1fdb292ced85cd7f63700c4f28a20f10eae68168a760be52ca746",
+                "sha256:e71ac5e1d933d67a3b402600f3dfb766da8c0113a0df328661c89a24bd5f21a5"
+            ],
+            "index": "pypi",
+            "version": "==0.0.4"
+        }
+    },
+    "develop": {}
+}
