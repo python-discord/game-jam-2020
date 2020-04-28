@@ -4,7 +4,7 @@
   <image source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/0x72_DungeonTilesetII_v1.3/0x72_DungeonTilesetII_v1.3/0x72_DungeonTilesetII_v1.3.png" width="512" height="512"/>
  </tileset>
  <tileset firstgid="1025" name="Dungeon_Tileset" tilewidth="16" tileheight="16" tilecount="100" columns="10">
-  <image source="E:/Dominic/Development/Game Dev/Resources/_Tilesets/2D Pixel Dungeon Asset Pack v2.0/2D Pixel Dungeon Asset Pack/character and tileset/Dungeon_Tileset.png" width="160" height="160"/>
+  <image source="../tilesets/dungeon/Dungeon_Tileset.png" width="160" height="160"/>
   <terraintypes>
    <terrain name="Floor" tile="43"/>
    <terrain name="Wall" tile="43"/>
