@@ -10,7 +10,6 @@ pathfinding = "*"
 c34b4ee = {file = "https://github.com/pvcraven/arcade/archive/shader_experimental.zip"}
 
 [requires]
-python_version = "3.7"
 
 [scripts]
 start = "python -m game"
