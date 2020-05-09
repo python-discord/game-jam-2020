@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+arcade = "==2.3.9"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
+
+[scripts]
+start = "python coin_collector.py"

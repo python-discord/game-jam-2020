@@ -3,7 +3,7 @@ from arcade.gui import TextButton
 from arcade import Theme
 import os
 from os.path import join, dirname, realpath
-from TriChess.game.trigrid import TriGrid
+from Finalists.TriChess.game.trigrid import TriGrid
 
 data_dir = join(dirname(realpath(__file__)).rsplit(os.sep, 1)[0], 'data')
 button_click = arcade.Sound(os.path.join(data_dir, "button_click.mp3"))

@@ -1,0 +1,27 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+appdirs = "==1.4.3"
+arcade = "==2.3.15"
+attrs = "==19.3.0"
+black = "==19.10b0"
+click = "==7.1.1"
+numpy = "==1.18.2"
+pathspec = "==0.8.0"
+pyglet = "==1.5.3"
+pytiled-parser = "==0.9.3"
+regex = "==2020.4.4"
+toml = "==0.10.0"
+typed-ast = "==1.4.1"
+Pillow = "==7.1.1"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
+
+[scripts]
+start = "python game.py"
